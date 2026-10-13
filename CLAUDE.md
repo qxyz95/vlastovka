@@ -25,6 +25,8 @@ Proběhlo review kódu, obsahu a mechanik. Opravené:
 - HUD a `#scene-label` nechytají klepnutí (`pointer-events:none`).
 - Mezerník na jiném tlačítku nespustí hod.
 - Poškozený save se zálohuje do `just-throw-it-v1-corrupt`, NaN dolet se neuloží.
+- Příběhy míst se zobrazují v `#journey-story` (za letu aktuální místo, jinak nejvzdálenější). Štítek scény ukazuje čtvrť a místo.
+- Texty sjednocené: Dílna (ne Hangár), Bonusy (ne Bonus tree), intro odpovídá trase předměstí → doky → jádro. Čísla v českém formátu (`num()` v `ui.js`). Po 500 m ukazuje HUD hranici dalšího místa.
 
 ## Známé problémy (z review 13. 10. 2026)
 **Mechaniky / balanc**
@@ -35,8 +37,8 @@ Proběhlo review kódu, obsahu a mechanik. Opravené:
 - `simulation/REPORT.md` je zastaralý (verze 0.1.0).
 
 **Obsah**
-- `story` míst ze `scenes.js` se nezobrazuje (`#journey-story` je prázdný). Cíl 500 m pokryje jen 2 ze 16 míst.
-- Fikce nesedí: intro mluví o městě, trasa vede do polí a hor. Zůstal štítek „ZAHRADA“, kolísá „Hangár“ a „Dílna“, míchá se CZ a EN („Bonus tree“). Desetinná tečka místo čárky.
+- Cíl 500 m pokryje jen 2 ze 16 míst.
+- Nápisy kreslené ve scéně zůstaly anglicky („PAPER LAB“ apod.), záměrně jako neonové reklamy.
 - Jen 2 typy událostí se stejnými texty a málo humoru. `bonus.html` je prázdná stránka v navigaci.
 
 **Kód**

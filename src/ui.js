@@ -2,7 +2,7 @@ import {BRANCHES,PRICES,DT} from './config.js';
 import {fresh,buy,createFlight,step,activeEvent,eventInput,settle,reward} from './core.js';
 import {load,save} from './storage.js';
 import {render} from './render.js';
-import {districtAt,routeAt} from './scenes.js';
+import {districtAt,routeAt,SCREEN_METERS} from './scenes.js';
 import {chargeAt,throwSettings} from './throw.js';
 import {eventProgress,eventStats} from './events.js';
 import {createDecorations,stepDecorations} from './decorations.js';
@@ -11,9 +11,14 @@ let decorations=null, inputOwner=null, milestoneQueue=[], seenMilestones=new Set
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 $('warning').textContent=loaded.warning;
 function persist(){const warning=save(p);if(warning)$('warning').textContent=warning;}
+const num=(x,d=1)=>x.toLocaleString('cs',{minimumFractionDigits:d,maximumFractionDigits:d});
+// Story line under the scene: the current place in flight, otherwise the farthest place reached.
+function setStory(text){if($('journey-story').textContent!==text)$('journey-story').textContent=text;}
+function storyAt(x,prefix=''){const place=routeAt(x);return prefix+place.name+' · '+place.story;}
 function refresh(){
   $('model-upgrades').textContent=(p.model==='dart'?'Šipka':'Kluzák')+' / vlastní vylepšení';
-  $('coins').textContent=p.coins;$('best').textContent=Math.floor(p.best)+' m';$('milestone').textContent=([100,250,500].find(n=>n>p.best)??500)+' m';
+  $('coins').textContent=p.coins;$('best').textContent=Math.floor(p.best)+' m';$('milestone').textContent=([100,250,500].find(n=>n>p.best)??Math.ceil((Math.floor(p.best/SCREEN_METERS)+1)*SCREEN_METERS))+' m';
+  setStory(p.best>0?storyAt(p.best,'Nejdál: '):storyAt(0));
   for(const m of ['dart','glider']){$(m).classList.toggle('selected',p.model===m);$(m).setAttribute('aria-pressed',p.model===m);}
   $('glider').disabled=p.best<100;$('glider-description').textContent=p.best<100?'Odemkneš doletem 100 m.':'Delší klouzání, širší křídla.';
   $('tree').replaceChildren();
@@ -62,12 +67,12 @@ $('reset').onclick=()=>{if(confirm('Opravdu smazat mince, vylepšení a rekord?'
 document.addEventListener('visibilitychange',()=>{last=0;acc=0;if(document.hidden){if(state==='aim')cancelHold();flightCancel();}$('paused').hidden=!document.hidden;});
 function finish(){const previous=p.best;settle(p,f);persist();refresh();show('result');
  $('result-title').textContent=f.x>=500?'Obzor je tvůj!':'Hod dokončen!';
- $('stat-distance').textContent=f.x.toFixed(1)+' m';$('stat-time').textContent=f.t.toFixed(1)+' s';
+ $('stat-distance').textContent=num(f.x)+' m';$('stat-time').textContent=num(f.t)+' s';
  $('stat-power').textContent=Math.round(f.launch.power*100)+' %';$('stat-angle').textContent=Math.round(f.launch.angle*180/Math.PI)+'°';
  const stats=eventStats(f);
- $('stat-events').textContent=stats.hits+' / '+stats.completed+' · ★ '+stats.perfect;$('stat-best').textContent=p.best.toFixed(1)+' m';
+ $('stat-events').textContent=stats.hits+' / '+stats.completed+' · ★ '+stats.perfect;$('stat-best').textContent=num(p.best)+' m';
  $('reward-breakdown').textContent='Za pokus 10 ◈ + za vzdálenost '+(reward(f)-10)+' ◈';$('stat-reward').textContent=reward(f);
- $('result-progress').value=Math.min(500,p.best);$('result-progress-label').textContent=Math.floor(p.best)+' / 500 m';
+ $('result-progress').value=Math.min(500,p.best);$('result-progress-label').textContent=p.best>=500?'Cíl splněn · rekord '+num(p.best,0)+' m':Math.floor(p.best)+' / 500 m';
  $('result-text').textContent=[f.launch.label,f.x>previous?'★ Nový rekord!':'',previous<100&&p.best>=100?'Kluzák odemčen!':''].filter(Boolean).join(' · ');
  $('result').showModal();$('retry').focus();
 }
@@ -76,23 +81,23 @@ function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;i
  if(state==='flight'){acc+=elapsed;while(acc>=DT&&!f.landed){step(f);stepDecorations(decorations,f);acc-=DT;}if(f.landed)finish();
  updateFlightUI();
  }
- $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name+' · CÍL 500 METRŮ';render($('game'),f,p.model,now/1000,{decorations,reduced:reduced.matches});
+ $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name+' · '+routeAt(f?.x??0).name.toUpperCase();render($('game'),f,p.model,now/1000,{decorations,reduced:reduced.matches});
  if(state==='aim'){const c=$('game').getContext('2d'),a=angle*Math.PI/180,len=65+(held?chargeAt(heldTime)*45:0);c.save();c.translate(148,258);c.rotate(-a);c.strokeStyle='#fff0a6';c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.moveTo(12,0);c.lineTo(len,0);c.stroke();c.setLineDash([]);c.beginPath();c.moveTo(len-10,-6);c.lineTo(len,0);c.lineTo(len-10,6);c.stroke();c.restore();c.fillStyle='#203b3e';c.fillRect(205,168,265,37);c.fillStyle='#fff0b3';c.font='bold 13px monospace';c.fillText(held?'PUSŤ NA VRCHOLU SÍLY':'ZAMIŘ A PODRŽ PRO HOD',220,191);c.fillStyle='#203b3e';c.fillRect(205,211,265,14);c.fillStyle='#f2ce87';c.fillRect(207,213,261*(held?chargeAt(heldTime):0),10);c.strokeStyle='#fff';c.strokeRect(449,212,19,12);}
  }requestAnimationFrame(frame);}
 function updateFlightUI(){
  const e=activeEvent(f), interactive=e&&!e.result;
- $('event-title').textContent=e?(e.type==='gust'?'Poryv z ventilace':'Kyberholub–kurýr'):'Město pod křídly';
+ $('event-title').textContent=e?(e.type==='gust'?'Poryv z ventilace':'Kyberholub-kurýr'):'Město pod křídly';
  $('action').disabled=!interactive;$('action').textContent=e?.type==='bird'?(e.heldAt!==null?'Pusť do zóny':'Podrž · mezerník'):'Klepni · mezerník';
  $('flight').dataset.kind=e?.type??'none';$('flight').dataset.phase=e?.phase??'idle';
  $('needle').style.left=(e?eventProgress(f,e)*100:0)+'%';
  const help=e?.phase==='warning'?'Připrav se…':interactive?(e.type==='gust'?'Klepni, až ukazatel projde světlým středem.':e.heldAt!==null?'Drž… pusť ve světlé zóně.':'Podrž tlačítko, pak ho pusť do zóny.'):f.t<f.feedbackUntil?f.feedback:'Let je automatický. Sleduj další příležitost.';
  if($('event-help').textContent!==help)$('event-help').textContent=help;
- $('flight-reward').textContent=reward(f)+' ◈';
+ $('flight-reward').textContent=reward(f)+' ◈';setStory(storyAt(f.x));
  for(const m of [100,250,500])if(f.x>=m&&!seenMilestones.has(m)){seenMilestones.add(m);milestoneQueue.push(m);}
  if(banner&&f.t>=banner.until)banner=null;
  if(!e&&!banner&&milestoneQueue.length)banner={value:milestoneQueue.shift(),until:f.t+1.5};
  $('milestone-banner').hidden=!!e||!banner||f.landed;
- if(banner)$('milestone-banner').textContent='★ '+banner.value+' m · '+(banner.value===500?'Obzor je tvůj!':'Další kus města za tebou');
+ if(banner)$('milestone-banner').textContent='★ '+banner.value+' m · '+(banner.value===500?'Obzor je tvůj!':'Další kus cesty za tebou');
  const district=districtAt(f.x).index;if(district!==lastDistrict){lastDistrict=district;districtUntil=f.t+1.5;}
  $('scene-label').classList.toggle('district-highlight',f.t<districtUntil);
 }
