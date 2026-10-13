@@ -16,7 +16,7 @@ function resolve(f,e,result){
  e.result=result;e.owner=null;e.phase='effect';e.resolvedAt=f.t;
  if(result==='success'||result==='perfect'){
   if(e.type==='gust'){const k=result==='perfect'?HELP.perfect:1;f.vx+=HELP.gustX*k;f.vy+=HELP.gustY*k;}
-  else {f.carry=result==='perfect'?HELP.birdPerfect:HELP.birdTime;f.vx=Math.max(10,f.vx);f.vy=.4;}
+  else {f.carry=result==='perfect'?HELP.birdPerfect:HELP.birdTime;f.vx=Math.max(10,f.vx);f.vy=Math.max(.4,f.vy);}
  }
  e.doneAt=f.t+Math.max(1,e.type==='bird'?f.carry:0);
  f.feedback={success:'✓ Úspěch',perfect:'★ Perfektní',miss:'○ Bez bonusu'}[result];f.feedbackUntil=f.t+1;

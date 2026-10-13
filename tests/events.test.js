@@ -73,3 +73,6 @@ test('cancelled or ignored QTE has exactly the same passive flight as no assista
  }
 });
 import {SECTION_METERS} from '../src/scenes.js';
+test('successful bird never cuts the climb',()=>{
+ for(const vy of [-3,5]){const f=event('bird',2.5);f.vy=vy;eventInput(f,'down');f.t+=.75;assert.equal(eventInput(f,'up'),'perfect');assert.equal(f.vy,Math.max(.4,vy));}
+});
