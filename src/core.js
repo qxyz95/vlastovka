@@ -1,5 +1,6 @@
 import {DT, parameters, PRICES, STEEP_PENALTY} from './config.js';
 import {random} from './random.js';
+import {AIM_MIN,AIM_MAX,throwSettings} from './throw.js';
 export {random} from './random.js';
 import {createEvents,updateEvents,eventInput} from './events.js';
 export {activeEvent,eventInput} from './events.js';
@@ -57,4 +58,15 @@ export function simulate(model,levels,seed=1,profile=0,dt=DT,options={}) {
   });step(f,dt);
  }
  if(!f.landed)throw Error('Flight exceeded 180 s');return f;
+}
+// Angle with the longest passive flight for this model, upgrades and throw power (1° grid).
+export function bestAngle(model,levels,power) {
+ let best={angle:AIM_MIN,x:-1};
+ for(let a=AIM_MIN;a<=AIM_MAX;a++){const f=createFlight(model,levels,1,{x:0,y:0},throwSettings(a,power));f.events=[];while(!f.landed&&f.t<180)step(f);if(f.x>best.x)best={angle:a,x:f.x};}
+ return best.angle;
+}
+// Short advice after a throw: within 3° counts as right, otherwise point steeper or flatter.
+export function angleHint(angle,best) {
+ const d=Math.round(angle)-best;
+ return Math.abs(d)<=3?'Úhel sedí':d>0?(d>8?'Zkus mnohem plošeji':'Zkus o kus plošeji'):(d<-8?'Zkus mnohem strměji':'Zkus o kus strměji');
 }

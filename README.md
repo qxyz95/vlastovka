@@ -114,4 +114,9 @@ Prohlížeč: ověřený běh hry a aktivace letových událostí; na 360 × 780
 - **Modely:** šipka (rychlá, nejvíc jí dá síla), kluzák (pomalejší, dlouhé klouzání, nejvíc mu dá papír a z poryvů a holubů získá o 15 % víc).
 - **QTE:** širší okna (poryv ±0,28 s, perfektní ±0,10 s; holub 0,50–1,00 s, perfektní 0,65–0,85 s), stisk během varování se ignoruje, mezery mezi událostmi 4–7 s (max. 10 událostí). Časovací kruh se kreslí přímo u vlaštovky a klepnout lze kamkoli do scény.
 - `PORT=4174 npm start` spustí server na jiném portu.
-- Ceny vylepšení 25/75/140/215/300 ◈ podle Monte Carlo (`simulation/MONTE-CARLO.md`): průměrný hráč dojde k 500 m za ~23 hodů / ~12 min.
+
+## Verze 0.6.1 — přehyby, nápověda úhlu, ceny (13. 10. 2026)
+
+- Přehyby navíc zvyšují účinek poryvů a holubů o 12 % za úroveň, odpuštění nepřesné síly je 15 % za úroveň.
+- Po každém hodu výsledek napoví úhel („Úhel sedí“, „Zkus o kus plošeji“, „Zkus mnohem strměji“). Počítá se nejlepší úhel bez událostí pro daný model, vylepšení a sílu hodu.
+- Ceny vylepšení 35/105/195/300/420 ◈ podle Monte Carlo: průměrný hráč dojde k 500 m za ~23 hodů / ~12 min, slabý za ~31 / ~15 min (`simulation/MONTE-CARLO.md`).

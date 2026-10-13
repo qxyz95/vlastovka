@@ -19,7 +19,7 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`). Commity jako `
 - Simulace i testy importují `src/` přímo. Logiku nemíchat s DOM.
 - Každá oprava chování by měla mít test v `tests/`.
 
-## Stav (13. 10. 2026, verze 0.6)
+## Stav (13. 10. 2026, verze 0.6.1)
 Proběhlo review kódu, obsahu a mechanik. Opravené:
 - Úspěšný holub už nezkracuje stoupání (`vy=max(.4,vy)`).
 - HUD a `#scene-label` nechytají klepnutí (`pointer-events:none`).
@@ -27,13 +27,12 @@ Proběhlo review kódu, obsahu a mechanik. Opravené:
 - Poškozený save se zálohuje do `just-throw-it-v1-corrupt`, NaN dolet se neuloží.
 - Příběhy míst se zobrazují v `#journey-story` (za letu aktuální místo, jinak nejvzdálenější). Štítek scény ukazuje čtvrť a místo.
 - **0.6:** arkádový model letu (klouzavost, ideální úhel modelu), sdílený strom vylepšení (save v3 s migrací), odlišné role šipky a kluzáku, širší okna QTE, stisk ve varování se ignoruje, kratší mezery, časovací kruh ve scéně a klepnutí do scény. Viz README „Verze 0.6“.
+- **0.6.1:** přehyby posílené (účinek QTE +12 %/úr., odpuštění síly 15 %), po hodu nápověda úhlu (`bestAngle`, `angleHint` v `core.js`), ceny přeladěné Monte Carlem.
 - Texty sjednocené: Dílna (ne Hangár), Bonusy (ne Bonus tree), intro odpovídá trase předměstí → doky → jádro. Čísla v českém formátu (`num()` v `ui.js`). Po 500 m ukazuje HUD hranici dalšího místa.
 
 ## Známé problémy (z review 13. 10. 2026)
 **Mechaniky / balanc**
-- Ekonomika 0.6: ceny `[25,75,140,215,300]`, odměna 10 + dolet/10. Podle `simulation/MONTE-CARLO.md` (`node simulation/monte-carlo.mjs`, ~100 s) průměrný hráč 23 hodů / ~12 min, slabý 29 / ~15 min, bez softlocku.
-- Přehyby jsou slabé, pokud je hráč kupuje první (~6 m za úroveň). Kandidát: `UPGRADE.steady` 0,1 → 0,15 a znovu simulovat.
-- Hra ideální úhel nenapovídá; pevných 15° zdvojnásobí počet hodů.
+- Ekonomika 0.6.1: ceny `[35,105,195,300,420]`, odměna 10 + dolet/10. Podle `simulation/MONTE-CARLO.md` (sekce Aktualizace 0.6.1, `node simulation/monte-carlo.mjs`, ~2 min) průměrný hráč 23 hodů / ~12 min, slabý 31 / ~15 min, bez softlocku. Specializace do jedné větve je pomalejší než vyvážený nákup (záměr).
 - QTE mají pořád stejný střed okna (dá se naučit nazpaměť).
 - Vítr je vždy nulový (`ui.js`). Po 500 m nic nenavazuje a mince nemají využití.
 - `simulation/REPORT.md` je zastaralý (verze 0.1.0).

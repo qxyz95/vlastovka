@@ -6,6 +6,22 @@ Spuštění: `node simulation/monte-carlo.mjs 250 1000 2,4`. Argumenty jsou poč
 
 Poslední běh: **108 000 kampaní za 102 s** (15 worker vláken).
 
+## Aktualizace 0.6.1 (13. 10. 2026): aktuální stav hry
+
+Změny oproti zbytku tohoto dokumentu: přehyby navíc +12 % účinku poryvů a holubů za úroveň a odpuštění síly +15 % (dřív +10 %), ceny `[35, 105, 195, 300, 420]` (dřív návrh A 25–300). Běh: 100 000 kampaní, 113 s. Zbytek dokumentu popisuje stav před touto úpravou.
+
+| Profil (mix: 4 nákupní strategie × učící úhel × 3 modely) | Hody do 500 m P50 (P10–P90) | Minuty P50 (P10–P90) | Softlock |
+|---|---:|---:|---:|
+| slabý | 31 (21–42) | 15,1 (10,9–20,5) | 0 % |
+| průměrný | 23 (15–33) | 11,9 (8,4–17,4) | 0 % |
+| dobrý | 18 (12–27) | 10,0 (6,6–15,1) | 0 % |
+| expert | 15 (12–23) | 8,3 (5,9–12,7) | 0 % |
+
+- Nákup (průměrný hráč, všechny strategie úhlu a modelu): rovnoměrně 28 hodů, síla napřed 37, papír napřed 45, přehyby napřed 46. Papír a přehyby už jsou vyrovnané, specializace do jedné větve je pomalejší než vyvážený nákup.
+- Marginální dolet na úrovni 5 (šipka / kluzák): síla 437 / 449 m, papír 325 / 440 m, přehyby 307 / 365 m (dřív 256 / 272 m).
+- Modely: šipka 37 hodů / 15,4 min, kluzák 39 / 20,1 min (průměrný hráč, všechny strategie). Kluzák má delší lety, ani jeden model nedominuje.
+- Ve hře se po každém hodu zobrazuje nápověda úhlu (`angleHint`), která hráče vede k učící strategii; pevný úhel 15° by znamenal zhruba dvojnásobek hodů.
+
 ## Metodika
 
 **Kampaň:**

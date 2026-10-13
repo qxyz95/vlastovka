@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {fresh,buy,createFlight,step,simulate,settle} from '../src/core.js';
+import {fresh,buy,createFlight,step,simulate,settle,bestAngle as passiveBestAngle,angleHint} from '../src/core.js';
 import {PRICES} from '../src/config.js';
 import {decode} from '../src/storage.js';
 import {chargeAt,throwSettings} from '../src/throw.js';
@@ -42,11 +42,11 @@ test('fold forgives weak throws; a weak but fully upgraded throw still reaches 5
   for(const model of ['dart','glider'])assert.ok(bestAngle(model,L(5,5,5),.5)[0]>=500);
 });
 test('purchase prerequisites, cap, persistence and one reward',()=>{
-  const p=fresh();assert.equal(buy(p,'power',1),false);p.coins=1000;
+  const p=fresh();assert.equal(buy(p,'power',1),false);p.coins=2000;
   assert.equal(buy(p,'power',2),false);for(let i=1;i<=5;i++)assert.ok(buy(p,'power',i));
-  assert.equal(p.coins,1000-PRICES.reduce((a,b)=>a+b));assert.equal(buy(p,'power',6),false);assert.equal(buy(p,'power',5),false);assert.equal(buy(p,'toString',1),false);
+  assert.equal(p.coins,2000-PRICES.reduce((a,b)=>a+b));assert.equal(buy(p,'power',6),false);assert.equal(buy(p,'power',5),false);assert.equal(buy(p,'toString',1),false);
   assert.deepEqual(decode(JSON.stringify(p)),p);assert.throws(()=>decode('{'));assert.throws(()=>decode('{"version":3}'));
-  const f=simulate('dart',fresh().levels);assert.ok(settle(p,f));const coins=p.coins;assert.equal(settle(p,f),false);assert.equal(p.coins,coins);assert.equal(coins,1000-PRICES.reduce((a,b)=>a+b)+10+Math.floor(f.x/10));
+  const f=simulate('dart',fresh().levels);assert.ok(settle(p,f));const coins=p.coins;assert.equal(settle(p,f),false);assert.equal(p.coins,coins);assert.equal(coins,2000-PRICES.reduce((a,b)=>a+b)+10+Math.floor(f.x/10));
 });
 test('aim and hold changes initial velocity; overholding loses power; bounded finite trajectories',()=>{
  assert.equal(chargeAt(0),0);assert.equal(chargeAt(1.15),1);assert.ok(chargeAt(2.3)<1e-10);
@@ -67,4 +67,12 @@ test('upgrades are shared by both models; older saves migrate without loss',()=>
  const v2=decode(JSON.stringify({...fresh(),version:2,levels:{dart:L(3,0,1),glider:L(1,4,0)}}));assert.deepEqual(v2.levels,L(3,4,1));
  assert.throws(()=>decode(JSON.stringify({...fresh(),version:2,levels:{dart:L(1,1,1)}})));
  assert.throws(()=>decode(JSON.stringify({...fresh(),levels:L(6,0,0)})));
+});
+test('angle hint points to the best passive angle for model, upgrades and power',()=>{
+ const dart=passiveBestAngle('dart',L(0,0,0),1),glider=passiveBestAngle('glider',L(0,0,0),1);
+ assert.ok(dart>=15&&dart<=32);assert.ok(glider>dart);
+ const x=a=>{const f=createFlight('dart',L(0,0,0),1,{x:0,y:0},throwSettings(a,1));f.events=[];while(!f.landed)step(f);return f.x;};
+ assert.ok(x(dart)>=x(dart-5)&&x(dart)>=x(dart+5));
+ assert.equal(angleHint(dart+2,dart),'Úhel sedí');assert.equal(angleHint(dart+5,dart),'Zkus o kus plošeji');
+ assert.equal(angleHint(dart-12,dart),'Zkus mnohem strměji');
 });

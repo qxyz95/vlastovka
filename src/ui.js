@@ -1,5 +1,5 @@
 import {BRANCHES,PRICES,DT} from './config.js';
-import {fresh,buy,createFlight,step,activeEvent,eventInput,settle,reward} from './core.js';
+import {fresh,buy,createFlight,step,activeEvent,eventInput,settle,reward,bestAngle,angleHint} from './core.js';
 import {load,save} from './storage.js';
 import {render} from './render.js';
 import {districtAt,routeAt,SCREEN_METERS} from './scenes.js';
@@ -76,7 +76,7 @@ function finish(){const previous=p.best;settle(p,f);persist();refresh();show('re
  $('stat-events').textContent=stats.hits+' / '+stats.completed+' · ★ '+stats.perfect;$('stat-best').textContent=num(p.best)+' m';
  $('reward-breakdown').textContent='Za pokus 10 ◈ + za vzdálenost '+(reward(f)-10)+' ◈';$('stat-reward').textContent=reward(f);
  $('result-progress').value=Math.min(500,p.best);$('result-progress-label').textContent=p.best>=500?'Cíl splněn · rekord '+num(p.best,0)+' m':Math.floor(p.best)+' / 500 m';
- $('result-text').textContent=[f.launch.label,f.x>previous?'★ Nový rekord!':'',previous<100&&p.best>=100?'Kluzák odemčen!':''].filter(Boolean).join(' · ');
+ $('result-text').textContent=[f.launch.label,angleHint(f.launch.angle*180/Math.PI,bestAngle(f.model,p.levels,f.launch.power)),f.x>previous?'★ Nový rekord!':'',previous<100&&p.best>=100?'Kluzák odemčen!':''].filter(Boolean).join(' · ');
  $('result').showModal();$('retry').focus();
 }
 function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;if(!document.hidden){
