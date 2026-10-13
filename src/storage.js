@@ -3,9 +3,12 @@ export const KEY='just-throw-it-v1';
 export function decode(raw) {
   if(raw===null) return fresh();
   const p=JSON.parse(raw);
-  if(!p||![1,2].includes(p.version)||!Number.isSafeInteger(p.coins)||p.coins<0||!Number.isFinite(p.best)||p.best<0||!Number.isSafeInteger(p.attempts)||p.attempts<0||typeof p.completed!=='boolean'||!['dart','glider'].includes(p.model)||!p.levels) throw Error('Invalid save');
-  if(p.version===1){p.levels={dart:{...p.levels},glider:{...p.levels}};p.version=2;}
-  for(const model of ['dart','glider']) for(const b of ['power','paper','fold']) if(!p.levels[model]||!Number.isInteger(p.levels[model][b])||p.levels[model][b]<0||p.levels[model][b]>5) throw Error('Invalid levels');
+  if(!p||![1,2,3].includes(p.version)||!Number.isSafeInteger(p.coins)||p.coins<0||!Number.isFinite(p.best)||p.best<0||!Number.isSafeInteger(p.attempts)||p.attempts<0||typeof p.completed!=='boolean'||!['dart','glider'].includes(p.model)||!p.levels) throw Error('Invalid save');
+  const branches=['power','paper','fold'],valid=l=>l&&branches.every(b=>Number.isInteger(l[b])&&l[b]>=0&&l[b]<=5);
+  // v2 had separate trees per model; shared tree keeps the better level of each branch.
+  if(p.version===2){if(!valid(p.levels.dart)||!valid(p.levels.glider)) throw Error('Invalid levels');p.levels=Object.fromEntries(branches.map(b=>[b,Math.max(p.levels.dart[b],p.levels.glider[b])]));}
+  if(!valid(p.levels)) throw Error('Invalid levels');
+  p.levels=Object.fromEntries(branches.map(b=>[b,p.levels[b]]));p.version=3;
   if(p.model==='glider'&&p.best<100) p.model='dart';
   p.completed=p.best>=500; return p;
 }

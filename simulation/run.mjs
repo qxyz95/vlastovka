@@ -10,11 +10,11 @@ for(const profile of [0,.25,.6,.9])for(const purchase of ['cheapest','balanced',
     const p=fresh();let time=0,purchases=0;const intervals=[];let lastBuy=0;
     while(!p.completed&&p.attempts<100){
       const model=p.best>=100&&(choice==='glider'||choice==='alternate'&&p.attempts%2)?'glider':'dart';
-      p.model=model; const f=simulate(model,p.levels[model],seed*1000+p.attempts,profile);settle(p,f);time+=f.t;
-      while(true){let branches=['power','paper','fold'].filter(b=>p.levels[p.model][b]<5);
-        if(purchase==='cheapest')branches.sort((a,b)=>PRICES[p.levels[p.model][a]]-PRICES[p.levels[p.model][b]]);
-        if(purchase==='balanced')branches.sort((a,b)=>p.levels[p.model][a]-p.levels[p.model][b]);
-        const branch=branches[0];if(!branch||!buy(p,branch,p.levels[p.model][branch]+1))break;
+      p.model=model; const f=simulate(model,p.levels,seed*1000+p.attempts,profile);settle(p,f);time+=f.t;
+      while(true){let branches=['power','paper','fold'].filter(b=>p.levels[b]<5);
+        if(purchase==='cheapest')branches.sort((a,b)=>PRICES[p.levels[a]]-PRICES[p.levels[b]]);
+        if(purchase==='balanced')branches.sort((a,b)=>p.levels[a]-p.levels[b]);
+        const branch=branches[0];if(!branch||!buy(p,branch,p.levels[branch]+1))break;
         intervals.push(p.attempts-lastBuy);lastBuy=p.attempts;purchases++;
       }
     }
