@@ -1,6 +1,7 @@
 import {random} from './random.js';
 import {districtAt} from './scenes.js';
 import {activeEvent} from './events.js';
+import {theme,box} from './themes.js';
 const TYPES=[['sign','robot'],['cargo','spotlight'],['train','steam'],['drone','hologram']];
 export function createDecorations(seed){const rng=random(seed^0x75ac091);return {rng,nextAt:3+2*rng(),active:null};}
 export function stepDecorations(state,f){
@@ -13,8 +14,9 @@ export function stepDecorations(state,f){
 export function drawDecorations(c,state,f,px,py,reduced){
  if(reduced||!f||!state?.active)return;
  const e=state.active,t=(f.t-e.at)/(e.until-e.at),x=650-760*t,y=120;
- c.save();c.beginPath();c.rect(0,0,640,360);c.rect(px-40,py-25,80,50);c.clip('evenodd');
- const r=(color,x,y,w,h)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
+ // No cut-out around the plane: it is drawn after decorations, so it stays on top without hiding what is behind it.
+ c.save();
+ const th=theme(),r=(color,x,y,w,h)=>box(c,th.tint(color),Math.round(x),Math.round(y),w,h);
  c.globalAlpha=Math.min(1,t*6,(1-t)*6)*.65;
  switch(e.type){
  case 'sign':r('#f778d4',420,154,105,24);c.fillStyle='#211a39';c.font='bold 12px monospace';c.fillText('PAPER LAB',433,171);break;

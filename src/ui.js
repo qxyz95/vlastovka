@@ -1,15 +1,23 @@
 import {BRANCHES,PRICES,DT} from './config.js';
 import {fresh,buy,createFlight,step,activeEvent,eventInput,settle,reward,bestAngle,angleHint} from './core.js';
 import {load,save} from './storage.js';
-import {render} from './render.js';
+import {render,view} from './render.js';
+import {createFx,fxEvent,stepFx} from './juice.js';
+import {lerp} from './motion.js';
 import {districtAt,routeAt,SCREEN_METERS} from './scenes.js';
 import {chargeAt,throwSettings} from './throw.js';
 import {eventProgress,eventStats,windows,TIMING} from './events.js';
 import {createDecorations,stepDecorations} from './decorations.js';
+import {THEMES,THEME_IDS,setTheme,pickTheme} from './themes.js';
 const $=id=>document.getElementById(id),loaded=load();let p=loaded.data,f=null,state='workshop',picked={branch:'power',level:1},last=0,acc=0;
-let decorations=null, inputOwner=null, milestoneQueue=[], seenMilestones=new Set(), banner=null, lastDistrict=0, districtUntil=0;
+let fx=null, prev=null, landedAt=0, decorations=null, inputOwner=null, milestoneQueue=[], seenMilestones=new Set(), banner=null, lastDistrict=0, districtUntil=0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 $('warning').textContent=loaded.warning;
+// Visual style: ?styl= in the URL wins, otherwise the last choice. Only presentation changes.
+const THEME_KEY='just-throw-it-theme';
+function applyTheme(id){setTheme(id);document.body.dataset.theme=id;for(const b of document.querySelectorAll('[data-theme-id]'))b.setAttribute('aria-pressed',b.dataset.themeId===id);try{localStorage.setItem(THEME_KEY,id);}catch{}}
+for(const id of THEME_IDS){const b=document.createElement('button');b.type='button';b.dataset.themeId=id;b.textContent=THEMES[id].name;b.onclick=()=>applyTheme(id);$('theme-picker').append(b);}
+{let stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch{}applyTheme(pickTheme(new URLSearchParams(location.search).get('styl'),stored));}
 function persist(){const warning=save(p);if(warning)$('warning').textContent=warning;}
 const num=(x,d=1)=>x.toLocaleString('cs',{minimumFractionDigits:d,maximumFractionDigits:d});
 // Story line under the scene: the current place in flight, otherwise the farthest place reached.
@@ -30,11 +38,11 @@ function refresh(){
 }
 let angle=15, held=false, heldTime=0, owner=null;
 function show(next){state=next;document.body.classList.toggle('in-flight',next==='flight');for(const id of ['workshop','flight','aim'])$(id).hidden=id!==next;$('game').classList.toggle('aiming',next==='aim');if(next!=='flight'){$('milestone-banner').hidden=true;$('scene-label').classList.remove('district-highlight');}if(next==='workshop'||next==='aim'){$('flight-reward').textContent='10 ◈';decorations=null;}}
-function prepare(){if($('result').open)$('result').close();f=null;held=false;owner=null;heldTime=0;acc=0;show('aim');updateAim();$('hold').focus();$('game').scrollIntoView({block:'center',behavior:'smooth'});}
-function workshop(upgrades=false){if($('result').open)$('result').close();held=false;owner=null;f=null;show('workshop');refresh();if(upgrades){$('tree').scrollIntoView({block:'center'});$('tree').querySelector('button').focus();}else $('launch').focus();}
+function prepare(){if($('result').open)$('result').close();f=null;fx=null;held=false;owner=null;heldTime=0;acc=0;show('aim');updateAim();$('hold').focus();$('game').scrollIntoView({block:'center',behavior:'smooth'});}
+function workshop(upgrades=false){if($('result').open)$('result').close();held=false;owner=null;f=null;fx=null;show('workshop');refresh();if(upgrades){$('tree').scrollIntoView({block:'center'});$('tree').querySelector('button').focus();}else $('launch').focus();}
 function updateAim(){const charge=held?chargeAt(heldTime):0;$('angle').value=angle;$('angle-value').textContent=Math.round(angle)+'°';$('charge-fill').style.width=charge*100+'%';$('charge-label').textContent=(held?'Pusť pro hod':'Připraveno')+' · '+Math.round(charge*100)+' %';}
 function begin(source){if(state!=='aim'||held||document.hidden)return;held=true;owner=source;heldTime=0;}
-function release(source){if(!held||owner!==source||state!=='aim')return;const launch=throwSettings(angle,chargeAt(heldTime));held=false;owner=null;f=createFlight(p.model,p.levels,p.attempts+1,{x:0,y:0},launch);acc=0;decorations=createDecorations(f.seed);zoneKind=null;inputOwner=null;milestoneQueue=[];seenMilestones=new Set();banner=null;lastDistrict=0;districtUntil=0;show('flight');$('event-help').textContent=launch.label;$('action').disabled=true;}
+function release(source){if(!held||owner!==source||state!=='aim')return;const launch=throwSettings(angle,chargeAt(heldTime));held=false;owner=null;f=createFlight(p.model,p.levels,p.attempts+1,{x:0,y:0},launch);acc=0;prev=null;landedAt=0;fx=createFx();fxEvent(fx,'throw',{power:launch.power});decorations=createDecorations(f.seed);zoneKind=null;inputOwner=null;milestoneQueue=[];seenMilestones=new Set();banner=null;lastDistrict=0;districtUntil=0;show('flight');$('event-help').textContent=launch.label;$('action').disabled=true;}
 function cancelHold(){held=false;owner=null;heldTime=0;updateAim();}
 function aimPointer(e){const r=$('game').getBoundingClientRect();const x=(e.clientX-r.left)*640/r.width,y=(e.clientY-r.top)*360/r.height;angle=Math.max(5,Math.min(40,Math.atan2(258-y,Math.max(1,x-148))*180/Math.PI));updateAim();}
 for(const target of [$('hold'),$('game')]){
@@ -81,15 +89,29 @@ function finish(){const previous=p.best;settle(p,f);persist();refresh();show('re
 }
 function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;if(!document.hidden){
  if(state==='aim'){if(held)heldTime+=elapsed;updateAim();}
- if(state==='flight'){acc+=elapsed;while(acc>=DT&&!f.landed){step(f);stepDecorations(decorations,f);acc-=DT;}if(f.landed)finish();
- updateFlightUI();
+ if(state==='flight'){
+  // Hitstop freezes physics for a few frames; QTE timing runs on flight time, so it is unaffected.
+  if(fx.hitstop>0)fx.hitstop=Math.max(0,fx.hitstop-elapsed);else acc+=elapsed;
+  while(acc>=DT&&!f.landed){prev={x:f.x,y:f.y,vx:f.vx,vy:f.vy,t:f.t};step(f);stepDecorations(decorations,f);acc-=DT;}
+  juiceEvents();
+  // Let the landing dust and shake play before the result dialog covers the scene.
+  if(f.landed){if(!landedAt)landedAt=now;if(now-landedAt>(reduced.matches?300:850))finish();}
+  updateFlightUI();
  }
- $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name;render($('game'),f,p.model,now/1000,{decorations,reduced:reduced.matches,qte:qteVisual()});
+ // Draw between the last two physics steps so motion is smooth on 120 Hz screens too.
+ const a=Math.min(1,acc/DT),shown=f&&prev&&!f.landed?{...f,x:lerp(prev.x,f.x,a),y:lerp(prev.y,f.y,a),vx:lerp(prev.vx,f.vx,a),vy:lerp(prev.vy,f.vy,a),t:lerp(prev.t,f.t,a)}:f;
+ if(fx)stepFx(fx,elapsed,shown,view(shown));
+ $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name;render($('game'),shown,p.model,f?f.t+(f.landed&&landedAt?(now-landedAt)/1000:0):now/1000,{decorations,reduced:reduced.matches,qte:qteVisual(),fx,charge:state==='aim'&&held?chargeAt(heldTime):0,clock:now/1000});
  if(state==='aim'){const c=$('game').getContext('2d'),a=angle*Math.PI/180,len=65+(held?chargeAt(heldTime)*45:0);c.save();c.translate(148,258);c.rotate(-a);c.strokeStyle='#fff0a6';c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.moveTo(12,0);c.lineTo(len,0);c.stroke();c.setLineDash([]);c.beginPath();c.moveTo(len-10,-6);c.lineTo(len,0);c.lineTo(len-10,6);c.stroke();c.restore();c.fillStyle='#203b3e';c.fillRect(205,168,265,37);c.fillStyle='#fff0b3';c.font='bold 13px monospace';c.fillText(held?'PUSŤ NA VRCHOLU SÍLY':'ZAMIŘ A PODRŽ PRO HOD',220,191);c.fillStyle='#203b3e';c.fillRect(205,211,265,14);c.fillStyle='#f2ce87';c.fillRect(207,213,261*(held?chargeAt(heldTime):0),10);c.strokeStyle='#fff';c.strokeRect(449,212,19,12);}
  }requestAnimationFrame(frame);}
 // Bar position of an event's success/perfect windows, as fractions of the bar.
 function zonesFor(kind){const w=windows(f)[kind],c=(kind==='gust'?w.center-TIMING.warning:w.center)/TIMING.bar,s=w.success/TIMING.bar,pf=w.perfect/TIMING.bar;return {success:[c-s,c+s],perfect:[c-pf,c+pf]};}
 let zoneKind=null;
+// Turn resolved events and the landing into feedback (each only once).
+function juiceEvents(){
+ for(const e of f.events)if(['success','perfect','miss'].includes(e.result)&&!fx.seen.has(e)){fx.seen.add(e);fxEvent(fx,e.result);if(e.type==='gust'&&e.result!=='miss')fxEvent(fx,'boost');}
+ if(f.landed&&!fx.landed)fxEvent(fx,'land',{speed:prev?Math.hypot(prev.vx,prev.vy):0,text:num(f.x)+' m'});
+}
 // What the canvas needs to draw the in-scene timing ring.
 function qteVisual(){if(state!=='flight'||!f)return null;const e=activeEvent(f);if(!e)return null;return {type:e.type,phase:e.phase,result:e.result,held:e.heldAt!==null,progress:eventProgress(f,e),zones:zonesFor(e.type)};}
 function updateFlightUI(){
@@ -102,7 +124,7 @@ function updateFlightUI(){
  const help=e?.phase==='warning'?'Připrav se…':interactive?(e.type==='gust'?'Klepni, až ukazatel projde světlým středem.':e.heldAt!==null?'Drž… pusť ve světlé zóně.':'Podrž tlačítko, pak ho pusť do zóny.'):f.t<f.feedbackUntil?f.feedback:'Let je automatický. Sleduj další příležitost.';
  if($('event-help').textContent!==help)$('event-help').textContent=help;
  $('flight-reward').textContent=reward(f)+' ◈';setStory(storyAt(f.x));
- for(const m of [100,250,500])if(f.x>=m&&!seenMilestones.has(m)){seenMilestones.add(m);milestoneQueue.push(m);}
+ for(const m of [100,250,500])if(f.x>=m&&!seenMilestones.has(m)){seenMilestones.add(m);milestoneQueue.push(m);fxEvent(fx,'milestone');}
  if(banner&&f.t>=banner.until)banner=null;
  if(!e&&!banner&&milestoneQueue.length)banner={value:milestoneQueue.shift(),until:f.t+1.5};
  $('milestone-banner').hidden=!!e||!banner||f.landed;

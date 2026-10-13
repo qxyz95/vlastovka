@@ -11,8 +11,12 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`). Commity jako `
 ## Architektura
 - **Logika (čisté funkce, bez DOM):** `config.js` (parametry, ceny, modely, efekty vylepšení), `core.js` (arkádový let, nákup, odměna, bot `simulate`), `events.js` (QTE poryv a holub, `TIMING`, `windows(f)`), `throw.js` (úhel a síla hodu), `scenes.js` (trasa 16 míst × ~305 m, čtvrti), `storage.js` (validace a ukládání do localStorage), `random.js` (seedovaný RNG).
 - **Prezentace:** `render.js`, `route-render.js`, `backgrounds.js`, `atmosphere.js`, `decorations.js` vykreslují canvas 640×360. `ui.js` obsahuje stavový automat (workshop → aim → flight → result), vstupy a HUD.
+- **Vizuální styly (`themes.js`):** `cyber` (výchozí, pixelové SVG nebe), `paper` (papírová koláž), `blueprint` (technický výkres, jen obrysy), `dusk` (plochý soumrak). Téma mění jen nebe, palety a způsob malby (`box`/`tri`/`paint`); geometrie trasy a rychlosti paralaxy (nebe .035, vzdálené město .28, popředí 1) jsou společné. Hladká témata kreslí canvas ve 2× rozlišení (`render.js` přepíná `canvas.width`). Volba: přepínač v navigaci, `?styl=<id>`, uloženo v `localStorage['just-throw-it-theme']` (mimo save). `background-preview.html` má výběr stylu.
+- **Animace prostředí:** `ambient.js` (hvězdy a padající hvězda podle `theme.night`, hejno a déšť z `atmosphereAt`), animace míst v `drawPlace` (`route-render.js`, každé ze 16 míst má vlastní: kouř, vlak, jeřáby, maják, reflektory…), oblohy v `themes.js` dostávají `time`. Barvy efektů jsou v `theme.fx`. Při reduced motion `render.js` předává `anim=0`, takže prostředí zamrzne a herní zpětná vazba zůstane.
+- **Pohyb a game feel (priorita 1 z `reports/Vylepšení animací a nástroje zdarma.md`):** `motion.js` (čisté: Pennerovy easingy, `damp`/`spring` nezávislé na fps, `wobble`, šum `noise1`/`fbm`, sdílený vítr `drift`/`wind`/`sway`, který řídí mraky, déšť, kouř, stromy, vlajky i turbíny). `juice.js` (čistý stav jednoho hodu: trauma → otřes, hitstop, squash & stretch, pružinová rotace letadla, stopa, pool částic ve `Float32Array`, popupy; `fxEvent` pro throw/perfect/success/miss/boost/milestone/land). `fx-render.js` je kreslí. `ui.js` interpoluje vykreslení mezi kroky fyziky, hitstop zastaví jen akumulátor (časování QTE běží na čase letu) a po dopadu čeká 850 ms (300 ms při reduced motion) před výsledkem. Reduced motion vypne otřes, záblesk a pohyb popupů. `render.view(f)` vrací kameru a pozici letadla.
 - Fyzika krokuje pevně po `DT=1/60` a je deterministická podle seedu. Seed letu = `attempts+1`, tutoriálové události jen pro seed 1.
-- Dokumenty: `KB vlastovky.md`, `KB zabavnost a motivace.md` (backlog B01–B10, K1–K7), `Plan realizace.md`. README obsahuje historii verzí.
+- Dokumenty: `KB vlastovky.md`, `KB zabavnost a motivace.md` (backlog B00–B14, K1–K7), `Plan realizace.md`. README obsahuje historii verzí.
+- Research designu a psychologie her (13. 10. 2026): `research/00-temata.md`, 9 bloků v `research/kb/01–09`, rejstřík, rozpory a fronta neověřeného v `research/kb/README.md`. Štítky V/H/N. Shrnutí a doporučení zatím nevznikla.
 
 ## Pravidla
 - Kód je psaný hutně (one-linery). Úpravy dělat ve stejném stylu, dokud se nerozhodne o formátování.
@@ -29,6 +33,8 @@ Proběhlo review kódu, obsahu a mechanik. Opravené:
 - **0.6:** arkádový model letu (klouzavost, ideální úhel modelu), sdílený strom vylepšení (save v3 s migrací), odlišné role šipky a kluzáku, širší okna QTE, stisk ve varování se ignoruje, kratší mezery, časovací kruh ve scéně a klepnutí do scény. Viz README „Verze 0.6“.
 - **0.6.1:** přehyby posílené (účinek QTE +12 %/úr., odpuštění síly 15 %), po hodu nápověda úhlu (`bestAngle`, `angleHint` v `core.js`), ceny přeladěné Monte Carlem.
 - Texty sjednocené: Dílna (ne Hangár), Bonusy (ne Bonus tree), intro odpovídá trase předměstí → doky → jádro. Čísla v českém formátu (`num()` v `ui.js`). Po 500 m ukazuje HUD hranici dalšího místa.
+
+- **Styly, animace prostředí a game feel (13. 10. 2026, nad 0.6.1, bez nového čísla verze):** 3 alternativní vizuální styly k porovnání, animace míst a oblohy, juice (otřes, hitstop, částice, popupy). Bez změny mechaniky a balancu. Barvy QTE kruhu, mířicí overlay v `ui.js` a texty („NEONOVÉ MĚSTO“, „Prořízni noc“) zůstávají kyberpunkové ve všech stylech.
 
 ## Známé problémy (z review 13. 10. 2026)
 **Mechaniky / balanc**
