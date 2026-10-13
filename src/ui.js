@@ -50,11 +50,13 @@ $('action').addEventListener('pointerdown',e=>{if(e.button!==0||inputOwner!==nul
 $('action').addEventListener('pointerup',e=>flightUp(e.pointerId));
 $('action').addEventListener('pointercancel',e=>{if(inputOwner===e.pointerId)flightCancel();});
 $('action').addEventListener('lostpointercapture',e=>{if(inputOwner===e.pointerId)flightCancel();});
+// Space on another focused button (e.g. "Zpět do dílny") must activate that button, not throw.
+const otherButton=e=>e.target instanceof HTMLButtonElement&&e.target!==$('hold')&&e.target!==$('action');
 window.addEventListener('keydown',e=>{
  if(state==='aim'&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)&&e.target!==$('angle')){e.preventDefault();angle=Math.max(5,Math.min(40,angle+(['ArrowUp','ArrowRight'].includes(e.code)?1:-1)));updateAim();}
- if((e.code==='Space'||e.code==='Enter'&&e.target===$('action'))&&(state==='flight'||state==='aim')){e.preventDefault();if(!e.repeat){if(state==='aim')begin('key');else flightDown('key');}}
+ if((e.code==='Space'||e.code==='Enter'&&e.target===$('action'))&&(state==='flight'||state==='aim')&&!otherButton(e)){e.preventDefault();if(!e.repeat){if(state==='aim')begin('key');else flightDown('key');}}
 });
-window.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='Enter'){if(state==='aim'){e.preventDefault();release('key');}else if(state==='flight'){e.preventDefault();flightUp('key');}}});
+window.addEventListener('keyup',e=>{if(otherButton(e))return;if(e.code==='Space'||e.code==='Enter'){if(state==='aim'){e.preventDefault();release('key');}else if(state==='flight'){e.preventDefault();flightUp('key');}}});
 window.addEventListener('blur',()=>{if(state==='aim')cancelHold();flightCancel();});
 $('reset').onclick=()=>{if(confirm('Opravdu smazat mince, vylepšení a rekord?')){p=fresh();persist();workshop();}};
 document.addEventListener('visibilitychange',()=>{last=0;acc=0;if(document.hidden){if(state==='aim')cancelHold();flightCancel();}$('paused').hidden=!document.hidden;});
