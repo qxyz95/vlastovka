@@ -9,5 +9,14 @@ export function decode(raw) {
   if(p.model==='glider'&&p.best<100) p.model='dart';
   p.completed=p.best>=500; return p;
 }
-export function load() {try{return {data:decode(localStorage.getItem(KEY)),warning:''};}catch{return {data:fresh(),warning:'Uložení není dostupné nebo je poškozené. Hraješ od začátku.'};}}
+// A corrupt save is copied aside before the next save() overwrites it, so it can be recovered.
+export function load() {
+  let raw=null;
+  try{raw=localStorage.getItem(KEY);return {data:decode(raw),warning:''};}
+  catch{
+    let backup=false;
+    if(raw!==null)try{localStorage.setItem(KEY+'-corrupt',raw);backup=true;}catch{}
+    return {data:fresh(),warning:backup?'Uložení je poškozené. Hraješ od začátku, původní data jsou zálohovaná.':'Uložení není dostupné nebo je poškozené. Hraješ od začátku.'};
+  }
+}
 export function save(p) {try{localStorage.setItem(KEY,JSON.stringify(p));return '';}catch{return 'Postup nelze uložit. Zůstane jen do zavření stránky.';}}

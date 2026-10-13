@@ -40,6 +40,7 @@ function integrate(f,dt) {
 export function reward(f) {return 10+Math.floor(Math.max(0,f.x-f.startX)/10);}
 export function settle(p,f) {
   if(!f.landed||f.settled) return false;
+  if(!Number.isFinite(f.x)) f.x=f.startX; // NaN would be saved as null and wipe the whole save
   f.settled=true; p.coins+=reward(f); p.best=Math.max(p.best,f.x-f.startX); p.completed=p.completed||p.best>=500; p.attempts++; return true;
 }
 export function simulate(model,levels,seed=1,profile=0,dt=DT,options={}) {
