@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {fresh,buy,createFlight,step,simulate,settle} from '../src/core.js';
+import {PRICES} from '../src/config.js';
 import {decode} from '../src/storage.js';
 import {chargeAt,throwSettings} from '../src/throw.js';
 const L=(power,paper,fold)=>({power,paper,fold});
@@ -43,9 +44,9 @@ test('fold forgives weak throws; a weak but fully upgraded throw still reaches 5
 test('purchase prerequisites, cap, persistence and one reward',()=>{
   const p=fresh();assert.equal(buy(p,'power',1),false);p.coins=1000;
   assert.equal(buy(p,'power',2),false);for(let i=1;i<=5;i++)assert.ok(buy(p,'power',i));
-  assert.equal(p.coins,700);assert.equal(buy(p,'power',6),false);assert.equal(buy(p,'power',5),false);assert.equal(buy(p,'toString',1),false);
+  assert.equal(p.coins,1000-PRICES.reduce((a,b)=>a+b));assert.equal(buy(p,'power',6),false);assert.equal(buy(p,'power',5),false);assert.equal(buy(p,'toString',1),false);
   assert.deepEqual(decode(JSON.stringify(p)),p);assert.throws(()=>decode('{'));assert.throws(()=>decode('{"version":3}'));
-  const f=simulate('dart',fresh().levels);assert.ok(settle(p,f));const coins=p.coins;assert.equal(settle(p,f),false);assert.equal(p.coins,coins);assert.equal(coins,700+10+Math.floor(f.x/10));
+  const f=simulate('dart',fresh().levels);assert.ok(settle(p,f));const coins=p.coins;assert.equal(settle(p,f),false);assert.equal(p.coins,coins);assert.equal(coins,1000-PRICES.reduce((a,b)=>a+b)+10+Math.floor(f.x/10));
 });
 test('aim and hold changes initial velocity; overholding loses power; bounded finite trajectories',()=>{
  assert.equal(chargeAt(0),0);assert.equal(chargeAt(1.15),1);assert.ok(chargeAt(2.3)<1e-10);
@@ -60,7 +61,7 @@ test('aim and hold changes initial velocity; overholding loses power; bounded fi
 });
 test('upgrades are shared by both models; older saves migrate without loss',()=>{
  const p=fresh();p.coins=100;p.best=120;
- assert.ok(buy(p,'power',1));p.model='glider';assert.ok(buy(p,'paper',1));assert.deepEqual(p.levels,L(1,1,0));assert.equal(p.coins,80);
+ assert.ok(buy(p,'power',1));p.model='glider';assert.ok(buy(p,'paper',1));assert.deepEqual(p.levels,L(1,1,0));assert.equal(p.coins,100-2*PRICES[0]);
  assert.deepEqual(decode(JSON.stringify(p)),p);
  const v1=decode(JSON.stringify({...fresh(),version:1,levels:L(3,2,1)}));assert.equal(v1.version,3);assert.deepEqual(v1.levels,L(3,2,1));
  const v2=decode(JSON.stringify({...fresh(),version:2,levels:{dart:L(3,0,1),glider:L(1,4,0)}}));assert.deepEqual(v2.levels,L(3,4,1));

@@ -31,7 +31,9 @@ Proběhlo review kódu, obsahu a mechanik. Opravené:
 
 ## Známé problémy (z review 13. 10. 2026)
 **Mechaniky / balanc**
-- Ekonomika (ceny 10–120, odměna 10 + dolet/10) je naladěná na starý model a hra je příliš krátká. `simulation/MONTE-CARLO.md` (nad verzí 0.4) doporučil ceny ×5. Po 0.6 je potřeba Monte Carlo spustit znovu a ceny přeladit.
+- Ekonomika 0.6: ceny `[25,75,140,215,300]`, odměna 10 + dolet/10. Podle `simulation/MONTE-CARLO.md` (`node simulation/monte-carlo.mjs`, ~100 s) průměrný hráč 23 hodů / ~12 min, slabý 29 / ~15 min, bez softlocku.
+- Přehyby jsou slabé, pokud je hráč kupuje první (~6 m za úroveň). Kandidát: `UPGRADE.steady` 0,1 → 0,15 a znovu simulovat.
+- Hra ideální úhel nenapovídá; pevných 15° zdvojnásobí počet hodů.
 - QTE mají pořád stejný střed okna (dá se naučit nazpaměť).
 - Vítr je vždy nulový (`ui.js`). Po 500 m nic nenavazuje a mince nemají využití.
 - `simulation/REPORT.md` je zastaralý (verze 0.1.0).

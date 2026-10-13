@@ -1,6 +1,6 @@
 export const VERSION = '0.6.0';
 export const DT = 1 / 60;
-export const PRICES = [10, 30, 55, 85, 120];
+export const PRICES = [25, 75, 140, 215, 300];
 export const GRAVITY = 1.8;
 // Each branch changes one legible thing: launch speed, glide ratio, or forgiveness.
 export const UPGRADE = {power:0.12, paper:0.2, steady:0.1, window:0.1};

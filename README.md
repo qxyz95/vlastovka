@@ -114,3 +114,4 @@ Prohlížeč: ověřený běh hry a aktivace letových událostí; na 360 × 780
 - **Modely:** šipka (rychlá, nejvíc jí dá síla), kluzák (pomalejší, dlouhé klouzání, nejvíc mu dá papír a z poryvů a holubů získá o 15 % víc).
 - **QTE:** širší okna (poryv ±0,28 s, perfektní ±0,10 s; holub 0,50–1,00 s, perfektní 0,65–0,85 s), stisk během varování se ignoruje, mezery mezi událostmi 4–7 s (max. 10 událostí). Časovací kruh se kreslí přímo u vlaštovky a klepnout lze kamkoli do scény.
 - `PORT=4174 npm start` spustí server na jiném portu.
+- Ceny vylepšení 25/75/140/215/300 ◈ podle Monte Carlo (`simulation/MONTE-CARLO.md`): průměrný hráč dojde k 500 m za ~23 hodů / ~12 min.
