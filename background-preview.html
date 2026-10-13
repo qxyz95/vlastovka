@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pozadí — dlouhý let</title><link rel="stylesheet" href="style.css"></head>
+<body><main><header><a class="brand" href="./">JUST THROW IT<span>ATLAS MĚSTA</span></a></header><h1>Cesta vlaštovky za obzor.</h1><p>Čtyři biomy, každý se čtyřmi navazujícími obrazovkami. Jedna obrazovka ≈ 305 m, celý biom ≈ 1 219 m. Proleť od dílny přes přístav a hory až do metropole.</p>
+<section class="scene"><canvas id="preview" width="640" height="360" aria-label="Animovaný náhled dlouhého letu"></canvas></section>
+<p id="location" aria-live="off"></p><p id="story"></p><label for="place">Přejít na místo </label><select id="place"></select><p><progress id="route-progress" max="4" value="0" style="width:100%"></progress></p><label for="meters">Vzdálenost</label><input id="meters" type="range" min="0" max="10000" step="1" value="0" style="width:100%">
+<p><label for="speed">Rychlost letu </label><select id="speed"><option value="15">15 m/s</option><option value="50" selected>50 m/s</option><option value="150">150 m/s</option></select> <button id="pause">Pozastavit</button> <a class="back-link" href="./">Zpět do hry</a></p>
+<p>QTE ve hře: mezerník nebo tlačítko Zasáhnout. Poryvy i pomoc holuba mají dvousekundové okno; další výzvy se vracejí během dlouhého letu. Hejna, déšť a vzdušné stopy jsou pouze vizuální.</p>
+</main><script type="module">
+import {render} from './src/render.js';
+import {districtAt,routeAt,ROUTE,SCREEN_METERS} from './src/scenes.js';
+const canvas=document.getElementById('preview'),meters=document.getElementById('meters'),speed=document.getElementById('speed'),pause=document.getElementById('pause');
+let distance=0,time=0,last=0,running=true;
+const place=document.getElementById('place');
+ROUTE.forEach((p,i)=>{const option=document.createElement('option');option.value=i;option.textContent=(Math.floor(i/4)+1)+'.'+(i%4+1)+' · '+p.name;place.append(option);});
+place.onchange=()=>{distance=Number(place.value)*SCREEN_METERS;meters.value=distance;};
+meters.oninput=()=>{distance=Number(meters.value);};
+pause.onclick=()=>{running=!running;pause.textContent=running?'Pozastavit':'Pokračovat';};
+document.addEventListener('visibilitychange',()=>{last=0;});
+function frame(now){const dt=last?Math.min(.1,(now-last)/1000):0;last=now;
+ if(!document.hidden&&running){distance=(distance+dt*Number(speed.value))%10000;time+=dt;meters.value=distance;}
+ render(canvas,{x:distance,y:35,vx:Number(speed.value),vy:0,t:time,events:[],landed:false},'glider',time);
+ document.getElementById('location').textContent=`${Math.floor(distance)} m · ${districtAt(distance).name}`;
+ const route=routeAt(distance);document.getElementById('story').textContent=route.story;document.getElementById('route-progress').value=route.part-1+route.progress;place.value=route.index;
+ requestAnimationFrame(frame);
+}requestAnimationFrame(frame);
+</script></body></html>
+
