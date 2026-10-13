@@ -105,3 +105,12 @@ HUD ukazuje průběžnou odměnu, zvýrazňuje změnu čtvrti a postupně zobraz
 Ověření: `npm test` — 18 unit testů. `node simulation/qte-balance.mjs` — 18 000 párových porovnání, viz `simulation/QTE-BALANCE.md`. Souhrnný medián přínosu obou QTE 20,25 %. Nejde o záruku pro každou konfiguraci: nastavení holuba na svislou rychlost +0,4 m/s může u některých stoupajících konstrukcí dolet zkrátit; záporné percentily jsou v reportu zachované. Parametry z plánu nebyly kvůli tomu potichu změněny.
 
 Prohlížeč: ověřený běh hry a aktivace letových událostí; na 360 × 780 a 390 × 844 px bez horizontálního přetečení, tlačítko QTE 48 px, panel viditelný pod scénou. Opraveno resetování odměny a bannerů při návratu do dílny. Fyzický telefon a uživatelské hodnocení srozumitelnosti nebyly provedeny.
+
+## Verze 0.6 — arkádový let, sdílená vylepšení, shovívavé QTE (13. 10. 2026)
+
+- **Let:** místo aerodynamiky (vztlak/odpor) jednoduchý arkádový model. Balistické stoupání, pak klouzání, při kterém klesání nepřekročí rychlost / klouzavost. Každý model má ideální úhel; strmější hod ho přibrzdí, takže úhel je skutečné rozhodnutí (šipka ~25°, kluzák ~35°).
+- **Vylepšení mění jednu čitelnou věc:** síla = rychlost výhozu (+12 %/úr.), papír = klouzavost (+20 %/úr.), přehyby = odpouští nepřesnou sílu (+10 % chybějící síly/úr.) a rozšiřují okna událostí (+10 %/úr.).
+- **Sdílený strom:** vylepšení platí pro obě vlaštovky. Starší uložení se převede, z každé větve se ponechá vyšší úroveň (save verze 3).
+- **Modely:** šipka (rychlá, nejvíc jí dá síla), kluzák (pomalejší, dlouhé klouzání, nejvíc mu dá papír a z poryvů a holubů získá o 15 % víc).
+- **QTE:** širší okna (poryv ±0,28 s, perfektní ±0,10 s; holub 0,50–1,00 s, perfektní 0,65–0,85 s), stisk během varování se ignoruje, mezery mezi událostmi 4–7 s (max. 10 událostí). Časovací kruh se kreslí přímo u vlaštovky a klepnout lze kamkoli do scény.
+- `PORT=4174 npm start` spustí server na jiném portu.

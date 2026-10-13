@@ -9,7 +9,7 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`). Commity jako `
 - `npm run simulate` / `node simulation/qte-balance.mjs` **přepisují reporty v `simulation/`**. Pro průzkum spouštět jinde nebo vlastním skriptem.
 
 ## Architektura
-- **Logika (čisté funkce, bez DOM):** `config.js` (parametry, ceny, modely), `core.js` (fyzika, let, nákup, odměna, `simulate`), `events.js` (QTE poryv a holub), `throw.js` (úhel a síla hodu), `scenes.js` (trasa 16 míst × ~305 m, čtvrti), `storage.js` (validace a ukládání do localStorage), `random.js` (seedovaný RNG).
+- **Logika (čisté funkce, bez DOM):** `config.js` (parametry, ceny, modely, efekty vylepšení), `core.js` (arkádový let, nákup, odměna, bot `simulate`), `events.js` (QTE poryv a holub, `TIMING`, `windows(f)`), `throw.js` (úhel a síla hodu), `scenes.js` (trasa 16 míst × ~305 m, čtvrti), `storage.js` (validace a ukládání do localStorage), `random.js` (seedovaný RNG).
 - **Prezentace:** `render.js`, `route-render.js`, `backgrounds.js`, `atmosphere.js`, `decorations.js` vykreslují canvas 640×360. `ui.js` obsahuje stavový automat (workshop → aim → flight → result), vstupy a HUD.
 - Fyzika krokuje pevně po `DT=1/60` a je deterministická podle seedu. Seed letu = `attempts+1`, tutoriálové události jen pro seed 1.
 - Dokumenty: `KB vlastovky.md`, `KB zabavnost a motivace.md` (backlog B01–B10, K1–K7), `Plan realizace.md`. README obsahuje historii verzí.
@@ -19,20 +19,20 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`). Commity jako `
 - Simulace i testy importují `src/` přímo. Logiku nemíchat s DOM.
 - Každá oprava chování by měla mít test v `tests/`.
 
-## Stav (13. 10. 2026, verze 0.4)
+## Stav (13. 10. 2026, verze 0.6)
 Proběhlo review kódu, obsahu a mechanik. Opravené:
 - Úspěšný holub už nezkracuje stoupání (`vy=max(.4,vy)`).
 - HUD a `#scene-label` nechytají klepnutí (`pointer-events:none`).
 - Mezerník na jiném tlačítku nespustí hod.
 - Poškozený save se zálohuje do `just-throw-it-v1-corrupt`, NaN dolet se neuloží.
 - Příběhy míst se zobrazují v `#journey-story` (za letu aktuální místo, jinak nejvzdálenější). Štítek scény ukazuje čtvrť a místo.
+- **0.6:** arkádový model letu (klouzavost, ideální úhel modelu), sdílený strom vylepšení (save v3 s migrací), odlišné role šipky a kluzáku, širší okna QTE, stisk ve varování se ignoruje, kratší mezery, časovací kruh ve scéně a klepnutí do scény. Viz README „Verze 0.6“.
 - Texty sjednocené: Dílna (ne Hangár), Bonusy (ne Bonus tree), intro odpovídá trase předměstí → doky → jádro. Čísla v českém formátu (`num()` v `ui.js`). Po 500 m ukazuje HUD hranici dalšího místa.
 
 ## Známé problémy (z review 13. 10. 2026)
 **Mechaniky / balanc**
-- Dobrý hráč dojde k 500 m za ~4 hody (~2,3 min), cíl plánu je 10–15 min. Slabý hráč (síla ~0,5) má strop ~451 m a hru nedohraje.
-- Papír a přehyby dávají jen ~1,5 % za úroveň, rozhoduje síla. Kluzák je horší než šipka na všech úrovních a má oddělený strom.
-- QTE mají vždy stejné časování, perfektní okno poryvu ±0,06 s je na dotyku příliš úzké. Stisk během varování se počítá jako minutí, mezery mezi událostmi jsou 10–14 s.
+- Ekonomika (ceny 10–120, odměna 10 + dolet/10) je naladěná na starý model a hra je příliš krátká. `simulation/MONTE-CARLO.md` (nad verzí 0.4) doporučil ceny ×5. Po 0.6 je potřeba Monte Carlo spustit znovu a ceny přeladit.
+- QTE mají pořád stejný střed okna (dá se naučit nazpaměť).
 - Vítr je vždy nulový (`ui.js`). Po 500 m nic nenavazuje a mince nemají využití.
 - `simulation/REPORT.md` je zastaralý (verze 0.1.0).
 

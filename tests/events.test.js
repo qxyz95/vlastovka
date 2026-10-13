@@ -1,39 +1,39 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createFlight,step,simulate} from '../src/core.js';
-import {createEvents,updateEvents,eventInput,eventStats,activeEvent,HELP} from '../src/events.js';
+import {createEvents,updateEvents,eventInput,eventStats,activeEvent,HELP,TIMING,windows} from '../src/events.js';
 import {createDecorations,stepDecorations} from '../src/decorations.js';
 function event(type,t){const f=createFlight();f.events[0].type=type;f.t=t;updateEvents(f);return f;}
 test('gust early, missing, success, perfect, repeated inputs and exact impulse',()=>{
- for(const [t,expected] of [[1.7,'miss'],[2.75,'success'],[2.9,'perfect'],[3.4,'miss']]){
+ assert.equal(eventInput(event('gust',1.7),'down'),null);
+ for(const [t,expected] of [[2.5,'miss'],[2.7,'success'],[2.95,'perfect'],[3.4,'miss']]){
   const f=event('gust',t),vx=f.vx,vy=f.vy;assert.equal(eventInput(f,'down'),expected);
   assert.equal(eventInput(f,'down'),null);assert.equal(eventInput(f,'up'),null);
   const k=expected==='perfect'?HELP.perfect:expected==='success'?1:0;
-  assert.equal(f.vx,vx+HELP.gustX*k);assert.equal(f.vy,vy+HELP.gustY*k);
+  assert.equal(f.vx,vx+HELP.gustX*k*f.p.qte);assert.equal(f.vy,vy+HELP.gustY*k*f.p.qte);
  }
  const f=event('gust',3.6);assert.equal(f.events[0].result,'miss');
 });
 test('bird hold/release, wrong owner, repeat, cancel and timeout',()=>{
- for(const [duration,expected] of [[.2,'miss'],[.6,'success'],[.75,'perfect'],[1,'miss'],[1.3,'miss']]){
+ for(const [duration,expected] of [[.2,'miss'],[.55,'success'],[.75,'perfect'],[1.05,'miss'],[1.3,'miss']]){
   const f=event('bird',2.5),vx=f.vx;assert.equal(eventInput(f,'down','finger1'),'holding');
   assert.equal(eventInput(f,'down','finger2'),null);assert.equal(eventInput(f,'up','finger2'),null);
   f.t+=duration;eventInput(f,'up','finger1');assert.equal(f.events[0].result,expected);
-  if(expected==='miss'){assert.equal(f.vx,vx);assert.equal(f.carry,0);}else assert.ok(f.carry>0&&f.carry<=HELP.birdPerfect);
+  if(expected==='miss'){assert.equal(f.vx,vx);assert.equal(f.carry,0);}else assert.ok(f.carry>0&&f.carry<=HELP.birdPerfect*f.p.qte);
   while(!f.landed&&f.t<180)step(f);assert.ok(f.landed);assert.equal(f.carry,0);
  }
  const f=event('bird',2.5);eventInput(f,'down','touch');assert.equal(eventInput(f,'cancel','touch'),'miss');assert.equal(eventInput(f,'up','touch'),null);
- const early=event('bird',1.6);assert.equal(eventInput(early,'down'),'miss');
+ const early=event('bird',1.6);assert.equal(eventInput(early,'down'),null);assert.equal(early.events[0].result,null);
  const absent=event('bird',3.6);assert.equal(absent.events[0].result,'miss');
 });
-test('schedule starts at 1.5, waits for result/effect, caps six and avoids triple repeats',()=>{
+test('schedule starts at 1.5, waits for result/effect, caps the count and avoids triple repeats',()=>{
  for(let seed=1;seed<=100;seed++){
-  const events=createEvents(seed,seed===1);assert.equal(events.length,6);assert.equal(events[0].at,1.5);
-  for(let i=2;i<6;i++)assert.ok(!(events[i].type===events[i-1].type&&events[i].type===events[i-2].type));
+  const events=createEvents(seed,seed===1);assert.equal(events.length,TIMING.maxEvents);assert.equal(events[0].at,1.5);
+  for(let i=2;i<events.length;i++)assert.ok(!(events[i].type===events[i-1].type&&events[i].type===events[i-2].type));
  }
  assert.deepEqual(createEvents(1,true).slice(0,2).map(e=>e.type),['gust','bird']);
  const f=simulate('glider',{power:5,paper:5,fold:5},43,1);
- for(let i=1;i<6;i++)if(Number.isFinite(f.events[i].at)){const gap=f.events[i].at-f.events[i-1].doneAt;assert.ok(i<3?Math.abs(gap-3)<1e-8:gap>=10&&gap<=14);}
- assert.ok(f.events.length<=6);
+ for(let i=1;i<f.events.length;i++)if(Number.isFinite(f.events[i].at)){const gap=f.events[i].at-f.events[i-1].doneAt;assert.ok(i<3?Math.abs(gap-3)<1e-8:gap>=4&&gap<=7);}
 });
 test('landing interrupts unfinished attempts without counting misses',()=>{
  const f=event('bird',2.5);eventInput(f,'down');f.y=.00001;f.vy=-5;step(f);
@@ -75,4 +75,12 @@ test('cancelled or ignored QTE has exactly the same passive flight as no assista
 import {SECTION_METERS} from '../src/scenes.js';
 test('successful bird never cuts the climb',()=>{
  for(const vy of [-3,5]){const f=event('bird',2.5);f.vy=vy;eventInput(f,'down');f.t+=.75;assert.equal(eventInput(f,'up'),'perfect');assert.equal(f.vy,Math.max(.4,vy));}
+});
+test('fold upgrade widens QTE windows and the glider gains more from hits',()=>{
+ const w0=windows(createFlight('dart',{power:0,paper:0,fold:0})),w5=windows(createFlight('dart',{power:0,paper:0,fold:5}));
+ assert.ok(w5.gust.perfect>w0.gust.perfect&&w5.bird.success>w0.bird.success);
+ const at=(t,fold)=>{const f=createFlight('dart',{power:0,paper:0,fold});f.events[0].type='gust';f.t=t;updateEvents(f);return eventInput(f,'down');};
+ assert.equal(at(3.02,0),'success');assert.equal(at(3.02,5),'perfect');
+ const gain=model=>{const f=createFlight(model);f.events[0].type='gust';f.t=2.9;updateEvents(f);const vy=f.vy;eventInput(f,'down');return f.vy-vy;};
+ assert.ok(gain('glider')>gain('dart'));
 });
