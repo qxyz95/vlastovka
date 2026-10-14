@@ -178,3 +178,19 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   5. **QTE:** účinek odvozený od rychlosti vlaštovky (pomalou vlaštovku u země QTE nezachrání), události rozdělené podle role (mince, dolet, rychlost, …) a promyšlený výskyt místo stejné náhody. Návrh a simulace před kódem.
   6. Obsah na 90 min kriticky zhodnotí role společně (co ve hře mít a co ne).
 - **Kdy spouštět balance-analyst (15. 10., trvalé pravidlo):** ladění čísel (ceny, statistiky, délka hry) až ve chvíli, kdy je uživatel **spokojený s obsahem a mechanikami**. Dokud se obsah a jádro (QTE, události, progrese) mění, simulace se nespouští, aby agent neběžel zbytečně. Platí i do budoucna.
+- **Plán hratelnosti, odpovědi na otázky (15. 10., `research/plan-hratelnost/README.md`):** shodné body 1–6 README platí.
+  1. **Hlavní lákadlo: město se pod vlaštovkou rozkládá jako vystřihovánka.**
+  2. Vztyčení **po jednotlivých budovách** (ne po blocích 50 m): budovy za rekordem leží naplocho a vztyčí se při prvním průletu. Dražší varianta, rozpočet výkonu ověřit `perf-check`.
+  3. Kousky (triky): celý systém **odložen po playtestu**, Over the Line zůstává jako okamžik ve vzduchu. Dávky V a D z plánu obsahu se odkládají.
+  4. Rozpor 00 × 01 rozhodnut **podle kreativního ředitele**: razítka pryč, zastávky nahradí vztyčení dominanty, Předpověď trasy odložena.
+  5. Vlaštovku na konci najde **jiné dítě na druhém konci města, beze slov**.
+  6. QS1 (síla zásahu podle letu, Q 0,15–1,25) přijato; čísla ověří simulace až po schválení obsahu.
+  7. Událost pro mince **„Spropitné“** přidat.
+  8. Předpověď událostí při míření **až jako odemčení v progresi** (ne zdarma od 2. hodu). Plán letu po playtestu.
+  9. Skimmer odložen, **4 nové vlaštovky**.
+  10. **Výškový práh QTE 8 m hned do hry.**
+  11. Z titulní obrazovky **podržet kdekoli = hod** (UX varianta B).
+  12. Ve výsledku jen řádek „na kolik vylepšení máš“, kupuje se v Dílně (UX A).
+  13. **Postavička: varianta C** (oblá figurka s mnoha stěnami, `postavicka-varianty.png`), ne doporučená A. Art director upraví díly, LOD a pózy (03 kap. 1.3–1.8) pro C.
+  14. **Kouř: papírový** (varianta B z 03 kap. 7): malé průsvitné papírové obláčky, jen daleko od místa odhodu. Cyber kouř `life3d` pryč (H0 platí), bible S-6 upravit podle toho.
+  15. Úvodní záběr A (dům s dílnou, přiblížení 0,6 s, úvod po spuštění a po Dílně/Atlasu, ne po „Hodit znovu“). **Nápis „Throw it“ nahoře v nebi** nad hřebenem.
