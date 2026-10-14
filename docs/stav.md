@@ -1,7 +1,7 @@
 # Stav projektu
 
 Aktualizuje se po každé větší práci (orchestrátor nebo agent, který práci dokončil). U každého údaje je datum.
-Poslední úprava: 14. 10. 2026 (přestavba kontextu, obsah převzat z dřívějšího `CLAUDE.md`).
+Poslední úprava: 14. 10. 2026 večer (Papírové město, kamera startu, rozhodnutí o obsahu a délce hry).
 
 ## Verze a hotové části
 **Verze 0.6.1 (13. 10. 2026).** Proběhlo review kódu, obsahu a mechanik. Opravené:
@@ -21,6 +21,16 @@ Poslední úprava: 14. 10. 2026 (přestavba kontextu, obsah převzat z dřívěj
 **14. 10. 2026:** komiksový 2D prototyp `verse` (jen náhled), 3D prototyp, hudební prototyp (F1+F3), 3D převod fáze 0 a a1–a6 (3D výchozí ve hře).
 
 ## Rozpracované práce
+### Papírové město, obsah a délka hry (14. 10. 2026, večer)
+- **Styl B Papírové město** za příznakem `?styl=papir` (bible `research/design/05-styl-papir.md`, katalog `11-katalog-ctvrt1.md`). Hotové dávky P0, P1, P3, P4; katalog modelů v `src/render3d/models/` (G1, G2, G2b místo odhodu) a stránka `prototype-katalog.html`. Výchozí (cyber) styl beze změny.
+- **Kamera startu S1–S3 ve hře:** šířka letu podle přebytku rychlosti a tempa π, vlaštovka roste s oddálením, míření zblízka 16 m. Dokud neběží S4, je v míření vidět staré obří dítě.
+- **Rozhodnutí (06, 14. 10.):** 5 nových vlaštovek za mince, Poštovní brašna (+X % mincí), skiny za postup, místo odhodu = podkrovní dílna v řezu, **cílová délka hry ~90 min** bez umělého natahování, kousky (triky) v odlehčené verzi až po ověření simulací. Návrhy: `research/obsah/01–05`, `research/start/01–02`, maketa `prototype-dilna.html`.
+- **Běží / navazuje se přes soubory průběhu `runs/`:**
+  - S4 místo odhodu ve hře: `runs/2026-10-14-s4-misto-odhodu.md` (worktree agenta, větev `worktree-agent-*`).
+  - Simulátor pro 90 min (Mailbag, náhled z posledních 5 hodů, detektory kousků): `runs/2026-10-14-sim-90.md`.
+  - Pak: balance-analyst ladí ceny vlaštovek a brašny na 90 min (05 §7.3), dávky obsahu A–D podle 05 §8, menu M1–M5, katalog G3–G7, P2.
+- Pokud se agent přeruší: nový agent přečte svůj soubor průběhu a pokračuje; orchestrátor zkontroluje worktree větev (`git log worktree-agent-<id>`) a sloučí ji `git merge --no-ff`.
+
 ### Progrese a simulátor (F5)
 - Simulátor nového systému `simulation/progression/`, nový systém zatím **není ve hře**.
 - Stav 13. 10. 2026 (F3): délka hry průměrný 98–118 hodů / 53–62 min, slabý 115–140, expert 75–84; lety ~28 s. 15–19 z 61 cílů nesplněno.
