@@ -524,10 +524,12 @@ Koncept 2 „podkrovní dílna v řezu“ (06, „Začátek hodu“ bod 1; bible
 #### H1 `kid` dítě, hrdina startu
 - **Předobraz a účel:** dítě, které vlaštovky skládá a hází. Hráčova postava, vidět zblízka při každém hodu, v menu a u stolu Dílny.
 - **Kde a kolik:** 1×, na pavlači H4, ruka při nápřahu v 12 m (x ≈ 71,6).
-- **Rozměry:** **1,2 m** (`person` × 0,7): hlava ⌀ 0,3 m, pláštěnka 0,5 m, nohy 0,45 m, ruka 0,5 m.
-- **Papír:** jako `person` (hlava kotouč, trup lichoběžník), navíc skládaná čepice (trojúhelník s proužkem), vlasy kotouč za hlavou, oko tečka. Bez obrysu.
-- **Pózy:** míření (ruka s vlaštovkou nahoře vpředu), nabíjení (záklon a couvnutí jako dnes `kidPose`), hod (švih), mávání po hodu, v menu mávání nebo sezení na pavlači, u stolu (panel Dílny).
-- **LOD H:** ~70 △ (dnes 49). **LOD 0** (oddálení, menu z dálky): 20 △ jako `person`. **LOD 2:** 0.
+> **Upraveno 15. 10. 2026 (dávka H2, rozhodnutí 06 bod 13):** dítě je **oblá figurka C** podle `research/plan-hratelnost/03-art.md` kap. 1.3–1.8 (bible 05 kap. 9.4). Původní znění (ploché karty, ~70 △, strop [80, 20, 0]) neplatí.
+
+- **Rozměry:** **1,2 m** (`person` × 0,7): hlava ⌀ 0,34 m, pláštěnka 0,59 m (kužel ke krku), nohy 0,46 m, ruka 0,55 m (pevná délka od ramene po střed dlaně).
+- **Papír:** oblá figurka z tuhých „soustružených“ dílů (nový díl `lathe` v `parts.js`, tvar karty `mesh`): hlava a pláštěnka 16 stěn, čepice-kornout 12 s rajčatovým proužkem nad očima, vlasy 10 (skořápka vzadu), ruce a nohy 8, dlaně a boty 6, oči dvě destičky. Jeden tón na stěnu (`kidMaterial`, rampa po stěnách), bez obrysu a lesku.
+- **Pózy (03 kap. 1.7):** klid (úvod, vlaštovka mezi dlaněmi), míření (dlaň vzdálené ruky T přesně v bodě výhozu, blízká ruka F ukazuje úhel mířidel), nabíjení (záklon a couvnutí z `kidPose`, ruka T drží vlaštovku), výhoz (švih), mávání, sed, u stolu (panel Dílny).
+- **LOD H:** **630 △** (míření 64–96 px, úvod na desktopu). **LOD 1:** **130 △** (dítě pod 44 px: úvod na telefonu, oddálení; zpět LOD H nad 52 px). **LOD 2:** 0. Oba LOD v jednom bufferu s praporkem H5 (`setDrawRange`), 1 draw call.
 - **Barvy:** pláštěnka `D1.near[1] #f2b65a`, čepice `PT.kraft #c9a57c` + proužek `PT.tomato`, nohy `D1.window #3d4f7a`, boty a oko `PT.pencil700`, kůže `life.people.skin[0]`.
 - **Silueta:** postavička s trojúhelníkem na hlavě a zdviženou rukou, čitelná od 60 px. Kontrast proti nebi je nízký (bible 05 kap. 9.4), proto snímek v šedi při art-review.
 
@@ -570,13 +572,13 @@ Koncept 2 „podkrovní dílna v řezu“ (06, „Začátek hodu“ bod 1; bible
 
 | | △ (LOD H) | Strop `tris:[0, 1, 2]` (H = LOD 0 místa odhodu) |
 |---|---|---|
-| H1 `kid` | ~70 | [80, 20, 0] (H / oddálení) |
+| H1 `kid` | 630 (LOD 1: 130) | **[760, 160, 0]** (H / LOD 1, dítě C 15. 10.) |
 | H2 `workshop-attic` | ~200 | [230, 0, 20] |
 | H3 `workshop-interior` | ~180 | [200, 0, 0] |
 | H4 `loft-balcony` | ~46 | [55, 0, 0] |
 | H5 `hoist-beam` | ~32 (+20 hák) | [60, 0, 0] |
 | H6 `retaining-wall` | ~86 | [95, 0, 4] |
-| **Celkem** | **~615–635** | **≤ 720** (dřív `workshop` [1 000, 0, 30]) |
+| **Celkem** | **~1 110–1 200** (ve hře 1 107, nejbohatší 1 117) | **≤ 1 400** (15. 10. s dítětem C; dřív ≤ 720, `workshop` [1 000, 0, 30]) |
 
 Kontrola (art-review, kap. 5): snímek míření na 375 × 667, 932 × 430 a 1280 × 800; za vlaštovkou nebe; kolem ruky nic bílého ani grafitového; dítě v šedi na 25 %; menu s domkem v pravých dvou třetinách.
 
@@ -656,7 +658,7 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | Položka | LOD | Místo 1 Střechy | Místo 2 Trh | Místo 3 Zahrady | Místo 4 Železnice |
 |---|---|---|---|---|---|
 | domy v ulici (`house-row`, `house-gable`, `cottage`, `rail-shed`, vč. komínů) | 0 | 18 domů 5,7 | 29 domů 4,6 ¹ | 5 domků 0,75 | 11 budov 2,9 |
-| dominanty | 0 / H | místo odhodu G2b 0,63 ⁴ + věžička 0,35 | hala 0,5 | skleník 0,6 | vodárna + nádraží 0,42 |
+| dominanty | 0 / H | místo odhodu G2b 1,11 ⁴ + věžička 0,35 | hala 0,5 | skleník 0,6 | vodárna + nádraží 0,42 |
 | domy ve středu (vč. komínů) | 1 | 14 → 2,2 | 13 → 2,0 | 6 → 0,6 | 10 → 1,1 |
 | dálka (`far-skyline`) | 2 | 11 → 0,44 | 10 → 0,40 | 8 → 0,32 | 8 → 0,32 |
 | nádrže, antény, prádlo | 0 | 0,32 | 0,53 | | 0,03 |
@@ -673,7 +675,7 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | Rezerva do 15 | | 3,3 | 3,1 | 7,4 | 4,9 |
 | Dnes (karty + život, bez stínů) | | 3,15 | 6,91 | 3,79 | 2,02 |
 
-¹ Na trhu je přízemí domů za stánky schované, pravidlo D-3 (přízemí v LOD 1) ušetří ~0,8 tis. ² Tunel stojí na hranici míst 3 a 4 (dnes x 636–678, v místě 3). ³ Dav 70 lidí za stánky v LOD 1. ⁴ 14. 10.: Dílna PAPER LAB (strop 1,0 tis.) nahrazena diorámatem G2b (H1–H6 ≈ 0,62–0,64 tis., kap. 3.7). Pás výhledu S-1 (střed do 150 m za startem ≤ 13 m) navíc ubere část domů středu místa 1; nepočítáno, rezerva je proto spíš větší.
+¹ Na trhu je přízemí domů za stánky schované, pravidlo D-3 (přízemí v LOD 1) ušetří ~0,8 tis. ² Tunel stojí na hranici míst 3 a 4 (dnes x 636–678, v místě 3). ³ Dav 70 lidí za stánky v LOD 1. ⁴ 14. 10.: Dílna PAPER LAB (strop 1,0 tis.) nahrazena diorámatem G2b (H1–H6 ≈ 0,62–0,64 tis., kap. 3.7); 15. 10. s dítětem C ≈ 1,11 tis. (strop G2b 1,4 tis., 03-art kap. 1.8). Pás výhledu S-1 (střed do 150 m za startem ≤ 13 m) navíc ubere část domů středu místa 1; nepočítáno, rezerva je proto spíš větší.
 
 **Závěr: „hodně detailu všude“ se do 15 tis. △ vejde ve všech čtyřech místech, ale jen se scénářem C.** Nejtěsněji místa 1 a 2 (rezerva ~3 tis.). Rezervu místa 3 (7 tis.) použít na zahrady (víc stromů, záhonů, ovocné stromy), přesouvat ji nejde (rozpočet je na místo).
 
@@ -691,7 +693,7 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | ~~Dílna (vlastní mesh, `workshop.js`)~~ | ~~1~~ | | | | nahrazeno G2b (řádky níže) |
 | místo odhodu: dioráma H2–H6 | 0 | | | | **sloučené do ulice místa 1** (stejný `paperMaterial`, stencil ulice, LOD H jen jako hustší geometrie) |
 | místo odhodu: stín diorámatu | 0 | | | | proxy H2 + H6 (≤ 11 △) **sloučený do masky stínů** místa 1 |
-| dítě H1 | 1–2 | | | | tělo + ruka (nápřah ve vertex shaderu → 1) |
+| dítě H1 | 1 | | | | dítě C + praporek H5 v jedné dynamické geometrii (pózu skládá CPU), LOD přes `setDrawRange` |
 | stín dítěte | 0 | | | | proxy stojícího dítěte (≤ 4 △) v masce; pózy stín nemění (dítě se hýbe o desítky cm) |
 | cedulka PAPER LAB (textura) | 1 | | | | 0, když se nápis složí z dílů jako piktogram (bez textury, ~50 △) |
 | jedoucí vlak (instancované vozy) | | | | 1 | |
@@ -713,7 +715,7 @@ Strop platí pro **nejbohatší variantu** při použití `panel` / `lista` (sc�
 | `rail-shed` | [250, 60, 13] | 220 / 50 / 13 | |
 | `far-skyline` | [0, 0, 50] | — / — / 40 | |
 | ~~`workshop`~~ | ~~[1 000, 0, 30]~~ | | nahrazeno G2b |
-| `kid` (H1) | [80, 20, 0] | jedinečná | LOD H / oddálení |
+| `kid` (H1) | **[760, 160, 0]** | jedinečná | LOD H / LOD 1 (dítě C, 15. 10.; dřív [80, 20, 0]) |
 | `workshop-attic` (H2) | [230, 0, 20] | jedinečná | příčky oken smí (LOD H) |
 | `workshop-interior` (H3) | [200, 0, 0] | jedinečná | nejbohatší stav: 4 role, 16 pohlednic |
 | `loft-balcony` (H4) | [55, 0, 0] | jedinečná | |

@@ -78,7 +78,7 @@ test('aim shot framing (S-1…S-7): kid 1,2 m, plane in hand and the sky behind 
   for(const [dx,dy] of [[0,0],[.25,0],[-.25,0],[.25,.1],[0,.3],[.5,.15]]){const h=hits(cam,[HAND.x+dx,12+dy,0],cards).filter(c=>c.layer!=='far');
    assert.deepEqual(h.map(c=>`${c.model??c.layer} ${c.part??c.shape}`),[],`css ${css}: behind the plane at ${dx},${dy}`);}}
  // zábradlí pod rukou (madlo 0,95 m nad pavlačí), ruka 1,4 m nad podlahou pavlače 10,6 m
- const rail=launchStatic().filter(c=>c.part==='railing');assert.ok(Math.max(...rail.map(c=>c.y+c.h))<12-.3);near(LAUNCH.floor+KID.hand.aim[1],12,1e-9);
+ const rail=launchStatic().filter(c=>c.part==='railing');assert.ok(Math.max(...rail.map(c=>c.y+c.h))<12-.3);near(LAUNCH.floor+KID.aimHand,12,1e-9);
 });
 
 test('view band S-1 (first screen of place 1): middle ≤ 13 m within 150 m of the hand, street ≤ 11 m within 60 m, roofs included, ramps back',()=>{
@@ -116,19 +116,21 @@ test('place 1 budget (paper, Node): ≤ 9 draw calls of its own incl. mask (+ 5 
  site.dispose();geos.forEach(g=>g.dispose());kit.dispose();
 });
 
-test('kid H1 rig: aim pose = catalogue model, feet on the deck, palm on the plane; phases rest → aim → charge → throw → wave; flag flutters on twos, still with reduced motion',()=>{
+test('kid C rig: aim pose = catalogue model, feet on the deck, palm T on the plane; phases idle/rest → aim → charge → throw → wave; flag flutters on twos, still with reduced motion',()=>{
  const P=(o)=>kidPose(o);
  assert.equal(P({rest:true,state:'workshop'}).phase,'rest');assert.equal(P({rest:true}).phase,'aim');assert.equal(P({rest:true,charge:.4}).phase,'charge');
  assert.equal(P({thrown:true,rest:false,since:.1}).phase,'throw');assert.equal(P({thrown:true,rest:false,since:KID_THROW+.01}).phase,'wave');
  assert.equal(P({thrown:true,rest:false,since:.15}).swing,.5);assert.equal(P({charge:.3,t:2,thrown:false}).phase,'charge');
- const rig=kidRig(),m=cardVertices(place(buildModel('kid',0,{pose:'aim'}),KID_AT).filter(c=>!(c.part==='hand'||(c.part==='arm'&&c.z-KID_AT.z>0))));
- poseKid(rig,P({rest:true}),HAND);for(let i=0;i<m.p.length;i++)near(rig.positions[i],m.p[i],1e-5,'body = model aim pose');
- let y0=Infinity;for(let i=0;i<rig.ranges.body[1];i++)y0=Math.min(y0,rig.positions[i*3+1]);near(y0,LAUNCH.floor,1e-5,'feet on the deck');
- near(rig.last[2],HAND.x,1e-9);near(rig.last[3],12,1e-9);
- const ch=P({rest:true,charge:1});poseKid(rig,ch,{x:HAND.x-.3,y:12});assert.ok(rig.last[0]<KID_AT.x+KID.shoulder[0],'leans back');near(rig.last[2],HAND.x-.3,1e-9);
+ // míření (reduced = bez dýchání): LOD H je model katalogu v póze míření posunutý do místa
+ const rig=kidRig(),m=cardVertices(place(buildModel('kid',0,{pose:'aim'}),KID_AT));
+ poseKid(rig,P({rest:true}),HAND,{reduced:true});for(let i=0;i<m.p.length;i++)near(rig.positions[i],m.p[i],1e-5,'body = model aim pose');
+ let y0=Infinity;for(let i=0;i<rig.ranges.h[1];i++)y0=Math.min(y0,rig.positions[i*3+1]);near(y0,LAUNCH.floor,1e-5,'feet on the deck');
+ near(rig.last[2],HAND.x,1e-6);near(rig.last[3],12,1e-6);near(rig.last[5],HAND.z,1e-6);
+ const ch=P({rest:true,charge:1});poseKid(rig,ch,{x:HAND.x-.25,y:12},{reduced:true});assert.ok(rig.last[0]<KID_AT.x+KID.aimPalm[0]-.1,'leans back');
  near(ch.back*KID_SCALE,.146,.01,'steps back ~15 cm (1,2 m kid)');
- poseKid(rig,P({thrown:true,rest:false,since:KID_THROW*(1-1e-9)}),null);near(rig.last[2],KID_AT.x+KID.hand.throw[0],1e-6,'throw ends forward-down');
- const wave=[.1,.2,.3,.4].map(t=>{poseKid(rig,P({thrown:true,rest:false,since:2,t}),null);return rig.last[3];});assert.ok(wave.every(y=>y>rig.last[1]),'hand above the shoulder');
+ poseKid(rig,P({thrown:true,rest:false,since:KID_THROW*(1-1e-9)}),null);assert.ok(rig.last[3]<rig.last[1]+.3&&rig.last[2]>rig.last[0],'throw ends forward');
+ const wave=[.1,.25,.4,.55].map(t=>{poseKid(rig,P({thrown:true,rest:false,since:2,t}),null,{t});return Array.from(rig.palms.slice(3));});assert.ok(wave.every(([,y])=>y>LAUNCH.floor+1.2),'hand F up');
+ assert.ok(Math.max(...wave.map(p=>Math.hypot(p[0]-wave[0][0],p[1]-wave[0][1],p[2]-wave[0][2])))>.2,'waves');
  const [f0,f1]=rig.ranges.flag,flag=t=>{poseKid(rig,P({rest:true}),HAND,{t});return Array.from(rig.positions.slice(f0*3,f1*3));};
  assert.notDeepEqual(flag(.3),flag(.6),'flutters');assert.deepEqual(flag(.30),flag(.31),'on twos');
  poseKid(rig,P({rest:true}),HAND,{t:.7,reduced:true});const still=Array.from(rig.positions.slice(f0*3,f1*3));assert.deepEqual(still,Array.from(rig.base.slice(f0*3,f1*3)),'reduced motion: flag still, pointing downwind');

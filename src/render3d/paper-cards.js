@@ -85,6 +85,7 @@ export function lifeCards(life=suburbLife(),style='papir'){
 // štíty; back:false bez zadního sklonu, 4 △), 'poly' vystřižené čelo {pts:[[x,y]…] CCW, vějíř z pts[0], hvězdicový k pts[0]; x,w,y,h = obal}.
 // 'prism' (K4, věžička): n-boký hranol {x,w,y,h,z,d, n=6}, jen přivrácená polovina plášťů (n/2 ploch k +z, plochou stěnou ke kameře) a víko
 // (n − 2 △, top:false bez víka); apex:true = jehlan nad toutéž podstavou (n/2 △). x,w,z,d = obal podstavy (elipsa vepsaná do w × d).
+// 'mesh' (dítě C, models/kid.js): hotové trojúhelníky {p, n} (vrcholy a normály stěn, plochá pole po 9 číslech na △), x,w,y,h,z,d = obal.
 // opts.thin=false nakreslí panel, lista a tenký disc jako plnou kartu (porovnání se stavem před K3).
 export const THIN=.15,THIN_DISC=.1,LISTA=Object.freeze(new Set(['sill','cornice','stringcourse','plinth','step','canopy','flowerbox','lintel','balcony','counter','coping']));
 export const cardKind=(b,thin=true)=>b.shape==='panel'||b.shape==='lista'?(thin?b.shape:'box'):b.shape==='box'&&thin&&b.d<=THIN?(LISTA.has(b.part)?'lista':'panel'):b.shape==='disc'&&thin&&b.d<=THIN_DISC?'plate':b.shape;
@@ -93,6 +94,7 @@ const tri=(o,a,b,c,n,col)=>{for(const v of [a,b,c]){o.p.push(...v);o.n.push(...n
 export function cardVertices(list,{thin=true}={}){
  const o={p:[],n:[],c:[]};
  for(const b of list){const z0=b.z-b.d/2,z1=b.z+b.d/2,k=cardKind(b,thin);
+  if(k==='mesh'){for(let i=0;i<b.p.length;i+=3){o.p.push(b.p[i],b.p[i+1],b.p[i+2]);o.n.push(b.n[i],b.n[i+1],b.n[i+2]);o.c.push(b.color);}continue;}
   if(k==='box'||k==='panel'||k==='lista'){const x0=b.x,x1=b.x+b.w,y0=b.y,y1=b.y+b.h,col=b.color;
    quad(o,[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],col);if(k==='panel')continue;quad(o,[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],col);if(k==='lista')continue;
    quad(o,[x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],col);quad(o,[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],col);}
@@ -124,9 +126,9 @@ export function cardVertices(list,{thin=true}={}){
  return o;
 }
 // Trojúhelníky karet bez sestavení vrcholů (rozpočet): box 8, panel 2, lista 4, gable 9 (bez lemů 5), eave 6 (bez zad 4), pyr 5, flag 1, poly body − 2,
-// disc 3 × n, tenký disc n − 2 (mnohoúhelník čelem).
+// disc 3 × n, tenký disc n − 2 (mnohoúhelník čelem), mesh p.length / 9.
 // prism n/2 · 2 + víko n − 2 (šestiboký 10, bez víka 6), jehlan prism n/2.
 const TRIS={box:8,panel:2,lista:4,pyr:5,flag:1};
 const prismTris=b=>{const n=b.n??6;return b.apex?n>>1:(n>>1)*2+(b.top===false?0:n-2);};
 export const cardTriangles=(list,{thin=true}={})=>list.reduce((s,b)=>{const k=cardKind(b,thin);
- return s+(TRIS[k]??(k==='gable'?(b.eaves===false?5:9):k==='eave'?(b.back===false?4:6):k==='poly'?b.pts.length-2:k==='plate'?(b.n??18)-2:k==='prism'?prismTris(b):3*(b.n??18)));},0);
+ return s+(TRIS[k]??(k==='gable'?(b.eaves===false?5:9):k==='eave'?(b.back===false?4:6):k==='poly'?b.pts.length-2:k==='plate'?(b.n??18)-2:k==='prism'?prismTris(b):k==='mesh'?b.p.length/9:3*(b.n??18)));},0);

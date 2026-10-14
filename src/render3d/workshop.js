@@ -5,17 +5,17 @@
 // ctx = {model, planeScale, paper}: group.userData.outlines = vlastní obrysové materiály (razítko vlaštovky), kterým scéna při resize nastaví
 // uniforms.resolution. Vlaštovka v ruce leží v ruce pose.HAND, klidová kamera ji promítne na (148, 258).
 // S4 (bible 05 kap. 9, katalog 11 kap. 3.7 a 4.2 varianta A): podkrovní dílna v řezu. Statické H2–H6 kreslí město ve sloučené ulici místa 0
-// (city.paperLayers '0s'), tady jen jedna dynamická geometrie dítěte H1 a praporku větru (models/kid-rig.js, paperMaterial(ID.near) ze sdílené sady
-// ctx.paper = paper.paperKit(), jinak vlastní; stín dítěte je proxy v masce místa), cedulka PAPER LAB jako textura na kartě domu H2 a vlaštovka
+// (city.paperLayers '0s'), tady jen jedna dynamická geometrie dítěte H1 a praporku větru (models/kid-rig.js, kidMaterial na uniformách sdílené sady
+// ctx.paper = paper.paperKit(), jinak vlastních; stín dítěte je proxy v masce místa), cedulka PAPER LAB jako textura na kartě domu H2 a vlaštovka
 // v ruce ve 12 m (razítko grafit 2,6 px, stín na zem ctx.paper.shadows.castPlane).
 import * as THREE from 'three';
 import {planeShape,outlineStamp} from './geometry.js';
 import {stampOutlineMaterial} from './toon.js';
 import {HAND,kidPose,planePose} from './pose.js';
 import {PAPIR} from './palette.js';
-import {paperMaterial,lin,ID} from './paper.js';
+import {kidMaterial,lin,ID} from './paper.js';
 import {planeColors,PLANE_SCALE} from './plane.js';
-import {kidRig,poseKid} from './models/kid-rig.js';
+import {kidRig,poseKid,kidLod,kidDrawRange} from './models/kid-rig.js';
 import {DIORAMA} from './models/launch-site.js';
 import {ATTIC} from './models/workshop-attic.js';
 // Cedulka PAPER LAB místa odhodu (bible 05 kap. 9.1, model H2 ATTIC.sign): karta 5,6 × 0,6 m nad okny 2. patra; střed ve světě a čelo
@@ -33,20 +33,34 @@ export function paperSignTexture(text,P=PAPIR.workshop,make=makeCanvas,{w=PAPER_
 
 // Obrys vlaštovky v ruce (razítko) v CSS px, stejně jako letící vlaštovka.
 export const OUTLINE={plane:2.6};
+// Vlaštovka v ruce přes dítě (bible 9.4, P1; 03-art kap. 1.5): místo depthTest:false posun hloubky v prostoru kamery o HAND_DEPTH.bias m ke kameře
+// (bod se posune po paprsku, poloha na obrazovce se nemění). Vlaštovka tak vyhraje nad dítětem (hloubka ~0,5 m), ale vlastní křídla a kýl se dál
+// zakrývají správně (depthTest:false by je kreslil v pořadí trojúhelníků) a zábradlí (≥ 1 m blíž ke kameře, pod rukou) ji zakryje dál.
+// Obrys razítkem je za vlaštovkou jen o push m (letící vlaštovka 2 m; v ruce by ho čepice zakryla).
+export const HAND_DEPTH=Object.freeze({bias:.6,push:.15});
+const BIAS=`max(.05,(-mvPosition.z-${HAND_DEPTH.bias.toFixed(2)})/max(-mvPosition.z,1e-3))`;
+export const biasChunk=src=>src.replace('#include <project_vertex>',`#include <project_vertex>
+mvPosition.xyz*=${BIAS};gl_Position=projectionMatrix*mvPosition;`);
+export function handDepthBias(m){
+ if(m.isShaderMaterial){m.vertexShader=m.vertexShader.replace('vec4 mv=modelViewMatrix*vec4(position,1.);',`vec4 mv=modelViewMatrix*vec4(position,1.);mv.xyz*=${BIAS.replaceAll('mvPosition','mv')};`);if(m.uniforms.push)m.uniforms.push.value=HAND_DEPTH.push;}
+ else{m.onBeforeCompile=sh=>{sh.vertexShader=biasChunk(sh.vertexShader);};m.customProgramCacheKey=()=>'handDepthBias';}
+ m.userData.handBias=HAND_DEPTH.bias;return m;
+}
 export function createWorkshop(scene,ctx={}){
  const PAL=PAPIR.workshop,group=new THREE.Group(),own=[],outlines=[],kit=ctx.paper,shadows=kit?.shadows,H=HAND;
  const mk=(o,m)=>(own.push(o),m===undefined?o:m);
- // Dítě H1 + praporek H5: jedna dynamická geometrie (models/kid-rig.js), polohy přepisuje update bez alokace; obal pevný (praporek i záklon).
+ // Dítě C + praporek H5: jedna dynamická geometrie (models/kid-rig.js), [LOD H][praporek][LOD 1], drawRange podle výšky dítěte v px (hystereze 44/52),
+ // polohy a normály přepisuje update bez alokace; obal pevný (praporek i záklon). Materiál kidMaterial (rampa po stěnách) na sdílených uniformách kitu.
  const rig=kidRig(),g=mk(new THREE.BufferGeometry()),col=new Float32Array(rig.count*3);rig.colors.forEach((h,i)=>{const c=lin(h);col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;});
- g.setAttribute('position',new THREE.BufferAttribute(rig.positions,3).setUsage(THREE.DynamicDrawUsage));g.setAttribute('normal',new THREE.BufferAttribute(rig.normals,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
- g.computeBoundingSphere();g.boundingSphere.radius+=1;
- const hero=new THREE.Mesh(g,kit?.material(ID.near)??mk(paperMaterial(ID.near)));hero.userData.layer=ID.near;group.add(hero);
+ g.setAttribute('position',new THREE.BufferAttribute(rig.positions,3).setUsage(THREE.DynamicDrawUsage));g.setAttribute('normal',new THREE.BufferAttribute(rig.normals,3).setUsage(THREE.DynamicDrawUsage));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ g.computeBoundingSphere();g.boundingSphere.radius+=1;const setLod=l=>{const [a,n]=kidDrawRange(rig,l);g.setDrawRange(a,n);};setLod(rig.lod);
+ const hero=new THREE.Mesh(g,mk(kidMaterial(kit?.uniforms)));hero.userData.layer=ID.near;group.add(hero);
  const sg=PAPER_SIGN,signMat=mk(new THREE.MeshBasicMaterial({map:mk(paperSignTexture(sg.text,PAL)),fog:false}));
  const sign=new THREE.Mesh(mk(new THREE.PlaneGeometry(sg.w,sg.h)),signMat);sign.position.set(sg.x,sg.y,sg.z);group.add(sign);
  // Vlaštovka v ruce: planeShape, skupiny root (poloha) → tilt (rotace z) → squash → roll; barva vrcholů bez světla (jako plane.js),
  // obrys razítkem grafit 2,6 px, přehyb tužkou, stín na zem castPlane.
- const planeHull=mk(stampOutlineMaterial({color:PAPIR.plane.outline,thickness:OUTLINE.plane}));planeHull.depthWrite=false;outlines.push(planeHull);
- const planeMat=mk(new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,fog:false})),creaseMat=mk(new THREE.LineBasicMaterial({color:PAL.crease}));
+ const planeHull=handDepthBias(mk(stampOutlineMaterial({color:PAPIR.plane.outline,thickness:OUTLINE.plane})));planeHull.depthWrite=false;outlines.push(planeHull);
+ const planeMat=handDepthBias(mk(new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,fog:false}))),creaseMat=handDepthBias(mk(new THREE.LineBasicMaterial({color:PAL.crease})));
  const shapes={},shapeOf=model=>shapes[model]??=(s=>{const g=mk(new THREE.BufferGeometry()),l=mk(new THREE.BufferGeometry());
   g.setAttribute('position',new THREE.Float32BufferAttribute(s.positions,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(s.normals,3));g.setAttribute('outline',new THREE.Float32BufferAttribute(s.outline,3));
   l.setAttribute('position',new THREE.Float32BufferAttribute(s.creases,3));
@@ -59,13 +73,14 @@ export function createWorkshop(scene,ctx={}){
  let model=null,ps=null;const setModel=m=>{if(m===model)return;model=m;const s=shapeOf(m);pm.geometry=s.g;ph.geometry=s.h;pc.geometry=s.l;if(ps)ps.geometry=s.g;};setModel(ctx.model??'dart');
  if(shadows){ps=shadows.castPlane(pm.geometry);pm.add(ps);}// stín vlaštovky v ruce na zem (dítě dědí matrixWorld)
  const scale=ctx.planeScale??PLANE_SCALE;
- const at={x:0,y:0},pos=hero.geometry.attributes.position;
+ const at={x:0,y:0,z:H.z},pos=g.attributes.position,nor=g.attributes.normal;
  group.update=(k,p,{t=0,reduced=false}={})=>{
   plane.visible=!!p;
   // plan.hand.scale: velikost vlaštovky v ruce podle záběru (S3) a +15 % na úzké scéně (P0)
   if(p){if(p.model)setModel(p.model);const sc=scale*(p.scale??1);plane.position.set(H.x+p.dx,H.y+p.dy,H.z);tilt.rotation.z=p.angle;squash.scale.set(p.squash[0]*sc,p.squash[1]*sc,sc);}
-  // Dítě a praporek (CPU, bez alokace); dlaň drží vlaštovku v ruce, po hodu švih a mávání.
-  if(k){at.x=plane.position.x;at.y=plane.position.y;poseKid(rig,k,p?at:null,{t,reduced});pos.needsUpdate=true;}
+  // Dítě a praporek (CPU, bez alokace); dlaň ruky T drží vlaštovku v ruce, po hodu švih a mávání. V klidu a u stolu drží vlaštovku obě dlaně.
+  if(k){const lod=kidLod(k.px,rig.lod);if(lod!==rig.lod)setLod(lod);at.x=plane.position.x;at.y=plane.position.y;poseKid(rig,k,p?at:null,{t,reduced,lod});pos.needsUpdate=true;nor.needsUpdate=true;
+   if(p&&(k.phase==='idle'||k.phase==='rest')){const P=rig.palms;plane.position.set((P[0]+P[3])/2,(P[1]+P[4])/2,(P[2]+P[5])/2);}}
  };
  group.dispose=()=>{for(const o of own)o.dispose?.();group.removeFromParent();};
  for(const o of outlines)o.userData.base=o.uniforms.thickness.value;// základ v CSS px; scéna ho může násobit DPR jako u svých obrysů

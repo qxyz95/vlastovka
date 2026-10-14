@@ -7,7 +7,7 @@ import {cardTriangles,groundCards,PLACE_W} from '../../src/render3d/paper-cards.
 import {cameraFor} from '../../src/render3d/frame.js';
 import {planeShape} from '../../src/render3d/geometry.js';
 import {PAPER_ROLE,PAPER_TOKENS as T} from '../../src/render3d/palette.js';
-import {paperMaterial,postPass,skyTexture,cardGeometry,lin} from './paper.js';
+import {paperMaterial,kidMaterial,postPass,skyTexture,cardGeometry,lin} from './paper.js';
 
 const $=s=>document.querySelector(s),q=new URLSearchParams(location.search);
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -28,7 +28,7 @@ const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'
 renderer.info.autoReset=false;renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const rt=new THREE.WebGLRenderTarget(4,4,{samples:4}),POST=postPass();
 const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(30,16/9,.5,4000);
-const mat=paperMaterial(),groundMat=paperMaterial({cutK:0,fiber:.05}),flatMat=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide});
+const mat=paperMaterial(),kidMat=kidMaterial(),groundMat=paperMaterial({cutK:0,fiber:.05}),flatMat=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide});
 const turntable=new THREE.Group(),spinner=new THREE.Group();turntable.add(spinner);scene.add(turntable);
 let modelMesh=null,pedestal=null,ground=null,sky=null,list=[],box=null,dirty=true;
 
@@ -46,8 +46,10 @@ function rebuild(){
  // Model, který se v daném LOD nekreslí (dálka: strop 0), ukáže nejbližší kreslený LOD.
  const m=modelById(state.model),dio=isDio();state.shown=dio?state.lod:nearestLod(m,state.lod);
  list=dio?diorama(state.lod,G2B.has(m.id)?{[m.id]:state.params}:{}):buildModel(m,state.shown,state.params);box=bounds(list);
- modelMesh?.geometry.dispose();pedestal?.geometry.dispose();if(ground){ground.geometry.dispose();scene.remove(ground);}modelMesh=pedestal=ground=null;spinner.clear();turntable.clear();turntable.add(spinner);
- modelMesh=new THREE.Mesh(cardGeometry(list),mat);
+ modelMesh?.children.forEach(o=>o.geometry.dispose());pedestal?.geometry.dispose();if(ground){ground.geometry.dispose();scene.remove(ground);}modelMesh=pedestal=ground=null;spinner.clear();turntable.clear();turntable.add(spinner);
+ // dítě C (karty 'mesh') vlastním materiálem kidMaterial jako ve hře, ostatní papírem
+ const kidCards=list.filter(c=>c.shape==='mesh'),rest=list.filter(c=>c.shape!=='mesh');modelMesh=new THREE.Group();
+ if(rest.length)modelMesh.add(new THREE.Mesh(cardGeometry(rest),mat));if(kidCards.length)modelMesh.add(new THREE.Mesh(cardGeometry(kidCards),kidMat));
  // Model otáčený kolem středu půdorysu; na podstavci stojí ve 0, ve hře přední hranou na hraně vrstvy.
  const cx=(box.x0+box.x1)/2,cz=(box.z0+box.z1)/2;modelMesh.position.set(-cx,0,-cz);spinner.add(modelMesh);
  if(dio){modelMesh.position.set(0,0,0);turntable.position.set(0,0,0);ground=new THREE.Mesh(cardGeometry(groundCards('papir',0)),groundMat);scene.add(ground);}

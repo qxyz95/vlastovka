@@ -104,11 +104,11 @@ test('S4 launch site tokens (06 bod 6, bible 05 kap. 9.4–9.5): coat #f2b65a, k
  drawn.length=0;const tx=paperSignTexture(PAPER_SIGN.text);assert.ok(drawn.includes('PAPER LAB'));assert.ok(Math.abs(tx.image.width/tx.image.height-PAPER_SIGN.w/PAPER_SIGN.h)<.1);tx.dispose();
 });
 
-test('S4 workshop: kid + flag one dynamic mesh on the shared kit (ID.near), sign texture, plane in hand at 12 m stamped in graphite, no card casters',()=>{
+test('S4/H2 workshop: kid C + flag one dynamic mesh (kidMaterial on the shared kit uniforms), sign texture, plane in hand at 12 m stamped in graphite, no card casters',()=>{
  const kit=paperKit(),g=createWorkshop(null,{paper:kit,planeScale:PLANE_SCALE});
  const meshes=[],casters=[];g.traverse(o=>{if(o.userData.shadow)casters.push(o);else if(o.isMesh)meshes.push(o);});
- const near=kit.material(ID.near);
- const hero=meshes.filter(m=>m.material===near);assert.equal(hero.length,1,'kid + flag = 1 draw call');assert.equal(g.userData.kid,hero[0]);
+ const hero=meshes.filter(m=>m.material.uniforms?.Lk);assert.equal(hero.length,1,'kid + flag = 1 draw call');assert.equal(g.userData.kid,hero[0]);
+ assert.equal(hero[0].material.uniforms.cut,kit.uniforms.cut,'shared kit uniforms (mood, fibre)');assert.equal(hero[0].userData.layer,ID.near);
  assert.equal(casters.length,1,'only the plane in hand casts (kid shadow is a proxy in the place mask)');assert.ok(casters.every(c=>c.layers.isEnabled(MASK_LAYER)));
  const sign=meshes.find(m=>m.material.map);assert.ok(sign&&Math.abs(sign.geometry.parameters.width-PAPER_SIGN.w)<1e-9,'paper sign texture on the H2 card');
  assert.deepEqual([sign.position.x,sign.position.y,sign.position.z].map(v=>+v.toFixed(6)),[PAPER_SIGN.x,PAPER_SIGN.y,PAPER_SIGN.z].map(v=>+v.toFixed(6)));
@@ -123,8 +123,9 @@ test('S4 workshop: kid + flag one dynamic mesh on the shared kit (ID.near), sign
  assert.deepEqual([g.userData.plane.position.x,g.userData.plane.position.y],[HAND.x,12],'plane in hand at the physics height');
  // pózy: dlaň drží vlaštovku (i stažení při nabíjení), po hodu švih a mávání; poloha se přepisuje v témže bufferu (bez nové geometrie)
  const pos=hero[0].geometry.attributes.position,arr=pos.array,v0=pos.version,rig=g.userData.rig;
- g.update(kidPose({charge:1,rest:true}),{dx:-.2,dy:0,angle:0,squash:[1,1]});assert.ok(Math.abs(rig.last[2]-(HAND.x-.2))<1e-9&&Math.abs(rig.last[3]-12)<1e-9,'palm on the pulled-back plane');
- g.update(kidPose({thrown:true,rest:false,since:2,t:1}),null,{t:1});assert.equal(g.userData.plane.visible,false);assert.ok(rig.last[3]>rig.last[1],'waving hand above the shoulder');
+ g.update(kidPose({charge:1,rest:true}),{dx:-.246,dy:0,angle:0,squash:[1,1]});// stažení vlaštovky při charge 1 na 1280 px (pose.planePose)
+ assert.ok(Math.hypot(rig.last[2]-(HAND.x-.246),rig.last[3]-12,rig.last[5]-HAND.z)<=.05,'palm T on the pulled-back plane (≤ 5 cm)');
+ g.update(kidPose({thrown:true,rest:false,since:2,t:1}),null,{t:1});assert.equal(g.userData.plane.visible,false);assert.ok(rig.palms[4]>rig.last[1],'waving hand F above the shoulder');
  assert.equal(pos.array,arr);assert.ok(pos.version>v0,'positions uploaded');
  g.dispose();kit.dispose();
  const solo=createWorkshop(null,{});let n=0;solo.traverse(o=>{if(o.userData.shadow)n++;});assert.equal(n,0);solo.dispose();

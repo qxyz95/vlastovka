@@ -152,7 +152,23 @@ export function cutRoof({x,w,y,h,front=0,roof,cut,ov=CUT_ROOF.ov,t=CUT_ROOF.t,co
  return out;
 }
 // Posun seznamu karet (umístění modelu do místa / vrstvy). Nemutuje vstup (body obrysu poly se posunou také).
-export const place=(list,{x=0,y=0,z=0}={})=>list.map(c=>({...c,x:c.x+x,y:c.y+y,z:c.z+z,...(c.pts?{pts:c.pts.map(([a,b])=>[a+x,b+y])}:{})}));
+export const place=(list,{x=0,y=0,z=0}={})=>list.map(c=>({...c,x:c.x+x,y:c.y+y,z:c.z+z,...(c.pts?{pts:c.pts.map(([a,b])=>[a+x,b+y])}:{}),...(c.p?{p:c.p.map((v,i)=>v+(i%3===0?x:i%3===1?y:z))}:{})}));
+// „Soustružený“ díl (dítě C, research/plan-hratelnost/03-art.md kap. 1.3, předloha latheP v research/design/img/hratelnost/hratelnost.mjs):
+// prstence [y, rx, rz, dx] kolem osy y dílu (rx ve směru +x, rz do boku, dx posun osy), n stěn, první vrchol v úhlu rot (π/n).
+// Prstenec s poloměrem 0 je pól (vějíř trojúhelníků), víčka bot/top jen na přání. Každá stěna má jednu normálu (Newell) mířící ven z osy,
+// čtyřúhelník = 2 △ se stejnou normálou (jeden tón na stěnu). Vrací {p, n} (vrcholy trojúhelníků, CCW zvenku) v souřadnicích dílu.
+export function lathe(rings,n,{rot=Math.PI/n,top=false,bot=false}={}){
+ const R=rings.map(([y,a,b,dx=0])=>Array.from({length:n},(_,k)=>{const t=rot+k/n*Math.PI*2;return [dx+a*Math.cos(t),y,b*Math.sin(t)];})),out={p:[],n:[]},pole=i=>rings[i][1]===0&&rings[i][2]===0;
+ const face=(pts,ref)=>{let N=[0,0,0];for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];N[0]+=(a[1]-b[1])*(a[2]+b[2]);N[1]+=(a[2]-b[2])*(a[0]+b[0]);N[2]+=(a[0]-b[0])*(a[1]+b[1]);}
+  const l=Math.hypot(...N)||1;N=N.map(v=>v/l);if(N[0]*ref[0]+N[1]*ref[1]+N[2]*ref[2]<0){pts=pts.slice().reverse();N=N.map(v=>-v);}
+  for(let i=1;i<pts.length-1;i++)for(const v of [pts[0],pts[i],pts[i+1]]){out.p.push(...v);out.n.push(...N);}};
+ for(let i=0;i+1<R.length;i++)for(let k=0;k<n;k++){const a=R[i][k],b=R[i][(k+1)%n],c=R[i+1][(k+1)%n],d=R[i+1][k],q=pole(i)?[a,c,d]:pole(i+1)?[a,b,c]:[a,b,c,d];
+  const cx=q.reduce((s,v)=>s+v[0],0)/q.length,cz=q.reduce((s,v)=>s+v[2],0)/q.length,ax=((rings[i][3]??0)+(rings[i+1][3]??0))/2;face(q,[cx-ax,0,cz]);}
+ if(bot&&!pole(0))face(R[0],[0,-1,0]);if(top&&!pole(R.length-1))face(R[R.length-1],[0,1,0]);
+ return out;
+}
+// Destička (oko dítěte): čtverec 2s × 2s v rovině yz v x, normála +x (2 △).
+export const plateX=(x,y,z,s)=>({p:[x,y-s,z-s,x,y+s,z-s,x,y+s,z+s,x,y-s,z-s,x,y+s,z+s,x,y-s,z+s],n:Array(6).fill([1,0,0]).flat()});
 // Obalový kvádr karet (kotouč podle poloměru, štít, jehlan a poly po obalu x,w,y,h).
 export function bounds(list){
  const b={x0:Infinity,x1:-Infinity,y0:Infinity,y1:-Infinity,z0:Infinity,z1:-Infinity};
