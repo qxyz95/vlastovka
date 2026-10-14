@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(npm run simulate*)",
+      "Bash(node simulation/run.mjs*)",
+      "Bash(node simulation/monte-carlo.mjs*)",
+      "Bash(node simulation/qte-balance.mjs*)",
+      "Bash(git push --force*)"
+    ],
+    "allow": [
+      "Bash(tasklist)",
+      "Bash(tasklist *)",
+      "Bash(npm test)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Get-CimInstance *)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "mcp__claude-in-chrome__find",
+      "mcp__claude-in-chrome__get_page_text",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__read_console_messages",
+      "mcp__claude-in-chrome__read_page"
+    ]
+  },
+  "worktree": {
+    "baseRef": "head"
+  }
+}
