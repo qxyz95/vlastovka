@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
-import {placeCards,lifeCards,hills,groundCards,cardVertices,cardTriangles,ID,CARD_D,FAR_H,PLACE_W} from '../src/render3d/paper-cards.js';
+import {placeCards,lifeCards,hills,groundCards,cardVertices,cardTriangles,cardKind,ID,CARD_D,FAR_H,PLACE_W,THIN,LISTA} from '../src/render3d/paper-cards.js';
 import {cityChunk,chunkOffset} from '../src/render3d/geometry.js';
 import {palette} from '../src/render3d/palette.js';
 
@@ -33,7 +33,8 @@ test('prototyp a hra dávají stejné karty (přenos 1:1 z papir-data.js)',async
  const proto=await import(url.href);
  for(let i=0;i<4;i++)assert.deepEqual(placeCards(cityChunk(i)).map(k=>({...k,x:k.x+chunkOffset(i)})).map(k=>JSON.stringify(k)),proto.placeCards(i).map(k=>JSON.stringify(k)),`místo ${i}`);
  assert.deepEqual(lifeCards().cards,proto.lifeCards().cards);assert.deepEqual(hills(-400,1600),proto.hills(-400,1600));
- const list=proto.placeCards(1);assert.deepEqual(cardVertices(list),proto.cardVertices(list));
+ // Prototyp nezná tenké karty (K3, 11-katalog kap. 1.3): shoda platí pro plné kreslení (thin:false).
+ const list=proto.placeCards(1);assert.deepEqual(cardVertices(list,{thin:false}),proto.cardVertices(list));
 });
 
 test('cardVertices: počet vrcholů odpovídá cardTriangles, normály jednotkové',()=>{
@@ -54,4 +55,26 @@ function placeBudget(i,life=lifeCards(),hl=hills(-400,4*PLACE_W+400)){
 test('rozpočet: každé z 16 míst ≤ 15 tis. trojúhelníků a ≤ 14 draw calls (počítáno z karet)',t=>{
  const life=lifeCards(),hl=hills(-400,4*PLACE_W+400);
  for(let i=0;i<16;i++){const b=placeBudget(i,life,hl);assert.ok(b.triangles<=15000,`místo ${i}: ${b.triangles} △`);assert.ok(b.calls<=14,`místo ${i}: ${b.calls} DC`);t.diagnostic(`místo ${i}: ${b.triangles} △, ${b.calls} DC`);}
+});
+
+// Tenké karty K3 (research/design/11-katalog-ctvrt1.md kap. 1.3, scénář C): stejná čela, méně trojúhelníků.
+test('tenké karty: panel 2 △, lista 4 △, box ≤ 0,15 m sám jako panel / lista podle dílu, tenký disc jen čelem, thin:false kreslí plně',()=>{
+ const b={shape:'box',x:0,w:2,y:1,h:1,z:0,d:.1,color:'#e8735a'},tri=l=>cardVertices(l).p.length/9;
+ assert.equal(cardKind(b),'panel');assert.equal(cardKind({...b,part:'sill'}),'lista');assert.equal(cardKind({...b,d:THIN+.01}),'box');assert.equal(cardKind(b,false),'box');
+ assert.ok(LISTA.has('cornice')&&LISTA.has('step')&&!LISTA.has('window'));
+ for(const [c,n] of [[{...b,shape:'panel'},2],[{...b,shape:'lista'},4],[b,2],[{...b,part:'sill'},4],[{...b,d:1},8],[{shape:'disc',x:0,y:0,r:1,n:6,z:0,d:.08,color:'#e8735a'},4],
+  [{shape:'disc',x:0,y:0,r:1,n:6,z:0,d:.5,color:'#e8735a'},18],[{shape:'gable',x:0,w:4,y:0,h:2,z:0,d:4,color:'#e8735a',roof:'#3d4f7a',eaves:false},5],
+  [{shape:'eave',x:0,w:4,y:0,h:2,z:0,d:4,color:'#e8735a',roof:'#3d4f7a'},6],[{shape:'eave',x:0,w:4,y:0,h:2,z:0,d:4,color:'#e8735a',roof:'#3d4f7a',back:false},4],
+  [{shape:'poly',x:0,w:2,y:0,h:2,z:0,d:.1,pts:[[1,0],[2,0],[2,1],[1,2],[0,1],[0,0]],color:'#e8735a'},4]]){
+  assert.equal(cardTriangles([c]),n,`${c.shape} ${c.part??''}`);assert.equal(tri([c]),n);}
+ // panel = čelo boxu, lista = čelo + horní řez: stejné vrcholy jako první 2 / 4 trojúhelníky plného boxu
+ const full=cardVertices([{...b,d:1}]),pn=cardVertices([{...b,d:1,shape:'panel'}]),ls=cardVertices([{...b,d:1,shape:'lista'}]);
+ assert.deepEqual(pn.p,full.p.slice(0,18));assert.deepEqual(ls.p,full.p.slice(0,36));assert.deepEqual(ls.n,full.n.slice(0,36));
+ assert.equal(cardTriangles([b],{thin:false}),8);assert.equal(cardVertices([b],{thin:false}).p.length/9,8);
+ // Sklony střechy okapem: přední míří nahoru a ke kameře, zadní nahoru a od kamery; poly CCW (normála +z, kladná plocha).
+ const e=cardVertices([{shape:'eave',x:0,w:4,y:0,h:2,z:0,d:4,color:'#e8735a',roof:'#3d4f7a'}]);assert.ok(e.n[1]>0&&e.n[2]>0&&e.n[19]>0&&e.n[20]<0);
+ const cross=(P,i)=>(P[i+3]-P[i])*(P[i+7]-P[i+1])-(P[i+6]-P[i])*(P[i+4]-P[i+1]),pv=cardVertices([{shape:'poly',x:0,w:2,y:0,h:2,z:0,d:.1,pts:[[1,0],[2,0],[2,1],[1,2],[0,1],[0,0]],color:'#e8735a'}]);
+ for(let i=0;i<pv.p.length;i+=9)assert.ok(cross(pv.p,i)>0,'CCW');
+ // Hra: tenké karty ubraly trojúhelníky města, ne čela (okna, prádlo, šňůry, větrníky)
+ const list=[...placeCards(cityChunk(1)),...lifeCards().cards];assert.ok(cardTriangles(list)<cardTriangles(list,{thin:false}));
 });
