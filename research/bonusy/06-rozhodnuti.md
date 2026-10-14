@@ -170,3 +170,10 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Brána kousků (15. 10., `research/obsah/05-plan-90-minut.md` §4.6):**
   1. Branou smí projít i kousek třídy „dovednost“ (hráč nic nevolí, jen přesně trefuje), když má zdravou četnost (2–20 % letů) a expert ho dělá aspoň 1,3× častěji než slabý hráč.
   2. Když ověření dá jen 4–5 zdravých kousků z 8, postaví se jen zdravé spolu s 5 kousky modelů (aspoň jeden musí jít do čtvrti 2). Další náhrady se nehledají.
+- **Poznámky tvůrce z hraní (15. 10., `research/playtest/2026-10-15-poznamky-tvurce.md`, výklad `2026-10-15-vyhodnoceni.md`):**
+  1. **Jediný styl je Papírové město** (screenshot 223830). Neonový (cyber) styl a přepínač stylů se odstraní.
+  2. **Hra přes celou obrazovku:** okolí stránky (jazyk, rozcestník Workshop/Atlas, panel Dílny a vylepšení dole) pryč, patří do menu (07-menu). Místo tlačítka „Throw it“ výzva textem uprostřed scény.
+  3. **Hlavní postava = plastická postavička z papíru** (objem, víc stran), ne plochá karta a ne klasický 3D model. První záběr ukazuje i dům s dílnou, za postavičkou žádný kouř z komínů.
+  4. **Skoro každý hod má přinést novinku nebo koupi** (ne dlouhé házení naprázdno). Pořadí odemykání: nejdřív Power, Paper, Folds, Atlas po dosažení vzdálenosti.
+  5. **QTE:** účinek odvozený od rychlosti vlaštovky (pomalou vlaštovku u země QTE nezachrání), události rozdělené podle role (mince, dolet, rychlost, …) a promyšlený výskyt místo stejné náhody. Návrh a simulace před kódem.
+  6. Obsah na 90 min kriticky zhodnotí role společně (co ve hře mít a co ne).
