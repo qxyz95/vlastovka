@@ -1,6 +1,8 @@
 # Stylová bible Just Throw It: Papírové město (směr B)
 
 > **Schváleno 14. 10. 2026** (`research/bonusy/06-rozhodnuti.md`): pilíře „Diorama za úsvitu“, paleta čtvrti 1 beze změny, názvy čtvrtí sada C, vlaštovka na úzkých obrazovkách +15 %, písmo zatím systémové (rozhodne se po zahrání). Bible nahrazuje `02-styl.md` pro styl `?styl=papir`; co se z 02 přebírá a co ruší, je v kap. 15. Do přepnutí celé hry platí 02 pro výchozí styl.
+>
+> **Doplněno 14. 10. 2026 podle schválených rozhodnutí** (06, bloky „Začátek hodu, místo odhodu a kamera“ 1–7 a „Odemykatelný obsah“ 1–8): jedno měřítko světa (kap. 3.1, M-1 až M-4), místo odhodu „podkrovní dílna v řezu“ místo Dílny PAPER LAB (kap. 9, S-1 až S-7), modely vlaštovek, papíry a skiny (kap. 17), rozpory R-S1 až R-S9 vyřešené (kap. 16.1). Zdroje: `research/start/02-misto-odhodu-vzhled.md`, `research/obsah/03-vzhled-modelu-a-skinu.md`. **Pozor na podobná označení:** s pomlčkou (M-1, S-1) = místo odhodu, bez pomlčky (M1, S1) = modely a skiny vlaštovky; jsou převzaté beze změny, aby šly dohledat ve zdrojových návrzích.
 
 **Vyzkoušej si to:** `npm start` → http://127.0.0.1:4173/prototype-styly.html (výchozí stránka je teď tento návrh; srovnání 5 směrů z `04-nove-smery.md` je na `?srovnani=1`). Nahoře se přepíná záběr (Dílna, let, událost s QTE, výsledek), místo 1–4, velikost (1280×800, telefon 375×667 a 932×430), druh stínů a jazyk. Tlačítko „Změřit“ vypíše kontrast vlaštovky z pixelů a výkon.
 
@@ -139,9 +141,27 @@ Vlaštovka je změřená **z vykresleného snímku** (`__papir.measure()`: pixel
 
 **Hustota detailu podle hloubky:** ulice = okna, dveře, komíny, prádlo, vlaječky, lidé, auta; střed = okna, komíny, antény, stromy; dálka = siluety (výška × 0,42 proti dnešku, aby ráno nad předměstím nebyly věže metropole), kopce. **P3, P4.**
 
-**Měřítko vlaštovky:** desktop 58–59 CSS px, na šířku 36–37 px, **telefon 21 px** (kamera hry, `PLANE_SCALE 7,75`). Cíl z 02 (≥ 24 px na telefonu) dnes neplní ani starý styl. Návrh v `06-papir-ctvrt1.md` kap. 6 (zvětšit vlaštovku nebo přiblížit kameru na úzké scéně), otázka v kap. 16.
+**Měřítko vlaštovky:** za letu desktop 58–59 CSS px, na šířku 36–37 px, telefon 21 px (kamera hry, `PLANE_SCALE 7,75`). **Rozhodnuto:** na úzkých obrazovkách o 15 % větší (≈ 24 px) a za letu na telefonu nikdy pod 24 px (06, „Začátek hodu“ bod 3). Při míření a oddálení platí M-2 (kap. 3.1).
 
-**Obrys vlaštovky:** razítkem (`toon.stampOutlineMaterial`, 8 směrů) 2,6 px `graphite` na všech šířkách a kvalitách; přehyb tenkou linkou `pencil`. Papíry (01-papiry) mění tloušťku jen nahoru.
+**Obrys vlaštovky:** razítkem (`toon.stampOutlineMaterial`, 8 směrů) 2,6 px `graphite` na všech šířkách a kvalitách; přehyb tenkou linkou `pencil`. **Obrys je vždy grafitový** na všech papírech, modelech a skinech; jen Kraft smí 2,9 px (kap. 17.3). Žádný druhý obrys, žádná jiná barva obrysu (06, „Odemykatelný obsah“ bod 8; ruší hnědý, indigový a magentový obrys z `01-papiry.md`).
+
+### 3.1 Jedno měřítko světa (schváleno 14. 10.)
+
+Obrázky: `img/start/dnes.png` (dnes: dítě 11,75 m, stejně vysoké jako dům), `img/start/zaber.png` (šířka záběru při míření 8 / **16** / 55 m). Zdroj: `research/start/02-misto-odhodu-vzhled.md` kap. 2.
+
+- **M-1 Svět, Dílna i dítě mají skutečné míry** podle katalogu 11 kap. 1.1: patro 3 m, přízemí 3–3,5 m, okno 1,2 × 1,4 m, dveře 1,1 × 2,2 m, člověk 1,7 m, **dítě 1,2 m** (model `person` × 0,7), zábradlí 0,95 m. Výjimky „dílenské okno 11 m“, „dveře 4,2 × 6 m“ a „dítě × `S = 0,25`“ končí. **P2:** v diorámatu z papíru vypadá obří dítě jako chyba, ne jako stylizace.
+- **M-2 Vlaštovka je jediná výjimka a její velikost se řídí obrazovkou, ne světem.** V ruce dítěte má **0,5 m** („velká hračka“), během oddálení po výhozu plynule roste na velikost letu (7,75 m, na úzké scéně × 1,15). Růst je mocninou šířky záběru `W`: `L(W) = 0,5 · (W / W_aim)^k`, kde `k = ln(L_let / 0,5) / ln(W_let / W_aim)`; na desktopu (16 m → 120 m) `k = 1,36`. Na obrazovce vlaštovka během oddálení roste ze 40 na 83 px (1280 px) a nikdy není vedle dítěte velká, protože je v tu chvíli metry daleko. Za letu na telefonu vždy ≥ 24 px. Fyzika a QTE se nemění (pro fyziku je vlaštovka bod, kruh QTE je v UI vrstvě). Přesný průběh a tlumení vlastní game design (`research/start/01-zacatek-a-kamera.md` §3.7, dávka S3). **P1:** vlaštovka je jediná *nakreslená* věc, smí se řídit obrazovkou.
+- **M-3 Ruka dítěte je ve výšce výhozu fyziky, 12 m.** Podlaha pavlače je tedy 10,6 m (ruka 1,4 m nad chodidly při nápřahu). Délka letů se nemění (06 bod 4).
+- **M-4 Hrdina zblízka má víc detailu (LOD H).** Při míření je 80 px/m (desktop) a 54 px/m (telefon na výšku), 12× víc než ulice za letu. Pro dioráma startu platí **LOD H**: nejmenší detail 0,03 m (rám okna, klika, tužky na stole, řez papíru na hraně střechy). Domy ulice do ~150 m od startu jsou v záběru míření ~6× zvětšené (42 px/m), patří jim plný LOD 0 včetně rámů a parapetů. Karty a rozpočet: katalog 11, skupina G2b.
+
+| Záběr | Šířka záběru | Dítě 1,2 m | Vlaštovka |
+|---|---|---|---|
+| **Míření** (polodetail, sklon −8°) | **16 m**, telefon na výšku **7 m** | 96 px / telefon 64 px | 0,5 m: 40 px / 27 px |
+| Let | 120 m (telefon náčrt 70 m) | – | 7,75 m: 83 px / ≥ 24 px |
+| Menu | 25–43 m (koncept 2: 28 m) | 36–62 px (54 px) | krouží po křivce |
+| Panel Dílny (stůl v řezu) | ~5 m | – | na stole, celý potisk |
+
+Spočteno z kamery hry v Node (`pose.project`, `geometry.follow`, fov 20°), v prohlížeči **NOT ASSESSED**.
 
 ---
 
@@ -198,6 +218,7 @@ Pořadí: **vlaštovka a stopa > QTE a nejbližší událost > ulice > střed > 
 4. **Opar dělá pozadí tiché:** dálka a kopce mají kontrast proti nebi < 1,5 : 1, ulice nejsytější. Hodnota (světlost), ne detail.
 5. **HUD nesmí zakrýt pás letu.** Na telefonu je štítek místa **pod scénou**, ve scéně jen malý štítek vzdálenosti vpravo nahoře (`mobil-udalost.jpg`); vlaštovka letí v levé části obrazu (px 148/640).
 6. **QTE nad vším:** krémový disk 95 % se stínem zvednutého papíru (kap. 11).
+7. **Při míření je za vlaštovkou vždy nebe** a kolem ruky nic bílého ani grafitového (zábradlí tmavomodré, čepice dítěte kraftová): kap. 9, S-1 až S-3 a S-6.
 
 Kontrolní test (pro art-review): snímek do šedi a zmenšit na 25 %. Vlaštovka a stopa musí být první, co oko najde (v prototypu splněno díky grafitu na světlém pozadí; večerní čtvrť NOT ASSESSED).
 
@@ -240,13 +261,51 @@ Celé UI je **papír na stole**: stránka je kraft `desk`, panely jsou krémové
 
 ---
 
-## 9. Dílna
+## 9. Místo odhodu: podkrovní dílna v řezu
 
-Dílna je **papírový dům dítěte na začátku města** (`desktop-dilna.jpg`, `papir.js workshopCards`): krémové stěny, rajčatová sedlová střecha, velké teplé okno, ve kterém je vidět stůl dítěte (deska, kelímek s tužkami, vystřižená vlaštovka), tmavomodré dveře. Cedule **PAPER LAB je papírová cedulka** (krémová, grafitové písmo, rajčatové podtržení) zavěšená na dvou provázcích, ne neon. Přístavek je tyrkysový s plochou krémovou střechou a grafitovým zábradlím; na něm stojí dítě.
+> **Schváleno 14. 10. 2026** (06, „Začátek hodu, místo odhodu a kamera“ body 1–7; koncept 2 z `research/start/02-misto-odhodu-vzhled.md`). **Nahrazuje** dřívější Dílnu PAPER LAB (dům 24 × 12 m s tyrkysovým přístavkem, dítě 11,75 m, kamera `restCamera` 244 m), kartu 5 v katalogu 11 a model K4 `workshop`. Mechanika startu a kamera podle rychlosti: `research/start/01-zacatek-a-kamera.md`. Karty modelů H1–H6 a rozpočet: katalog 11, skupina G2b.
 
-**Dítě:** papírová postavička ze stejných kvádrů jako dnes (`workshop.js px()`, měřítko `S = 0,25`): hořčicová pláštěnka, tmavomodré nohy, **skládaná papírová čepice** (bílý trojúhelník). V ruce vlaštovka v poloze `HAND`. Animace z `pose.js` beze změny.
+Obrázky (`img/start/`): **ano** `koncept-2-podkrovi.png` (míření, oddálení, menu; 16 : 9 a telefon na výšku), `zaber.png` (16 m), `vyhled.png` (pás výhledu); **ne** `dnes.png` (obří dítě, kamera 244 m, nic neříká „odtud se hází“).
 
-Pravidla: Dílna je jediné místo s teplým světlem v okně ve dne (domov). Kamera Dílny zůstává (`restCamera`, HAND na 148, 258). **Na telefonu je dítě i vlaštovka maličké** (vlaštovka 10 CSS px, `mobil-dilna-cs.jpg`); návrh v 06 kap. 6, otázka v kap. 16.
+### 9.1 Co to je
+Úzký krémový dům s rajčatovou sedlovou střechou na nízké opěrné zdi nad ulicí místa 1 (zeď 1,1 m + přízemí 3,5 m + 2 patra = podlaha podkroví 10,6 m). **Podkroví je rozříznuté jako domeček pro panenky:** přední stěna chybí a řez střechy ukazuje světlé jádro kartonu (P2: „tohle je papír“). Uvnitř je dílna dítěte: stůl s lampou a stohy papíru, police s rolemi papírů, nástěnka s pohlednicemi z Atlasu, hotové vlaštovky na provázku. Z boku podkroví vedou půdní dveře na **pavlač** s tmavomodrým zábradlím; na ní stojí dítě. Nad pavlačí trčí **trám s kladkou** a košíkem papírů (místo pro hák Crane Lift). Pod podkrovím visí papírová cedulka PAPER LAB (krémová, grafitové písmo, rajčatové podtržení), ne neon. **P2, P3** (hráč míří z domova ke slunci).
+
+Dům zůstává krémový s rajčatovou střechou, aby ho hráč poznal i v novém tvaru. **Postup hry je vidět doma**, ne změnou denní doby (S-5): pohlednice na nástěnce přibývají s místy Atlasu, role na polici s druhy papíru (Copy, Kraft, Washi, Stříbrná fólie), hák jeřábu s úrovněmi Crane Lift.
+
+### 9.2 Tři záběry, jedna scéna
+Menu, míření i Dílna jsou **jedna boční kamera**, jen jinak blízko; mezi záběry kamera jede, nestřihá (výjimky: „Throw again“ pod kartou výsledku a reduced motion, 01 §2.3 a §3.8). Za hlavním menu je tahle scéna, ne nejvzdálenější čtvrť (06 bod 2, mění `07-menu.md` §2.1).
+
+| Záběr | Šířka | Co je v obraze | Pravidla |
+|---|---|---|---|
+| **Menu** (ustavující) | 25–43 m (náčrt 28 m), sklon +2° | celý domek v řezu, dítě na pavlači, slunce, kus města | dítě a dílna v **pravých dvou třetinách** (desktop, UI vlevo ve sloupci 27 %) nebo v pásu 25–60 % výšky (telefon, UI dole ~40 %), nikdy pod tlačítky. Vlaštovka krouží po křivce (07-menu §6). |
+| **Míření** (polodetail) | **16 m**, telefon na výšku 7 m, sklon −8° | dítě od kolen nahoru, vlaštovka v ruce, zábradlí, kus podkroví a dveře vlevo, trám nad dítětem, nebe a slunce vpravo nahoře, střechy dole | **za vlaštovkou je vždy nebe** (obrys grafit × ranní nebe 6,7–12,2 : 1, změřeno z hex). Mířidla směřují ke slunci (P3). Kamera mírně zespodu, aby se dítě nekreslilo proti fasádám. HUD v rozích nezakrývá dítě ani oblouk mířidel. Ruka na (0,38; 0,60) obrazu, na výšku (0,40; 0,62). |
+| **Oddálení** (po výhozu) | 16 → 120 m do 1,2 s | dům zůstane na levém okraji (červený štít v řezu), otevře se ulice | sklon se vrací z −8° na +6°; vlaštovka roste podle M-2; stopa začíná přesně v ruce. Dál šířka podle přebytku rychlosti (01 §3). |
+| **Panel Dílny** | ~5 m | stůl v řezu, na něm zvolená vlaštovka s potiskem | panel vpravo (desktop) nebo dole (telefon); stůl je pozadí, ne druhá obrazovka (S7 v 01, nápad na později). |
+
+### 9.3 Pravidla místa odhodu (S-1 až S-7)
+- **S-1 Pás výhledu.** Do ~150 m za startem nesmí střed (vrstva −110 m) přesahovat výšku ruky + 1 m (**≤ 13 m**, dnes 17–38 m) a ulice do ~60 m před dítětem výšku ruky − 1 m (≤ 11 m). Dál výšky plynule rostou k dnešním. Mění rozložení místa 1 (`cityChunk(0)`, dávka S4), ne fyziku. Obrázek `img/start/vyhled.png`. **P3, P1.**
+- **S-2 Hrana.** Dítě stojí u viditelné hrany (pavlač se zábradlím). Zábradlí a dveře jsou **tmavomodré `#3d4f7a`** (barva oken a střech čtvrti 1, `D1.window`), nikdy grafit. Zábradlí × ranní nebe 3,6–6,6 : 1 (čte se, ale slabší než obrys vlaštovky 6,7–12,2). **P1:** černá čára patří jen vlaštovce a stopě.
+- **S-3 Dítě není bílé ani hořčicové:** pláštěnka `#f2b65a` (`D1.near[1]`), čepice skládaná z kraftového papíru `PT.kraft #c9a57c` s rajčatovým proužkem, nohy `#3d4f7a`, bez obrysu. Vlaštovka je vedle něj jediná bílá věc s grafitem (papír × čepice 2,3 : 1). **P1, „hořčicová jen hodnota“.**
+- **S-4 Domov je jediné teplé světlo ve dne:** teplé sklo `#ffe2a8` (`PAPER_WARM`) jen v podkroví a oknech domu dítěte; lampa na stole smí svítit (teplý kruh jako okno).
+- **S-5 Ráno vždy.** Místo odhodu je za úsvitu ve všech fázích hry (P3: cesta za sluncem začíná doma). Postup ukazují věci v diorámatu (kap. 9.1), ne denní doba.
+- **S-6 Nic v pásu letu nepřebije vlaštovku.** Trám s kladkou, košík, praporek větru a kouř z komína jsou nad nebo za dítětem, matné (kraft, krém s alfou ≤ 0,6), menší než vlaštovka na obrazovce. Praporek větru je proužek pásky `PT.tape #efe0a8`, ne bílý. Hotové vlaštovky na provázku v dílně jsou barevné a **bez obrysu**; jediná bílá s obrysem je ta zvolená. **P1.**
+- **S-7 Reduced motion:** dioráma stojí (žádný kouř, vlání praporku, krouživá vlaštovka v menu). Přechody střihem nebo prolnutím 0,2 s (01 §3.8). Informace zůstává: směr větru ukazuje natočený praporek bez vlání.
+
+### 9.4 Dítě
+Papírová postavička z modelu `person` × 0,7 (**1,2 m**, karta H1 v 11): hlava kotouč ⌀ 0,3 m, pláštěnka lichoběžník, skládaná čepice (trojúhelník s proužkem), vlasy kotouč za hlavou, oko tečka `pencil-700`. Pózy: míření, nabíjení (záklon a couvnutí jako dnes `kidPose`), hod, mávání po hodu, v menu mávání nebo sezení na pavlači, u stolu (panel Dílny).
+
+| Část | Barva | Token |
+|---|---|---|
+| pláštěnka | `#f2b65a` | `D1.near[1]` (dnes `PT.mustard`, mění se) |
+| čepice | `#c9a57c` + proužek `#d9472b` | `PT.kraft` + `PT.tomato` (dnes `PT.paper`, mění se) |
+| nohy | `#3d4f7a` | `D1.window` |
+| boty, oko | `#4a4038` | `PT.pencil700` |
+| kůže | `#f3d2b4` | `life.people.skin[0]` |
+
+**Kontrast dítěte proti nebi je nízký** (pláštěnka 1,1–1,5 : 1, čepice 1,0–1,9 : 1 proti ranním pásům, změřeno z hex); dítě se odliší odstínem (oranžová × modrá) a tmavomodrýma nohama, ne hodnotou. To je v souladu s P1 (≥ 3 : 1 platí pro vlaštovku), ale čitelnost dítěte na telefonu (64 px) v šedi je **NOT ASSESSED** (kap. 16.2).
+
+### 9.5 Barvy diorámatu
+Jen z tokenů a palety čtvrti 1, nové hexy nevznikají: stěna `PT.cream` (`PAPIR.workshop.wall`), střecha `PT.tomato`, řez střechy `mix(tomato, city.cut, .55)` jako horní řez karet (kap. 3), interiér podkroví o tón tmavší a méně sytý než fasáda (je ve stínu střechy; `mix(barva, city.side, .2)`), rámy oken, dveře a zábradlí `#3d4f7a`, deska pavlače a košík `PT.kraftDark #9c7a55`, opěrná zeď `D1.ground.near #dcc29b` (návrh 02 měl `#d9bf98`, sjednoceno na existující barvu), klika krémová `PT.cream` (dnes `PT.mustard`, mění se), provázky `PT.pencil` (dnes grafit, mění se).
 
 ---
 
@@ -326,6 +385,9 @@ Nálady čtvrtí: kap. 2.3.
 8. **Pohyb:** varianta reduced motion; blikání ≤ 3 Hz; prostředí „on twos“.
 9. **Telefon:** snímek 375 × 667 a 932 × 430; HUD mimo pás letu.
 10. **Text:** přes i18n EN i CS, délka CS ověřená (`mobil-dilna-cs.jpg`).
+11. **Měřítko:** skutečné míry podle M-1 (kap. 3.1); jediná výjimka je vlaštovka (M-2) a jmenovité herní velikosti v kartách katalogu (holub, větrník, praporky). Prvek u místa odhodu kreslit v LOD H (M-4) a projít S-1 až S-7 (kap. 9.3).
+12. **Nový model vlaštovky:** M1–M8 (kap. 17.2): silueta z boku v póze letu, IoU ≤ 0,75 proti všem modelům na 24 px (`img/obsah/siluety.mjs`), plocha 0,75–1,4 × Dart, opsaná kružnice ≤ 0,75 délky, ≤ 12 △, stejná délka.
+13. **Nový skin nebo papír:** S1–S7 (kap. 17.4): obrys nedotčený, průměrná světlost horní plochy L ≥ 0,45, papír L ≥ 0,69, pokrytí ≤ 30 %, žádný token role (rajčatová, hořčicová, tyrkysová, kobaltová), 0 draw calls navíc (`img/obsah/skiny.mjs`).
 
 ---
 
@@ -342,6 +404,10 @@ Nálady čtvrtí: kap. 2.3.
 | 6 Hierarchie | `mobil-udalost.jpg`: štítek místa pod scénou, pás letu volný | první verze telefonu: štítek místa vlevo nahoře zakryl vlaštovku (Železnice) |
 | 7 Efekty | `desktop-udalost-qte.jpg`: poryv jako papírové proužky | rychlostní čáry přes vlaštovku (02, R11) |
 | 8 UI | `desktop-vysledek.jpg`: papírová karta s páskou, „Delivered.“ rukopisem jen jednou | `pencil` text přímo na stole (3,6 : 1), opraveno na `pencil-700` |
+| 3.1 Měřítko | `img/start/zaber.png` prostřední: dítě 1,2 m, vlaštovka v ruce 0,5 m, záběr 16 m | `img/start/dnes.png`: dítě 11,75 m vysoké jako dům, dveře 4,2 × 6 m |
+| 9 Místo odhodu | `img/start/koncept-2-podkrovi.png`: pavlač nad ulicí, za vlaštovkou nebe, domov v řezu | `img/start/vyhled.png` horní: za dítětem zeď domů 38 m, slunce zakryté (S-1) |
+| 17 Modely | `img/obsah/siluety.png` řádek 3 (Hawk): oddělené křídlo, mezi ním a trupem je vidět nebe i na 24 px | `img/obsah/siluety-pruzkum.png` řádek 7 (vidlicový ocas): krásný shora, z boku splyne se šipkou |
+| 17 Skiny | `img/obsah/skiny.png` K9 Sail Stripes: pruhy vidět na 24 px, vlaštovka zůstane světlá | modrotisk, zlatá, rajčatová (03 kap. 3, zakázané): večer zmizí, nebo si hráč splete roli barvy |
 
 ---
 
@@ -359,16 +425,141 @@ Nálady čtvrtí: kap. 2.3.
 - `src/render3d/toon.js`, `comic.js`, `scene.js`: toon rampa, obrysy, půltón, posterizace, `BasicShadowMap` 2048² → papírový shader, siluetové stíny, jen zrno.
 - `palette.js`, `mood.js`: neon, magenta, azurová, noční čtvrti → paleta kap. 2.
 - `style.css`: indigo tokeny Atlasu → papírové tokeny kap. 8.
-- `workshop.js`: neonová cedule, kyberdítě → kap. 9.
+- `workshop.js`, `models/workshop.js` (K4): neonová cedule, kyberdítě, Dílna 24 × 12 m s přístavkem → kap. 9 (podkroví v řezu, karty H1–H6 v 11).
+- `palette.js PAPIR.workshop`: `shirt` a `knob` hořčicové, `visor` bílý, `rail`, `frame`, `string` grafitové → kap. 9.4 a 9.5.
 - `src/locales/*`: názvy kap. 12.
-- **Vlaštovka na telefonu 21 CSS px** (bible chce ≥ 24) a **v Dílně na telefonu 10 px**: rozpor i v dnešní hře.
+- **Vlaštovka na telefonu 21 CSS px** (bible chce ≥ 24) a **v Dílně na telefonu 10 px**: rozpor i v dnešní hře. Řeší rozhodnutí +15 % na úzké scéně a M-2 s polodetailem 16 m (v ruce 27 px), dávky S2 a S3.
+- `plane.js planeColors`: svislé plochy (ny ≤ 0,3) barví jako spodní → M6 (kap. 17.2). `geometry.planeShape` nemá UV → potřeba pro potisk (kap. 17.4).
+- `01-papiry.md`: tóny, obrysy a Neon Foil pro neonový styl → kap. 17.3 (světlý Kraft, Stříbrná fólie, obrys grafit).
+
+### 16.1 Rozpory místa odhodu R-S1 až R-S9 (vyřešeno 14. 10.)
+
+Všechny rozpory z `research/start/02-misto-odhodu-vzhled.md` kap. 6 rozhodl uživatel v 06 („Začátek hodu, místo odhodu a kamera“). V dokumentech platí rozhodnutí, **kód je zatím po staru** a mění se v dávkách S1–S5 z `research/start/01-zacatek-a-kamera.md` (pořadí 06 bod 7).
+
+| # | Kde | Bylo | Platí (06) | Kód čeká na |
+|---|---|---|---|---|
+| R-S1 | bible kap. 9, 11 karta 5, `models/workshop.js` (K4), `workshop.js` | Dílna 24 × 12 m s přístavkem, dítě `S = 0,25` | koncept 2, podkroví v řezu (bod 1); karty H1–H6, skupina G2b v 11; K4 `workshop` se nahrazuje | G2b v katalogu, S4 |
+| R-S2 | bible kap. 9 „kamera `restCamera`“, 11 kap. 1.2 „Dílna ~5 px/m“ | klid 244 m | míření 16 m (80 px/m), menu 25–43 m, jedna boční kamera (body 2, 3) | S2, S5 |
+| R-S3 | 11 kap. 1.1 „vlaštovka 7,75 m“ | stálá velikost | M-2: v ruce 0,5 m, roste s šířkou záběru (bod 3) | S3 |
+| R-S4 | `PAPIR.workshop.rail`, `frame`, `string` | grafit `#2a2622` | zábradlí a rámy `#3d4f7a`, provázky `PT.pencil` (bod 6, S-2) | S4 |
+| R-S5 | `PAPIR.workshop.visor`, `shirt` (a `knob`) | bílá, hořčicová | čepice kraft `#c9a57c`, pláštěnka `#f2b65a`, klika krémová (bod 6, S-3) | S4 (barvy lze dřív, 02 kap. 7 bod 3a) |
+| R-S6 | `07-menu.md` §2.1 | menu = nejvzdálenější čtvrť | menu = dioráma startu, pokoj v podkroví (bod 2) | S5; text 07-menu upraví product-designer |
+| R-S7 | `pose.js HAND` × `core.js` y0 | ruka 16 m, fyzika 12 m | ruka 12 m, fyzika beze změny (bod 4, M-3) | S2, S4 |
+| R-S8 | `cityChunk(0)` střed | 17–38 m hned za startem | pás výhledu ≤ 13 m do 150 m (bod 5, S-1) | S4 |
+| R-S9 | 01 §3.3 `W_aim` | 55 m (telefon 45 m) | ~16 m (telefon na výšku 7 m) (bod 3) | S2; číslo v 01 upraví game designer |
+
+### 16.2 Otevřené body po rozhodnutích 14. 10. (bez rozhodnutí uživatele)
+- **Čitelnost dítěte na telefonu v šedi** (kap. 9.4): pláštěnka a čepice mají proti nebi jen 1,0–1,9 : 1. Ověřit art-review po dávce S4 (snímek do šedi, 25 %). Kdyby se dítě ztrácelo, první krok je tmavší vlasy a nohy, ne obrys (obrys patří vlaštovce).
+- **Výkon místa 0** s diorámatem: ~17 draw calls proti stropu 14 na místo; návrh řešení je v 11, skupina G2b (sloučení stínů). Měří game-dev (`perf-check`), NOT ASSESSED.
+- **Kruh QTE × velikost modelu** (M4): přepočet logických px na CSS px na telefonu NOT ASSESSED.
+- **Copy × skin N1 Ruled Notebook:** oba mají modré linky sešitu; na Copy by N1 skoro nebyl vidět. Návrh pro game designera: N1 kreslit čtverečkovaně (Graph Paper z rezervy 03), nebo linky Copy ztišit na vlákna. Rozhodne se se skiny v dávce, nemění schválený vzhled.
+- **Práh papíru:** 03 uvádělo L ≥ 0,70, správně je 0,69 (světlý Kraft 0,694 × `#cdd3e3` 0,651 = 0,452 ≥ 0,449). Opraveno v 03 i tady.
+
+### 16.3 Otázka pro uživatele
+
+BLOCKED: **Smí Washi na 3. úrovni („papírový lampion“) svítit i mimo večerní čtvrť?** Schválený návrh papírů (`01-papiry.md`) má korunku Washi „vlaštovka svítí zevnitř, teplá aura“ a Washi slabou vnitřní záři. Bible ale dovoluje světlo jen lampionům a oknu domova, a u lampionového skinu uživatel rozhodl „svítí jen ve čtvrti 4“. Možnosti: (a) **stejně jako lampionový skin: záře jen ve Městě lampionů, jinde teplejší výplň bez záře**; (b) svítí všude (ve dne je záře na světlém nebi skoro neviditelná a soupeří s obrysem); (c) Washi nesvítí nikdy. **Doporučuji (a)**: jedno pravidlo pro všechno, co svítí, a korunka má svou chvíli ve večerní čtvrti. Obrázek pro srovnání: `img/obsah/skiny.png`, sloupec 6 (večerní nebe).
+
+### 16.4 Prototyp × bible a otázky prvního návrhu
 - `.claude/rules/render3d.md` zmiňuje `quality.js`, který neexistuje; `plan.quality` je natvrdo 2.
 
 **Prototyp × bible** (zjednodušení prototypu, ve hře udělat podle bible): prototyp nemá rychlostní čáry, útržky, popupy, holuba, večerní čtvrť, pohlednice v novém stylu a pohyb aut a vlaku; vlákna a zrno nejsou laděné pro telefon; režimy „shadow map“ v prototypu používají `MeshLambertMaterial` (jen pro měření, vzhled se liší).
 
-**Otevřené otázky pro uživatele** (jdou přes orchestrátora jako `BLOCKED:`):
+**Otázky pro uživatele z prvního návrhu bible** (všech 5 zodpovězeno 14. 10., viz hlavička; ponecháno kvůli dohledatelnosti):
 1. Pilíře: varianta A „Diorama za úsvitu“, nebo B „Tiché protisvětlo“ (kap. 1.1)? Doporučuji A.
 2. Paleta čtvrti 1 „ráno“ (kap. 2.3, `paleta.png`, `desktop-let-1-strechy.jpg`): takhle, teplejší (víc broskvové a hořčicové), nebo chladnější (víc modré a šalvěje)? Doporučuji takhle.
 3. Názvy čtvrtí: sada A, B, nebo C (kap. 12)? Doporučuji C (Sunrise Roofs, Bright Harbor, Golden Fields, Lantern City).
 4. Vlaštovka na telefonu je malá (21 px, v Dílně 10 px): zvětšit vlaštovku o 15 % jen na úzkých obrazovkách, přiblížit kameru, nebo nechat? Doporučuji zvětšit vlaštovku (nemění záběr ani hratelnost).
 5. Písmo: zůstat u systémových písem (Trebuchet MS, nic se nestahuje), nebo přidat jedno volné oblé písmo jako soubor v repu? Doporučuji zatím systémová, rozhodnout po zahrání.
+
+---
+
+## 17. Vlaštovka: modely, papíry a skiny
+
+> **Schváleno 14. 10. 2026** (06, „Odemykatelný obsah: vlaštovky za mince a skiny“ body 1, 5, 7, 8; vše podle doporučení). Zdroj a měření: `research/obsah/03-vzhled-modelu-a-skinu.md` (dál „03“), obrázky `img/obsah/siluety.png`, `siluety-seda.png`, `skiny.png`, skripty `img/obsah/siluety.mjs`, `skiny.mjs` (Node, bez prohlížeče). Obsah a podmínky odemčení: `research/obsah/01-game-design.md`, obrazovky: `02-ux-dilna.md`, ceny: `04-ekonomika.md`. Snímky jsou simulace (stejná geometrie, póza, obrys 2,6 px a barvy jako `plane.js`), **vzhled ve hře NOT ASSESSED**.
+
+**Základní věta (P1, P4):** model poznáš podle **siluety z boku**, papír podle **tónu a tvaru stopy**, skin podle **potisku zblízka**. Za letu na telefonu (~24 px) zbývá silueta a průměrný tón, potisk se slije.
+
+### 17.1 Vrstvy vlaštovky
+
+| Vrstva | Co mění | Kdo rozhoduje | Smí měnit skin? |
+|---|---|---|---|
+| 1 Model | silueta, přehyby, let | game design, Dílna za mince | ne |
+| 2 Papír (Copy → Kraft → Washi → Stříbrná fólie) | tón listu, vzor, tvar stopy, korunka | žebřík rychlosti | ne |
+| 3 Potisk (skin) | kresba přes papír | hráč, jeden skin pro všechny vlaštovky | **ano** |
+| 4 Ozdoba (se skinem) | jedna malá věc nebo barva přehybu (mašle K7, nit K10, lem K11) | hráč | ano |
+| 5 Razítko | nálepka na pravém křídle | hráč, jedno nebo žádné | ano (samostatně) |
+| — Obrys | grafit 2,6 px (Kraft 2,9 px) | bible P1 | **nikdy** |
+| — Stín, velikost | `08-stiny`, M-2, `plan.plane.scale` | bible | **nikdy** |
+| — Stopa | barva podle čtvrti (grafit, večer krém), tvar podle papíru | bible kap. 2.3, kap. 17.3 | **nikdy** (stopa bez kosmetiky, 06 bod 7) |
+
+### 17.2 Modely (M1–M8)
+
+- **M1 Silueta z boku.** Model se pozná podle siluety v póze letu (křídla natočená ke kameře o 24°), ne podle půdorysu ani detailu. Mezery užší než ~7 px zaroste obrys, vnitřní detail zmizí. Každý model má **jeden hlavní podpis** a od ostatních se liší aspoň ve **dvou osách**: A výška siluety, B výběžek nahoru, C výběžek dolů, D tvar nosu, E křídlo oddělené od těla, F těžiště. Předobraz je vždy skutečná papírová skládačka. **P1, P2.**
+- **M2 Stejná délka:** všechny modely `PLANE_SCALE 7,75` × `plan.plane.scale` (+15 % na úzké scéně), liší se výškou a rozpětím. **P1.**
+- **M3 Plocha siluety 0,75–1,4 × Dart.**
+- **M4 Kruh QTE zůstává volný:** poloměr opsané kružnice od těžiště (s obrysem) ≤ 0,75 délky.
+- **M5 Čisté tvary, papírová logika:** jen rovné trojúhelníky, každý díl jde složit z jednoho listu; plachty a ploutvičky jsou dvojitá vrstva. **P2.**
+- **M6 Svislé plochy jsou papír, ne spodek:** plochy natočené ke kameře (|nz| > 0,7) mají barvu horního papíru (dnes `planeColors` barví ny ≤ 0,3 jako spodní; změna kódu pro game-deva).
+- **M7 Přehyby jako podpis zblízka:** každý model má vlastní kresbu přehybů tužkou (`pencil`), vidět v Dílně a při míření.
+- **M8 Kontrola nového modelu:** `siluety.mjs` → IoU ≤ 0,75 proti všem modelům (24 px, 3 pózy), plocha a poloměr v mezích, ≤ 12 △, snímek v šedi čitelný na 24 px.
+
+| Model | Hlavní podpis | Tvar (délka 1) | Plocha / Dart | △ | Herní osa |
+|---|---|---|---|---|---|
+| Dart (dnes) | štíhlý klín, hluboký kýl vzadu | nos 0,55, rozpětí 0,36, kýl −0,14 | 1,00 | 4 | univerzál |
+| Glider (dnes) | širší klín, zalomená náběžná hrana | rozpětí 0,5 | 1,15 | 6 | delší lety |
+| **Hawk** | „letadýlko“: dlouhá úzká šípová křídla, mezi trupem a křídlem nebe | křídla 0,62, šíp 0,4 | 1,01 | 8 | perfekty |
+| **Kite** | vysoký lichoběžník, konce křídel nahoře | rozpětí 0,58, vzepětí +0,3, tupý nos 0,3 | 1,34 | 8 | výška, plachtění |
+| **Skimmer** | plochá tupá deska, konce dolů | useknutý nos 0,26, konce −0,2, bez kýlu | 1,14 | 8 | nízký let nad vodou |
+| **Sail** | plachta nahoru uprostřed | trojúhelník 0,52 nad trupem | 1,14 | 6 | vítr |
+| **Needle** | tenká jehla, ploutvička dolů u ocasu | rozpětí 0,16, kýl −0,05 | 0,75 | 6 | krátké rychlé lety |
+| *Night Owl* (rezerva) | vidlicový ocas | — | 1,16 | 6 | navrhne se s Night Route (dnes IoU 0,78 s Dartem, upravit) |
+
+Rozlišitelnost: nejpodobnější schválený pár 0,75 (Dart × Needle, Glider × Skimmer), dnešní Dart × Glider 0,74. Karty siluet jako zadání pro katalog: 11, skupina V.
+
+### 17.3 Papíry v Papírovém městě
+
+**Schválené jádro (06 bod 8):** světlý Kraft `#ead7b5` místo `#c08550`, **Stříbrná fólie** místo Neon Foil, obrys vždy grafit. Ostatní řádky převádějí schválený `research/design/01-papiry.md` do pravidel této bible (bez neonu, magenty, azurové, toon rampy a půltónu); nejde o nové volby, ale vzhled je **NOT ASSESSED** a ověří ho art-review v prototypu papírů. Balanc Stříbrné fólie a 2. kapsy přeladí simulace ve 3. kole (06 bod 8), mimo art.
+
+| | Copy (úr. 1–3) | Kraft (4–6) | Washi (7–9) | Stříbrná fólie (10–12) |
+|---|---|---|---|---|
+| List (horní plochy) | `#ffffff`, L 1,00 | **`#ead7b5`**, L 0,69 | `#fbe8cc`, L 0,83 | podklad `#e9edf2` (zástupně), L 0,84 |
+| Spodní plochy | list × `#cdd3e3` | dtto | dtto | dtto |
+| Večer: výplň × nebe `#4a5f8f` | 6,3 : 1 | 4,5 : 1 | 5,3 : 1 | 5,4 : 1 |
+| Obrys | grafit 2,6 px | grafit **2,9 px** (pevný papír) | grafit 2,6 px | grafit 2,6 px, bez druhého obrysu |
+| Přehyby | `pencil` plná | `kraftDark` čárkovaná (steh) | `pencil` jemná | `pencil` |
+| Vzor (zblízka, zdálky se slije) | linky sešitu `#7f9ed6`, okrajová linka u ocasu `#b5503c` | vlákna `#9c7a55`, airmail lem `#b5503c` / `#3d4f7a` na odtokové hraně, razítko | seigaiha jemně `#3d4f7a`, dlouhá vlákna | perleťový lesk podle úhlu pohledu v barvách úsvitu a oparu `#cfe2ec` → `#ffe0e8` → `#fff0b0`, 3 pruhy lišící se jasem, jemné šikmé rýhy; **bez duhy a magenty** |
+| Stopa (tvar; barvu dává čtvrť) | 1 páska | provázek (2 tenké pásky) | měkký široký pás s užším jádrem | kometa (zužující se pás) bez světlého jádra (bílá + grafit patří vlaštovce) |
+| Částice | krémové čtverečky | vlákna `kraftDark` | krémové lístky | 4cípé krémové hvězdičky, blikání ≤ 3 Hz |
+| Rychlostní čáry (vždy grafit tužkou, kap. 7) | rovné | čárkované (steh) | štětcové zúžené | dvojité tenké |
+| Korunka (3. úroveň) | dvě linky `#7f9ed6` z konců křídel | krémové kapky tříště | teplá výplň „lampion“; záře jen podle kap. 16.3 | delší kometa |
+
+Pravidla: **papír L ≥ 0,69** (spodní plochy list × `#cdd3e3` pak drží L ≥ 0,45, S2); Foil se mění jen natočením vlaštovky, při reduced motion ne v čase; Foil se nesmí lesknout přes potisk (S6). Jméno EN („Silver Foil“ je návrh) a texty papírů jsou věc product-designera a i18n.
+
+### 17.4 Skiny (S1–S7)
+
+Skin je **potisk přes papír**, ne jiný papír; **jeden skin platí pro všechny vlaštovky**; skiny jsou **jen za postup** (suvenýry čtvrtí, finále, podpisové za první trik modelu) a k nim 7 razítek (06 bod 7). Karty 16 skinů (K0–K11, N1–N4) s motivy, barvami a změřeným L jsou v 03 kap. 3 a platí jako zadání; podmínky odemčení dává game design.
+
+- **S1 Obrys** grafitový 2,6 px nedotčený. Potisk nekreslí čáru podél okraje (zdvojený obrys by vypadal rozmazaně).
+- **S2 Večerní pravidlo:** průměrná světlost horní plochy (lineárně, jak ji zprůměruje mipmapa) **L ≥ 0,45** na všech papírech; papír pod potiskem **L ≥ 0,69**. Odvození: grafit × večerní nebe je jen 1,1–2,0 : 1, vlaštovku drží výplň; výplň × `#4a5f8f` ≥ 3 : 1 ⇒ L ≥ 0,449. Všech 16 skinů vyhovuje (nejhorší 0,57).
+- **S3 Ve dne nese vlaštovku obrys** (5,4–8,2 : 1). Tmavé motivy (grafit, `#22355e`) jen ≥ 0,08 délky od okraje nebo jako tenké linky; tmavá plocha u okraje by obrys „rozpustila“.
+- **S4 Role barev nejsou v potisku:** žádná `tomato` `#d9472b`, `mustard` `#e2a43a`, `teal` `#13807d`, `cobalt` `#2456c9`. Červenou zastupuje cihlová `#b5503c`, žlutou okrová `#c98a4a` nebo broskvová `#f0a27a`, zelenomodrou šalvějová `#5aa6a0`. **Žádný zlatý ani hořčicový skin.**
+- **S5 Pokrytí potiskem ≤ 30 %** horní plochy; lazura přes celou plochu nejvýš alfa 0,5.
+- **S6 Žádný pohyb ani záře ve dne.** Výjimka: lampionový skin (K4 Lantern Night) **jemně svítí jen ve čtvrti 4** (06 bod 7): měkký kruh ≤ 1,5 × délka vlaštovky, alfa ≤ 0,25, nepulzuje.
+- **S7 Ve výšce letu nic bílého s grafitem** platí i pro ozdoby: mašle K7 jsou trojúhelníčky v barvě potisku, ≤ 0,4 délky, nesmí vypadat jako čárky stopy.
+
+**Paleta skinů** (jen existující tokeny a palety čtvrtí, nejvýš 3 barvy potisku + papír): linky `#2a2622` (jen tenké), `#6b6158`, `#3d4f7a`; teplé `#b5503c` `#f0a27a` `#e0a060` `#d9967a` `#c98a4a` `#9c7a55`; studené `#7f9ed6` `#5b8fb0` `#9ec2d6` `#22355e` `#5aa6a0`; pastely `#e98fa0` `#9cc3a6`, úsvit `#ffe0e8` → `#fff0b0`. Suvenýr čtvrti bere barvy své čtvrti.
+
+**Razítka:** nálepka ≤ 10 % plochy na pravém křídle, krémový podklad `#fbf6ec`, tužková kresba a jeden akcent z palety skinů; ikony rozlišené tvarem (Gust 3 vlnky, Pigeon origami holub, Steam 3 obláčky, Thermal spirála, Drone papírový drak, Shooting Star 4cípá tužková hvězda, ne rajčatová pěticípá perfektu, Delivered obálka).
+
+**Kde se skin ukáže:** naplno v Dílně, při míření (vlaštovka v ruce 0,5 m, 40 px), ve výsledku a v hlavním menu; za letu na telefonu jen tón a velké pruhy. To je záměr (P1). Viditelnost skinů za letu na telefonu se řeší až s telefonem na konci (06 bod 7).
+
+### 17.5 Technika a rozpočet
+
+- Model ≤ **12 △** (dnes 4–6, nové 6–8), obrys razítkem 8 kopií ≤ 96 △. Geometrie v cache, výměna bez alokace za snímek (`setModel`). Každý model musí fungovat i v ruce dítěte a na stole Dílny.
+- Skin = jedna `CanvasTexture` 256² (potisk + razítko), vzniká při změně skinu, mipmapy, sRGB, anizotropie 4. Data potisku jako čistý modul bez three.js a DOM; stejná funkce kreslí ikonu v Dílně. Spodní plochy míří UV do rohu textury (1 materiál). Testy v Node: pokrytí, L, zakázané tokeny.
+- **Draw calls beze změny** (výplň, obrys, přehyb, stopa + stín do masky); ozdoby sloučené do výplně. Jediná výjimka: záře K4 ve čtvrti 4 +1 DC.
+- `planeShape` potřebuje UV (u od ocasu k nosu, v rozpětí) a příznak svislé plochy (M6).
+
+### 17.6 Dílna a zamčené modely
+
+Podle 06 bod 5: vlastněné vlaštovky a **2 nejbližší zamčené plně s cenou**, další **jako silueta**. Art pro siluetu navrhuje tužkovou skicu přehybů na listu bez výplně (M7, „instrukce skládání“): nepotřebuje zámek ani šedou kopii a jediná nakreslená věc zůstává vlaštovka. Podobu karty určuje `02-ux-dilna.md` (product-designer). Po odemčení skinu ukázat vlaštovku zblízka (stůl v podkroví, kap. 9.2).

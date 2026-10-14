@@ -1,6 +1,6 @@
 # Místo odhodu: vzhled, měřítko a záběry (art director)
 
-> **NÁVRH, 14. 10. 2026, art-director.** Nic tu není schválené. Navazuje na bibli Papírového města `research/design/05-styl-papir.md` (dál jen „bible“), stíny `08`, přechody `09`, katalog `10` a `11` a menu `07-menu.md`. Souběžně píše game designer `research/start/01-zacatek-a-kamera.md` (dál „01“), kde je mechanika, sekvence startu a kamera podle rychlosti. Tady je jen vzhled: odkud se hází, co je kolem dítěte, měřítko a kompozice záběrů.
+> **Schváleno 14. 10. 2026** (`research/bonusy/06-rozhodnuti.md`, „Začátek hodu, místo odhodu a kamera“ body 1–7): koncept 2 Podkrovní dílna v řezu, polodetail 16 m, pás výhledu (a), barvy dítěte a zábradlí (a), vše podle doporučení. **Závazné znění je v bibli** `research/design/05-styl-papir.md` (kap. 3.1 M-1–M-4, kap. 9 S-1–S-7, kap. 16.1 rozpory) a v katalogu `research/design/11-katalog-ctvrt1.md` (skupina G2b, karty H1–H6, rozpočet místa 1). Tento dokument zůstává jako zdůvodnění a náčrty; koncepty 1 a 3 jsou zamítnuté. Napsal art-director 14. 10. 2026. Navazuje na bibli Papírového města `research/design/05-styl-papir.md` (dál jen „bible“), stíny `08`, přechody `09`, katalog `10` a `11` a menu `07-menu.md`. Souběžně píše game designer `research/start/01-zacatek-a-kamera.md` (dál „01“), kde je mechanika, sekvence startu a kamera podle rychlosti. Tady je jen vzhled: odkud se hází, co je kolem dítěte, měřítko a kompozice záběrů.
 >
 > **Ověření:** náčrty jsou spočítané v Node se skutečnou kamerou hry (`pose.project`, `geometry.follow` + `sideCamera`, fov 20°) a se skutečným rozložením místa 0–1 (`cityChunk`). Jde o kompozici a měřítko, ne o render: chybí stíny, vlákna, život a pohyb. Prohlížeč jsem nepoužil (okno sdílí uživatel), proto je **vzhled ve hře NOT ASSESSED**. Totéž platí pro kontrasty v pixelech a pro výkon.
 
@@ -192,6 +192,8 @@ Rozpočet místa (14 DC, 15 tis. △, `.claude/rules/render3d.md`) se počítá 
 
 ## 6. Rozpory kód × bible × tento návrh
 
+**Vyřešeno 14. 10.** podle 06 (body 1–6); tabulka s tím, co platí a na kterou dávku kód čeká, je v bibli 05 kap. 16.1. Sloupec „Návrh“ níže je teď platné znění.
+
 | # | Kde | Dnes | Návrh |
 |---|---|---|---|
 | R-S1 | bible 05 kap. 9, 11 karta 5, `models/workshop.js` (K4), `workshop.js workshopCards` | Dílna 24 × 12 m s přístavkem, dítě `S = 0,25` | po schválení konceptu nová karta (kap. 5), K4 model se nahradí |
@@ -209,16 +211,18 @@ Rozpočet místa (14 DC, 15 tis. △, `.claude/rules/render3d.md`) se počítá 
 ## 7. Doporučení
 
 1. **Koncept 2 Podkrovní dílna v řezu** s polodetailem 16 m při míření, kamerou mírně zespodu a vlaštovkou podle M-2.
-2. Pravidla jednoho měřítka (M-1 až M-4) a společná pravidla (S-1 až S-7) zapsat do bible 05 (kap. 3, 6, 9) a 11 (kap. 1.1, 1.2) po schválení.
+2. Pravidla jednoho měřítka (M-1 až M-4) a společná pravidla (S-1 až S-7) zapsat do bible 05 (kap. 3, 6, 9) a 11 (kap. 1.1, 1.2) po schválení. **Splněno 14. 10.** (bible 05 kap. 3.1, 6, 9; katalog 11 kap. 1.1, 1.2, 3.7, 4).
 3. Pořadí pro game-deva (navazuje na dávky S1–S5 z 01): (a) pás výhledu v rozložení místa 1 a barvy dítěte a zábradlí (malé, hned viditelné), (b) dítě H1 ve skutečném měřítku a velikost vlaštovky M-2 spolu s kamerou S1–S3 z 01, (c) modely H2–H6 přes katalog (`prototype/katalog`, nejdřív hezký objekt, 10), (d) menu a panel Dílny nad řezem.
 4. Před stavbou ověřit v prohlížeči (art-review): polodetail na 375 × 667, 932 × 430 a 1280 × 800, kontrast obrysu vlaštovky z pixelů na pozadí slunce a mraků, čitelnost dítěte na telefonu, výkon místa 0.
 
-## 8. Otevřené volby
+## 8. Otevřené volby (rozhodnuto 14. 10.)
 
-BLOCKED: **Jak má vypadat místo, odkud se hází?** Obrázky `research/design/img/start/koncept-1-terasa.png`, `koncept-2-podkrovi.png`, `koncept-3-vyhlidka.png`. (1) **Terasa na střeše**: dítě u zábradlí na ploché střeše, Dílna je kůlna vedle. Nejlevnější, ale obecné. (2) **Podkrovní dílna v řezu**: domeček bez přední stěny podkroví, uvnitř dílna se stolem a nástěnkou pohlednic, dítě hází z pavlače u půdních dveří, nad ním trám s kladkou (místo pro hák jeřábu). (3) **Vyhlídka na kopci**: chaloupka a dřevěná vyhlídka nad městem, největší výhled, ale Dílna je za zády. **Doporučuji 2**: je nejvíc „papírové dioráma“, menu, míření i Dílna jsou jedna scéna a sedí k balkonu a jeřábu z návrhu game designera.
+Všechny čtyři otázky uživatel rozhodl podle doporučení: koncept 2, polodetail 16 m (a), pás výhledu (a), barvy dítěte a zábradlí (a). Otázky zůstávají níže kvůli dohledatelnosti, už se nepředávají.
 
-BLOCKED: **Jak blízko má být kamera při míření a jak velké dítě?** Obrázek `research/design/img/start/zaber.png`. (a) **Polodetail 16 m**: dítě ve skutečné velikosti 1,2 m má na monitoru 96 px a na telefonu 64 px, vlaštovka v ruce 0,5 m (40 / 27 px) a po výhozu plynule naroste na dnešní velikost. (b) **55 m** podle game designera: vidět víc města, ale dítě má jen 28 px (telefon ~10 px), nebo by muselo zase být obr jako dnes. (c) **Detail 8 m**: dítě velké, ale málo místa pro mířidla. **Doporučuji (a)**; game designer by v 01 upravil `W_aim` na 16 m (telefon 7 m).
+Rozhodnuto (dříve BLOCKED): **Jak má vypadat místo, odkud se hází?** Obrázky `research/design/img/start/koncept-1-terasa.png`, `koncept-2-podkrovi.png`, `koncept-3-vyhlidka.png`. (1) **Terasa na střeše**: dítě u zábradlí na ploché střeše, Dílna je kůlna vedle. Nejlevnější, ale obecné. (2) **Podkrovní dílna v řezu**: domeček bez přední stěny podkroví, uvnitř dílna se stolem a nástěnkou pohlednic, dítě hází z pavlače u půdních dveří, nad ním trám s kladkou (místo pro hák jeřábu). (3) **Vyhlídka na kopci**: chaloupka a dřevěná vyhlídka nad městem, největší výhled, ale Dílna je za zády. **Doporučuji 2**: je nejvíc „papírové dioráma“, menu, míření i Dílna jsou jedna scéna a sedí k balkonu a jeřábu z návrhu game designera.
 
-BLOCKED: **Smí se snížit domy hned za startem?** Obrázek `research/design/img/start/vyhled.png`. Za dítětem dnes stojí domy až 38 m vysoké a zakrývají nebe i slunce. (a) **Do 150 m od startu domy ve středu nejvýš 13 m**, dál postupně jako dnes: dítě se dívá přes střechy ke slunci. (b) Nechat: za dítětem bude zeď domů. (c) Házet z vyššího místa: mění délku letů a chce nové kolo simulace (01 §1.5). **Doporučuji (a).**
+Rozhodnuto (dříve BLOCKED): **Jak blízko má být kamera při míření a jak velké dítě?** Obrázek `research/design/img/start/zaber.png`. (a) **Polodetail 16 m**: dítě ve skutečné velikosti 1,2 m má na monitoru 96 px a na telefonu 64 px, vlaštovka v ruce 0,5 m (40 / 27 px) a po výhozu plynule naroste na dnešní velikost. (b) **55 m** podle game designera: vidět víc města, ale dítě má jen 28 px (telefon ~10 px), nebo by muselo zase být obr jako dnes. (c) **Detail 8 m**: dítě velké, ale málo místa pro mířidla. **Doporučuji (a)**; game designer by v 01 upravil `W_aim` na 16 m (telefon 7 m).
 
-BLOCKED: **Barvy dítěte a zábradlí** (mění dnešní vzhled). (a) **Pláštěnka světle oranžová `#f2b65a`** místo hořčicové (hořčicová patří jen mincím, stejně jako u praporků), **čepice z hnědého kraftového papíru** místo bílé (bílá je jen vlaštovka) a **zábradlí tmavomodré** místo černého (černá čára je jen vlaštovka a její stopa). (b) Nechat jako dnes. **Doporučuji (a)**, zblízka by bílá čepice a černé zábradlí stály hned vedle vlaštovky.
+Rozhodnuto (dříve BLOCKED): **Smí se snížit domy hned za startem?** Obrázek `research/design/img/start/vyhled.png`. Za dítětem dnes stojí domy až 38 m vysoké a zakrývají nebe i slunce. (a) **Do 150 m od startu domy ve středu nejvýš 13 m**, dál postupně jako dnes: dítě se dívá přes střechy ke slunci. (b) Nechat: za dítětem bude zeď domů. (c) Házet z vyššího místa: mění délku letů a chce nové kolo simulace (01 §1.5). **Doporučuji (a).**
+
+Rozhodnuto (dříve BLOCKED): **Barvy dítěte a zábradlí** (mění dnešní vzhled). (a) **Pláštěnka světle oranžová `#f2b65a`** místo hořčicové (hořčicová patří jen mincím, stejně jako u praporků), **čepice z hnědého kraftového papíru** místo bílé (bílá je jen vlaštovka) a **zábradlí tmavomodré** místo černého (černá čára je jen vlaštovka a její stopa). (b) Nechat jako dnes. **Doporučuji (a)**, zblízka by bílá čepice a černé zábradlí stály hned vedle vlaštovky.

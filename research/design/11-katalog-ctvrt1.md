@@ -2,6 +2,8 @@
 
 > **Schváleno 14. 10. 2026 (dominanty a), drobnosti (a), praporky (a); viz 06-rozhodnuti.md.** Napsal art-director 14. 10. 2026 jako zadání pro game-deva (krok K3 v `10-katalog-modelu.md`). Závazné podklady: bible `05-styl-papir.md` (schválená), stíny `08-stiny.md` a rozhodnutí v `research/bonusy/06-rozhodnuti.md` (blok „Stíny, přechody a modely“: modely v kódu, **hodně detailu všude**, rozpočty na místo dál platí). Prohlížeč jsem nepoužil (okno sdílí uživatel), **vzhled v záběru hry je NOT ASSESSED**. Čísla rozložení jsou změřená z kódu (`cityChunk`, `placeCards`, `lifeCards`, `suburbLife`), trojúhelníky nových modelů jsou **odhad** podle vzorců v kap. 1.3.
 
+> **Doplněno 14. 10. 2026 podle rozhodnutí uživatele** (06, „Začátek hodu, místo odhodu a kamera“ a „Odemykatelný obsah“): jedno měřítko i pro dítě a místo odhodu (kap. 1.1, 1.2), karta 5 `workshop` nahrazena skupinou **G2b Místo odhodu** (karty H1–H6, kap. 3.7, rozpočet kap. 4), nová skupina **V Vlaštovky** (karty siluet V1–V5, kap. 3.8). Pravidla: bible 05 kap. 3.1, 9 a 17.
+
 Skici: `img/katalog/meritko.svg` (všechny hlavní objekty vedle sebe v jednom měřítku) a `img/katalog/dum-radovy-lod.svg` (řadový dům v LOD 0, 1 a 2).
 
 **Navazuje na K1** (`src/render3d/models/`: `index.js` registr, `scale.js`, `parts.js` díly `block`, `gableRoof`, `cornice`, `windowCut`, `door`, `balcony`, `chimney`, `downpipe`, `oculus`; vzor `house-row.js`). Karty používají jména dílů z `parts.js`; co chybí, je v kap. 1.3 jako **nový díl** pro game-deva. **Nejdůležitější zjištění rozpočtu je v kap. 4.0:** dnešní díly kreslí každý lem a parapet jako plný kvádr (8 △), proto má `house-row` 245–773 △ a 28 domů trhu by samo zabralo ~12,7 tis. △. Navrhuji „ploché“ varianty dílů (kap. 1.3), které stejný vzhled nakreslí za ~40 % trojúhelníků.
@@ -14,11 +16,14 @@ Skici: `img/katalog/meritko.svg` (všechny hlavní objekty vedle sebe v jednom m
 | Míra | Hodnota | Poznámka |
 |---|---|---|
 | patro | 3,0 m | |
-| přízemí | 3,0 m (jako `house-row`), 3,5 m jen u hal a nádraží | |
+| přízemí | 3,0 m (jako `house-row`), 3,5 m jen u hal, nádraží a domu dítěte (H2) | |
 | okno | 1,2 × 1,4 m, parapet 0,9 m nad podlahou patra | |
 | dveře | 1,1 × 2,2 m, schod 0,2 m | |
 | člověk | 1,7 m | dnes `lifeCards` 2,0 m (trup 1,3 + hlava nad ním), rozpor R2 |
-| vlaštovka | 7,75 m | herní měřítko hrdiny, jediná schválená výjimka (10 kap. 2) |
+| **dítě** | **1,2 m** (`person` × 0,7) | schváleno 14. 10. (M-1); dnes `workshop.js` 47 px × `S = 0,25` = 11,75 m, rozpor R-S1 |
+| zábradlí | 0,95 m, madlo + sloupky po 0,5 m | pavlač H4 |
+| ruka dítěte (výhoz) | 12 m nad zemí, podlaha pavlače 10,6 m | M-3, výška výhozu fyziky; dnes `HAND` 16 m, rozpor R-S7 |
+| vlaštovka | za letu 7,75 m (+15 % na úzké scéně), **v ruce 0,5 m**, při oddálení plynule roste | jediná výjimka, řídí se obrazovkou (bible 05 kap. 3.1, M-2) |
 | výška domu | `patra · 3` (+ střecha), jako `house-row` | dnes `cityChunk` dává výšky spojitě (8–22 m), rozpor R1 |
 | osa okna | 2,4 m, okraj fasády 0,7 m (`house-row` `BAY`, `MARGIN`) | šířka domu = `osy · 2,4 + 1,4` |
 
@@ -30,7 +35,10 @@ Odhad z geometrie kamery (fov 20°, šířka záběru za letu ~170 m odvozená z
 | ulice (−17 až −26 m) | ~6,9 px/m | ~2,5 px/m | 0,3 m | **LOD 0** |
 | střed (−97 až −110 m) | ~5,3 px/m | ~1,9 px/m | 0,4 m | **LOD 1** |
 | dálka (−350 až −380 m) | ~3,1 px/m | ~1,1 px/m | 0,7 m | **LOD 2** |
-| Dílna v klidovém záběru | ~5 px/m (šířka 244 m) | ~1,5 px/m | 0,4 m | hrdina (LOD 0) |
+| ~~Dílna v klidovém záběru~~ | ~~~5 px/m (šířka 244 m)~~ | | | zrušeno 14. 10. (R-S2) |
+| **místo odhodu při míření** (polodetail 16 m, telefon na výšku 7 m) | **80 px/m** | **54 px/m** | **0,03 m** | **LOD H** (hrdina, M-4): rámy, kliky, tužky, řez papíru |
+| ulice do ~150 m od startu při míření | ~42 px/m | ~28 px/m (odvozeno poměrem 54/80) | 0,05 m | plný LOD 0 včetně rámů a parapetů (`windowCut`) |
+| místo odhodu v menu (šířka 25–43 m) | 30–50 px/m | NOT ASSESSED (šířka menu na telefonu dává 07-menu) | 0,05 m | LOD H |
 
 Z toho plyne: **„hodně detailu všude“ znamená různý druh detailu podle vrstvy**, ne stejné drobnosti všude. Rám okna 0,15 m je i na desktopu pod 1 px, proto se nemodeluje. Ve středu je okno 1,2 × 1,4 m pořád 6 × 7 px, takže okna tam patří. V dálce nese detail **členitá silueta** (štíty, komíny, věžičky, nádrže), ne okna.
 
@@ -69,7 +77,7 @@ Pravidlo v `cardVertices`: `box` s `d ≤ 0,15 m` se automaticky kreslí jako `p
 Dnes na výchozí variantě (3 patra, 3 osy) nejvíc stojí sloupky zábradlí (72 △), rámy oken (72), příčky (64), parapety (64), tabulky (56), kytky (36) a kulaté okénko (36).
 
 **Další úpravy dílů podle pravidla D-1** (detail pod ~1 px nekreslit):
-- `windowCut`: příčka 0,06 m (0,4 px na desktopu) v LOD 0 vynechat; ponechat jen u Dílny (hrdina, klidový záběr).
+- `windowCut`: příčka 0,06 m (0,4 px na desktopu) v LOD 0 vynechat; ponechat jen v LOD H místa odhodu (G2b, záběr míření 80 px/m).
 - `door`: klika 0,1 m (bod pod 1 px) vynechat.
 - `balcony`: sloupky 0,04 m → zábradlí jako **jedna karta `panel`** v barvě zábradlí s výškou 0,95 m + madlo `lista` (papírový výřez místo prutů). Z 72 △ na 6.
 - `downpipe`: šířku zvětšit z 0,12 na 0,2 m (dlouhá svislá linka, čte se), tvar `panel`.
@@ -106,7 +114,7 @@ Jen z palety `PAPIR` (`src/render3d/palette.js`): tokeny `PAPER_TOKENS` (zkratka
 | okapová roura, stín pod římsou | `shade` | `mix(stěna, city.side, .45)` | |
 | okenice, markýza, truhlík | — | jiná barva z `D1.near` než stěna (jako `house-row`) | `#9cc3a6` |
 
-Zakázáno na objektech: `PT.mustard #e2a43a` („hořčicová jen hodnota“, výjimka jen pláštěnka dítěte z bible kap. 9), grafit `PT.graphite` výš než 8 m nad zemí (P1), bílá `PT.paper` (patří vlaštovce).
+Zakázáno na objektech: `PT.mustard #e2a43a` („hořčicová jen hodnota“, bez výjimky: pláštěnka dítěte je od 14. 10. `#f2b65a`, bible kap. 9.4), grafit `PT.graphite` výš než 8 m nad zemí (P1), bílá `PT.paper` (patří vlaštovce).
 
 ### 1.5 Varianty (aby město nebylo z kopií)
 - Každý model má **seed** ze světového x (jako dnes `hash`), takže místo je pořád stejné (determinismus).
@@ -124,7 +132,7 @@ Zakázáno na objektech: `PT.mustard #e2a43a` („hořčicová jen hodnota“, v
 | 2 | `house-gable` | úzký dům se štítem do ulice | ulice, střed | 1, 2 | G1 |
 | 3 | `far-skyline` | vzdálené město (blok siluet) | dálka | 1–4 | G1 |
 | 4 | `chimney` | komín s kouřem | střecha | 1–4 | G1 |
-| 5 | `workshop` | Dílna PAPER LAB | ulice (hrdina) | 1 | G2 |
+| 5 | ~~`workshop`~~ | ~~Dílna PAPER LAB~~ → **nahrazeno H1–H6** (14. 10.) | | | ~~G2~~ |
 | 6 | `corner-turret` | nárožní dům s věžičkou (dominanta 1) | ulice | 1 | G2 |
 | 7 | `person` | člověk, 3 postoje | ulice, střecha | 1–4 | G2 |
 | 8 | `street-lamp` | pouliční lampa | chodník | 1–4 | G2 |
@@ -158,6 +166,13 @@ Zakázáno na objektech: `PT.mustard #e2a43a` („hořčicová jen hodnota“, v
 | 36 | `cloud` | mrak ze tří kotoučů | nebe | čtvrť | G7 |
 | 37 | `flock` | hejno ptáků | vzduch, střed | čtvrť | G7 |
 | 38 | `pigeon` | origami holub (událost) | pás letu | události | G7 |
+| H1 | `kid` | dítě, hrdina startu | místo odhodu (LOD H) | 1 | **G2b** |
+| H2 | `workshop-attic` | dům dítěte s podkrovím v řezu | ulice (LOD H) | 1 | **G2b** |
+| H3 | `workshop-interior` | dílna v podkroví (stůl, police, nástěnka) | ulice (LOD H) | 1 | **G2b** |
+| H4 | `loft-balcony` | pavlač s půdními dveřmi | ulice (LOD H) | 1 | **G2b** |
+| H5 | `hoist-beam` | trám s kladkou (hák Crane Lift, praporek větru) | ulice (LOD H) | 1 | **G2b** |
+| H6 | `retaining-wall` | opěrná zeď se schody | ulice (LOD H) | 1 | **G2b** |
+| V1–V5 | `plane-hawk`, `plane-kite`, `plane-skimmer`, `plane-sail`, `plane-needle` | nové vlaštovky za mince | hráč | všechna | **V** |
 
 Vynechávám (do rozhodnutí product-designera, bible 05 kap. 12): dron s balíčkem, robot Bolts, reklamní billboard. Kostel a radnice z návrhu 10 kap. 5 nahrazuje dominanta podle místa (otázka v kap. 6).
 
@@ -206,16 +221,8 @@ Formát: **předobraz a účel · kde a kolik · rozměry · papírová konstruk
 - **Varianty:** počet budov, pořadí výšek, prvek siluety; dvě sousední „věže“ nikdy stejně vysoké.
 - **Silueta:** členitá horní hrana; kontrast proti nebi < 1,5 : 1 (bible kap. 6.4), proto **detail jen tvarem**.
 
-#### 5 `workshop` Dílna PAPER LAB (hrdina)
-- **Předobraz a účel:** domek dítěte na začátku cesty (bible 05 kap. 9). Vidí ji hráč před každým hodem v klidovém záběru, je to „domov“.
-- **Kde a kolik:** jen místo 1, x 20–44 m, z −7 (dnes `papir.js workshopCards`, ve hře `workshop.js`).
-- **Rozměry:** dům 24 × 12 m (přízemí 3,5 + patro 3 + podkroví), štít 8 m; přístavek s terasou do výšky ruky dítěte (`KID.y`), dítě 1,7 m × `S`.
-- **Papír:** krémový dům se štítem, velké teplé okno, ve kterém je vidět stůl (deska, kelímek s tužkami, vystřižená vlaštovka), **cedulka PAPER LAB na dvou provázcích**, tyrkysový přístavek s krémovou deskou a grafitovým zábradlím (bible kap. 9, beze změny).
-- **LOD 0 (doplnit k dnešku):** rám okna a příčky dílny (velké okno 11,4 × 4,8 m je výjimka z měřítka 1,2 × 1,4: dílenské okno), okenice u horního okna, komín se slabým kouřem (domov), truhlík s květinami na přístavku, kolo opřené o zeď (2 `disc 8` jen čelo), poštovní schránka u dveří, hřebíky na cedulce, police s papíry v okně. **Cíl ≤ 1 200 △ včetně dítěte (~150).**
-- **LOD 2 (stín):** dům + přístavek + střecha **≈ 30 △**.
-- **Barvy:** `PAPIR.workshop` (beze změny, bible kap. 9). Kolo `D1.near[2]` teal, schránka `PT.tomato`.
-- **Varianty:** žádné (jedinečný). Postupně se může měnit s postupem hry (návrh na později: na okně přibývají pohlednice z Atlasu).
-- **Silueta:** dům se štítem + nízký přístavek + postavička nahoře; musí být čitelná i na telefonu, kde je vlaštovka 10 px (bible kap. 16, otázka 4).
+#### 5 ~~`workshop` Dílna PAPER LAB~~ (nahrazeno 14. 10.)
+Uživatel schválil místo odhodu „podkrovní dílna v řezu“ (06, „Začátek hodu, místo odhodu a kamera“ bod 1). Dílna 24 × 12 m s přístavkem, dílenským oknem 11,4 × 4,8 m a dítětem 11,75 m končí, stejně jako model K4 `workshop` (`src/render3d/models/workshop.js`). Platí karty **H1 `kid`, H2 `workshop-attic`, H3 `workshop-interior`, H4 `loft-balcony`, H5 `hoist-beam`, H6 `retaining-wall`** ve skupině **G2b** (kap. 3.7) a bible 05 kap. 9. Nápad „pohlednice z Atlasu na okně“ přešel do nástěnky H3.
 
 #### 6 `corner-turret` nárožní dům s věžičkou (dominanta místa 1)
 - **Předobraz a účel:** secesní nárožní dům s věžičkou a praporkem (Vinohrady, Budapešť). Dominanta „Dílny a prvních střech“: první výrazná silueta po vzletu a obrázek pro teaser v Atlasu.
@@ -508,11 +515,128 @@ Formát: **předobraz a účel · kde a kolik · rozměry · papírová konstruk
 - **Barvy:** `PAPIR.companion` (`body #b6c9e4`, `head #cfe2ec`, `wing #a7bdd6`, `tail #7f9ed6`, `beak #f0a27a`, `eye PT.graphite` jen tečka), bageta `PT.kraft`.
 - **P1:** šedomodrý, bez obrysu, menší než vlaštovka; nikdy bílý s grafitem.
 
+### 3.7 Místo odhodu: skupina G2b (schváleno 14. 10.)
+
+Koncept 2 „podkrovní dílna v řezu“ (06, „Začátek hodu“ bod 1; bible 05 kap. 9). Náčrty `img/start/koncept-2-podkrovi.png` (míření, oddálení, menu), měřítko `img/start/zaber.png`. Všechny karty jsou v **LOD H** (nejmenší detail 0,03 m, M-4) a ve skutečném měřítku (M-1). Trojúhelníky jsou **odhad** podle vzorců kap. 1.3. Barvy jen z tokenů (bible 05 kap. 9.5), pravidla S-1 až S-7 (bible 05 kap. 9.3). Souřadnice: x od startu města, čelo ulice z ≈ +1,2.
+
+#### H1 `kid` dítě, hrdina startu
+- **Předobraz a účel:** dítě, které vlaštovky skládá a hází. Hráčova postava, vidět zblízka při každém hodu, v menu a u stolu Dílny.
+- **Kde a kolik:** 1×, na pavlači H4, ruka při nápřahu v 12 m (x ≈ 71,6).
+- **Rozměry:** **1,2 m** (`person` × 0,7): hlava ⌀ 0,3 m, pláštěnka 0,5 m, nohy 0,45 m, ruka 0,5 m.
+- **Papír:** jako `person` (hlava kotouč, trup lichoběžník), navíc skládaná čepice (trojúhelník s proužkem), vlasy kotouč za hlavou, oko tečka. Bez obrysu.
+- **Pózy:** míření (ruka s vlaštovkou nahoře vpředu), nabíjení (záklon a couvnutí jako dnes `kidPose`), hod (švih), mávání po hodu, v menu mávání nebo sezení na pavlači, u stolu (panel Dílny).
+- **LOD H:** ~70 △ (dnes 49). **LOD 0** (oddálení, menu z dálky): 20 △ jako `person`. **LOD 2:** 0.
+- **Barvy:** pláštěnka `D1.near[1] #f2b65a`, čepice `PT.kraft #c9a57c` + proužek `PT.tomato`, nohy `D1.window #3d4f7a`, boty a oko `PT.pencil700`, kůže `life.people.skin[0]`.
+- **Silueta:** postavička s trojúhelníkem na hlavě a zdviženou rukou, čitelná od 60 px. Kontrast proti nebi je nízký (bible 05 kap. 9.4), proto snímek v šedi při art-review.
+
+#### H2 `workshop-attic` dům dítěte s podkrovím v řezu
+- **Předobraz a účel:** úzký měšťanský dům s podkrovní dílnou (Amsterdam, Malá Strana). Domov a pozadí menu.
+- **Kde a kolik:** 1×, místo 1, x 55,5–67,5 m, čelo z +1,2; pavlač H4 končí u ruky (x 71,6). Nahrazuje dnešní Dílnu (x 20–44 m) a přístavek.
+- **Rozměry:** 12 × 8 m, na zdi H6 1,1 m: přízemí 3,5 m + 2 patra × 3 m, podkroví: nadezdívka 2,3 m + střecha 4,6 m (podlaha podkroví 10,6 m).
+- **Papír:** tělo karta, okna `windowCut` (příčky smí, LOD H), dveře se stříškou, výloha v přízemí (`shopfront`), cedulka PAPER LAB pod podkrovím (karta + textura). **Řez podkroví:** zadní stěna a štít `panel` v `PT.card`, podlaha `lista` v kraftu, nadezdívka v řezu (krémová se světlou hranou), střecha jako dvě silné rajčatové `lista` se světlým jádrem řezu: **nový díl `cutRoof`** (8 △).
+- **LOD H/0:** tělo a řez ~40, okna 8 × 12 ≈ 100, přízemí (dveře, výloha, schránka) ~40, cedulka 6, střecha v řezu 16 ≈ **200 △** bez interiéru. **LOD 1:** 0 (jen ulice). **LOD 2 (stínový proxy, dálka):** dům + štít ≈ 20 △, proxy do masky ≤ 7 △.
+- **Barvy:** stěna `PT.cream` (`PAPIR.workshop.wall`), střecha `PT.tomato`, řez `mix(tomato, city.cut, .55)`, rámy oken a dveře `#3d4f7a` (ne grafit), sklo podkroví a oken `PAPER_WARM #ffe2a8` (jediné teplé světlo ve dne, S-4).
+- **Varianty:** žádné (jedinečný). Mění se postupem jen interiér (H3) a hák (H5).
+- **Silueta:** vysoký dům s červeným štítem a „otevřenou“ střechou; v 25 % šedi dům s tmavým otvorem nahoře.
+
+#### H3 `workshop-interior` dílna v podkroví
+- **Účel:** výloha postupu a pozadí panelu Dílny.
+- **Obsah:** stůl 3,4 × 0,8 m (`box` 8 + nohy 2 × `panel`), lampa (rameno `panel`, stínítko `flag`), stohy papíru 3 × `panel`, kelímek s tužkami, řezačka; **police s rolemi papírů** (4 role = Copy, Kraft, Washi, Stříbrná fólie, `disc 10` jen čelo, přibývají s druhy papíru); **nástěnka s pohlednicemi** (kraftová deska, 16 míst Atlasu jako krémové kartičky s barevným obrázkem, `panel` 2 + 2, přibývají s místy); provázek s hotovými vlaštovkami (`flag`, barevné, **bez obrysu a ne bílé**, S-6); zvolená vlaštovka na stole (`plane.js`, jediná bílá s obrysem, celý potisk).
+- **△:** stůl a lampa ~30, papíry a kelímek ~20, police ~50, nástěnka ~70, provázek ~10 ≈ **180 △**. LOD 1 a 2: 0 (za oddálení se interiér neukazuje, stačí stín střechy).
+- **Barvy:** deska stolu `PT.kraftDark`, kelímek `PT.teal`, nástěnka `PT.kraft`, kartičky `PT.cream`; vše `mix(barva, city.side, .2)` (interiér o tón tmavší a méně sytý než fasáda, je ve stínu střechy), aby dítě a vlaštovka zůstaly první, co oko najde.
+- **Stavy:** počet rolí 1–4, počet pohlednic 0–16. Stav čte model z uložené hry, ne za snímek (stavba při změně).
+
+#### H4 `loft-balcony` pavlač s půdními dveřmi
+- **Rozměry:** deska 4 × 2,4 × 0,2 m na dvou konzolách, zábradlí 0,95 m (sloupky po 0,5 m, madlo), půdní dveře 0,95 × 2,05 m otevřené ke kameře, klika.
+- **△:** deska 8, konzoly 4, zábradlí 9 × 2 + 2 = 20, dveře a rám 6, klika 8 ≈ **46 △** (LOD H; zábradlí tu jde po sloupcích, protože je zblízka 80 px/m, výjimka z D-1 a `balcony`).
+- **Barvy:** deska `PT.kraftDark #9c7a55`, zábradlí a dveře `#3d4f7a` (S-2), klika `PT.cream` (ne hořčicová).
+- **Silueta:** vodorovná hrana s řídkým hřebenem sloupků; za vlaštovkou při míření je nebe, ne zábradlí (ruka je 1,4 m nad deskou, madlo 0,95 m).
+
+#### H5 `hoist-beam` trám s kladkou
+- **Účel:** místo pro hák Crane Lift (01 §1, úrovně zvedají plošinu nad pavlač) a ukazatel větru.
+- **Rozměry:** trám 9 × 0,3 m z vrcholu štítu přes pavlač, kladka ⌀ 0,45 m, lano, košík papírů 0,65 × 0,45 m; praporek větru na konci trámu (páska 0,8 m). Varianty: **hák s plošinou Crane Lift úr. 1–3** (plošina 1,5 / 3 / 4,5 m nad pavlačí).
+- **△:** trám 8, kladka 12, lano 2, košík 8, praporek 2 ≈ **32 △**, hák s plošinou +20.
+- **Barvy:** trám a košík `PT.kraftDark`, lano `PT.pencil`, praporek `PT.tape #efe0a8`. Nic bílého s grafitem, vše matné (S-6).
+- **Pohyb:** praporek vlaje podle větru „on twos“ (atribut `sway`, bez vlastního DC); reduced motion: natočený bez vlání (S-7).
+
+#### H6 `retaining-wall` opěrná zeď se schody
+- **Rozměry:** zeď 31 × 1,1 m se spárami, 7 schodů dolů do ulice.
+- **△:** zeď 8, spáry 11 × 2, schody 7 × 8 ≈ **86 △**. **LOD 2:** zeď jako `lista` 4.
+- **Barvy:** `D1.ground.near #dcc29b` (návrh 02 měl `#d9bf98`; sjednoceno na existující barvu, žádný nový hex), spáry `mix(zeď, city.side, .3)`.
+
+**Souhrn G2b:**
+
+| | △ (LOD H) | Strop `tris:[0, 1, 2]` (H = LOD 0 místa odhodu) |
+|---|---|---|
+| H1 `kid` | ~70 | [80, 20, 0] (H / oddálení) |
+| H2 `workshop-attic` | ~200 | [230, 0, 20] |
+| H3 `workshop-interior` | ~180 | [200, 0, 0] |
+| H4 `loft-balcony` | ~46 | [55, 0, 0] |
+| H5 `hoist-beam` | ~32 (+20 hák) | [60, 0, 0] |
+| H6 `retaining-wall` | ~86 | [95, 0, 4] |
+| **Celkem** | **~615–635** | **≤ 720** (dřív `workshop` [1 000, 0, 30]) |
+
+Kontrola (art-review, kap. 5): snímek míření na 375 × 667, 932 × 430 a 1280 × 800; za vlaštovkou nebe; kolem ruky nic bílého ani grafitového; dítě v šedi na 25 %; menu s domkem v pravých dvou třetinách.
+
+### 3.8 Vlaštovky: skupina V (zadání pro budoucí dávku)
+
+Schváleno 14. 10. (06, „Odemykatelný obsah“ bod 1: siluety podle `img/obsah/siluety.png`). Pravidla M1–M8 a skiny: bible 05 kap. 17. Tvary jsou v `img/obsah/siluety.mjs` (objekt `M`, konvence jako `geometry.planeShape`: nos +x, délka 1, y nahoru, z rozpětí; uvedená je polovina, zrcadlí se podle z). **Herní statistiky ladí simulace** (06 bod 2, `research/obsah/04-ekonomika.md`), karty určují jen vzhled.
+
+**Společné pro V1–V5:**
+- **Rozpočet ≤ 12 △** na model (obrys razítkem 8 kopií ≤ 96 △); draw calls beze změny (výplň, obrys, přehyb, stopa, stín do masky).
+- **Délka** jako Dart (`PLANE_SCALE 7,75` × `plan.plane.scale`), v ruce 0,5 m (M-2).
+- **Barvy:** horní plochy = papír (bible 17.3), spodní papír × `#cdd3e3`, **svislé plochy natočené ke kameře jako horní papír** (M6, změna `planeColors`), obrys grafit 2,6 px (Kraft 2,9), přehyby tužkou podle modelu (M7).
+- **UV** = půdorys listu (u ocas → nos, v rozpětí) pro potisk; razítko ve středu křídla.
+- **Kontrola (M8):** `node research/design/img/obsah/siluety.mjs` po úpravě tvaru → IoU ≤ 0,75 proti všem modelům, plocha 0,75–1,4 × Dart, opsaná kružnice ≤ 0,75 délky; pak snímek ve hře (24 px na telefonu rovně, stoupání, střemhlav) a v ruce dítěte.
+- **Zamčený vzhled v Dílně:** 2 nejbližší plně s cenou, další jako silueta (06 bod 5); art navrhuje tužkovou skicu přehybů (bible 17.6).
+
+#### V1 `plane-hawk` Hawk / Sokol
+- **Předobraz:** skládaná „stíhačka“ s odděleným křídlem. **Podpis:** „letadýlko“, dlouhá úzká šípová křídla, mezi trupem a křídlem je vidět nebe (osa E).
+- **Tvar (polovina):** trup `[.55,0,0] [-.45,0,0] [.1,.02,.05]`; křídlo 2 trojúhelníky `[.18,.02,.04] [-.08,.02,.04] [-.36,.07,.6]` a `[.18,.02,.04] [-.36,.07,.6] [-.24,.07,.62]`; kýl `[.55,0,0] [-.45,-.1,.012] [-.45,0,0]`. Křídla 0,62 do strany, šíp 0,4.
+- **△:** 8. **Plocha / Dart:** 1,01. **Nejbližší IoU:** Dart 0,70.
+- **Přehyby:** dvě linky po náběžné hraně křídla. **Podpisový skin:** K6 Hawk Feather.
+- **Riziko:** úzké křídlo; mezera mezi křídlem a trupem musí na 24 px zůstat ≥ 7 px, jinak podpis zmizí. Razítko se na křídle zmenší (v = 0,7).
+
+#### V2 `plane-kite` Kite / Drak
+- **Předobraz:** široký „hang glider“ s vytaženými konci. **Podpis:** vysoký lichoběžník, konce křídel nahoře (osy A, D, F).
+- **Tvar (polovina):** `[.3,0,.06] [-.45,0,0] [-.45,.3,.56]`, `[.3,0,.06] [-.45,.3,.56] [-.05,.3,.58]`, nos `[.3,0,0] [.3,0,.06] [-.45,0,0]`, kýl `[.3,0,0] [-.45,-.05,.012] [-.45,0,0]`. Rozpětí 0,58, vzepětí +0,3, tupý nos 0,3.
+- **△:** 8. **Plocha / Dart:** 1,34 (nejbližší horní mez 1,4). **Nejbližší IoU:** Glider 0,72.
+- **Přehyby:** přehyb vzepětí podél trupu. **Podpisový skin:** K7 Kite Tail (mašle ≤ 0,4 délky, sloučené do výplně).
+- **Riziko:** největší plocha, hlídat M4 (kruh QTE) a „nic většího než vlaštovka“ vůči kruhu.
+
+#### V3 `plane-skimmer` Skimmer / Žabka
+- **Předobraz:** plochá „žába“ s ohnutými konci dolů. **Podpis:** plochá tupá deska, konce křídel dolů, masa vpředu dole (osy C, D, F).
+- **Tvar (polovina):** `[.42,0,.13] [-.45,0,0] [-.4,-.2,.4]`, `[.42,0,.13] [-.4,-.2,.4] [.1,-.16,.4]`, nos `[.42,0,0] [.42,0,.13] [-.45,0,0]`, kýl `[.42,0,0] [-.45,-.02,.012] [-.45,0,0]`. Useknutý nos šíře 0,26, konce −0,2, bez výrazného kýlu.
+- **△:** 8. **Plocha / Dart:** 1,14. **Nejbližší IoU:** Glider 0,75 (na hranici).
+- **Přehyby:** zlom konců křídel. **Podpisový skin:** K8 Skimmer Ripples.
+- **Riziko:** proti Glideru na hranici prahu; kdyby IoU po úpravě vzrostlo, prohloubit konce dolů (−0,24), ne zvětšit plochu.
+
+#### V4 `plane-sail` Sail / Plachta
+- **Předobraz:** šipka s jedním přehybem nahoru jako plachta. **Podpis:** trojúhelníková plachta nahoru uprostřed (osa B).
+- **Tvar (polovina):** křídlo `[.55,0,0] [-.45,0,0] [-.49,.05,.3]`, kýl `[.55,0,0] [-.45,-.08,.012] [-.45,0,0]`, plachta `[.15,0,.01] [-.45,0,.01] [-.4,.52,.01]` (dvojitá vrstva 1 cm od středu, M5). Výška plachty 0,52 délky.
+- **△:** 6. **Plocha / Dart:** 1,14. **Opsaná kružnice:** 0,74 (hranice M4).
+- **Barvy:** plachta jako horní papír (M6), jinak by byla šedomodrá. **Podpisový skin:** K9 Sail Stripes (pruhy viditelné i za letu).
+- **Riziko:** plachta je svislá plocha, bez M6 vypadá jako spodek; rychlá volba Sail při míření (06 bod 5) potřebuje siluetu čitelnou i v ruce (0,5 m, 40 px).
+
+#### V5 `plane-needle` Needle / Jehla
+- **Předobraz:** úzká šipka se zahnutým ocáskem. **Podpis:** tenká jehla, malá ploutvička dolů u ocasu (osy A, C).
+- **Tvar (polovina):** křídlo `[.55,0,0] [-.45,0,0] [-.47,.03,.16]`, kýl `[.55,0,0] [-.45,-.05,.012] [-.45,0,0]`, ploutvička `[-.3,0,.012] [-.47,0,.012] [-.47,-.16,.012]`. Rozpětí 0,16.
+- **△:** 6. **Plocha / Dart:** 0,75 (dolní mez M3). **Nejbližší IoU:** Dart 0,75.
+- **Přehyby:** jedna dlouhá linka. **Podpisový skin:** K10 Needle Thread (přehyb cihlovou nití).
+- **Riziko:** nejmenší plocha, na telefonu ji drží obrys; nezmenšovat.
+
+| | V1 Hawk | V2 Kite | V3 Skimmer | V4 Sail | V5 Needle |
+|---|---|---|---|---|---|
+| △ (strop 12) | 8 | 8 | 8 | 6 | 6 |
+| Plocha / Dart (0,75–1,4) | 1,01 | 1,34 | 1,14 | 1,14 | 0,75 |
+| Nejbližší IoU (≤ 0,75) | Dart 0,70 | Glider 0,72 | Glider 0,75 | ≤ 0,70 | Dart 0,75 |
+| Hlavní osa podpisu | E | A, D | C, D, F | B | A, C |
+
 ---
 
 ## 4. Rozpočet míst 1–4
 
-Pravidla: **ulice LOD 0, střed LOD 1, dálka LOD 2**, Dílna a dominanty LOD 0. Statické objekty jedné vrstvy jsou **jedna sloučená geometrie** (jako dnes karty), opakované a pohyblivé drobnosti **instancované a sdílené pro celou čtvrť**. Maska stínů na zem kreslí **stínové proxy ≤ 7 △** (kap. 1.3). Obloha, mraky a balóny patří čtvrti, ne místu. Limit: **≤ 15 tis. △ a ≤ 14 DC na místo** včetně masky.
+Pravidla: **ulice LOD 0, střed LOD 1, dálka LOD 2**, místo odhodu LOD H (G2b), dominanty LOD 0. Statické objekty jedné vrstvy jsou **jedna sloučená geometrie** (jako dnes karty), opakované a pohyblivé drobnosti **instancované a sdílené pro celou čtvrť**. Maska stínů na zem kreslí **stínové proxy ≤ 7 △** (kap. 1.3). Obloha, mraky a balóny patří čtvrti, ne místu. Limit: **≤ 15 tis. △ a ≤ 14 DC na místo** včetně masky.
 
 ### 4.0 Domy rozhodují: tři scénáře
 Domy v ulici a ve středu jsou 60–70 % všech trojúhelníků. Plocha čel (součet šířka × výška bloků `cityChunk`, změřeno): ulice 2 924 / 2 336 / 279 / 1 426 m², střed 6 668 / 6 044 / 1 659 / 3 065 m² v místech 1–4. Trojúhelníky domů podle hustoty `house-row` (kap. 3, karta 1):
@@ -530,7 +654,7 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | Položka | LOD | Místo 1 Střechy | Místo 2 Trh | Místo 3 Zahrady | Místo 4 Železnice |
 |---|---|---|---|---|---|
 | domy v ulici (`house-row`, `house-gable`, `cottage`, `rail-shed`, vč. komínů) | 0 | 18 domů 5,7 | 29 domů 4,6 ¹ | 5 domků 0,75 | 11 budov 2,9 |
-| dominanty | 0 | Dílna 1,0 + věžička 0,35 | hala 0,5 | skleník 0,6 | vodárna + nádraží 0,42 |
+| dominanty | 0 / H | místo odhodu G2b 0,63 ⁴ + věžička 0,35 | hala 0,5 | skleník 0,6 | vodárna + nádraží 0,42 |
 | domy ve středu (vč. komínů) | 1 | 14 → 2,2 | 13 → 2,0 | 6 → 0,6 | 10 → 1,1 |
 | dálka (`far-skyline`) | 2 | 11 → 0,44 | 10 → 0,40 | 8 → 0,32 | 8 → 0,32 |
 | nádrže, antény, prádlo | 0 | 0,32 | 0,53 | | 0,03 |
@@ -543,11 +667,11 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | **auta** (instancovaná, ~14 v místě × 50) | 0 | 0,70 | 0,70 | 0,70 | 0,70 |
 | země | | 0,02 | 0,02 | 0,02 | 0,02 |
 | maska stínů (proxy ≤ 7 △) | | ~45 → 0,30 | ~65 → 0,45 | ~60 → 0,42 | ~45 → 0,32 |
-| **Součet** | | **≈ 12,1** | **≈ 11,9** (12,7 bez D-3) | **≈ 7,6** | **≈ 10,1** |
-| Rezerva do 15 | | 2,9 | 3,1 | 7,4 | 4,9 |
+| **Součet** | | **≈ 11,7** ⁴ | **≈ 11,9** (12,7 bez D-3) | **≈ 7,6** | **≈ 10,1** |
+| Rezerva do 15 | | 3,3 | 3,1 | 7,4 | 4,9 |
 | Dnes (karty + život, bez stínů) | | 3,15 | 6,91 | 3,79 | 2,02 |
 
-¹ Na trhu je přízemí domů za stánky schované, pravidlo D-3 (přízemí v LOD 1) ušetří ~0,8 tis. ² Tunel stojí na hranici míst 3 a 4 (dnes x 636–678, v místě 3). ³ Dav 70 lidí za stánky v LOD 1.
+¹ Na trhu je přízemí domů za stánky schované, pravidlo D-3 (přízemí v LOD 1) ušetří ~0,8 tis. ² Tunel stojí na hranici míst 3 a 4 (dnes x 636–678, v místě 3). ³ Dav 70 lidí za stánky v LOD 1. ⁴ 14. 10.: Dílna PAPER LAB (strop 1,0 tis.) nahrazena diorámatem G2b (H1–H6 ≈ 0,62–0,64 tis., kap. 3.7). Pás výhledu S-1 (střed do 150 m za startem ≤ 13 m) navíc ubere část domů středu místa 1; nepočítáno, rezerva je proto spíš větší.
 
 **Závěr: „hodně detailu všude“ se do 15 tis. △ vejde ve všech čtyřech místech, ale jen se scénářem C.** Nejtěsněji místa 1 a 2 (rezerva ~3 tis.). Rezervu místa 3 (7 tis.) použít na zahrady (víc stromů, záhonů, ovocné stromy), přesouvat ji nejde (rozpočet je na místo).
 
@@ -562,10 +686,17 @@ Scénář C nemění, co je vidět (boky karet tenčích než 15 cm mají v záb
 | střed (sloučený) | 1 | 1 | 1 | 1 | |
 | ulice (sloučená: domy, dominanta, stánky, prádlo, ploty, trať…) | 1 | 1 | 1 | 1 | prádlo a praporky se houpou ve vertex shaderu (atribut `sway`), bez vlastního DC |
 | maska stínů (proxy, sloučená) | 1 | 1 | 1 | 1 | `08-stiny.md` kap. 6 |
-| Dílna (vlastní mesh, `workshop.js`) | 1 | | | | dnes zvlášť |
+| ~~Dílna (vlastní mesh, `workshop.js`)~~ | ~~1~~ | | | | nahrazeno G2b (řádky níže) |
+| místo odhodu: dioráma H2–H6 | 0 | | | | **sloučené do ulice místa 1** (stejný `paperMaterial`, stencil ulice, LOD H jen jako hustší geometrie) |
+| místo odhodu: stín diorámatu | 0 | | | | proxy H2 + H6 (≤ 11 △) **sloučený do masky stínů** místa 1 |
+| dítě H1 | 1–2 | | | | tělo + ruka (nápřah ve vertex shaderu → 1) |
+| stín dítěte | 0 | | | | proxy stojícího dítěte (≤ 4 △) v masce; pózy stín nemění (dítě se hýbe o desítky cm) |
+| cedulka PAPER LAB (textura) | 1 | | | | 0, když se nápis složí z dílů jako piktogram (bez textury, ~50 △) |
 | jedoucí vlak (instancované vozy) | | | | 1 | |
 | sdílené pro čtvrť: lidé, auta (2 tvary), kouř, větrníky | 5 | | | | počítá se jednou na scénu |
-| **Na místo** | **6** | **5** | **5** | **6** | **i se všemi sdílenými ≤ 11, limit 14** |
+| **Na místo** | **7–8** | **5** | **5** | **6** | **i se všemi sdílenými ≤ 13 (místo 1), limit 14** |
+
+**Místo odhodu a strop 14 DC (návrh, 14. 10.).** Kdyby se dioráma kreslilo jako samostatné meshe (dioráma + stín, cedulka, dítě 2 + stín, k tomu vlaštovka), mělo by místo 1 ~17 DC (`research/start/02-misto-odhodu-vzhled.md` kap. 5.1), tedy nad stropem. **Navrhuji variantu A, sloučení:** statické dioráma H2–H6 patří do sloučené geometrie ulice místa 1 a jeho stínový proxy i proxy dítěte do masky stínů místa 1 (žádná výjimka z pravidel, vzhled se nemění). Místo 1 pak má 7–8 DC (země, dálka, střed, ulice, maska, dítě 1–2, cedulka 0–1) a se sdílenými pro čtvrť 12–13, pod stropem 14. Vlaštovka v ruce je hráč a počítá se do scény (≤ 120 DC), ne do místa, jako dnes. **Varianta B jen kdyby A nešlo** (např. interiér potřebuje vlastní materiál): výjimka „místo odhodu ≤ 17 DC, dokud je dioráma v záběru“; po oddálení ho ořízne frustum culling. B mění pravidlo v `.claude/rules/render3d.md`, a proto by šla k rozhodnutí uživateli jako `BLOCKED`. Změří game-dev (`perf-check`) po dávce S4, dnes NOT ASSESSED.
 
 Jeden papírový shader pro všechny vrstvy (bible kap. 3), instancované meshe jeho variantou s instancováním. Žádné nové textury (nápisy jsou piktogramy z dílů).
 
@@ -579,7 +710,14 @@ Strop platí pro **nejbohatší variantu** při použití `panel` / `lista` (sc�
 | `cottage` | [180, 50, 13] | 150 / 40 / 13 | |
 | `rail-shed` | [250, 60, 13] | 220 / 50 / 13 | |
 | `far-skyline` | [0, 0, 50] | — / — / 40 | |
-| `workshop` | [1 000, 0, 30] | jedinečná | vč. dítěte ~150, příčky oken smí |
+| ~~`workshop`~~ | ~~[1 000, 0, 30]~~ | | nahrazeno G2b |
+| `kid` (H1) | [80, 20, 0] | jedinečná | LOD H / oddálení |
+| `workshop-attic` (H2) | [230, 0, 20] | jedinečná | příčky oken smí (LOD H) |
+| `workshop-interior` (H3) | [200, 0, 0] | jedinečná | nejbohatší stav: 4 role, 16 pohlednic |
+| `loft-balcony` (H4) | [55, 0, 0] | jedinečná | |
+| `hoist-beam` (H5) | [60, 0, 0] | jedinečná | s hákem Crane Lift úr. 3 |
+| `retaining-wall` (H6) | [95, 0, 4] | jedinečná | |
+| vlaštovky V1–V5 | ≤ 12 | 6–8 | razítkový obrys 8 kopií navíc |
 | `corner-turret` | [350, 100, 20] | jedinečná | |
 | `market-hall` | [550, 150, 25] | jedinečná | |
 | `greenhouse` | [650, 120, 25] | jedinečná | |
@@ -621,11 +759,13 @@ Nejdřív to, co je v záběru nejvíc (plocha obrazu × počet snímků). Každ
 |---|---|---|
 | **G0 Díly** | `panel` / `lista` v `cardVertices` a `cardTriangles`, úpravy `windowCut`, `door`, `balcony`, `downpipe` (D-1), nové díly `eaveRoof`, `steppedGable`, `dormer`, `shopfront`, výstup `shadow(params)` | bez toho se domy nevejdou (kap. 4.0); ověřit snímkem „v záběru hry“ před a po, že se vzhled nezměnil |
 | **G1 Hmota města** | `house-row` (rozšířit parametry, R14), `house-gable`, `far-skyline`, `chimney` (díl) | jsou v každém snímku letu, ~60 % plochy města; ověří stavebnici, barvy detailu (kap. 1.4) a varianty |
-| **G2 Start hodu** | `workshop`, `corner-turret`, `person`, `street-lamp` | Dílnu a místo 1 vidí hráč před každým hodem; lidé jsou nejčastější „odměna pohledem“ |
+| **G2 Start hodu** | `corner-turret`, `person`, `street-lamp` (~~`workshop`~~ → G2b) | místo 1 vidí hráč před každým hodem; lidé jsou nejčastější „odměna pohledem“ |
+| **G2b Místo odhodu** (14. 10.) | H1 `kid`, H2 `workshop-attic`, H3 `workshop-interior`, H4 `loft-balcony`, H5 `hoist-beam`, H6 `retaining-wall`, nový díl `cutRoof` | pořadí 06 bod 7: po dávkách kamery S1, S3, S2 a před stavbou místa odhodu S4; v katalogu nejdřív hezký objekt zblízka (LOD H, 80 px/m), pak záběr míření |
 | **G3 Trh** | `stall`, `bunting`, `market-hall`, `antenna`, `laundry` | nejhustší místo a nejtěsnější rozpočet, změřit brzy |
 | **G4 Zeleň a pohyb** | `tree-round`, `tree-poplar`, `hedge-fence`, `car`, `cottage` | stromy a auta jsou ve všech místech |
 | **G5 Zahrady** | `greenhouse`, `pinwheel`, `garden-shed`, `garden-bed`, `bench` | místo 3 má nejvíc rezervy, tady se ukáže „hodně detailu“ |
 | **G6 Železnice** | `track`, `train`, `platform`, `station`, `water-tower`, `rail-shed` | celé místo 4 najednou (6 objektů, `rail-shed` je varianta `house-row`) |
+| **V Vlaštovky** (14. 10.) | V1 Hawk, V2 Kite, V3 Skimmer, V4 Sail, V5 Needle (kap. 3.8) | budoucí dávka s Dílnou a obchodem; nezávisí na městě, potřebuje UV a M6 v `planeShape` / `planeColors` |
 | **G7 Brána, vzduch, drobnosti** | `tunnel-hill`, `rail-bridge`, `roof-tank`, `street-kit`, `signal`, `balloon`, `cloud`, `flock`, `pigeon` | menší plocha v záběru; most čeká na T3 plánu přechodů; holub patří k událostem (P3 bible) |
 
 Kontrola každého modelu (art-review, 10 kap. 4): smysl (předobraz, dveře u země, okna v patrech), silueta v šedi na 25 %, měřítko vedle `person` a vlaštovky (`img/katalog/meritko.svg`), paleta jen z kap. 1.4, △ podle karty ±20 %.
@@ -652,7 +792,8 @@ Kontrola každého modelu (art-review, 10 kap. 4): smysl (předobraz, dveře u z
 | R14 | K1 `house-row` parametry | `floors` 2–4, `bays` 2–3 (šířka 6,2 nebo 8,6 m) | bloky `cityChunk` mají 6–16 m a 6–38 m | `floors` 2–7 (ulice) / 3–12 (střed), `bays` 2–6, 1 blok = 1 dům |
 | R15 | K1 `parts.js` | každý detail je `block` (8 △), `house-row` 245–773 △ | `panel` 2 / `lista` 4 (kap. 1.3), změřeno 111–285 △ | scénář C (kap. 4.0) |
 | R16 | K1 `house-row.tris` | [800, 160, 40] | [600, 130, 13] pro 6 os × 7 pater | kap. 4.3 |
-| R17 | K1 detail pod 1 px | příčka okna 0,06 m, klika 0,1 m, sloupky zábradlí 0,04 m, svod 0,12 m | D-1 | příčky a kliky jen Dílna, zábradlí jako 1 karta, svod 0,2 m |
+| R17 | K1 detail pod 1 px | příčka okna 0,06 m, klika 0,1 m, sloupky zábradlí 0,04 m, svod 0,12 m | D-1 | příčky, kliky a sloupky zábradlí jen v LOD H místa odhodu (G2b), jinde zábradlí jako 1 karta, svod 0,2 m |
+| R-S1–R-S9 | místo odhodu (Dílna, kamera, měřítko, barvy dítěte, pás výhledu) | | | **vyřešeno 14. 10.** podle 06, tabulka v bible 05 kap. 16.1; v kódu dávky S1–S5 |
 | R13 | bible P3 „hloubku dělá opar, ne detail“ × rozhodnutí „hodně detailu všude“ | | detail ve středu a dálce tónový a siluetou (D-2) | doplnit do bible 05 kap. 3 po schválení |
 
 ### 6.2 BLOCKED (otázky pro uživatele)
@@ -669,4 +810,4 @@ BLOCKED: **Žlutá na praporcích.** Paleta má mezi praporky hořčicovou `#e2a
 - **Rozhraní K1:** tvary `panel` / `lista`, nové díly a stínový proxy (kap. 1.3) jsou návrh pro game-deva; scénář C v kap. 4.0 na nich stojí. Úsporu jsem spočítal na `house-row` z K1 (`cardTriangles` všech 30 variant, skript mimo repo), vzhled v záběru hry je NOT ASSESSED.
 - **Stránka katalogu** `prototype-katalog.html` jsem neotevřel (zákaz prohlížeče), karty jsou psané z kódu K1.
 - **Večer (čtvrť 4) a lampy:** `street-lamp` má ráno sklo `D1.glass`; večerní svit patří lampionům čtvrti 4 (bible kap. 4), ne čtvrti 1.
-- **Dílna roste s postupem** (pohlednice na okně): nápad pro product-designera, mimo K3.
+- **Dílna roste s postupem:** schváleno jako součást konceptu 2 (nástěnka pohlednic a role papírů v H3, hák v H5). Které stavy kdy přibývají, dává game design a product-designer.
