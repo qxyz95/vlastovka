@@ -11,7 +11,8 @@ export const KID=Object.freeze({h:PERSON.h*PERSON.child,head:.15,legs:.45,coat:O
  // ruka (střed dlaně) podle pózy, od středu chodidel; sed = na podlaze pavlače, trup o 0,4 m níž
  hand:Object.freeze({aim:[.32,1.4],charge:[-.3,1.32],throw:[.48,.98],wave:[.22,1.5],sit:[.3,.32],desk:[.42,.76]}),lean:Object.freeze({aim:0,charge:-.08,throw:.07,wave:0,sit:0,desk:.04})});
 export const POSES=Object.freeze(Object.keys(KID.hand));
-const C=()=>{const P=palette('papir'),D=P.city.districts[0];return {coat:D.near[1],legs:D.window,skin:P.life.people.skin[0],cap:T.kraft,band:T.tomato,ink:T.pencil700,side:P.city.side};};
+// Barvy z tokenů místa odhodu PAPIR.workshop (pláštěnka D1.near[1], nohy D1.window, čepice kraft s rajčatovým proužkem, kůže life.people.skin[0]).
+const C=()=>{const P=palette('papir'),W=P.workshop;return {coat:W.shirt,legs:W.legs,skin:W.skin,cap:W.visor,band:W.capBand,ink:T.pencil700,side:P.city.side};};
 const disc=(x,y,r,n,z,color,part)=>({shape:'disc',x,y,r,n,z,d:.02,color,part});
 
 function build(p,lod){

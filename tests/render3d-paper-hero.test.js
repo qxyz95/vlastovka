@@ -7,7 +7,7 @@ import {PAPER_TRAIL,ID} from '../src/render3d/paper-cards.js';
 import {drawUi,drawQte,drawLabel,drawPopups,drawSpeedLines,drawParticles,drawAim,QTE_BASE,QTE_WIDTH,QTE_STAR} from '../src/render3d/ui-layer.js';
 import {gustStrips,scrapAngle,scrapTone,particles,GUST} from '../src/render3d/fx-map.js';
 import {createFx,fxEvent,stepFx} from '../src/juice.js';
-import {HAND} from '../src/render3d/pose.js';
+import {HAND,PAPER_HAND,kidPose} from '../src/render3d/pose.js';
 
 // P3 „Hrdina“ Papírového města (spec research/design/06-papir-ctvrt1.md, bible 05 kap. 3, 7, 9, 11, stíny 08-stiny.md S4).
 // three.js moduly: holý import 'three' na vendorovaný build (jako import map v prohlížeči); plátno cedulky nahrazeno záznamem volání.
@@ -17,7 +17,7 @@ const drawn=[];
 globalThis.document??={createElement:()=>({width:0,height:0,getContext:()=>new Proxy({},{get:(_,k)=>k==='fillText'?(...a)=>drawn.push(a[0]):()=>{},set:()=>true})})};
 const THREE=await import('three');
 const {createPlane,planeColors,PLANE_SCALE}=await import('../src/render3d/plane.js');
-const {createWorkshop,workshopCards,kidParts,paperSign}=await import('../src/render3d/workshop.js');
+const {createWorkshop,kidParts,PAPER_SIGN,paperSignTexture}=await import('../src/render3d/workshop.js');
 const {paperKit,MASK_LAYER}=await import('../src/render3d/paper.js');
 
 const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
@@ -97,37 +97,40 @@ test('P3 contrast: graphite outline and trail ≥ 3 : 1 against every sky stop a
 });
 
 // ── Dílna (workshop.js)
-test('P3 workshop: paper Dílna from cards (cream house, tomato gable, warm window with desk, teal annex, graphite rail, sign strings)',()=>{
- const W=PAPIR.workshop,cards=workshopCards();
- const has=(shape,color)=>cards.some(c=>c.shape===shape&&c.color===color);
- assert.ok(cards.some(c=>c.shape==='gable'&&c.color===W.wall&&c.roof===W.roof),'gable roof');assert.equal(W.wall,PAPER_TOKENS.cream);assert.equal(W.roof,PAPER_TOKENS.tomato);
- for(const c of [W.window,W.desk,W.cup,W.annex,W.rail,W.door,W.knob,W.string])assert.ok(has('box',c),c);assert.ok(has('flag',W.plane),'cut-out plane on the desk');
- assert.equal(cards.filter(c=>c.color===W.string&&c.w===.08).length,2,'two strings');assert.ok(cards.every(c=>c.layer==='near'&&Number.isFinite(c.x+c.y+c.z+c.w+c.h+c.d)));
- const s=paperSign(),house=cards[0];assert.ok(s.x>house.x&&s.x<house.x+house.w&&s.y+s.h/2<=house.h,'sign on the house under the roof');assert.ok(s.z>house.z+house.d/2,'sign in front of the wall');
- // dítě: hořčicová pláštěnka, tmavomodré nohy, skládaná bílá čepice (jehlan); cyber dítě beze změny
- const k=kidParts(W,true);assert.ok(k.upper.every(p=>p.color===W.shirt)&&W.shirt===PAPER_TOKENS.mustard);assert.ok(k.legs.every(p=>p.color===W.legs));
- const cap=k.head.find(p=>p.shape==='pyr');assert.ok(cap&&cap.color===W.visor&&W.visor===PAPER_TOKENS.paper,'folded paper cap');
- assert.ok(!kidParts(CYBER.workshop).head.some(p=>p.shape==='pyr'));
+test('S4 launch site tokens (06 bod 6, bible 05 kap. 9.4–9.5): coat #f2b65a, kraft cap with tomato band, navy rail, frames and legs, cream knob, pencil strings',()=>{
+ const W=PAPIR.workshop,D1=palette('papir').city.districts[0];
+ assert.equal(W.shirt,'#f2b65a');assert.equal(W.shirt,D1.near[1]);assert.equal(W.visor,PAPER_TOKENS.kraft);assert.equal(W.capBand,PAPER_TOKENS.tomato);
+ for(const k of ['rail','frame','door','legs'])assert.equal(W[k],'#3d4f7a',k);assert.equal(W.knob,PAPER_TOKENS.cream);assert.equal(W.string,PAPER_TOKENS.pencil);
+ assert.ok(![W.shirt,W.visor,W.rail,W.knob,W.string].some(c=>c===PAPER_TOKENS.mustard||c===PAPER_TOKENS.paper||c===PAPER_TOKENS.graphite),'no mustard, white or graphite next to the plane');
+ // cyber dítě beze změny (kšilt, žádná čepice)
+ assert.ok(!kidParts(CYBER.workshop).head.some(p=>p.shape==='pyr'));assert.equal(CYBER.workshop.rail,'#7a5bb0');
+ // cedulka PAPER LAB: textura v poměru stran karty H2 (5,6 × 0,6 m), nápis a podtržení
+ drawn.length=0;const tx=paperSignTexture(PAPER_SIGN.text);assert.ok(drawn.includes('PAPER LAB'));assert.ok(Math.abs(tx.image.width/tx.image.height-PAPER_SIGN.w/PAPER_SIGN.h)<.1);tx.dispose();
 });
 
-test('P3 workshop: paper build uses the shared paper kit (ID.near), casts ground shadows, sign is a paper card, plane in hand stamped in graphite and scaled by plan.hand.scale',()=>{
+test('S4 workshop (paper): kid + flag one dynamic mesh on the shared kit (ID.near), sign texture, plane in hand at 12 m stamped in graphite, no card casters',()=>{
  const kit=paperKit(),g=createWorkshop(null,{style:'papir',paper:kit,planeScale:PLANE_SCALE});
  const meshes=[],casters=[];g.traverse(o=>{if(o.userData.shadow)casters.push(o);else if(o.isMesh)meshes.push(o);});
  assert.equal(g.userData.style,'papir');const near=kit.material(ID.near);
- const cards=meshes.filter(m=>m.material===near);assert.equal(cards.length,5,'house + 4 kid parts share one material');
- assert.equal(casters.length,6,'5 card casters + plane');assert.ok(casters.every(c=>c.layers.isEnabled(MASK_LAYER)));
+ const hero=meshes.filter(m=>m.material===near);assert.equal(hero.length,1,'kid + flag = 1 draw call');assert.equal(g.userData.kid,hero[0]);
+ assert.equal(casters.length,1,'only the plane in hand casts (kid shadow is a proxy in the place mask)');assert.ok(casters.every(c=>c.layers.isEnabled(MASK_LAYER)));
+ const sign=meshes.find(m=>m.material.map);assert.ok(sign&&Math.abs(sign.geometry.parameters.width-PAPER_SIGN.w)<1e-9,'paper sign texture on the H2 card');
+ assert.deepEqual([sign.position.x,sign.position.y,sign.position.z].map(v=>+v.toFixed(6)),[PAPER_SIGN.x,PAPER_SIGN.y,PAPER_SIGN.z].map(v=>+v.toFixed(6)));
+ const own=g.children.filter(o=>o.isMesh);assert.equal(own.length,2,'launch site group: hero + sign (plane in hand is the player, counted to the scene)');
  const pm=g.userData.plane.getObjectsByProperty('isMesh',true).find(m=>m.material.isMeshBasicMaterial&&m.material.vertexColors);
- assert.ok(pm,'plane in hand: vertex colours');assert.ok(pm.children.some(c=>c.material===kit.shadows.materials.plane),'S4 caster under the hand plane');
+ assert.ok(pm,'plane in hand: vertex colours');assert.ok(pm.children.some(c=>c.material===kit.shadows.materials.plane),'caster under the hand plane');
  const outl=g.userData.outlines;assert.equal(outl.length,1,'only the plane is outlined');assert.equal(hex(outl[0].uniforms.color.value),PAPER_TOKENS.graphite);assert.equal(outl[0].userData.base,2.6);
  assert.ok(meshes.every(m=>!m.material.isMeshToonMaterial),'no toon in paper');
- assert.ok(meshes.some(m=>m.material.map&&m.geometry.parameters?.width===12),'paper sign');assert.ok(drawn.includes('PAPER LAB'));
  const sq=g.userData.plane.children[0].children[0];
  g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],scale:1.15});assert.ok(Math.abs(sq.scale.z-PLANE_SCALE*1.15)<1e-9,'plan.hand.scale');
- g.update(null,{dx:0,dy:0,angle:0,squash:[1,1]});assert.equal(sq.scale.z,PLANE_SCALE);
  g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],model:'glider'});assert.equal(pm.children[0].geometry,pm.geometry,'caster follows the model');
- assert.equal(g.userData.plane.position.x,HAND.x);
+ assert.deepEqual([g.userData.plane.position.x,g.userData.plane.position.y],[PAPER_HAND.x,12],'plane in hand at the physics height');assert.notEqual(PAPER_HAND.y,HAND.y);
+ // pózy: dlaň drží vlaštovku (i stažení při nabíjení), po hodu švih a mávání; poloha se přepisuje v témže bufferu (bez nové geometrie)
+ const pos=hero[0].geometry.attributes.position,arr=pos.array,v0=pos.version,rig=g.userData.rig;
+ g.update(kidPose({charge:1,rest:true}),{dx:-.2,dy:0,angle:0,squash:[1,1]});assert.ok(Math.abs(rig.last[2]-(PAPER_HAND.x-.2))<1e-9&&Math.abs(rig.last[3]-12)<1e-9,'palm on the pulled-back plane');
+ g.update(kidPose({thrown:true,rest:false,since:2,t:1}),null,{t:1});assert.equal(g.userData.plane.visible,false);assert.ok(rig.last[3]>rig.last[1],'waving hand above the shoulder');
+ assert.equal(pos.array,arr);assert.ok(pos.version>v0,'positions uploaded');
  g.dispose();kit.dispose();
- // bez sady (např. jiný volající): vlastní papírový materiál, bez vrhačů
  const solo=createWorkshop(null,{style:'papir'});let n=0;solo.traverse(o=>{if(o.userData.shadow)n++;});assert.equal(n,0);solo.dispose();
 });
 

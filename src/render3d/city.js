@@ -9,6 +9,7 @@ import {mergeBlocks,cityChunk,placeIndex,chunkOffset} from './geometry.js';
 import {districtOf} from './districts/index.js';
 import {placeCards,groundCards,hills,PLACE_W,ID} from './paper-cards.js';
 import {cardGeometry} from './paper.js';
+import {launchStatic,launchShadow} from './models/index.js';
 
 export function bufferOf(m){const g=new THREE.BufferGeometry();for(const [k,n] of [['position',3],['normal',3],['uv',2],['color',3],['outline',3]])g.setAttribute(k,new THREE.BufferAttribute(m[k],n));g.computeBoundingSphere();return g;}
 // Klíč keše: index místa; u indexu 0 zvlášť první obrazovka (Dílna + zem doleva) a další okruhy (bez Dílny).
@@ -16,18 +17,22 @@ export const chunkKey=(index,screen)=>index===0?(screen===0?'0s':'0r'):String(in
 
 // Karty jednoho papírového místa po vrstvách (lokální x). opts = districts/*-layout.js paper {farH,roofs}; extra = karty čtvrti (district.cards).
 // Klíč '0s' (Dílna): zem a kopce i 600 m doleva jako v cyber cestě. Kopce z jedné řady od HILLS_FROM (navazují přes hranice míst).
+// '0s' je navíc místo odhodu (S4): pás výhledu S-1 (cityChunk view), dioráma H2–H6 sloučené do ulice a nearShadow = vrhač ulice bez diorámatu
+// s proxy H2 + H6 a dítěte (11 kap. 4.2: 0 draw calls navíc). site = parametry modelů diorámatu ({id: {…}}).
 export const HILLS_FROM=-1000;
-export function paperLayers(index,key=String(index),{opts,extra=[]}={}){
- const c=cityChunk(index),x0=chunkOffset(index),left=key==='0s'?-600:0,own=h=>{const m=h.x+h.w/2-x0;return m>=left&&m<PLACE_W;};
+export function paperLayers(index,key=String(index),{opts,extra=[],site={}}={}){
+ const launch=key==='0s',c=cityChunk(index,{view:launch}),x0=chunkOffset(index),left=launch?-600:0,own=h=>{const m=h.x+h.w/2-x0;return m>=left&&m<PLACE_W;};
  const cards=[...placeCards(c,'papir',opts??{}),...extra,...hills(HILLS_FROM,x0+PLACE_W+400,'papir',c.biome).filter(own).map(h=>({...h,x:h.x-x0}))];
- const ground=groundCards('papir',c.biome).map(g=>left?{...g,x:g.x+left,w:g.w-left}:g);
- return {ground,far:cards.filter(b=>b.layer==='far'),mid:cards.filter(b=>b.layer==='mid'),near:cards.filter(b=>b.layer==='near')};
+ const ground=groundCards('papir',c.biome).map(g=>left?{...g,x:g.x+left,w:g.w-left}:g),near=cards.filter(b=>b.layer==='near');
+ return {ground,far:cards.filter(b=>b.layer==='far'),mid:cards.filter(b=>b.layer==='mid'),near:launch?[...near,...launchStatic(site)]:near,...(launch?{nearShadow:[...near,...launchShadow(site)]}:{})};
 }
 // Meshe papírového místa: země (id 8), dálka (1), střed (2), ulice (4); vrstvy karet vrhají stín na zem (kit.shadows.cast, sdílí geometrii,
-// vrstva masky). kit = paper.paperKit(). Vrací {group,geos}.
+// vrstva masky; layers.nearShadow = vlastní geometrie vrhače ulice, místo odhodu). kit = paper.paperKit(). Vrací {group,geos}.
 export function buildPaperPlace(layers,kit){
  const g=new THREE.Group(),geos=[],add=(list,id,o)=>{if(!list.length)return;const geo=cardGeometry(list),m=new THREE.Mesh(geo,kit.material(id,o));m.userData.layer=id;geos.push(geo);g.add(m);return m;};
- add(layers.ground,ID.ground,{cutK:0,fiber:.05});for(const L of ['far','mid','near']){const m=add(layers[L],ID[L]);if(m)g.add(kit.shadows.cast(m));}
+ add(layers.ground,ID.ground,{cutK:0,fiber:.05});
+ for(const L of ['far','mid','near']){const m=add(layers[L],ID[L]);if(!m)continue;
+  if(L==='near'&&layers.nearShadow){const geo=cardGeometry(layers.nearShadow);geos.push(geo);g.add(kit.shadows.cast({geometry:geo}));}else g.add(kit.shadows.cast(m));}
  return {group:g,geos};
 }
 export function createCity(ctx){

@@ -130,11 +130,12 @@ export const PAPIR={
   chimney:'#9a4a3a',tanks:{body:'#9fb7d9',leg:PT.pencil,roof:PT.tomato},mast:PT.pencil,stall:{base:PT.card,post:PT.pencil,stripe:PT.cream,stripes:[PT.tomato,'#5aa6a0','#e98fa0','#f2b65a']},
   line:PT.pencil,bunting:[PT.tomato,PT.mustard,PT.teal,PT.cream,'#7f9ed6'],tunnel:{wall:'#9cc3a6',mouth:PT.graphite},pyramid:'#a8c48a',
   rail:{...CYBER.life.rail,bed:PT.kraftDark},platform:PT.card,pole:PT.pencil,car:{...CYBER.life.car,cabin:PT.cream,wheel:PT.graphite},basket:PT.kraftDark,rope:PT.pencil},
- // Dílna (kap. 9, papir.js workshopCards): krémový dům, rajčatová střecha, teplé okno se stolem, tyrkysový přístavek, grafitové zábradlí;
- // dítě v hořčicové pláštěnce (shirt) se skládanou bílou čepicí (visor), tmavomodré nohy. sign* = papírová cedulka PAPER LAB na provázcích.
- workshop:{wall:PT.cream,annex:'#5aa6a0',roof:PT.tomato,trim:PT.cream,door:'#3d4f7a',frame:PT.graphite,window:PAPER_WARM,light:PAPER_WARM,warm:PAPER_WARM,
-  skin:SKIN[0],visor:PT.paper,shirt:PT.mustard,legs:'#3d4f7a',rail:PT.graphite,plane:PT.paper,crease:PT.pencil,
-  desk:PT.kraftDark,cup:PT.teal,knob:PT.mustard,sign:PT.card,signText:PT.graphite,signLine:PT.tomato,string:PT.graphite}
+ // Místo odhodu (bible 05 kap. 9.4–9.5, rozhodnutí 06 bod 6, S-2 a S-3): krémový dům, rajčatová střecha, teplé sklo; rámy, dveře, zábradlí a nohy
+ // dítěte tmavomodré D1.window (nikdy grafit), pláštěnka (shirt) D1.near[1] #f2b65a místo hořčicové, skládaná čepice (visor) z kraftu s rajčatovým
+ // proužkem (capBand), klika krémová, provázky tužkou. sign* = papírová cedulka PAPER LAB. annex jen kvůli shodě klíčů s cyber (přístavek zrušen).
+ workshop:{wall:PT.cream,annex:'#5aa6a0',roof:PT.tomato,trim:PT.cream,door:D1C.window,frame:D1C.window,window:PAPER_WARM,light:PAPER_WARM,warm:PAPER_WARM,
+  skin:SKIN[0],visor:PT.kraft,capBand:PT.tomato,shirt:D1C.near[1],legs:D1C.window,rail:D1C.window,plane:PT.paper,crease:PT.pencil,
+  desk:PT.kraftDark,cup:PT.teal,knob:PT.cream,sign:PT.card,signText:PT.graphite,signLine:PT.tomato,string:PT.pencil}
 };
 export const PALETTES={cyber:CYBER,papir:PAPIR};
 export const palette=id=>PALETTES[id]??CYBER;

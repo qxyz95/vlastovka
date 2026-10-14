@@ -32,13 +32,15 @@ export function placeCards(chunk,style='papir',{farH=FAR_H,roofs=ROOFS}={}){
   if(b.h<1){add(card({shape:'box',x,w:b.w,y:b.y??0,h:b.h,z:b.z,d:b.d,color:C.flat},'near'));continue;}// kolejové lože a ploché pásy bez střech
   if(b.tone===3){add(card({shape:'box',x,w:b.w,y:b.y??0,h:b.h,z:b.z,d:b.d,color:b.w>15?pick(C.near,x,9):C.roof[0]},'near'));continue;}
   const pal=L==='near'?C.near:L==='mid'?C.mid:C.far,col=pick(pal,x,L.length);
-  const o=add(card({shape:b.type==='pyramid'?'pyr':'box',x,w:b.w,y:b.y??0,h:L==='far'?b.h*farH:b.h,z:b.z,d:b.d,color:col},L));
-  const roofP=L==='near'?(b.w<=20?roofs.near:roofs.nearWide??ROOFS.nearWide):L==='mid'?roofs.mid:roofs.far;
+  const roofP=L==='near'?(b.w<=20?roofs.near:roofs.nearWide??ROOFS.nearWide):L==='mid'?roofs.mid:roofs.far,roof=b.type!=='pyramid'&&hash(Math.floor(x*7),2)<roofP;
+  // pás výhledu S-1 (geometry.viewCap): strop b.cap platí i se střechou; střecha nejvýš 30 % stropu, tělo zbytek
+  let h=L==='far'?b.h*farH:b.h,rh=Math.min(L==='far'?14:9,b.w*.42);if(b.cap!=null&&roof&&h+rh>b.cap){rh=Math.min(rh,b.cap*.3);h=Math.min(h,b.cap-rh);}
+  const o=add(card({shape:b.type==='pyramid'?'pyr':'box',x,w:b.w,y:b.y??0,h,z:b.z,d:b.d,color:col},L));
   // Okna = malé tmavé výřezy, dveře jen v ulici, panorama bez oken (silueta).
   if(o.shape==='box'&&L!=='far'&&b.w>=7&&o.h>=7){const sp=L==='near'?4.2:6,ww=L==='near'?1.3:1.6,wh=L==='near'?1.8:2.2,fz=o.z+o.d/2+.05,wc=mix(col,C.window,.6),cols=Math.floor((b.w-2)/sp),rows=Math.floor((o.h-3)/4.2);
    for(let i=0;i<cols;i++)for(let j=0;j<rows;j++)if(hash(x*13+i*7+j*3,6)<.55)out.push({shape:'box',layer:L,x:x+1+(i+.5)*(b.w-2)/cols-ww/2,w:ww,y:3+j*4.2,h:wh,z:fz,d:.1,color:wc});
    if(L==='near')out.push({shape:'box',layer:L,x:x+b.w*(.2+.5*hash(x,8)),w:1.6,y:0,h:2.6,z:fz,d:.1,color:mix(col,C.window,.75)});}
-  if(o.shape==='box'&&hash(Math.floor(x*7),2)<roofP){const ov=.6;add({shape:'gable',x:x-ov,w:b.w+2*ov,y:o.h,h:Math.min(L==='far'?14:9,b.w*.42),z:o.z,d:o.d+.4,layer:L,color:col,roof:L==='far'?mix(col,C.roof[0],.25):pick(C.roof,x,5)});}
+  if(roof){const ov=.6;add({shape:'gable',x:x-ov,w:b.w+2*ov,y:o.h,h:rh,z:o.z,d:o.d+.4,layer:L,color:col,roof:L==='far'?mix(col,C.roof[0],.25):pick(C.roof,x,5)});}
  }
  // Zahrady: stromy i ve středu, živé ploty u ulice, skleník (aby místo nebylo prázdné).
  if(chunk.kind==='garden'){for(let x=dx+6,i=0;x<dx+PLACE_W-6;i++){const r=3.5+hash(i,21)*3;out.push({shape:'box',layer:'mid',x:x-.5,w:1,y:0,h:6,z:-104,d:1,color:C.trunk},{shape:'disc',layer:'mid',x,y:6+r*.8,r,n:20,z:-103.5,d:1.5,color:pick(C.trees,x,22)});x+=9+hash(i,23)*12;}

@@ -1,6 +1,5 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {registerHooks} from 'node:module';
 import {MODELS,ACTIVE_MODELS,modelById,buildModel,buildShadow,modelTriangles,defaults,bounds,place,drawnLods,nearestLod,SCALE,LOD_LAYER,diorama,dioramaShadow,DIORAMA,LAUNCH,AIM_SHOT,MENU_SHOT} from '../src/render3d/models/index.js';
 import {windowCut,door,gate,tones,hash,chimney,gableRoof,eaveRoof,roofAt,balcony,downpipe,dormer,shopfront,steppedGable,gableOutline,GATE,cutRoof,CUT_ROOF} from '../src/render3d/models/parts.js';
 import {KID as CHILD} from '../src/render3d/models/kid.js';
@@ -11,12 +10,9 @@ import {WALL} from '../src/render3d/models/retaining-wall.js';
 import {PLANE_OFFSET} from '../src/render3d/geometry.js';
 import {skylineLayout} from '../src/render3d/models/far-skyline.js';
 import {gableHeight} from '../src/render3d/models/house-gable.js';
-import {WORKSHOP_AT,SIGN,KID,S} from '../src/render3d/models/workshop.js';
 import {TURRET} from '../src/render3d/models/corner-turret.js';
 import {PERSON} from '../src/render3d/models/person.js';
 import {LAMP} from '../src/render3d/models/street-lamp.js';
-import {HAND} from '../src/render3d/pose.js';
-import {cityChunk} from '../src/render3d/geometry.js';
 import {cardVertices,cardTriangles,CARD_D} from '../src/render3d/paper-cards.js';
 import {CARD_DEPTH} from '../src/render3d/models/scale.js';
 import {palette,PAPIR,PAPER_TOKENS as PT,mix} from '../src/render3d/palette.js';
@@ -29,16 +25,14 @@ const G2B=['kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam
 const variants=(m,{all=false}={})=>Object.entries(m.params).reduce((acc,[k,v])=>acc.flatMap(p=>(all||!['color','roof','layer'].includes(k)?v.values:[v.default]).map(x=>({...p,[k]:x}))),[{}]);
 const inScope=(m,p)=>!m.trisScope||Object.entries(m.trisScope).every(([k,v])=>p[k]<=v);
 const sample=(m,n=60)=>{const all=variants(m);return all.length<=n?all:Array.from({length:n},(_,i)=>all[Math.floor(i*all.length/n)]);};
-// Výjimky z „bez hořčicové a bílé“ (bible 05 kap. 9, P3): dítě v hořčicové pláštěnce s bílou skládanou čepicí, vystřižená vlaštovka na stole Dílny.
-const EXEMPT={workshop:{kid:[PT.mustard,PT.paper],deskPlane:[PT.paper]}};
 // Prostor variant K1 (2–4 patra × 2–3 osy × seed 1–5, ostatní výchozí) a průměr △ před K3 (11 kap. 1.3: LOD 0 ⌀ 488, LOD 1 ⌀ 85).
 const K1_SPACE=[2,3,4].flatMap(floors=>[2,3].flatMap(bays=>[1,2,3,4,5].map(seed=>({floors,bays,seed}))));
 
-test('registr: G1, G2 a G2b objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy, workshop nahrazený',()=>{
- assert.deepEqual(MODELS.map(m=>m.id),['house-row','house-gable','far-skyline','chimney','workshop','corner-turret','person','street-lamp',
+test('registr: G1, G2 a G2b objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy; K4 workshop po S4 odstraněn',()=>{
+ assert.deepEqual(MODELS.map(m=>m.id),['house-row','house-gable','far-skyline','chimney','corner-turret','person','street-lamp',
   'kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam','retaining-wall']);
- assert.equal(modelById('workshop').replacedBy,'workshop-attic');assert.ok(!ACTIVE_MODELS.includes(modelById('workshop')),'K4 workshop zůstává v registru do S4, ale je nahrazený');
- assert.deepEqual(MODELS.filter(m=>m.hero).map(m=>m.id),G2B,'G2b = LOD H (hrdina)');assert.equal(ACTIVE_MODELS.length,MODELS.length-1);
+ assert.equal(modelById('workshop'),null,'K4 workshop nahrazen G2b a ve hře zapojen (S4)');assert.deepEqual(ACTIVE_MODELS,MODELS);
+ assert.deepEqual(MODELS.filter(m=>m.hero).map(m=>m.id),G2B,'G2b = LOD H (hrdina)');
  assert.equal(new Set(MODELS.map(m=>m.id)).size,MODELS.length);assert.deepEqual([...LOD_LAYER],['near','mid','far']);
  for(const m of MODELS){
   for(const k of ['id','name','prototype','purpose'])assert.ok(typeof m[k]==='string'&&m[k].length>2,`${m.id}.${k}`);
@@ -57,7 +51,7 @@ test('karty: platný tvar, barva z palety (hex, bez hořčicové a bílé), kone
   if(!m.tris[lod]){assert.equal(list.length,0,`${m.id} LOD ${lod} se nekreslí`);continue;}
   assert.ok(list.length>0);
   for(const c of list){assert.ok(SHAPES.has(c.shape),c.shape);assert.match(c.color,HEX,`${m.id} ${c.part}`);if(c.shape==='gable'||c.shape==='eave')assert.match(c.roof,HEX);
-   assert.ok(![PT.mustard,PT.paper].includes(c.color)||EXEMPT[m.id]?.[c.part]?.includes(c.color),`${m.id} ${c.part}: zakázaná barva ${c.color}`);
+   assert.ok(![PT.mustard,PT.paper].includes(c.color),`${m.id} ${c.part}: zakázaná barva ${c.color}`);
    for(const k of ['x','y','z','d',...(c.shape==='disc'?['r']:['w','h'])])assert.ok(Number.isFinite(c[k])&&(['x','y','z'].includes(k)||c[k]>0),`${m.id} ${c.part}.${k}=${c[k]}`);
    if(c.shape==='poly')assert.ok(c.pts.length>=3&&c.pts.flat().every(Number.isFinite));}
   const v=cardVertices(list);assert.equal(v.p.length/9,cardTriangles(list));}
@@ -189,47 +183,12 @@ test('díly: tenké karty a D-1 (okno, dveře, průjezd, balkon, svod, komín, v
 
 // ── G2 (K4): Dílna, nárožní dům s věžičkou, člověk, lampa (11-katalog-ctvrt1.md karty 5–8).
 const front=c=>c.z+c.d/2,same=(a,b,e=1e-9)=>['x','w','y','h'].every(k=>near(a[k],b[k],e))&&near(front(a),front(b),e);
-// Grafit (jediná tuš) jen do 8 m nad zemí (11 kap. 1.4, P1). Výjimky: barvy Dílny z P3 beze změny (bible 05 kap. 9: zábradlí, provázky, dítě).
-const GRAPHITE_OK={workshop:new Set(['kid','string','railing'])};
-test('G2 barvy: grafit nejvýš 8 m nad zemí, hořčicová jen pláštěnka dítěte (klika Dílny ne)',()=>{
+// Grafit (jediná tuš) jen do 8 m nad zemí (11 kap. 1.4, P1), bez výjimek (S4: zábradlí a provázky místa odhodu tmavomodré a tužkou).
+test('G2 barvy: grafit nejvýš 8 m nad zemí, hořčicová nikde (pláštěnka #f2b65a, klika krémová)',()=>{
  for(const m of MODELS)for(const p of sample(m,24))for(const l of drawnLods(m))for(const c of buildModel(m,l,p)){
-  if(c.color===PT.graphite&&!GRAPHITE_OK[m.id]?.has(c.part))assert.ok((c.shape==='disc'?c.y+c.r:c.y+c.h)<=8+1e-9,`${m.id} ${c.part}: grafit ve výšce ${c.y}`);
-  if(c.color===PT.mustard)assert.equal(`${m.id} ${c.part}`,'workshop kid');}
- assert.ok(buildModel('workshop',0,{door:'p3'}).some(c=>c.part==='knob'&&c.color!==PT.mustard));
-});
-
-test('workshop: vychází z P3 workshopCards (dům, štít, dílenské okno se stolem, přístavek do výšky ruky dítěte, zábradlí, cedulka)',async()=>{
- registerHooks({resolve:(spec,ctx,next)=>spec==='three'?{url:new URL('../vendor/three/three.module.min.js',import.meta.url).href,shortCircuit:true}:next(spec,ctx)});
- const P3=await import('../src/render3d/workshop.js'),old=P3.workshopCards(),sg=P3.paperSign();
- assert.deepEqual({...KID},{x:P3.KID.x,y:P3.KID.y,z:P3.KID.z});assert.equal(S,P3.S);
- const shop=cityChunk(0).blocks.find(b=>b.shop);assert.deepEqual([WORKSHOP_AT.z,shop.x,shop.w,shop.h],[shop.z+shop.d/2,20,24,12],'dům = blok cityChunk(0) shop');
- for(const door of ['world','p3']){const cards=place(buildModel('workshop',0,{door,kid:0}),WORKSHOP_AT);
-  // Všechny karty P3 kromě dveří, kliky a provázků (P3: nulová výška) mají v modelu kartu se stejným čelem; dveře P3 jen ve variantě p3.
-  for(const c of old){const kind=c.color===PAPIR.workshop.door?'door':c.color===PAPIR.workshop.knob?'knob':c.color===PAPIR.workshop.string&&c.h<.01?'string':'';
-   if(kind==='string'||kind==='knob'||(kind&&door==='world'))continue;
-   assert.ok(cards.some(k=>same(k,c)),`${door}: chybí karta P3 ${c.shape} ${c.color} x=${c.x}`);}
-  const sign=cards.find(c=>c.part==='sign');assert.ok(near(sign.x+sign.w/2,sg.x)&&near(sign.y+sign.h/2,sg.y)&&near(sign.w,sg.w)&&near(front(sign),sg.z));
-  const terrace=cards.find(c=>c.part==='terrace');assert.ok(near(terrace.y+terrace.h,KID.y),'terasa ve výšce chodidel dítěte');assert.ok(terrace.x+terrace.w>=HAND.x+7,'přístavek až za ruku');}
- assert.ok(near(SIGN.x+WORKSHOP_AT.x,sg.x));
-});
-
-test('workshop: doplňky karty 5 (příčky, okenice, komín, truhlík, kolo, schránka, hřebíky, police), dítě volitelně, LOD 2 hmota ≤ 30 △',()=>{
- const m=modelById('workshop'),W=PAPIR.workshop,l=buildModel(m,0),has=part=>l.filter(c=>c.part===part);
- assert.ok(has('mullion').length>=3,'příčky dílenského okna');assert.equal(has('shutter').length,1,'okenice u horního okna');
- const top=Math.max(...has('chimney').map(c=>c.y+c.h)),ridge=Math.max(...l.filter(c=>c.part==='roof').map(c=>c.y+c.h));assert.ok(top-ridge>=1,'komín nad hřebenem');
- assert.ok(has('flowerbox').length===1&&has('flower').length>=3,'truhlík s květinami');assert.ok(has('mailbox').every(c=>c.color===PT.tomato)&&has('mailbox').length===1);
- const wheels=has('bike').filter(c=>c.shape==='disc');assert.equal(wheels.length,2);assert.ok(wheels.every(c=>c.d<=.1&&near(c.y,c.r)),'kola jen čelem na zemi');
- assert.ok(has('bike').some(c=>c.color===palette('papir').city.districts[0].near[2]),'rám kola teal');
- assert.equal(has('nail').length,2);assert.equal(has('string').length,2);assert.ok(has('papers').length>=2&&has('shelf').length===1);
- assert.ok(has('kid').some(c=>c.color===W.shirt)&&!buildModel(m,0,{kid:0}).some(c=>c.part==='kid'),'dítě jen s kid: 1');
- assert.equal(cardTriangles(buildModel(m,0))-cardTriangles(buildModel(m,0,{kid:0})),49,'dítě P3 (kvádry) ~50 △');
- // Barvy jen z PAPIR.workshop, palety čtvrti 1 a života (kolo, schránka, truhlík, hřebíky, komín).
- const D=palette('papir').city.districts[0],life=palette('papir').life,ok=new Set([...Object.values(W),D.near[2],D.trunk,PT.tomato,PT.pencil,PT.pencil700,...life.balloons,...life.pastel,life.chimney,
-  ...Object.values(tones(life.chimney)),...Object.values(tones(W.wall)),...Object.values(tones(W.annex))]);
- for(const p of variants(m))for(const c of buildModel(m,0,p))assert.ok(ok.has(c.color),`${c.part} ${c.color}`);
- // Dveře světa 1,1 × 2,2 m (dva vchody: dům a přístavek), varianta p3 = dveře P3 4,2 × 6 m.
- assert.equal(has('door').length,2);const wide=buildModel(m,0,{door:'p3'}).filter(c=>c.part==='wideDoor');assert.ok(wide.length===2&&near(wide[0].w,4.2)&&near(wide[0].h,6));
- assert.ok(modelTriangles(m,2)<=30&&modelTriangles(m,2,{kid:0})<modelTriangles(m,2));assert.equal(buildModel(m,1).length,0,'LOD 1 se nekreslí');
+  if(c.color===PT.graphite)assert.ok((c.shape==='disc'?c.y+c.r:c.y+c.h)<=8+1e-9,`${m.id} ${c.part}: grafit ve výšce ${c.y}`);
+  assert.notEqual(c.color,PT.mustard,`${m.id} ${c.part}: hořčicová jen hodnota`);}
+ assert.ok(buildModel('loft-balcony',0).some(c=>c.part==='knob'&&c.color===PT.cream));
 });
 
 test('corner-turret: přízemí + 4 patra, arkýř přes 3 patra, šestiboká věžička (3 stěny) s jehlanem do 25 m a praporkem, zrcadlení',()=>{

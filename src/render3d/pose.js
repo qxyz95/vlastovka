@@ -5,13 +5,18 @@ import {PIXELS_PER_METER as PPM} from '../scenes.js';
 import {noise1,fbm} from '../motion.js';
 import {flightAngle} from '../juice.js';
 import {PLANE_OFFSET,follow,sideCamera} from './geometry.js';
+import {LAUNCH,AIM_SHOT} from './models/launch-site.js';
 // Klidový záběr (Dílna, míření): polodetail 16 m, na užší scéně tak, aby vlaštovka v ruce (hand m) měla aspoň handPx CSS px, nejméně 7 m
 // (research/start/02 §2: desktop 16 m / 40 px, telefon 375 px 7 m / 27 px; rozhodnutí 06);
 // při nabíjení se přisune o push·charge (01 §2.2 fáze 3). k = logické px na světový px (2,1 px/m) v hloubce ruky.
-// Ruka HAND je zatím v 16 m (dnešní přístavek Dílny, 42 px nad zemí ve 2D při šířce 244 m); fyzika hází z 12 m, rozdíl překlene výhoz
-// (frame.launchLift). Místo odhodu s rukou ve 12 m je dávka S4.
+// Ruka podle stylu: cyber (stará Dílna, přístavek) HAND v 16 m, fyzika hází z 12 m a rozdíl překlene výhoz (frame.launchLift);
+// papír (S4, místo odhodu G2b) PAPER_HAND = launch-site LAUNCH.hand ve 12 m = výška výhozu fyziky (M-3), převod není potřeba.
+// Klidový sklon: cyber 6° shora, papír AIM_SHOT.pitch −8° (kamera mírně zespodu, za vlaštovkou nebe; bible 05 kap. 9.2).
 export const REST={width:16,narrow:7,hand:.5,handPx:27,push:.06,fov:20,pitch:6,k:640/PPM/16};
-export const HAND={x:PLANE_OFFSET,y:16,z:0};
+export const HAND=Object.freeze({x:PLANE_OFFSET,y:16,z:0});
+export const PAPER_HAND=LAUNCH.hand;
+export const handOf=style=>style==='papir'?PAPER_HAND:HAND;
+export const restPitch=style=>style==='papir'?AIM_SHOT.pitch:REST.pitch;
 export const aimWidth=(cssWidth=640)=>Math.max(REST.narrow,Math.min(REST.width,REST.hand*cssWidth/REST.handPx));
 // Promítnutí bodu kamerou {position,target,fov} (up = +y) do logických px 640×360. Čisté, stejné jako THREE.PerspectiveCamera.lookAt.
 export function project(cam,[x,y,z],aspect=16/9){
@@ -19,11 +24,11 @@ export function project(cam,[x,y,z],aspect=16/9){
  const U=[R[1]*F[2]-R[2]*F[1],R[2]*F[0]-R[0]*F[2],R[0]*F[1]-R[1]*F[0]],d=[x-ex,y-ey,z-ez],dot=a=>a[0]*d[0]+a[1]*d[1]+a[2]*d[2],t=Math.tan(cam.fov*Math.PI/360),depth=dot(F);
  return [320+dot(R)/(depth*t*aspect)*320,180-dot(U)/(depth*t)*180];
 }
-// Kamera v klidu (Dílna, míření): follow + sideCamera jako za letu se šířkou width (REST.width); sklon 6° posune HAND,
-// proto se kamera (pozice i cíl) dorovná tak, aby HAND padl přesně na (148, 258). Vrací {cx,cy,width,height,lift,position,target,dist,fov}.
-export function restCamera(aspect=16/9,width=REST.width){
- const v=follow(HAND.x,HAND.y,{width,aspect}),c={...v,...sideCamera(v,REST.fov,REST.pitch),fov:REST.fov};
- for(let i=0;i<4;i++){const [sx,sy]=project(c,[HAND.x,HAND.y,HAND.z],aspect),dx=(sx-148)/640*c.width,dy=(258-sy)/360*c.height;
+// Kamera v klidu (Dílna, míření): follow + sideCamera jako za letu se šířkou width (REST.width); sklon posune ruku hand,
+// proto se kamera (pozice i cíl) dorovná tak, aby ruka padla přesně na (148, 258). Vrací {cx,cy,width,height,lift,position,target,dist,fov}.
+export function restCamera(aspect=16/9,width=REST.width,{hand=HAND,pitch=REST.pitch}={}){
+ const v=follow(hand.x,hand.y,{width,aspect}),c={...v,...sideCamera(v,REST.fov,pitch),fov:REST.fov};
+ for(let i=0;i<6;i++){const [sx,sy]=project(c,[hand.x,hand.y,hand.z],aspect),dx=(sx-148)/640*c.width,dy=(258-sy)/360*c.height;
   c.cx+=dx;c.cy+=dy;c.position=[c.position[0]+dx,c.position[1]+dy,c.position[2]];c.target=[c.target[0]+dx,c.target[1]+dy,c.target[2]];}
  return c;
 }
@@ -31,9 +36,13 @@ const m=px=>px/PPM;
 // Dítě: dýchá při míření (ve 2D ±1 px, tady bez zaokrouhlení), při nabíjení couvne (2D: kx − charge·3 px) a zakloní se (3D navíc),
 // po hodu mává (2D: rotate(−1,25 + sin(9t)·0,45) → three.js rotation.z s opačným znaménkem). Reduced motion: anim = 0, takže bez dýchání.
 // Neon dílny (2D: blikne, když noise1(.6t,7) > .45 a noise1(30t,9) > 0) a dýchající světlo okna (.7 + .3·sin 1,6t) jsou tu taky.
-export function kidPose({charge=0,thrown=false,t=0,reduced=false}={}){
+// phase (papír, dítě H1): 'rest' klid (Dílna), 'aim' míření, 'charge' nabíjení, 'throw' výhoz (švih ruky, swing 0→1 za KID_THROW s od puštění,
+// since = čas letu f.t), 'wave' mávání; rest = klidový stav scény (Dílna, míření), state = visual.state. pose, arm a ostatní zůstávají pro cyber Dílnu.
+export const KID_THROW=.3;
+export function kidPose({charge=0,thrown=false,t=0,reduced=false,rest=!thrown,state='aim',since=0}={}){
  const env=reduced?0:t,bob=thrown?0:m(Math.sin(env*2.5)),back=m(charge*3),arm=thrown?1.25-Math.sin(env*9)*.45:null;
- return {pose:thrown?'wave':charge>0?'charge':'hold',bob,back,lean:charge*.18,arm,charge,
+ const phase=rest?(charge>0?'charge':state==='workshop'?'rest':'aim'):since<KID_THROW?'throw':'wave',swing=phase==='throw'?Math.max(0,Math.min(1,since/KID_THROW)):phase==='wave'?1:0;
+ return {pose:thrown?'wave':charge>0?'charge':'hold',phase,swing,bob,back,lean:charge*.18,arm,charge,
   flicker:noise1(env*.6,7)>.45&&noise1(env*30,9)>0,glow:.7+.3*Math.sin(env*1.6)};
 }
 // Vlaštovka: rotace z pružiny fx.rot.x (nebo flightAngle), −charge·0,25 (záklon nosu), flutter šumem, squash & stretch fx.stretch.x

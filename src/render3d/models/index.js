@@ -10,7 +10,6 @@ import houseRow from './house-row.js';
 import houseGable from './house-gable.js';
 import farSkyline from './far-skyline.js';
 import chimney from './chimney.js';
-import workshop from './workshop.js';
 import cornerTurret from './corner-turret.js';
 import person from './person.js';
 import streetLamp from './street-lamp.js';
@@ -27,8 +26,8 @@ export {place,bounds} from './parts.js';
 export {LAUNCH,DIORAMA,AIM_SHOT,MENU_SHOT} from './launch-site.js';
 import {place} from './parts.js';
 import {DIORAMA} from './launch-site.js';
-// G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7). Model s replacedBy je nahrazený (zůstává do S4), hero = LOD 0 je LOD H.
-export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney,workshop,cornerTurret,person,streetLamp,kid,workshopAttic,workshopInterior,loftBalcony,hoistBeam,retainingWall]);
+// G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7; K4 workshop nahradily v S4). Model s replacedBy je nahrazený, hero = LOD 0 je LOD H.
+export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney,cornerTurret,person,streetLamp,kid,workshopAttic,workshopInterior,loftBalcony,hoistBeam,retainingWall]);
 export const ACTIVE_MODELS=Object.freeze(MODELS.filter(m=>!m.replacedBy));
 export const modelById=id=>MODELS.find(m=>m.id===id)??null;
 export const defaults=m=>Object.fromEntries(Object.entries(m.params).map(([k,v])=>[k,v.default]));
@@ -49,8 +48,13 @@ export function buildShadow(m,params={}){
  return m.shadow?m.shadow(p):m.lod[2](p);
 }
 // Dioráma místa odhodu (G2b): karty H1–H6 posunuté do souřadnic místa 1 (launch-site.js DIORAMA). params {id: {…}} přepíše varianty modelů.
-// Ve hře (S4) bude H2–H6 ve sloučené geometrii ulice místa 1 a dítě zvlášť (11 kap. 4.2); tady jen karty pro katalog a testy.
 export function diorama(lod=0,params={},{only=null}={}){
  return DIORAMA.filter(o=>!only||only.includes(o.id)).flatMap(o=>place(buildModel(o.id,lod,params[o.id]??{}).map(c=>({...c,model:o.id})),o.at));
 }
 export const dioramaShadow=(params={})=>DIORAMA.flatMap(o=>place(buildShadow(o.id,params[o.id]??{}),o.at));
+// Hra (S4, 11 kap. 4.2 varianta A): statické H2–H6 jdou do sloučené ulice místa 1 (vrstva near, city.js), dítě a praporek větru kreslí
+// workshop.js (pohyb); stín celého místa = proxy H2 + H6 + stojící dítě v masce stínů místa 1 (dioramaShadow).
+export const LAUNCH_STATIC=Object.freeze(DIORAMA.map(o=>o.id).filter(id=>id!=='kid'));
+export const launchStatic=(params={})=>diorama(0,params,{only:LAUNCH_STATIC}).filter(c=>c.part!=='flag').map(c=>({...c,layer:'near'}));
+export const launchFlag=(params={})=>diorama(0,params,{only:['hoist-beam']}).filter(c=>c.part==='flag');
+export const launchShadow=(params={})=>dioramaShadow(params).map(c=>({...c,layer:'near'}));

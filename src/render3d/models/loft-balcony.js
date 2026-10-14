@@ -11,7 +11,7 @@ const W=LAUNCH.deckEnd-LAUNCH.house.x1,X0=-W/2;
 // Dveře 0,95 × 2,05 m otevřené o 90° ke kameře (křídlo před lícem domu), klika ⌀ 0,1 m ve výšce 1 m.
 export const LOFT=Object.freeze({w:W,deck:Object.freeze({d:2.4,t:.2}),rail:Object.freeze({h:.95,post:.05,step:.5,hand:.07,front:-.1}),
  door:Object.freeze({w:.95,h:2.05,x:X0-.1,front:.5}),knob:Object.freeze({r:.05,y:1})});
-const C=()=>{const P=palette('papir'),navy=P.city.districts[0].window;return {deck:T.kraftDark,navy,inset:mix(navy,P.city.cut,.15),knob:T.cream};};
+const C=()=>{const P=palette('papir'),navy=P.workshop.rail;return {deck:T.kraftDark,navy,inset:mix(navy,P.city.cut,.15),knob:P.workshop.knob};};
 
 function build(){
  const c=C(),R=LOFT.rail,D=LOFT.door,out=[block({x:X0,w:W,y:-LOFT.deck.t,h:LOFT.deck.t,d:LOFT.deck.d,color:c.deck,part:'deck'})];

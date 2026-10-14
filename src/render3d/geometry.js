@@ -83,7 +83,9 @@ export const chunkOffset=screen=>screen*SCREEN_METERS;
 // takže výsledek jde kešovat podle indexu a skupinu jen posunout o chunkOffset(screen). Seed = index, místa se po 16 opakují.
 // Dílna (bloky a cedule s shop:true) je v indexu 0; volající ji za první obrazovkou (screen ≥ 16) vynechá.
 // tone: 0 ulice, 1 střed, 2 panorama, 3 akcent (kontejnery, vlak), 4 zeleň, 5 hory.
-export function cityChunk(index){
+// opts.view = pás výhledu S-1 (jen Papírové město, jen první obrazovka místa 0): domy ulice a středu kolem startu snížené (viewCap), až po
+// vygenerování, takže pořadí náhody, šířky i polohy zůstávají (cyber volá bez opts a dostane stejné místo jako dřív).
+export function cityChunk(index,{view=false}={}){
  index=placeIndex(index);const kind=ROUTE[index].kind,biome=Math.floor(index/4),L=DISTRICT_LAYOUTS[biome],k=L.kinds[kind],rng=random(index*7919+13),W=SCREEN_METERS;
  const blocks=[],signs=[],lamps=[],between=(a,b)=>a+rng()*(b-a);
  const add=b=>{const block={type:'box',y:0,biome,tone:0,ou:Math.floor(rng()*8)/8,ov:Math.floor(rng()*8)/8,...b};blocks.push(block);return block;};
@@ -100,7 +102,17 @@ export function cityChunk(index){
  for(const b of blocks)if(b.sign)signs.push({x:b.x+b.w*.25,y:b.y+.8,z:b.z+b.d/2+.4,w:b.w*.5,h:3.4,text:b.sign,color:NEON[1]});
  if(index===0)signs.push({x:22,y:7.5,z:-4.6,w:20,h:3,text:'PAPER LAB',color:NEON[0],shop:true});
  if(k.lamps!==false)for(let x=15;x<W;x+=45)lamps.push({x,z:9,h:6,color:NEON[biome%NEON.length]});
- return {index,kind,biome,district:L.id,x0:0,x1:W,blocks,signs,lamps,ground:{x0:0,x1:W,biome,water:biome===1}};
+ return {index,kind,biome,district:L.id,x0:0,x1:W,blocks:view&&index===0?blocks.map(viewCap):blocks,signs,lamps,ground:{x0:0,x1:W,biome,water:biome===1}};
+}
+// Pás výhledu S-1 (bible 05 kap. 9.3, rozhodnutí 06 bod 5): ruka 12 m (launch-site LAUNCH.hand, x = PLANE_OFFSET). Střed (tone 1) do reach m
+// od ruky (vodorovně, podle nejbližší hrany domu) nejvýš h = ruka + 1 m, ulice (tone 0) do 60 m nejvýš ruka − 1 m; za reach strop lineárně
+// roste a za reach + ramp končí (top = nejvyšší dům vrstvy ve čtvrti 1, dál výšky jako dřív). cap = strop celé výšky včetně střechy (paper-cards).
+export const VIEW_BAND=Object.freeze({x:PLANE_OFFSET,mid:Object.freeze({h:13,reach:150,ramp:100,top:40}),near:Object.freeze({h:11,reach:60,ramp:100,top:22})});
+export const viewCapAt=(layer,d)=>{const L=VIEW_BAND[layer];return d<=L.reach?L.h:d>=L.reach+L.ramp?Infinity:L.h+(L.top-L.h)*(d-L.reach)/L.ramp;};
+export function viewCap(b){
+ if(b.shop||(b.tone!==0&&b.tone!==1)||b.h<1)return b;
+ const cap=viewCapAt(b.tone===1?'mid':'near',Math.max(0,b.x-VIEW_BAND.x,VIEW_BAND.x-(b.x+b.w)));
+ return cap===Infinity?b:{...b,h:Math.min(b.h,cap),cap};
 }
 // Kamera jako render.view(f), jen v metrech: vlaštovka na px/640 zleva, zem 60/360 nad spodním okrajem,
 // nad 190/360 výšky obrazu se kamera zvedá. width = viditelná šířka v metrech ve hloubce letu (hra: 640/2,1).
