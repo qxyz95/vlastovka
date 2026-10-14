@@ -128,7 +128,7 @@ export const PAPIR={
  steam:PT.cream,
  life:{...CYBER.life,people:{cloth:['#e8735a','#f2b65a','#5aa6a0','#7f9ed6','#e98fa0','#f4ece0'],skin:SKIN},pastel:BALLOONS,balloons:BALLOONS,cloud:PAPER_DISC,
   chimney:'#9a4a3a',tanks:{body:'#9fb7d9',leg:PT.pencil,roof:PT.tomato},mast:PT.pencil,stall:{base:PT.card,post:PT.pencil,stripe:PT.cream,stripes:[PT.tomato,'#5aa6a0','#e98fa0','#f2b65a']},
-  line:PT.pencil,bunting:[PT.tomato,PT.mustard,PT.teal,PT.cream,'#7f9ed6'],tunnel:{wall:'#9cc3a6',mouth:PT.graphite},pyramid:'#a8c48a',
+  line:PT.pencil,bunting:[PT.tomato,'#f2b65a',PT.teal,PT.cream,'#7f9ed6'],tunnel:{wall:'#9cc3a6',mouth:PT.graphite},pyramid:'#a8c48a',
   rail:{...CYBER.life.rail,bed:PT.kraftDark},platform:PT.card,pole:PT.pencil,car:{...CYBER.life.car,cabin:PT.cream,wheel:PT.graphite},basket:PT.kraftDark,rope:PT.pencil},
  // Místo odhodu (bible 05 kap. 9.4–9.5, rozhodnutí 06 bod 6, S-2 a S-3): krémový dům, rajčatová střecha, teplé sklo; rámy, dveře, zábradlí a nohy
  // dítěte tmavomodré D1.window (nikdy grafit), pláštěnka (shirt) D1.near[1] #f2b65a místo hořčicové, skládaná čepice (visor) z kraftu s rajčatovým

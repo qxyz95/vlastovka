@@ -51,3 +51,7 @@ test('Calm camera / reduced motion: throw cuts from the aim shot to W_let·T (ca
  const o=throwChain({visual:{reduced:true},frames:30});assert.equal(o[1].cut,true);assert.ok(o.slice(2).every(x=>!x.cut));
  near(o[1].w,CAMERA.width,1e-9,'flight width right away');assert.ok(o.slice(1).every(x=>Math.abs(x.w-CAMERA.width)<1e-9));
 });
+test('game in the cyber style (visual.style cyber) keeps the old far workshop shot, the 16 m close shot is for the paper launch site',()=>{
+ const p=restPlan({visual:{cssWidth:1280,style:'cyber'}});near(p.camera.width,640/2.1/1.25,1e-6,'cyber far rest shot');near(p.view.px,148,1e-6,'px');near(p.view.py,258,1e-6,'py');
+ near(restPlan({visual:{cssWidth:1280,style:'papir'}}).camera.width,16,1e-9,'paper 16 m');
+});

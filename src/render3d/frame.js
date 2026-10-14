@@ -57,8 +57,11 @@ export const planeWorld=(f,style)=>{const h=handOf(style);return f?[f.x+PLANE_OF
 export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
 // Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka a sklon podle stylu; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
 const rests=new Map(),restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0)),style=styleOf(visual),h=handOf(style);
- return {x:h.x,y:h.y,v:0,t,dt,flying:false,calm,aimW:aimWidth(visual.cssWidth??640)*(1-AIM.push*c),pitch:restPitch(style)};};
-const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm+'|'+i.y+'|'+i.pitch;if(i.aimW!==aimWidth(visual.cssWidth??640))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
+ return {x:h.x,y:h.y,v:0,t,dt,flying:false,calm,aimW:restWidth(visual,style,c),pitch:restPitch(style)};};
+// Hra ve stylu cyber (visual.style==='cyber', stará Dílna s obřím dítětem) drží původní vzdálený klidový záběr; zblízka 16 m papír (místo odhodu S4).
+export const CYBER_REST_W=640/PPM/1.25;
+const restWidth=(visual,style,c=0)=>visual?.style==='cyber'?CYBER_REST_W:aimWidth(visual?.cssWidth??640)*(1-AIM.push*c);
+const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm+'|'+i.y+'|'+i.pitch;if(i.aimW!==restWidth(visual,styleOf(visual)))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
  let r=rests.get(key);if(!r)rests.set(key,r=direct(createDirector(DIRECTOR),i));return r;};
 // Tempo π a cestovní rychlost výbavy (01 §3.3): nový systém nese π v f.d.pi a cestovní rychlost s β v f.cruise (simulation/progression/model.mjs),
 // dnešní hra jen f.p.cruise (π = 1). Calm camera i reduced motion = kamera bez dynamického zoomu (01 §3.8).
