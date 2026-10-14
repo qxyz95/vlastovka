@@ -55,3 +55,45 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **3D město nahradí 2D grafiku** (14. 10.): uživatel: „3D město bude určitě vypadat lépe než 2D grafika.“ Dnešní 2D styly zůstanou jen do doby, než bude 3D ve hře hratelné.
 - **2D grafika města končí** (14. 10.): uživatel po vyzkoušení živé čtvrti ve 3D prototypu: „3D grafika vyhrává na plné čáře. 2D grafiku města můžeš hodit do koše.“ 2D vykreslování (`render.js`, `route-render.js`, `backgrounds.js`, `themes.js` se 4 styly, `themes-verse.js`, SVG oblohy) se odstraní, **až bude 3D ve hře hratelné**. Do té doby by hra bez 2D nešla spustit. Odstranění bude samostatný krok s commitem, aby šlo vrátit.
 - **K plánu převodu 3D (`research/3d/01-plan-prevodu.md` §6, 14. 10.):** (1) bez WebGL jen hláška „Hra potřebuje WebGL“, žádný nouzový režim. (2) 2D se smaže po hrubém 3D všech 16 míst (fáze b0). (3) Referenční zařízení: uživatelův výkonný notebook (HW v plánu) a iPhone 15 Pro (Safari). (4) 3D je ve hře výchozí hned po fázi a5, 2D jen přes `?render=2d` do smazání.
+- **K rozboru RippleLoop (`13-rippleloop.md` §7, 14. 10.): vše podle doporučení.** Vstup pro 3. kolo progrese (po F5):
+  1. **Boost taps: ano.** Pár ťuknutí za hod, kterými hráč vlaštovku postrčí. Nesmí kolidovat s QTE na jednom tlačítku.
+  2. **Letka (víc vlaštovek v jednom hodu): ne.** Nanejvýš pozdní bonus „Wingmen“.
+  3. **Kombo zvyšuje i mince: ano**, s malým účinkem.
+  4. **„Throw again“ přímo z výsledku: ano.**
+  5. **Překážky: ne.**
+  6. **Prestige / reset: ne.**
+  7. **Prodloužení hry na ~2 h: rozhodne se až po playtestu.**
+  Převzít i mince = dolet × násobek čtvrti s cenami v tisících a strom s mnoha malými uzly a viditelnými čísly (hodnota teď → po koupi). Nepřevzít oddělené úrovně, offline výdělek ani nutkavé prvky (P13).
+- **K návrhu Atlasu (`research/atlas/01-navrh-atlasu.md` §9, 14. 10.): vše podle doporučení.**
+  1. Atlas je **panel ve hře** (`<dialog id="atlas">` v `index.html`), `bonus.html` jen přesměruje na `./#atlas`.
+  2. Bonus nejbližšího místa (teaser) je vidět předem: jméno a jedna věta, bez čísel.
+  3. Hlášky postav jdou v Atlasu přečíst, ale jen ty, které už zazněly, bez počtu („2/3“).
+  4. Tečka na tlačítku Atlas jen při nové, dosud neviděné věci, nikdy kvůli možnosti koupě.
+  5. Automatika QTE a Night Route jsou uzly v Atlasu (Night Route u Rooftop Harbor, po finále).
+- **Jazyk hry: přepínatelný EN / CS (14. 10.).** Uživatel chce překlad celé hry hned a s možností přepnout jazyk. Mění to dřívější „překlad až po ustálení grafiky a obsahu“. Výchozí jazyk je **angličtina** (hra je primárně anglická), čeština jako druhý jazyk. Každý nový herní text se od teď píše přes klíče v obou jazycích.
+- **Ke 4 druhům papíru (`research/design/01-papiry.md`, 14. 10.): vše podle doporučení.**
+  1. Korunka Copy Paper = „Ruled contrails“ (dvě modré linky z konců křídel), ne rychlostní čáry.
+  2. Kraft jako letecká pošta (okraj se šipkami, razítko), návaznost na „Delivered.“.
+  3. Washi se vzorem vlnek.
+  4. Animace výměny papíru jen v Dílně po koupi, ne při dalším hodu.
+- **Atlas A1, čeština (14. 10.):** české texty Atlasu se doplní už v prototypu A1 (sloupec CS v `research/atlas/03-texty.md`, prototyp přes `?lang=cs`), aby se delší čeština ověřila na 360 px dřív než ve hře.
+- **Jednotný vizuální styl (14. 10.):** zavádí se stylová bible `research/design/02-styl.md` (jediný zdroj pravdy o vzhledu), agent `art-director` a skill `art-review`. Bibli napíše art-director z toho, co ve hře funguje. Závazná bude až po schválení pilířů stylu a palety uživatelem.
+- **K prototypu Atlasu A1 (`research/atlas/02-design-spec.md`, 14. 10.): vše podle doporučení.**
+  1. Kapsy na mobilu rolují s mapou.
+  2. Autopilot jako 5 samostatných uzlů po čtvrtích.
+  3. Účinek jako dvě věty „Now · Level 2“ / „Level 3“.
+  4. Věta „Progress saved. Nothing here runs out.“ zůstává.
+- **K výsledkům F5 (`research/bonusy/12-ladeni2.md` §5 a §7, 14. 10.): vše podle doporučení.** Vstup pro 3. kolo progrese:
+  1. Sucho v D3–D4 řeší drobná novinka mezi místy (např. pravdivá těsnost „37 m short of …“ nebo dílčí odměna za nový nejdelší let v rámci místa). Cíl sucha P90 ≤ 8 zůstává.
+  2. Pára a Ad Drone se přidávají do rozvrhu navíc jako Shooting Star, ne vahou do směsi událostí.
+  3. Dive: zrychlení a strop střemhlavu odvozené od základní rychlosti (`cruise`) bez π, síla nesmí růst s výbavou.
+  4. Sada „šum ×2“: pásma posunuta (mezi místy P90 ≤ 16, první kapsa ≤ 45. hod, koupené úrovně ≤ 90 %), expert / průměrný 0,69 přijato. Packing Tape se měří v sadě „šum ×2“.
+- **Ke stylové bibli (`research/design/02-styl.md`, 14. 10.): vše podle doporučení. Bible je po zapracování závazná.**
+  1. Pilíře stylu: varianta A „Cesta za sluncem“ (vlaštovka vždy vidět, tištěný komiks, barva vypráví cestu za sluncem, jedna výrazná věc na obrazovku).
+  2. Paleta: varianta A, uklizená dnešní (barvy čtvrtí z `mood.js`, jedna tuš, bílá vlaštovka).
+  3. Jedno UI pro celou hru na tokenech Atlasu (indigo `#1b1444`, Bahnschrift, rámy 3 px tuš, bez monospace); `style.css` hry se na ně převede.
+  4. Perfekt je vždy magenta, zlatá znamená jen hodnotu (mince, odměny).
+  5. Pás obzoru v Neon Core se posouvá z limetkové do tyrkysové (`#2aa99c` → `#7ff0d8`).
+  6. Půltón jen ve stínech budov.
+- **Pohlednice Atlasu bez výjimky (14. 10.):** půltón jen ve stínech platí přísně i pro pohlednice, vzor čtvrti v nebi (`ht-0…3`) se odstraní. Stopa letu dostane tušový lem (návrh art directora, beze změny voleb).
+- **Pořadí oprav grafiky (14. 10.):** dávka G0 (tokeny) až po commitu současné práce přes `/release`, pak G1, G2, P1, G3 souběžně ve worktree, P2 po dokončení češtiny v prototypu Atlasu.
