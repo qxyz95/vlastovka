@@ -158,3 +158,4 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   - **Cílová délka kampaně ~2 hodiny**, ale jen pokud ji nese obsah a objevování (nové bonusy, eventy, výzvy), ne zdražování a grind (P13). Nahrazuje „~60 min“ z bodu 2 rozhodnutí o odemykatelném obsahu.
   - Násobič mincí: řádek Poštovní brašna (Mailbag) v Dílně. Needle: stejný dolet jako Dart, kratší let.
   - Pásma hodů a minut v 08 §10.2 se přepočítají podle plánu obsahu na 2 hodiny.
+- **Washi úr. 3 „papírový lampion“ (14. 10.):** svítí jen ve Městě lampionů (čtvrť 4), jinde teplejší výplň bez záře. Jedno pravidlo pro všechno, co svítí (stejně jako lampionový skin). Bible 05 kap. 16.3 tím uzavřena.

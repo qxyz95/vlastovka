@@ -455,9 +455,11 @@ Všechny rozpory z `research/start/02-misto-odhodu-vzhled.md` kap. 6 rozhodl už
 - **Copy × skin N1 Ruled Notebook:** oba mají modré linky sešitu; na Copy by N1 skoro nebyl vidět. Návrh pro game designera: N1 kreslit čtverečkovaně (Graph Paper z rezervy 03), nebo linky Copy ztišit na vlákna. Rozhodne se se skiny v dávce, nemění schválený vzhled.
 - **Práh papíru:** 03 uvádělo L ≥ 0,70, správně je 0,69 (světlý Kraft 0,694 × `#cdd3e3` 0,651 = 0,452 ≥ 0,449). Opraveno v 03 i tady.
 
-### 16.3 Otázka pro uživatele
+### 16.3 Záře Washi (rozhodnuto 14. 10.)
 
-BLOCKED: **Smí Washi na 3. úrovni („papírový lampion“) svítit i mimo večerní čtvrť?** Schválený návrh papírů (`01-papiry.md`) má korunku Washi „vlaštovka svítí zevnitř, teplá aura“ a Washi slabou vnitřní záři. Bible ale dovoluje světlo jen lampionům a oknu domova, a u lampionového skinu uživatel rozhodl „svítí jen ve čtvrti 4“. Možnosti: (a) **stejně jako lampionový skin: záře jen ve Městě lampionů, jinde teplejší výplň bez záře**; (b) svítí všude (ve dne je záře na světlém nebi skoro neviditelná a soupeří s obrysem); (c) Washi nesvítí nikdy. **Doporučuji (a)**: jedno pravidlo pro všechno, co svítí, a korunka má svou chvíli ve večerní čtvrti. Obrázek pro srovnání: `img/obsah/skiny.png`, sloupec 6 (večerní nebe).
+**Rozhodnuto (a):** Washi úr. 3 „papírový lampion“ svítí jen ve Městě lampionů (čtvrť 4), jinde má teplejší výplň bez záře. Stejné pravidlo jako lampionový skin: všechno, co svítí, svítí jen ve večerní čtvrti (rozhodnutí 06). Původní otázka:
+
+Dříve BLOCKED: **Smí Washi na 3. úrovni („papírový lampion“) svítit i mimo večerní čtvrť?** Schválený návrh papírů (`01-papiry.md`) má korunku Washi „vlaštovka svítí zevnitř, teplá aura“ a Washi slabou vnitřní záři. Bible ale dovoluje světlo jen lampionům a oknu domova, a u lampionového skinu uživatel rozhodl „svítí jen ve čtvrti 4“. Možnosti: (a) **stejně jako lampionový skin: záře jen ve Městě lampionů, jinde teplejší výplň bez záře**; (b) svítí všude (ve dne je záře na světlém nebi skoro neviditelná a soupeří s obrysem); (c) Washi nesvítí nikdy. **Doporučuji (a)**: jedno pravidlo pro všechno, co svítí, a korunka má svou chvíli ve večerní čtvrti. Obrázek pro srovnání: `img/obsah/skiny.png`, sloupec 6 (večerní nebe).
 
 ### 16.4 Prototyp × bible a otázky prvního návrhu
 - `.claude/rules/render3d.md` zmiňuje `quality.js`, který neexistuje; `plan.quality` je natvrdo 2.
