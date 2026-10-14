@@ -1,0 +1,207 @@
+{
+ "name": "f3-seed2-skills",
+ "date": "2026-10-13T20:42:01.879Z",
+ "n": 200,
+ "seed": 2,
+ "over": {},
+ "groups": {
+  "average|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 98,
+   "throwsP90": 110,
+   "throwsMax": 126,
+   "minutes": 52.16899789878356,
+   "district": [
+    {
+     "throws": 30,
+     "minutes": 13.257291026449549
+    },
+    {
+     "throws": 31,
+     "minutes": 16.253898077221592
+    },
+    {
+     "throws": 16,
+     "minutes": 9.86528487106954
+    },
+    {
+     "throws": 21,
+     "minutes": 13.317892962560748
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.47,
+     "p90": 24.7,
+     "max": 34.34
+    },
+    {
+     "median": 23.43,
+     "p90": 27.94,
+     "max": 38.57
+    },
+    {
+     "median": 27.87,
+     "p90": 33.39,
+     "max": 48.18
+    },
+    {
+     "median": 28.67,
+     "p90": 35.66,
+     "max": 45.93
+    }
+   ],
+   "flightP90": 31.64,
+   "flightMax": 48.18,
+   "simMax": 51.99,
+   "droughtMedian": 2,
+   "droughtMax": 10,
+   "droughtMaxMedian": 7,
+   "placeGapMedian": 7,
+   "placeGapP90": 14,
+   "firstPocket": 36,
+   "levelsBought": 0.8043478260869565,
+   "gliderShare": 0.5523809523809524,
+   "eCap": 0.07753398157104312,
+   "betaCap": 0,
+   "qteHit": 0.9710698532591461,
+   "diveCrash": null
+  }
+ },
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 30,
+   "goal": "25–35",
+   "ok": true
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 31,
+   "goal": "20–30",
+   "ok": false
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 16,
+   "goal": "20–30",
+   "ok": false
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 21,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "13.3",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "16.3",
+   "goal": "10–16",
+   "ok": false
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "9.9",
+   "goal": "12–18",
+   "ok": false
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "13.3",
+   "goal": "14–20",
+   "ok": false
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "52.2",
+   "goal": "50–75",
+   "ok": true
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.5",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "23.4",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "27.9",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "28.7",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "31.6",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / max",
+   "value": "2 / 10",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": false
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "7 / 14",
+   "goal": "≤ 8 / ≤ 14",
+   "ok": true
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "8 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "55 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 36,
+   "goal": "20–40",
+   "ok": true
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "80 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "48.2",
+   "goal": "≤ 60",
+   "ok": true
+  }
+ ],
+ "seconds": 54.672
+}

@@ -126,3 +126,5 @@ Každý bod: co měří, proč čísla nepomohou a co navrhuji. Mechaniky jsem n
 - Termika se silným vodorovným pushem (×3): působí ještě jako „stoupavý proud“?
 - Humor postav, velký moment na hranici čtvrti, finále.
 - Model realistického hráče (trpělivost 6 hodů, preference papíru) je odhad. Skutečné nákupní chování ukáže až playtest.
+
+**Pokračování:** ladění po změnách pravidel ze 14. 10. (fáze F5) je v `12-ladeni2.md`.

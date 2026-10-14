@@ -1,0 +1,216 @@
+{
+ "name": "f5-seed2-skills",
+ "date": "2026-10-14T11:35:14.831Z",
+ "n": 200,
+ "seed": 2,
+ "over": {},
+ "groups": {
+  "average|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 94,
+   "throwsP90": 105,
+   "throwsMax": 123,
+   "minutes": 50.73806009030048,
+   "district": [
+    {
+     "throws": 30,
+     "minutes": 13.247226368434013
+    },
+    {
+     "throws": 22,
+     "minutes": 11.741211180208674
+    },
+    {
+     "throws": 22,
+     "minutes": 13.349492206736326
+    },
+    {
+     "throws": 20,
+     "minutes": 12.510116215964956
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.49,
+     "p90": 24.66,
+     "max": 33.98
+    },
+    {
+     "median": 23.7,
+     "p90": 28.16,
+     "max": 37.16
+    },
+    {
+     "median": 28.38,
+     "p90": 33.92,
+     "max": 42.16
+    },
+    {
+     "median": 29.13,
+     "p90": 35.56,
+     "max": 48.16
+    }
+   ],
+   "flightP90": 32.44,
+   "flightMax": 48.16,
+   "simMax": 51.72,
+   "droughtMedian": 2,
+   "droughtMax": 11,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 7,
+   "placeGapP90": 13,
+   "firstPocket": 38,
+   "levelsBought": 0.8260869565217391,
+   "gliderShare": 0.5384615384615384,
+   "eCap": 0.17841374541199,
+   "betaCap": 0,
+   "craneTugRate": 0.0075535932762380974,
+   "craneNewPlace": 0.035211267605633804,
+   "qteHit": 0.9761951102660459,
+   "diveCrash": null
+  }
+ },
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 30,
+   "goal": "25–35",
+   "ok": true
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 22,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 22,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 20,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "13.2",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "11.7",
+   "goal": "10–16",
+   "ok": true
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "13.3",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "12.5",
+   "goal": "14–20",
+   "ok": false
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "50.7",
+   "goal": "50–75",
+   "ok": true
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.5",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "23.7",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "28.4",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "29.1",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "32.4",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 9 (max 11, P90 9)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": false
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "7 / 13",
+   "goal": "≤ 8 / ≤ 14",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "0.8 % / 4 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "18 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "54 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 38,
+   "goal": "20–40",
+   "ok": true
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "83 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "48.2",
+   "goal": "≤ 60",
+   "ok": true
+  }
+ ],
+ "seconds": 40.351
+}

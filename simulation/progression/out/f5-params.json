@@ -1,0 +1,787 @@
+{
+ "route": {
+  "place": 304.76190476190476,
+  "places": 16,
+  "perDistrict": 4,
+  "finish": 4876.190476190476
+ },
+ "physics": {
+  "dt": 0.016666666666666666,
+  "gravity": 1.8,
+  "steepPenalty": 0.0015,
+  "y0": 12,
+  "maxT": 180,
+  "eventMinY": 8
+ },
+ "models": {
+  "dart": {
+   "speed": 20,
+   "glide": 3.2,
+   "drag": 0.12,
+   "cruise": 11,
+   "ideal": 18,
+   "qte": 1
+  },
+  "glider": {
+   "speed": 14,
+   "glide": 4,
+   "drag": 0.12,
+   "cruise": 11,
+   "ideal": 30,
+   "qte": 1.15
+  }
+ },
+ "workshop": {
+  "power": {
+   "prices": [
+    50,
+    160,
+    350
+   ],
+   "step": 0.14
+  },
+  "folds": {
+   "prices": [
+    50,
+    160,
+    350
+   ],
+   "steady": 0.3,
+   "window": 0.25,
+   "push": 0.2
+  },
+  "paper": {
+   "prices": [
+    180,
+    320,
+    520,
+    500,
+    800,
+    1100,
+    2800,
+    3600,
+    4400,
+    3200,
+    3800,
+    4400
+   ],
+   "steps": [
+    0.62,
+    0.62,
+    0.62,
+    0.45,
+    0.45,
+    0.45,
+    0.7,
+    0.7,
+    0.7,
+    0.85,
+    0.85,
+    0.85
+   ],
+   "perTier": 3,
+   "openAtPlace": 3
+  }
+ },
+ "atlas": {
+  "bonuses": [
+   "glider",
+   "chain",
+   "pinwheel",
+   "steam",
+   "tape",
+   "crane",
+   "skip",
+   "gull",
+   "momentum",
+   "thermal",
+   "echo",
+   "star",
+   "drone",
+   "paperCrane",
+   "onAir",
+   "encore"
+  ],
+  "unlevelled": [
+   "glider",
+   "encore"
+  ],
+  "gliderAt": 100,
+  "prices": [
+   [
+    40,
+    90
+   ],
+   [
+    170,
+    340
+   ],
+   [
+    500,
+    1000
+   ],
+   [
+    500,
+    1000
+   ]
+  ],
+  "crane": 1.5,
+  "gull": {
+   "carry": [
+    0.2,
+    0.35,
+    0.5
+   ],
+   "push": [
+    0.1,
+    0.15,
+    0.22
+   ]
+  },
+  "tape": [
+   0.3,
+   0.5,
+   0.75
+  ],
+  "skip": {
+   "keep": [
+    0.3,
+    0.45,
+    0.45
+   ],
+   "bounces": [
+    1,
+    1,
+    2
+   ],
+   "vy": 3,
+   "minVx": 1.75,
+   "chainVx": 0.5
+  },
+  "momentum": {
+   "step": [
+    0.004,
+    0.014,
+    0.022
+   ],
+   "cap": [
+    0.04,
+    0.12,
+    0.18
+   ]
+  },
+  "onAir": {
+   "beta": [
+    0.1,
+    0.15,
+    0.2
+   ],
+   "combo": 3
+  },
+  "echo": {
+   "share": [
+    0.1,
+    0.4,
+    0.5
+   ],
+   "delay": 0.6
+  },
+  "paperCrane": {
+   "reach": [
+    0.03,
+    0.05,
+    0.08
+   ]
+  },
+  "pinwheel": {
+   "rerolls": [
+    1,
+    2,
+    3
+   ],
+   "noHeadwind": [
+    false,
+    false,
+    true
+   ]
+  },
+  "chain": [
+   {
+    "step": 0.1,
+    "max": 4
+   },
+   {
+    "step": 0.13,
+    "max": 5
+   },
+   {
+    "step": 0.21,
+    "max": 5
+   }
+  ]
+ },
+ "combo": {
+  "step": 0.05,
+  "max": 3,
+  "success": 1,
+  "perfect": 2,
+  "partial": 1,
+  "star": 2
+ },
+ "caps": {
+  "E": 2,
+  "beta": 0.5
+ },
+ "push": {
+  "base": 1.5,
+  "perfect": 1.25,
+  "scaleWithPace": true
+ },
+ "events": {
+  "timing": {
+   "warning": 0.8,
+   "bar": 1.2,
+   "gustCenter": 1.4,
+   "gustSuccess": 0.28,
+   "gustPerfect": 0.1,
+   "birdCenter": 0.75,
+   "birdSuccess": 0.25,
+   "birdPerfect": 0.1,
+   "maxEvents": 10
+  },
+  "maxEvents": 12,
+  "firstAt": 1.5,
+  "earlyGap": 3,
+  "earlyCount": 3,
+  "gapMin": 4,
+  "gapSpread": 3,
+  "gapScale": 1,
+  "effectMin": 1,
+  "retry": 0.25,
+  "earlyGrace": 0.12,
+  "weights": {
+   "gust": 2,
+   "bird": 2,
+   "steam": 1,
+   "thermal": 1,
+   "drone": 1
+  },
+  "gust": {
+   "dvy": 2,
+   "push": 1
+  },
+  "bird": {
+   "carry": 0.8,
+   "carryPerfect": 1.1,
+   "minVx": 10,
+   "minVy": 0.4,
+   "push": 1
+  },
+  "steam": {
+   "firstPuff": 1.3,
+   "gapMin": 0.45,
+   "gapMax": 0.6,
+   "window": 0.9,
+   "lift": 1.6,
+   "pushFull": 2.4,
+   "pushPartial": 0.6,
+   "levelPush": 0.7,
+   "burst": {
+    "amp": 0.3,
+    "dur": 2,
+    "shape": "flat"
+   }
+  },
+  "thermal": {
+   "warning": 2,
+   "column": 0.65,
+   "core": 0.25,
+   "perfect": 0.08,
+   "dvy": 3.7,
+   "push": 3,
+   "half": 0.6,
+   "levelPush": 0.7,
+   "secondChance": 0.4,
+   "followGap": 0.3
+  },
+  "drone": {
+   "lead": 0.12,
+   "dvy": 3,
+   "push": 2.2,
+   "levelWindow": 1.3,
+   "pairChance": 0.5,
+   "followGap": 0.2
+  },
+  "star": {
+   "chance": [
+    0.08,
+    0.12,
+    0.16
+   ],
+   "window": 2,
+   "slotMin": 1,
+   "slotMax": 3,
+   "gap": 0.5,
+   "after": 0.5,
+   "burst": {
+    "amp": 1,
+    "dur": 4,
+    "shape": "linear"
+   }
+  },
+  "floating": {
+   "gust": 0.25,
+   "birdMin": 0.6,
+   "birdMax": 0.95,
+   "rampFrom": 3,
+   "rampTo": 15,
+   "readNoise": 0.15
+  }
+ },
+ "wind": {
+  "values": [
+   -0.12,
+   -0.08,
+   -0.04,
+   0,
+   0.04,
+   0.08,
+   0.12
+  ],
+  "weights": [
+   1,
+   2,
+   3,
+   3,
+   3,
+   2,
+   1
+  ],
+  "shear": 25
+ },
+ "swing": {
+  "zone": 0.09,
+  "peak": 1.15,
+  "gain": 1.05,
+  "fromThrow": 4
+ },
+ "pockets": {
+  "prices": [
+   300,
+   5040
+  ],
+  "secondFromDistrict": 2,
+  "unlock": {
+   "cushion": 0,
+   "sharp": 0,
+   "dive": 1,
+   "calm": 1,
+   "whistle": 2,
+   "rocket": 2
+  },
+  "active": [
+   "dive",
+   "cushion",
+   "whistle",
+   "rocket"
+  ],
+  "exclusive": [
+   [
+    "sharp",
+    "calm"
+   ]
+  ]
+ },
+ "specials": {
+  "sharp": {
+   "window": 0.75,
+   "S": 1.45
+  },
+  "calm": {
+   "gap": 1.6,
+   "S": 1.6
+  },
+  "dive": {
+   "maxSink": 2.2,
+   "fromDiveOnly": true,
+   "gravity": 3,
+   "accel": 2.2,
+   "conv": 0.36,
+   "lowConv": 0.74,
+   "low": [
+    2,
+    7
+   ],
+   "keep": 0.6,
+   "waitMax": 2,
+   "lowBurst": {
+    "amp": 0.2,
+    "dur": 3,
+    "shape": "flat"
+   }
+  },
+  "cushion": {
+   "maxY": 6,
+   "perfectY": 1,
+   "midY": 2.5,
+   "perfectT": 1.6,
+   "midT": 1.2,
+   "glide": 1.4,
+   "glideT": 1.5
+  },
+  "whistle": {
+   "uses": 1,
+   "minY": 8,
+   "window": 0.8
+  },
+  "rocket": {
+   "charges": 2,
+   "amp": 1.4,
+   "tau": 1.5
+  }
+ },
+ "warp": {
+  "factor": 1.4,
+  "ramp": 0.3,
+  "lookahead": 1
+ },
+ "time": {
+  "ui": 8,
+  "districtCard": 4
+ },
+ "profiles": {
+  "weak": {
+   "mu": 0.5,
+   "sigma": 0.12,
+   "angle": 5,
+   "qte": 0.22,
+   "react": 0.45
+  },
+  "average": {
+   "mu": 0.7,
+   "sigma": 0.1,
+   "angle": 3.5,
+   "qte": 0.14,
+   "react": 0.35
+  },
+  "good": {
+   "mu": 0.85,
+   "sigma": 0.07,
+   "angle": 2.5,
+   "qte": 0.09,
+   "react": 0.3
+  },
+  "expert": {
+   "mu": 0.95,
+   "sigma": 0.04,
+   "angle": 1.5,
+   "qte": 0.05,
+   "react": 0.25
+  },
+  "weakAssist": {
+   "mu": 0.5,
+   "sigma": 0.12,
+   "angle": 5,
+   "qte": 0.22,
+   "react": 0.45,
+   "assist": {
+    "window": 1.4,
+    "noise": 0.6,
+    "slow": 0.6
+   }
+  },
+  "auto": {
+   "mu": 0.5,
+   "sigma": 0.12,
+   "angle": 5,
+   "qte": 0.22,
+   "react": 0.45,
+   "auto": true
+  }
+ },
+ "bots": {
+  "dive": {
+   "minY": 25,
+   "target": 5,
+   "maxUses": 3
+  },
+  "cushion": {
+   "target": 0.6
+  },
+  "rocket": {
+   "margin": 0.08,
+   "endY": 2.5
+  },
+  "whistle": {
+   "combo": 2
+  },
+  "previewThrows": 1,
+  "modelExplore": 0.15,
+  "angleStart": 20,
+  "angleStep": [
+   3,
+   6
+  ],
+  "pocketAuto": {
+   "weak": [
+    "rocket",
+    "cushion"
+   ],
+   "average": [
+    "rocket",
+    "calm"
+   ],
+   "good": [
+    "dive",
+    "sharp"
+   ],
+   "expert": [
+    "dive",
+    "sharp"
+   ],
+   "weakAssist": [
+    "rocket",
+    "cushion"
+   ],
+   "auto": [
+    "rocket",
+    "calm"
+   ]
+  },
+  "pocketFallback": [
+   "cushion",
+   "sharp"
+  ],
+  "fallbackThrows": 3,
+  "realistic": {
+   "noise": 0.5,
+   "patience": 6,
+   "kind": {
+    "workshop": 1,
+    "paper": 1.25,
+    "atlas": 1,
+    "pocket": 1
+   }
+  }
+ },
+ "campaign": {
+  "maxThrows": 400,
+  "strategies": [
+   "balanced",
+   "realistic",
+   "paper-first",
+   "atlas-first",
+   "cheapest",
+   "random"
+  ],
+  "fallback": "realistic"
+ },
+ "curve": [
+  {
+   "name": "1. hod (nic)",
+   "power": 0,
+   "folds": 0,
+   "paper": 0,
+   "atlas": {}
+  },
+  {
+   "name": "po Power 1",
+   "power": 1,
+   "folds": 0,
+   "paper": 0,
+   "atlas": {}
+  },
+  {
+   "name": "po Paper 1",
+   "power": 0,
+   "folds": 0,
+   "paper": 1,
+   "atlas": {}
+  },
+  {
+   "name": "střed D1",
+   "power": 2,
+   "folds": 1,
+   "paper": 1,
+   "atlas": {
+    "chain": 1
+   }
+  },
+  {
+   "name": "konec D1",
+   "power": 3,
+   "folds": 3,
+   "paper": 3,
+   "atlas": {
+    "chain": 2,
+    "pinwheel": 1,
+    "steam": 1
+   }
+  },
+  {
+   "name": "konec D2",
+   "power": 3,
+   "folds": 3,
+   "paper": 6,
+   "atlas": {
+    "chain": 2,
+    "pinwheel": 1,
+    "steam": 2,
+    "tape": 2,
+    "crane": 2,
+    "skip": 2,
+    "gull": 2
+   }
+  },
+  {
+   "name": "konec D3",
+   "power": 3,
+   "folds": 3,
+   "paper": 9,
+   "atlas": {
+    "chain": 3,
+    "pinwheel": 2,
+    "steam": 2,
+    "tape": 2,
+    "crane": 2,
+    "skip": 2,
+    "gull": 2,
+    "momentum": 2,
+    "thermal": 2,
+    "echo": 2,
+    "star": 1
+   }
+  },
+  {
+   "name": "střed D4",
+   "power": 3,
+   "folds": 3,
+   "paper": 10,
+   "atlas": {
+    "*": 3,
+    "encore": 0,
+    "paperCrane": 0,
+    "onAir": 0
+   }
+  },
+  {
+   "name": "plná výbava",
+   "power": 3,
+   "folds": 3,
+   "paper": 12,
+   "atlas": {
+    "*": 3
+   }
+  },
+  {
+   "name": "plná bez Atlasu",
+   "power": 3,
+   "folds": 3,
+   "paper": 12,
+   "atlas": {}
+  },
+  {
+   "name": "plná, kluzák",
+   "model": "glider",
+   "power": 3,
+   "folds": 3,
+   "paper": 12,
+   "atlas": {
+    "*": 3
+   }
+  }
+ ],
+ "targets": {
+  "throwsPerDistrict": [
+   [
+    25,
+    35
+   ],
+   [
+    20,
+    30
+   ],
+   [
+    20,
+    30
+   ],
+   [
+    20,
+    30
+   ]
+  ],
+  "minutesPerDistrict": [
+   [
+    12,
+    18
+   ],
+   [
+    10,
+    16
+   ],
+   [
+    12,
+    18
+   ],
+   [
+    14,
+    20
+   ]
+  ],
+  "totalMinutes": [
+   50,
+   75
+  ],
+  "weakFinishWithin": 250,
+  "weakVsAverage": 1.4,
+  "expertVsAverage": 0.7,
+  "expertVsWeak": [
+   0.6,
+   0.75
+  ],
+  "flightMedian": [
+   22,
+   27,
+   30,
+   35
+  ],
+  "flightP90": 45,
+  "flightMax": 60,
+  "droughtMedian": 4,
+  "droughtMax": 8,
+  "droughtStat": "p90",
+  "placeGapMedian": 8,
+  "placeGapP90": 14,
+  "pocketSpread": 0.08,
+  "diveCrash": {
+   "weak": 0.15,
+   "expert": 0.03
+  },
+  "diveHigh": 0.02,
+  "paperFirst": 0.1,
+  "atlasFirst": 0.2,
+  "atlasBonus": [
+   0.03,
+   0.15
+  ],
+  "capE": 0.2,
+  "capBeta": 0.25,
+  "gliderShare": [
+   0.3,
+   0.7
+  ],
+  "firstPocket": [
+   20,
+   40
+  ],
+  "levelsBought": [
+   0.6,
+   0.85
+  ],
+  "skipRate": [
+   0.3,
+   0.5
+  ],
+  "reference": "realistic"
+ }
+}

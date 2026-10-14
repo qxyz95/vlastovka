@@ -1,0 +1,824 @@
+{
+ "name": "f5-sens-skills",
+ "date": "2026-10-14T11:35:53.697Z",
+ "n": 80,
+ "seed": 1,
+ "over": {},
+ "groups": {
+  "weak|realistic|auto|better": {
+   "n": 80,
+   "doneRate": 1,
+   "throws": 110,
+   "throwsP90": 123,
+   "throwsMax": 135,
+   "minutes": 58.83150665331304,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.468748223794533
+    },
+    {
+     "throws": 22,
+     "minutes": 11.992315123233997
+    },
+    {
+     "throws": 28,
+     "minutes": 16.323290241528962
+    },
+    {
+     "throws": 24,
+     "minutes": 14.917037599969731
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.56,
+     "p90": 24.07,
+     "max": 32.6
+    },
+    {
+     "median": 25.5,
+     "p90": 30.45,
+     "max": 37.3
+    },
+    {
+     "median": 27.41,
+     "p90": 33.11,
+     "max": 42.87
+    },
+    {
+     "median": 27.96,
+     "p90": 34.73,
+     "max": 48.19
+    }
+   ],
+   "flightP90": 31.96,
+   "flightMax": 48.19,
+   "simMax": 52.12,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 8,
+   "droughtMaxP90": 10,
+   "placeGapMedian": 8,
+   "placeGapP90": 15,
+   "firstPocket": 40,
+   "levelsBought": 0.8695652173913043,
+   "gliderShare": 0.6018518518518519,
+   "eCap": 0.13712792547148375,
+   "betaCap": 0,
+   "craneTugRate": 0.009656896159963645,
+   "craneNewPlace": 0.08235294117647059,
+   "qteHit": 0.9122327753247991,
+   "diveCrash": null
+  },
+  "average|realistic|auto|better": {
+   "n": 80,
+   "doneRate": 1,
+   "throws": 96,
+   "throwsP90": 109,
+   "throwsMax": 117,
+   "minutes": 52.106397139330845,
+   "district": [
+    {
+     "throws": 30,
+     "minutes": 13.237663108459332
+    },
+    {
+     "throws": 23,
+     "minutes": 12.172964338930104
+    },
+    {
+     "throws": 21,
+     "minutes": 12.695188808909748
+    },
+    {
+     "throws": 23,
+     "minutes": 14.753137272730712
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.4,
+     "p90": 24.33,
+     "max": 32.41
+    },
+    {
+     "median": 23.62,
+     "p90": 27.85,
+     "max": 36.53
+    },
+    {
+     "median": 28.31,
+     "p90": 34,
+     "max": 41.64
+    },
+    {
+     "median": 29.39,
+     "p90": 35.78,
+     "max": 45.41
+    }
+   ],
+   "flightP90": 32.66,
+   "flightMax": 45.41,
+   "simMax": 49.61,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 7,
+   "placeGapP90": 13,
+   "firstPocket": 39,
+   "levelsBought": 0.8478260869565217,
+   "gliderShare": 0.5463917525773195,
+   "eCap": 0.1758326878388846,
+   "betaCap": 0,
+   "craneTugRate": 0.010973405628711594,
+   "craneNewPlace": 0.023529411764705882,
+   "qteHit": 0.9739375950191849,
+   "diveCrash": null
+  }
+ },
+ "sensitivity": [
+  {
+   "name": "krok papíru ×0,9",
+   "average": {
+    "throws": 109,
+    "minutes": 60.28414722248465,
+    "district": [
+     32,
+     27,
+     26,
+     23
+    ],
+    "flightP90": 32.65,
+    "flightMax": 45.34
+   },
+   "weak": {
+    "throws": 129,
+    "minutes": 69.95740986451256,
+    "max": 149
+   },
+   "full": {
+    "x": 5792.487074708816,
+    "real": 26.268638664670597
+   }
+  },
+  {
+   "name": "krok papíru ×1,1",
+   "average": {
+    "throws": 84,
+    "minutes": 45.77492099448214,
+    "district": [
+     28,
+     18,
+     15,
+     22
+    ],
+    "flightP90": 32.35,
+    "flightMax": 45.46
+   },
+   "weak": {
+    "throws": 96,
+    "minutes": 51.08199700439483,
+    "max": 125
+   },
+   "full": {
+    "x": 6930.992944907199,
+    "real": 26.235305331337265
+   }
+  },
+  {
+   "name": "zrychlení klouzání 1,0",
+   "average": {
+    "throws": 96,
+    "minutes": 55.97055555555512,
+    "district": [
+     30,
+     23,
+     21,
+     23
+    ],
+    "flightP90": 35.47,
+    "flightMax": 49.63
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 62.942499999999534,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 28.999999999999634
+   }
+  },
+  {
+   "name": "zrychlení klouzání 1,4",
+   "average": {
+    "throws": 96,
+    "minutes": 52.106397139330845,
+    "district": [
+     30,
+     23,
+     21,
+     23
+    ],
+    "flightP90": 32.66,
+    "flightMax": 45.41
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.83150665331304,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "ceny ×0,8",
+   "average": {
+    "throws": 76,
+    "minutes": 41.32655416103343,
+    "district": [
+     24,
+     19,
+     18,
+     15
+    ],
+    "flightP90": 32.44,
+    "flightMax": 46.64
+   },
+   "weak": {
+    "throws": 89,
+    "minutes": 47.67224057023668,
+    "max": 111
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "ceny ×1,25",
+   "average": {
+    "throws": 119,
+    "minutes": 64.78280459630186,
+    "district": [
+     38,
+     27,
+     26,
+     27
+    ],
+    "flightP90": 32.64,
+    "flightMax": 47.69
+   },
+   "weak": {
+    "throws": 142,
+    "minutes": 76.04434953828726,
+    "max": 172
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "Shooting Star ×0,5",
+   "average": {
+    "throws": 97,
+    "minutes": 52.870563116899206,
+    "district": [
+     30,
+     23,
+     21,
+     24
+    ],
+    "flightP90": 32.66,
+    "flightMax": 45.41
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.845399220131874,
+    "max": 135
+   },
+   "full": {
+    "x": 6351.879559346143,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "Shooting Star ×2",
+   "average": {
+    "throws": 95,
+    "minutes": 51.62405042601084,
+    "district": [
+     30,
+     23,
+     20,
+     23
+    ],
+    "flightP90": 32.7,
+    "flightMax": 45.41
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 59.22078045694052,
+    "max": 135
+   },
+   "full": {
+    "x": 6391.014367873465,
+    "real": 26.65710788049084
+   }
+  },
+  {
+   "name": "rozestup událostí ×0,8",
+   "average": {
+    "throws": 87,
+    "minutes": 48.14104480261198,
+    "district": [
+     28,
+     19,
+     17,
+     22
+    ],
+    "flightP90": 34.13,
+    "flightMax": 45.48
+   },
+   "weak": {
+    "throws": 103,
+    "minutes": 55.934948539221715,
+    "max": 144
+   },
+   "full": {
+    "x": 6692.610540985856,
+    "real": 27.761495807527407
+   }
+  },
+  {
+   "name": "rozestup událostí ×1,25",
+   "average": {
+    "throws": 105,
+    "minutes": 56.583565028707966,
+    "district": [
+     31,
+     24,
+     25,
+     24
+    ],
+    "flightP90": 31.5,
+    "flightMax": 47.2
+   },
+   "weak": {
+    "throws": 120,
+    "minutes": 64.36015825117757,
+    "max": 144
+   },
+   "full": {
+    "x": 6023.583466292822,
+    "real": 25.354726928109848
+   }
+  },
+  {
+   "name": "readNoise 0",
+   "average": {
+    "throws": 94,
+    "minutes": 51.17092935262513,
+    "district": [
+     29,
+     23,
+     23,
+     20
+    ],
+    "flightP90": 32.7,
+    "flightMax": 47.25
+   },
+   "weak": {
+    "throws": 111,
+    "minutes": 59.08015877380505,
+    "max": 135
+   },
+   "full": {
+    "x": 6408.154780365253,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "readNoise 0,4",
+   "average": {
+    "throws": 97,
+    "minutes": 52.7270989856954,
+    "district": [
+     30,
+     23,
+     25,
+     22
+    ],
+    "flightP90": 32.33,
+    "flightMax": 43.21
+   },
+   "weak": {
+    "throws": 113,
+    "minutes": 60.94061037495569,
+    "max": 135
+   },
+   "full": {
+    "x": 6278.960208594496,
+    "real": 26.268638664670593
+   }
+  },
+  {
+   "name": "push sond (scaleWithPace=false)",
+   "average": {
+    "throws": 109,
+    "minutes": 61.07361844438488,
+    "district": [
+     31,
+     26,
+     27,
+     25
+    ],
+    "flightP90": 33.11,
+    "flightMax": 49.98
+   },
+   "weak": {
+    "throws": 125,
+    "minutes": 68.60143379543523,
+    "max": 148
+   },
+   "full": {
+    "x": 5816.242325266198,
+    "real": 27.125758204045283
+   }
+  },
+  {
+   "name": "nákupčí: trpělivost 3",
+   "average": {
+    "throws": 104,
+    "minutes": 56.9105328260303,
+    "district": [
+     32,
+     23,
+     21,
+     29
+    ],
+    "flightP90": 32.92,
+    "flightMax": 49.19
+   },
+   "weak": {
+    "throws": 115,
+    "minutes": 62.1900556199001,
+    "max": 144
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "nákupčí: trpělivost 10",
+   "average": {
+    "throws": 91,
+    "minutes": 48.79730641913969,
+    "district": [
+     30,
+     23,
+     20,
+     17
+    ],
+    "flightP90": 32.09,
+    "flightMax": 44.74
+   },
+   "weak": {
+    "throws": 107,
+    "minutes": 57.13136828647525,
+    "max": 134
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "nákupčí: chyba odhadu 0,25",
+   "average": {
+    "throws": 94,
+    "minutes": 51.342156117855296,
+    "district": [
+     29,
+     22,
+     22,
+     23
+    ],
+    "flightP90": 32.52,
+    "flightMax": 45.57
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.489958610358386,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "nákupčí: chyba odhadu 0,8",
+   "average": {
+    "throws": 97,
+    "minutes": 53.12385945192929,
+    "district": [
+     30,
+     24,
+     21,
+     22
+    ],
+    "flightP90": 32.49,
+    "flightMax": 47.27
+   },
+   "weak": {
+    "throws": 114,
+    "minutes": 61.67984444785362,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "nákupčí: bez preference papíru",
+   "average": {
+    "throws": 96,
+    "minutes": 52.48740182504217,
+    "district": [
+     30,
+     24,
+     20,
+     23
+    ],
+    "flightP90": 32.52,
+    "flightMax": 45.57
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.841849020988526,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "papír na hranici čtvrti (openAtPlace 5)",
+   "average": {
+    "throws": 95,
+    "minutes": 52.01571157059172,
+    "district": [
+     30,
+     23,
+     20,
+     23
+    ],
+    "flightP90": 32.57,
+    "flightMax": 45.49
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.52135348766192,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "termika bez perfektu (thermal.perfect 0)",
+   "average": {
+    "throws": 104,
+    "minutes": 57.05879146076696,
+    "district": [
+     30,
+     23,
+     25,
+     25
+    ],
+    "flightP90": 32.64,
+    "flightMax": 49.19
+   },
+   "weak": {
+    "throws": 118,
+    "minutes": 63.1249825862512,
+    "max": 141
+   },
+   "full": {
+    "x": 6178.033749888336,
+    "real": 26.242448188479898
+   }
+  },
+  {
+   "name": "Dive bez stropu (dive.maxSink null)",
+   "average": {
+    "throws": 96,
+    "minutes": 52.106397139330845,
+    "district": [
+     30,
+     23,
+     21,
+     23
+    ],
+    "flightP90": 32.66,
+    "flightMax": 45.41
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.83150665331304,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  },
+  {
+   "name": "Whistle plné okno (whistle.window 1)",
+   "average": {
+    "throws": 96,
+    "minutes": 52.106397139330845,
+    "district": [
+     30,
+     23,
+     21,
+     23
+    ],
+    "flightP90": 32.66,
+    "flightMax": 45.41
+   },
+   "weak": {
+    "throws": 110,
+    "minutes": 58.83150665331304,
+    "max": 135
+   },
+   "full": {
+    "x": 6362.305484813713,
+    "real": 26.25197199800393
+   }
+  }
+ ],
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 30,
+   "goal": "25–35",
+   "ok": true
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 23,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 21,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 23,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "13.2",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "12.2",
+   "goal": "10–16",
+   "ok": true
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "12.7",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "14.8",
+   "goal": "14–20",
+   "ok": true
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "52.1",
+   "goal": "50–75",
+   "ok": true
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.4",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "23.6",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "28.3",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "29.4",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "32.7",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 9 (max 9, P90 9)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": false
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "7 / 13",
+   "goal": "≤ 8 / ≤ 14",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "1.1 % / 2 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "18 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "55 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 39,
+   "goal": "20–40",
+   "ok": true
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "85 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "48.2",
+   "goal": "≤ 60",
+   "ok": true
+  },
+  {
+   "name": "Slabý: cíl do 250 hodů",
+   "value": "100 % (max 135)",
+   "goal": "100 %",
+   "ok": true
+  },
+  {
+   "name": "Slabý / průměrný (hody)",
+   "value": "1.15",
+   "goal": "≤ 1.4",
+   "ok": true
+  }
+ ],
+ "seconds": 1738.985
+}

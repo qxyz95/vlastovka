@@ -1,0 +1,3355 @@
+{
+ "name": "f5-start-skills",
+ "date": "2026-10-14T06:52:42.587Z",
+ "n": 200,
+ "seed": 1,
+ "over": {},
+ "groups": {
+  "weak|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 111,
+   "throwsP90": 127,
+   "throwsMax": 154,
+   "minutes": 58.73665638558223,
+   "district": [
+    {
+     "throws": 37,
+     "minutes": 15.696107342422984
+    },
+    {
+     "throws": 29,
+     "minutes": 16.388024219251733
+    },
+    {
+     "throws": 20,
+     "minutes": 11.390689095313142
+    },
+    {
+     "throws": 27,
+     "minutes": 16.232298915688418
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.42,
+     "p90": 23.98,
+     "max": 33.3
+    },
+    {
+     "median": 25.87,
+     "p90": 30.64,
+     "max": 42.06
+    },
+    {
+     "median": 27.07,
+     "p90": 32.59,
+     "max": 41.63
+    },
+    {
+     "median": 27.56,
+     "p90": 33.87,
+     "max": 44.48
+    }
+   ],
+   "flightP90": 31.3,
+   "flightMax": 44.48,
+   "simMax": 48.46,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 8,
+   "placeGapP90": 15,
+   "firstPocket": 37,
+   "levelsBought": 0.8478260869565217,
+   "gliderShare": 0.6041666666666666,
+   "eCap": 0.06212317448975035,
+   "betaCap": 0,
+   "craneTugRate": 0.01094189629761958,
+   "craneNewPlace": 0.044897959183673466,
+   "qteHit": 0.8946373582354855,
+   "diveCrash": null
+  },
+  "weak|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 100,
+   "throwsP90": 115,
+   "throwsMax": 151,
+   "minutes": 51.526280202032225,
+   "district": [
+    {
+     "throws": 34,
+     "minutes": 13.84699842525645
+    },
+    {
+     "throws": 26,
+     "minutes": 14.368389224725124
+    },
+    {
+     "throws": 17,
+     "minutes": 10.050244946114777
+    },
+    {
+     "throws": 21,
+     "minutes": 12.222189244341116
+    }
+   ],
+   "flight": [
+    {
+     "median": 16.72,
+     "p90": 22.49,
+     "max": 31.83
+    },
+    {
+     "median": 25.2,
+     "p90": 29.87,
+     "max": 37.23
+    },
+    {
+     "median": 26.11,
+     "p90": 31.17,
+     "max": 41.49
+    },
+    {
+     "median": 26.88,
+     "p90": 32.85,
+     "max": 41.44
+    }
+   ],
+   "flightP90": 30.19,
+   "flightMax": 41.49,
+   "simMax": 45.85,
+   "droughtMedian": 2,
+   "droughtMax": 13,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 11,
+   "placeGapMedian": 8,
+   "placeGapP90": 13,
+   "firstPocket": 38,
+   "levelsBought": 0.6739130434782609,
+   "gliderShare": 0.609271523178808,
+   "eCap": 0.026502204388963193,
+   "betaCap": 0,
+   "craneTugRate": 0.0035171149749839005,
+   "craneNewPlace": 0.04225352112676056,
+   "qteHit": 0.8922907046777755,
+   "diveCrash": null
+  },
+  "weak|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 171,
+   "throwsP90": 184,
+   "throwsMax": 201,
+   "minutes": 74.20534417775544,
+   "district": [
+    {
+     "throws": 72,
+     "minutes": 27.339533544495662
+    },
+    {
+     "throws": 37,
+     "minutes": 16.48787412851767
+    },
+    {
+     "throws": 40,
+     "minutes": 20.15018500543011
+    },
+    {
+     "throws": 20,
+     "minutes": 10.247816931887208
+    }
+   ],
+   "flight": [
+    {
+     "median": 14.19,
+     "p90": 18.01,
+     "max": 24.24
+    },
+    {
+     "median": 18.82,
+     "p90": 24.32,
+     "max": 32.12
+    },
+    {
+     "median": 21.3,
+     "p90": 26.11,
+     "max": 34.06
+    },
+    {
+     "median": 22.23,
+     "p90": 27.33,
+     "max": 35.3
+    }
+   ],
+   "flightP90": 24.73,
+   "flightMax": 35.3,
+   "simMax": 38.89,
+   "droughtMedian": 6,
+   "droughtMax": 28,
+   "droughtMaxMedian": 18,
+   "droughtMaxP90": 21,
+   "placeGapMedian": 12,
+   "placeGapP90": 26,
+   "firstPocket": 159,
+   "levelsBought": 0.41304347826086957,
+   "gliderShare": 0.5955056179775281,
+   "eCap": 0.00002943254061690605,
+   "betaCap": 0,
+   "craneTugRate": 0.0025606310336708264,
+   "craneNewPlace": 0.04597701149425287,
+   "qteHit": 0.8595678855293555,
+   "diveCrash": null
+  },
+  "weak|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 122,
+   "throwsP90": 137,
+   "throwsMax": 167,
+   "minutes": 65.28203275078262,
+   "district": [
+    {
+     "throws": 41,
+     "minutes": 17.181470855512387
+    },
+    {
+     "throws": 33,
+     "minutes": 18.56269411150849
+    },
+    {
+     "throws": 24,
+     "minutes": 14.107469293256607
+    },
+    {
+     "throws": 26,
+     "minutes": 15.624240318863002
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.28,
+     "p90": 23.51,
+     "max": 31.69
+    },
+    {
+     "median": 25.74,
+     "p90": 31.02,
+     "max": 42.06
+    },
+    {
+     "median": 27.36,
+     "p90": 33.09,
+     "max": 41.66
+    },
+    {
+     "median": 27.83,
+     "p90": 34.53,
+     "max": 49.22
+    }
+   ],
+   "flightP90": 31.59,
+   "flightMax": 49.22,
+   "simMax": 53.69,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 8,
+   "droughtMaxP90": 10,
+   "placeGapMedian": 9,
+   "placeGapP90": 17,
+   "firstPocket": 45,
+   "levelsBought": 0.8695652173913043,
+   "gliderShare": 0.6017699115044248,
+   "eCap": 0.06815587803684983,
+   "betaCap": 0,
+   "craneTugRate": 0.010679928256970488,
+   "craneNewPlace": 0.026717557251908396,
+   "qteHit": 0.8961955840991129,
+   "diveCrash": null
+  },
+  "average|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 93,
+   "throwsP90": 104,
+   "throwsMax": 120,
+   "minutes": 49.382917036534174,
+   "district": [
+    {
+     "throws": 30,
+     "minutes": 13.410994666070012
+    },
+    {
+     "throws": 30,
+     "minutes": 15.974903542328802
+    },
+    {
+     "throws": 14,
+     "minutes": 8.70082800770675
+    },
+    {
+     "throws": 18,
+     "minutes": 10.886294897154919
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.4,
+     "p90": 24.53,
+     "max": 33.7
+    },
+    {
+     "median": 23.56,
+     "p90": 28.16,
+     "max": 36.97
+    },
+    {
+     "median": 27.92,
+     "p90": 33.45,
+     "max": 43.59
+    },
+    {
+     "median": 28.71,
+     "p90": 35.06,
+     "max": 44.63
+    }
+   ],
+   "flightP90": 31.31,
+   "flightMax": 44.63,
+   "simMax": 48.29,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 7,
+   "placeGapP90": 13,
+   "firstPocket": 37,
+   "levelsBought": 0.782608695652174,
+   "gliderShare": 0.5421686746987951,
+   "eCap": 0.07239211049604988,
+   "betaCap": 0,
+   "craneTugRate": 0.007416563658838072,
+   "craneNewPlace": 0.08695652173913043,
+   "qteHit": 0.9696452138809099,
+   "diveCrash": null
+  },
+  "average|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 85,
+   "throwsP90": 95,
+   "throwsMax": 119,
+   "minutes": 44.70422902243043,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.109268496136263
+    },
+    {
+     "throws": 25,
+     "minutes": 13.524408216179227
+    },
+    {
+     "throws": 14,
+     "minutes": 7.8996433501121786
+    },
+    {
+     "throws": 17,
+     "minutes": 10.486123255594613
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.5,
+     "p90": 23.48,
+     "max": 31.3
+    },
+    {
+     "median": 24.12,
+     "p90": 28.44,
+     "max": 35.55
+    },
+    {
+     "median": 27.05,
+     "p90": 31.79,
+     "max": 41.79
+    },
+    {
+     "median": 27.99,
+     "p90": 33.86,
+     "max": 44.95
+    }
+   ],
+   "flightP90": 30.49,
+   "flightMax": 44.95,
+   "simMax": 49.19,
+   "droughtMedian": 2,
+   "droughtMax": 14,
+   "droughtMaxMedian": 8,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 7,
+   "placeGapP90": 11,
+   "firstPocket": 49,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.5405405405405406,
+   "eCap": 0.04472974557392426,
+   "betaCap": 0,
+   "craneTugRate": 0.004220893422441084,
+   "craneNewPlace": 0.08333333333333333,
+   "qteHit": 0.9674462176720533,
+   "diveCrash": null
+  },
+  "average|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 160,
+   "throwsP90": 169,
+   "throwsMax": 184,
+   "minutes": 71.83460343247303,
+   "district": [
+    {
+     "throws": 66,
+     "minutes": 25.41646426112747
+    },
+    {
+     "throws": 32,
+     "minutes": 14.792606442522999
+    },
+    {
+     "throws": 43,
+     "minutes": 21.337561319079995
+    },
+    {
+     "throws": 19,
+     "minutes": 9.522031419232349
+    }
+   ],
+   "flight": [
+    {
+     "median": 15.52,
+     "p90": 18.41,
+     "max": 24.81
+    },
+    {
+     "median": 19.14,
+     "p90": 24.56,
+     "max": 31.2
+    },
+    {
+     "median": 21.85,
+     "p90": 26.3,
+     "max": 34.29
+    },
+    {
+     "median": 22.81,
+     "p90": 27.53,
+     "max": 39.34
+    }
+   ],
+   "flightP90": 25.15,
+   "flightMax": 39.34,
+   "simMax": 43.25,
+   "droughtMedian": 6,
+   "droughtMax": 28,
+   "droughtMaxMedian": 17,
+   "droughtMaxP90": 19,
+   "placeGapMedian": 11,
+   "placeGapP90": 26,
+   "firstPocket": 158,
+   "levelsBought": 0.41304347826086957,
+   "gliderShare": 0.5574712643678161,
+   "eCap": 0,
+   "betaCap": 0,
+   "craneTugRate": 0.002545888860950465,
+   "craneNewPlace": 0.037037037037037035,
+   "qteHit": 0.9460926715701423,
+   "diveCrash": null
+  },
+  "average|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 108,
+   "throwsP90": 121,
+   "throwsMax": 142,
+   "minutes": 58.371803806048135,
+   "district": [
+    {
+     "throws": 34,
+     "minutes": 15.122871585743322
+    },
+    {
+     "throws": 33,
+     "minutes": 17.791424979860587
+    },
+    {
+     "throws": 18,
+     "minutes": 11.002575122060954
+    },
+    {
+     "throws": 25,
+     "minutes": 15.516579999555226
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.09,
+     "p90": 24.08,
+     "max": 32.05
+    },
+    {
+     "median": 23.76,
+     "p90": 28.64,
+     "max": 39.6
+    },
+    {
+     "median": 28.2,
+     "p90": 33.86,
+     "max": 43.93
+    },
+    {
+     "median": 29.05,
+     "p90": 35.73,
+     "max": 46.24
+    }
+   ],
+   "flightP90": 32.12,
+   "flightMax": 46.24,
+   "simMax": 50.26,
+   "droughtMedian": 2,
+   "droughtMax": 10,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 8,
+   "placeGapP90": 16,
+   "firstPocket": 44,
+   "levelsBought": 0.8478260869565217,
+   "gliderShare": 0.5555555555555556,
+   "eCap": 0.09148076746534471,
+   "betaCap": 0,
+   "craneTugRate": 0.009822821995777104,
+   "craneNewPlace": 0.04205607476635514,
+   "qteHit": 0.9664310035609388,
+   "diveCrash": null
+  },
+  "good|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 82,
+   "throwsP90": 93,
+   "throwsMax": 119,
+   "minutes": 43.429835786027375,
+   "district": [
+    {
+     "throws": 25,
+     "minutes": 11.760920087123713
+    },
+    {
+     "throws": 31,
+     "minutes": 16.59383543521796
+    },
+    {
+     "throws": 14,
+     "minutes": 8.488403560387926
+    },
+    {
+     "throws": 10,
+     "minutes": 6.045577088809829
+    }
+   ],
+   "flight": [
+    {
+     "median": 19.07,
+     "p90": 25.04,
+     "max": 32.36
+    },
+    {
+     "median": 23.96,
+     "p90": 28.64,
+     "max": 37.53
+    },
+    {
+     "median": 25.72,
+     "p90": 32.57,
+     "max": 49.32
+    },
+    {
+     "median": 28.73,
+     "p90": 36.53,
+     "max": 52.73
+    }
+   ],
+   "flightP90": 30.67,
+   "flightMax": 52.73,
+   "simMax": 53.17,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 6,
+   "placeGapP90": 13,
+   "firstPocket": 33,
+   "levelsBought": 0.6956521739130435,
+   "gliderShare": 0.43023255813953487,
+   "eCap": 0.034928142623249045,
+   "betaCap": 0,
+   "craneTugRate": 0.004002183008913953,
+   "craneNewPlace": 0,
+   "qteHit": 0.903225239784984,
+   "diveCrash": 0.011305323925593328
+  },
+  "good|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 74,
+   "throwsP90": 85,
+   "throwsMax": 102,
+   "minutes": 39.189615596098946,
+   "district": [
+    {
+     "throws": 24,
+     "minutes": 10.808593855393669
+    },
+    {
+     "throws": 23,
+     "minutes": 12.891291666674054
+    },
+    {
+     "throws": 15,
+     "minutes": 8.882775764116023
+    },
+    {
+     "throws": 10,
+     "minutes": 6.133046508167951
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.36,
+     "p90": 24.13,
+     "max": 33.35
+    },
+    {
+     "median": 24.31,
+     "p90": 28.97,
+     "max": 36.1
+    },
+    {
+     "median": 25.63,
+     "p90": 31.78,
+     "max": 44.08
+    },
+    {
+     "median": 28.31,
+     "p90": 35.91,
+     "max": 48.91
+    }
+   ],
+   "flightP90": 30.46,
+   "flightMax": 48.91,
+   "simMax": 50.12,
+   "droughtMedian": 2,
+   "droughtMax": 15,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 6,
+   "placeGapP90": 11,
+   "firstPocket": 47,
+   "levelsBought": 0.6086956521739131,
+   "gliderShare": 0.4444444444444444,
+   "eCap": 0.02319828854124883,
+   "betaCap": 0,
+   "craneTugRate": 0.0036769621607166732,
+   "craneNewPlace": 0.01818181818181818,
+   "qteHit": 0.9333026325888403,
+   "diveCrash": 0.009977681501903637
+  },
+  "good|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 147,
+   "throwsP90": 156,
+   "throwsMax": 169,
+   "minutes": 68.83620183992511,
+   "district": [
+    {
+     "throws": 53,
+     "minutes": 21.71390292658441
+    },
+    {
+     "throws": 33,
+     "minutes": 15.150935980049635
+    },
+    {
+     "throws": 42,
+     "minutes": 21.48409362660709
+    },
+    {
+     "throws": 19,
+     "minutes": 9.856891941313087
+    }
+   ],
+   "flight": [
+    {
+     "median": 16.61,
+     "p90": 19.35,
+     "max": 24.9
+    },
+    {
+     "median": 18.92,
+     "p90": 24.76,
+     "max": 33.77
+    },
+    {
+     "median": 22.68,
+     "p90": 26.83,
+     "max": 34.29
+    },
+    {
+     "median": 23.37,
+     "p90": 27.76,
+     "max": 39.71
+    }
+   ],
+   "flightP90": 25.76,
+   "flightMax": 39.71,
+   "simMax": 41.18,
+   "droughtMedian": 5,
+   "droughtMax": 22,
+   "droughtMaxMedian": 15,
+   "droughtMaxP90": 18,
+   "placeGapMedian": 10,
+   "placeGapP90": 22,
+   "firstPocket": 146,
+   "levelsBought": 0.391304347826087,
+   "gliderShare": 0.5384615384615384,
+   "eCap": 0,
+   "betaCap": 0,
+   "craneTugRate": 0.003096185907250519,
+   "craneNewPlace": 0.07692307692307693,
+   "qteHit": 0.9833461439918012,
+   "diveCrash": 0.009640102827763496
+  },
+  "good|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 93,
+   "throwsP90": 108,
+   "throwsMax": 120,
+   "minutes": 49.504102676981915,
+   "district": [
+    {
+     "throws": 30,
+     "minutes": 13.91095557295883
+    },
+    {
+     "throws": 33,
+     "minutes": 17.996553620808385
+    },
+    {
+     "throws": 18,
+     "minutes": 10.30589705293831
+    },
+    {
+     "throws": 10,
+     "minutes": 6.3700675204947075
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.9,
+     "p90": 24.51,
+     "max": 31.34
+    },
+    {
+     "median": 24.43,
+     "p90": 29.82,
+     "max": 41.01
+    },
+    {
+     "median": 25.81,
+     "p90": 32.89,
+     "max": 49.55
+    },
+    {
+     "median": 28.93,
+     "p90": 38.1,
+     "max": 57.56
+    }
+   ],
+   "flightP90": 31.32,
+   "flightMax": 57.56,
+   "simMax": 59.12,
+   "droughtMedian": 2,
+   "droughtMax": 10,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 7,
+   "placeGapP90": 15,
+   "firstPocket": 41,
+   "levelsBought": 0.7608695652173914,
+   "gliderShare": 0.4421052631578947,
+   "eCap": 0.03964569660103516,
+   "betaCap": 0,
+   "craneTugRate": 0.008323995517848567,
+   "craneNewPlace": 0.01282051282051282,
+   "qteHit": 0.9120140265284342,
+   "diveCrash": 0.00958965209634255
+  },
+  "expert|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 71,
+   "throwsP90": 78,
+   "throwsMax": 88,
+   "minutes": 38.762317227852016,
+   "district": [
+    {
+     "throws": 22,
+     "minutes": 10.323342753842399
+    },
+    {
+     "throws": 25,
+     "minutes": 13.764412055853
+    },
+    {
+     "throws": 15,
+     "minutes": 8.971095167478047
+    },
+    {
+     "throws": 8,
+     "minutes": 5.147741679681246
+    }
+   ],
+   "flight": [
+    {
+     "median": 19.69,
+     "p90": 25.39,
+     "max": 33.75
+    },
+    {
+     "median": 24.64,
+     "p90": 29.47,
+     "max": 40.14
+    },
+    {
+     "median": 26.88,
+     "p90": 33.96,
+     "max": 46.91
+    },
+    {
+     "median": 30.68,
+     "p90": 38.28,
+     "max": 48.42
+    }
+   ],
+   "flightP90": 31.73,
+   "flightMax": 48.42,
+   "simMax": 49.83,
+   "droughtMedian": 2,
+   "droughtMax": 8,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 5,
+   "placeGapP90": 12,
+   "firstPocket": 30,
+   "levelsBought": 0.6521739130434783,
+   "gliderShare": 0.3977272727272727,
+   "eCap": 0.03543390621684702,
+   "betaCap": 0,
+   "craneTugRate": 0.0026876016691420894,
+   "craneNewPlace": 0.02631578947368421,
+   "qteHit": 0.9103991843776958,
+   "diveCrash": 0
+  },
+  "expert|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 64,
+   "throwsP90": 72,
+   "throwsMax": 79,
+   "minutes": 35.1202868500836,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 9.677843566122188
+    },
+    {
+     "throws": 21,
+     "minutes": 11.982002303565194
+    },
+    {
+     "throws": 13,
+     "minutes": 7.956096311883272
+    },
+    {
+     "throws": 8,
+     "minutes": 4.970556176895077
+    }
+   ],
+   "flight": [
+    {
+     "median": 19.12,
+     "p90": 25.14,
+     "max": 34.2
+    },
+    {
+     "median": 25.08,
+     "p90": 29.97,
+     "max": 37.31
+    },
+    {
+     "median": 26.6,
+     "p90": 32.4,
+     "max": 44.08
+    },
+    {
+     "median": 29.53,
+     "p90": 37.29,
+     "max": 47.62
+    }
+   ],
+   "flightP90": 31.17,
+   "flightMax": 47.62,
+   "simMax": 48.77,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 5,
+   "placeGapP90": 10,
+   "firstPocket": 41,
+   "levelsBought": 0.5869565217391305,
+   "gliderShare": 0.41935483870967744,
+   "eCap": 0.022239382239382238,
+   "betaCap": 0,
+   "craneTugRate": 0.003088803088803089,
+   "craneNewPlace": 0.075,
+   "qteHit": 0.933677918873503,
+   "diveCrash": 0
+  },
+  "expert|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 135,
+   "throwsP90": 147,
+   "throwsMax": 157,
+   "minutes": 64.75305504650652,
+   "district": [
+    {
+     "throws": 41,
+     "minutes": 17.269222462445818
+    },
+    {
+     "throws": 34,
+     "minutes": 15.568617326689594
+    },
+    {
+     "throws": 38,
+     "minutes": 20.10581148227395
+    },
+    {
+     "throws": 19,
+     "minutes": 10.093496679249526
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.26,
+     "p90": 20.13,
+     "max": 24.66
+    },
+    {
+     "median": 19.05,
+     "p90": 24.35,
+     "max": 34.64
+    },
+    {
+     "median": 23.55,
+     "p90": 27.47,
+     "max": 36.05
+    },
+    {
+     "median": 24.6,
+     "p90": 28.47,
+     "max": 40.34
+    }
+   ],
+   "flightP90": 26.41,
+   "flightMax": 40.34,
+   "simMax": 44.31,
+   "droughtMedian": 5,
+   "droughtMax": 19,
+   "droughtMaxMedian": 14,
+   "droughtMaxP90": 18,
+   "placeGapMedian": 9,
+   "placeGapP90": 22,
+   "firstPocket": 134,
+   "levelsBought": 0.32608695652173914,
+   "gliderShare": 0.5263157894736842,
+   "eCap": 0,
+   "betaCap": 0,
+   "craneTugRate": 0.002488393686165274,
+   "craneNewPlace": 0.014925373134328358,
+   "qteHit": 0.996829537022463,
+   "diveCrash": 0
+  },
+  "expert|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 85,
+   "throwsP90": 97,
+   "throwsMax": 107,
+   "minutes": 47.156306464390106,
+   "district": [
+    {
+     "throws": 26,
+     "minutes": 12.224365701640656
+    },
+    {
+     "throws": 29,
+     "minutes": 16.578304739286175
+    },
+    {
+     "throws": 18,
+     "minutes": 10.58369087957464
+    },
+    {
+     "throws": 12,
+     "minutes": 7.549849243021669
+    }
+   ],
+   "flight": [
+    {
+     "median": 19.46,
+     "p90": 24.98,
+     "max": 32.93
+    },
+    {
+     "median": 25.14,
+     "p90": 31.08,
+     "max": 41.77
+    },
+    {
+     "median": 27.61,
+     "p90": 34.55,
+     "max": 47.03
+    },
+    {
+     "median": 31,
+     "p90": 39.7,
+     "max": 56.22
+    }
+   ],
+   "flightP90": 32.85,
+   "flightMax": 56.22,
+   "simMax": 57.56,
+   "droughtMedian": 2,
+   "droughtMax": 8,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 6,
+   "placeGapP90": 14,
+   "firstPocket": 39,
+   "levelsBought": 0.7608695652173914,
+   "gliderShare": 0.4074074074074074,
+   "eCap": 0.0459749867887969,
+   "betaCap": 0,
+   "craneTugRate": 0.006752392695672597,
+   "craneNewPlace": 0.06086956521739131,
+   "qteHit": 0.91786914093745,
+   "diveCrash": 0
+  },
+  "weakAssist|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 92,
+   "throwsP90": 106,
+   "throwsMax": 131,
+   "minutes": 55.750748076840274,
+   "district": [
+    {
+     "throws": 33,
+     "minutes": 16.173489783385172
+    },
+    {
+     "throws": 25,
+     "minutes": 16.252575148494877
+    },
+    {
+     "throws": 17,
+     "minutes": 11.631350680959137
+    },
+    {
+     "throws": 17,
+     "minutes": 11.95357949343311
+    }
+   ],
+   "flight": [
+    {
+     "median": 21.32,
+     "p90": 28.95,
+     "max": 37.8
+    },
+    {
+     "median": 30.76,
+     "p90": 36.19,
+     "max": 46.22
+    },
+    {
+     "median": 32.67,
+     "p90": 39,
+     "max": 49.27
+    },
+    {
+     "median": 33.38,
+     "p90": 40.22,
+     "max": 57.42
+    }
+   ],
+   "flightP90": 37.31,
+   "flightMax": 57.42,
+   "simMax": 53.15,
+   "droughtMedian": 2,
+   "droughtMax": 11,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 7,
+   "placeGapP90": 12,
+   "firstPocket": 35,
+   "levelsBought": 0.782608695652174,
+   "gliderShare": 0.618421052631579,
+   "eCap": 0.10488760126616235,
+   "betaCap": 0,
+   "craneTugRate": 0.007135575942915392,
+   "craneNewPlace": 0.045112781954887216,
+   "qteHit": 0.9813744959980742,
+   "diveCrash": null
+  },
+  "weakAssist|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 84,
+   "throwsP90": 95,
+   "throwsMax": 115,
+   "minutes": 49.65782428305929,
+   "district": [
+    {
+     "throws": 31,
+     "minutes": 14.643697110587564
+    },
+    {
+     "throws": 24,
+     "minutes": 14.786422391544663
+    },
+    {
+     "throws": 14,
+     "minutes": 9.451935621932027
+    },
+    {
+     "throws": 16,
+     "minutes": 10.768987258806838
+    }
+   ],
+   "flight": [
+    {
+     "median": 20.41,
+     "p90": 27.6,
+     "max": 36.96
+    },
+    {
+     "median": 29.98,
+     "p90": 35.29,
+     "max": 47.59
+    },
+    {
+     "median": 31.65,
+     "p90": 37.46,
+     "max": 45.57
+    },
+    {
+     "median": 32.82,
+     "p90": 39.57,
+     "max": 50.3
+    }
+   ],
+   "flightP90": 36.11,
+   "flightMax": 50.3,
+   "simMax": 47.72,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 8,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 7,
+   "placeGapP90": 11,
+   "firstPocket": 35,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.6052631578947368,
+   "eCap": 0.05203699367829548,
+   "betaCap": 0,
+   "craneTugRate": 0.004565675485834699,
+   "craneNewPlace": 0.05128205128205128,
+   "qteHit": 0.9819952325404473,
+   "diveCrash": null
+  },
+  "weakAssist|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 163,
+   "throwsP90": 173,
+   "throwsMax": 195,
+   "minutes": 81.27545102377643,
+   "district": [
+    {
+     "throws": 69,
+     "minutes": 29.409115980365222
+    },
+    {
+     "throws": 30,
+     "minutes": 15.224147721175179
+    },
+    {
+     "throws": 41,
+     "minutes": 23.22227724283308
+    },
+    {
+     "throws": 20,
+     "minutes": 11.541827466061193
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.87,
+     "p90": 21.56,
+     "max": 29.84
+    },
+    {
+     "median": 22.4,
+     "p90": 28.97,
+     "max": 37.57
+    },
+    {
+     "median": 25.31,
+     "p90": 31.24,
+     "max": 45.59
+    },
+    {
+     "median": 26.36,
+     "p90": 32.63,
+     "max": 42.32
+    }
+   ],
+   "flightP90": 29.71,
+   "flightMax": 45.59,
+   "simMax": 40.06,
+   "droughtMedian": 6,
+   "droughtMax": 23,
+   "droughtMaxMedian": 18,
+   "droughtMaxP90": 20,
+   "placeGapMedian": 11,
+   "placeGapP90": 25,
+   "firstPocket": 159,
+   "levelsBought": 0.41304347826086957,
+   "gliderShare": 0.6143790849673203,
+   "eCap": 0.00003097125867195243,
+   "betaCap": 0,
+   "craneTugRate": 0.002601585728444004,
+   "craneNewPlace": 0.08333333333333333,
+   "qteHit": 0.9809591637951801,
+   "diveCrash": null
+  },
+  "weakAssist|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 110,
+   "throwsP90": 120,
+   "throwsMax": 140,
+   "minutes": 67.46589531417011,
+   "district": [
+    {
+     "throws": 37,
+     "minutes": 17.96797884883072
+    },
+    {
+     "throws": 30,
+     "minutes": 19.011903662931555
+    },
+    {
+     "throws": 20,
+     "minutes": 14.228188727788613
+    },
+    {
+     "throws": 24,
+     "minutes": 16.780219075119433
+    }
+   ],
+   "flight": [
+    {
+     "median": 21.07,
+     "p90": 28.08,
+     "max": 37.66
+    },
+    {
+     "median": 30.51,
+     "p90": 36.84,
+     "max": 48.5
+    },
+    {
+     "median": 33.24,
+     "p90": 39.72,
+     "max": 50.4
+    },
+    {
+     "median": 34.2,
+     "p90": 41.48,
+     "max": 60.07
+    }
+   ],
+   "flightP90": 38.16,
+   "flightMax": 60.07,
+   "simMax": 51.99,
+   "droughtMedian": 2,
+   "droughtMax": 10,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 9,
+   "placeGapP90": 15,
+   "firstPocket": 43,
+   "levelsBought": 0.8478260869565217,
+   "gliderShare": 0.616822429906542,
+   "eCap": 0.13203777697057756,
+   "betaCap": 0,
+   "craneTugRate": 0.010760988013076643,
+   "craneNewPlace": 0.05063291139240506,
+   "qteHit": 0.97986661475276,
+   "diveCrash": null
+  },
+  "auto|realistic|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 124,
+   "throwsP90": 136,
+   "throwsMax": 151,
+   "minutes": 64.51507407299381,
+   "district": [
+    {
+     "throws": 35,
+     "minutes": 15.208446766381412
+    },
+    {
+     "throws": 35,
+     "minutes": 18.35811684662262
+    },
+    {
+     "throws": 22,
+     "minutes": 12.479981541473158
+    },
+    {
+     "throws": 32,
+     "minutes": 18.791319575187224
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.52,
+     "p90": 23.64,
+     "max": 32.23
+    },
+    {
+     "median": 22.7,
+     "p90": 26.93,
+     "max": 36.4
+    },
+    {
+     "median": 26.7,
+     "p90": 31.83,
+     "max": 44.63
+    },
+    {
+     "median": 27.61,
+     "p90": 33.84,
+     "max": 45.18
+    }
+   ],
+   "flightP90": 30.56,
+   "flightMax": 45.18,
+   "simMax": 48.93,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 10,
+   "placeGapMedian": 9,
+   "placeGapP90": 17,
+   "firstPocket": 40,
+   "levelsBought": 0.8913043478260869,
+   "gliderShare": 0.6,
+   "eCap": 0.015714400838101376,
+   "betaCap": 0,
+   "craneTugRate": 0.01249093399951648,
+   "craneNewPlace": 0.01935483870967742,
+   "qteHit": 1,
+   "diveCrash": null
+  },
+  "auto|balanced|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 105,
+   "throwsP90": 116,
+   "throwsMax": 128,
+   "minutes": 53.14974192798618,
+   "district": [
+    {
+     "throws": 33,
+     "minutes": 13.659174200581685
+    },
+    {
+     "throws": 31,
+     "minutes": 16.110328680437988
+    },
+    {
+     "throws": 20,
+     "minutes": 11.106707930655233
+    },
+    {
+     "throws": 23,
+     "minutes": 13.154367568736333
+    }
+   ],
+   "flight": [
+    {
+     "median": 16.68,
+     "p90": 22.76,
+     "max": 30.12
+    },
+    {
+     "median": 22.96,
+     "p90": 27.27,
+     "max": 35.75
+    },
+    {
+     "median": 25.97,
+     "p90": 30.79,
+     "max": 41.84
+    },
+    {
+     "median": 26.9,
+     "p90": 32.22,
+     "max": 43.66
+    }
+   ],
+   "flightP90": 29.45,
+   "flightMax": 43.66,
+   "simMax": 47.46,
+   "droughtMedian": 3,
+   "droughtMax": 14,
+   "droughtMaxMedian": 10,
+   "droughtMaxP90": 11,
+   "placeGapMedian": 8,
+   "placeGapP90": 14,
+   "firstPocket": 53,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.5922330097087378,
+   "eCap": 0.005656108597285068,
+   "betaCap": 0,
+   "craneTugRate": 0.004194947209653092,
+   "craneNewPlace": 0.0449438202247191,
+   "qteHit": 1,
+   "diveCrash": null
+  },
+  "auto|paper-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 168,
+   "throwsP90": 180,
+   "throwsMax": 199,
+   "minutes": 73.94967121602217,
+   "district": [
+    {
+     "throws": 67,
+     "minutes": 25.521768017291272
+    },
+    {
+     "throws": 36,
+     "minutes": 16.49634244848016
+    },
+    {
+     "throws": 43,
+     "minutes": 21.748633248045465
+    },
+    {
+     "throws": 21,
+     "minutes": 10.314565792765471
+    }
+   ],
+   "flight": [
+    {
+     "median": 14.98,
+     "p90": 18.1,
+     "max": 24.16
+    },
+    {
+     "median": 18.74,
+     "p90": 24.03,
+     "max": 32.98
+    },
+    {
+     "median": 22.01,
+     "p90": 26.16,
+     "max": 34.21
+    },
+    {
+     "median": 23.68,
+     "p90": 27.51,
+     "max": 34.86
+    }
+   ],
+   "flightP90": 24.99,
+   "flightMax": 34.86,
+   "simMax": 38.86,
+   "droughtMedian": 6,
+   "droughtMax": 27,
+   "droughtMaxMedian": 18,
+   "droughtMaxP90": 21,
+   "placeGapMedian": 12,
+   "placeGapP90": 25,
+   "firstPocket": 162,
+   "levelsBought": 0.43478260869565216,
+   "gliderShare": 0.6184971098265896,
+   "eCap": 0,
+   "betaCap": 0,
+   "craneTugRate": 0.0026828032312874476,
+   "craneNewPlace": 0.022222222222222223,
+   "qteHit": 1,
+   "diveCrash": null
+  },
+  "auto|atlas-first|auto|better": {
+   "n": 200,
+   "doneRate": 1,
+   "throws": 135,
+   "throwsP90": 143,
+   "throwsMax": 152,
+   "minutes": 69.93241951039249,
+   "district": [
+    {
+     "throws": 40,
+     "minutes": 16.91096293813485
+    },
+    {
+     "throws": 36,
+     "minutes": 18.489813730496515
+    },
+    {
+     "throws": 28,
+     "minutes": 16.202321257340905
+    },
+    {
+     "throws": 33,
+     "minutes": 19.598384842543403
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.36,
+     "p90": 23.49,
+     "max": 32.87
+    },
+    {
+     "median": 22.8,
+     "p90": 27.38,
+     "max": 37.92
+    },
+    {
+     "median": 26.97,
+     "p90": 32.44,
+     "max": 44.5
+    },
+    {
+     "median": 27.84,
+     "p90": 34.31,
+     "max": 46.7
+    }
+   ],
+   "flightP90": 30.88,
+   "flightMax": 46.7,
+   "simMax": 50.05,
+   "droughtMedian": 3,
+   "droughtMax": 12,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 10,
+   "placeGapMedian": 10,
+   "placeGapP90": 18,
+   "firstPocket": 45,
+   "levelsBought": 0.8913043478260869,
+   "gliderShare": 0.6180555555555556,
+   "eCap": 0.01747100635989525,
+   "betaCap": 0,
+   "craneTugRate": 0.012345679012345678,
+   "craneNewPlace": 0.06666666666666667,
+   "qteHit": 1,
+   "diveCrash": null
+  }
+ },
+ "curve": [
+  {
+   "name": "1. hod (nic)",
+   "pi": 1,
+   "cells": {
+    "weak": {
+     "x": 182.11156693250095,
+     "xMed": 180.68289165885054,
+     "t": 13.176418004273684,
+     "real": 12.22578152181343,
+     "realMax": 17.540417896055853,
+     "speed": 13.79477496539004,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 223.72125116644435,
+     "xMed": 221.35179307814278,
+     "t": 14.8992669418927,
+     "real": 13.940067236099232,
+     "realMax": 18.77340056943265,
+     "speed": 14.754888108577212,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 258.7902742081371,
+     "xMed": 262.36971660694724,
+     "t": 17.35292029920513,
+     "real": 16.22613218177005,
+     "realMax": 19.98054342657558,
+     "speed": 15.378955326159483,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 286.51290992510906,
+     "xMed": 289.5542987547732,
+     "t": 18.296429779176,
+     "real": 16.952345975728914,
+     "realMax": 21.423804544852583,
+     "speed": 15.855893631286028,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 197.2200564870296,
+     "xMed": 195.08521330381933,
+     "t": 13.63268420369344,
+     "real": 14.901971998003997,
+     "realMax": 22.070908240245153,
+     "speed": 14.130035591812673,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 188.2597519589716,
+     "xMed": 186.54531604184658,
+     "t": 13.223845528235476,
+     "real": 12.349591045622962,
+     "realMax": 17.18327503891299,
+     "speed": 13.946983375663068,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "po Power 1",
+   "pi": 1,
+   "cells": {
+    "weak": {
+     "x": 219.10080283826358,
+     "xMed": 219.2797284247262,
+     "t": 14.548510559436195,
+     "real": 13.616257712289691,
+     "realMax": 19.443045920295283,
+     "speed": 14.719709438761159,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 272.5749509010362,
+     "xMed": 275.2698595371379,
+     "t": 17.626463799609894,
+     "real": 16.440417896055784,
+     "realMax": 21.032924378956466,
+     "speed": 15.652780436336919,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 312.53733701652465,
+     "xMed": 311.7854277820092,
+     "t": 19.39024892305777,
+     "real": 17.823774547157548,
+     "realMax": 22.602322657960443,
+     "speed": 16.226164372051436,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 344.5549232679501,
+     "xMed": 343.4468073705497,
+     "t": 20.609632234227035,
+     "real": 18.876155499538573,
+     "realMax": 23.449941705579565,
+     "speed": 16.651814287022827,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 238.6614799148683,
+     "xMed": 238.93868541760125,
+     "t": 16.2858702604489,
+     "real": 18.497560753198513,
+     "realMax": 24.102765648797675,
+     "speed": 15.06067353567934,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 228.58380492443027,
+     "xMed": 229.0466727776546,
+     "t": 15.572404090277448,
+     "real": 14.609465515103293,
+     "realMax": 19.287323964877828,
+     "speed": 14.871194605577879,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "po Paper 1",
+   "pi": 1.62,
+   "cells": {
+    "weak": {
+     "x": 294.85048904259895,
+     "xMed": 292.70628448733834,
+     "t": 13.193017672107516,
+     "real": 12.240067236099147,
+     "realMax": 17.540417896055853,
+     "speed": 22.325897266034254,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 362.42842688963975,
+     "xMed": 358.5899047865922,
+     "t": 14.899266941892723,
+     "real": 13.940067236099232,
+     "realMax": 18.77340056943265,
+     "speed": 23.902918735895085,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 419.2402442171817,
+     "xMed": 425.03894090325383,
+     "t": 17.352920299205135,
+     "real": 16.22613218177005,
+     "realMax": 19.98054342657558,
+     "speed": 24.913907628378347,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 464.15091407867743,
+     "xMed": 469.0779639827309,
+     "t": 18.296429779175988,
+     "real": 16.952345975728914,
+     "realMax": 21.423804544852583,
+     "speed": 25.68654768268341,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 319.29788647839376,
+     "xMed": 316.0380455521868,
+     "t": 13.649446006947265,
+     "real": 14.901971998003997,
+     "realMax": 22.070908240245153,
+     "speed": 22.86827758403417,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 304.791251246953,
+     "xMed": 302.20341198779136,
+     "t": 13.241878741870153,
+     "real": 12.349591045622962,
+     "realMax": 17.18327503891299,
+     "speed": 22.570464871376437,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "střed D1",
+   "pi": 1.62,
+   "cells": {
+    "weak": {
+     "x": 474.791563198063,
+     "xMed": 483.11438553240487,
+     "t": 18.408787832081334,
+     "real": 17.026155499538447,
+     "realMax": 22.285655991293815,
+     "speed": 26.448227433183433,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 564.9721857899922,
+     "xMed": 564.3757047779642,
+     "t": 20.55999698720121,
+     "real": 18.873636996443487,
+     "realMax": 23.399941705579614,
+     "speed": 27.666801508500463,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 629.6565990243048,
+     "xMed": 623.7829136867618,
+     "t": 21.82643401074439,
+     "real": 20.06149580752798,
+     "realMax": 25.02137027700822,
+     "speed": 28.430538215341127,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 681.813255022213,
+     "xMed": 683.4659902294604,
+     "t": 23.538356401441415,
+     "real": 21.671370277008094,
+     "realMax": 26.185655991294027,
+     "speed": 29.00592198617982,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 512.8574735384801,
+     "xMed": 521.0554543857131,
+     "t": 19.321173234307697,
+     "real": 21.071813267845474,
+     "realMax": 27.320576626214542,
+     "speed": 27.14694454807509,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 486.3868869194686,
+     "xMed": 491.8439618912594,
+     "t": 18.69503006165803,
+     "real": 17.14339528332199,
+     "realMax": 21.764227419865264,
+     "speed": 26.56197964736544,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D1",
+   "pi": 2.86,
+   "cells": {
+    "weak": {
+     "x": 1253.2118529050156,
+     "xMed": 1266.5904129761498,
+     "t": 23.025699784328037,
+     "real": 21.204703610341323,
+     "realMax": 27.742424870711876,
+     "speed": 55.06419331857721,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 1366.093278928867,
+     "xMed": 1350.580747073122,
+     "t": 24.405005078950904,
+     "real": 22.35470361034141,
+     "realMax": 28.232901061188038,
+     "speed": 56.67803847337625,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 1433.3161161966284,
+     "xMed": 1423.920693666603,
+     "t": 24.66691030853296,
+     "real": 22.67613218177003,
+     "realMax": 28.420996299283267,
+     "speed": 57.83095030877867,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 1491.9032569527135,
+     "xMed": 1487.7364389922238,
+     "t": 25.492398647418565,
+     "real": 23.242798848436667,
+     "realMax": 28.49956772785489,
+     "speed": 58.5507135231742,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 1324.172566209531,
+     "xMed": 1329.3266330690699,
+     "t": 23.70984980175342,
+     "real": 25.865021070658972,
+     "realMax": 34.19559947388678,
+     "speed": 56.96745743972848,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 1242.1707262719747,
+     "xMed": 1241.5507629581596,
+     "t": 23.031251665867085,
+     "real": 21.054703610341427,
+     "realMax": 27.764204102096826,
+     "speed": 54.56158294459988,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D2",
+   "pi": 4.96,
+   "cells": {
+    "weak": {
+     "x": 2395.6727278325307,
+     "xMed": 2412.6834448098175,
+     "t": 25.186026032300834,
+     "real": 23.021370277008156,
+     "realMax": 28.875758204045145,
+     "speed": 96.47442203290883,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.25,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 2598.4233490587776,
+     "xMed": 2594.6451201835,
+     "t": 26.589803771232393,
+     "real": 24.357084562722378,
+     "realMax": 32.38416136483521,
+     "speed": 99.26522007689042,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.29,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 2732.1247078951656,
+     "xMed": 2719.5213543436316,
+     "t": 27.394776186565423,
+     "real": 24.950968153172013,
+     "realMax": 32.42608554623307,
+     "speed": 101.12475031072614,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.34,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 2846.742830259351,
+     "xMed": 2831.001587815077,
+     "t": 28.094029008623583,
+     "real": 25.485282013569257,
+     "realMax": 32.35703792718549,
+     "speed": 102.38963127694498,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.355,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 2538.919909321658,
+     "xMed": 2540.8034100878704,
+     "t": 26.017577603357157,
+     "real": 28.17439417000185,
+     "realMax": 38.50547394336661,
+     "speed": 99.34331004296584,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.36,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 2346.813931196431,
+     "xMed": 2358.6681106863584,
+     "t": 25.048160817776466,
+     "real": 22.830894086531867,
+     "realMax": 31.60190204469894,
+     "speed": 95.54744182638298,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.24,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D3",
+   "pi": 6.94,
+   "cells": {
+    "weak": {
+     "x": 3838.610126705638,
+     "xMed": 3853.304287490849,
+     "t": 25.17610754990729,
+     "real": 23.378513134151014,
+     "realMax": 31.445133165280854,
+     "speed": 152.54166333102697,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.4,
+     "tug": 0,
+     "eCap": 0.055,
+     "star": 0.065
+    },
+    "average": {
+     "x": 4250.1993491021885,
+     "xMed": 4224.547446090195,
+     "t": 26.60679148638363,
+     "real": 24.223751229389105,
+     "realMax": 31.629087548197383,
+     "speed": 161.36203260396465,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.515,
+     "tug": 0,
+     "eCap": 0.155,
+     "star": 0.065
+    },
+    "good": {
+     "x": 4551.717348943408,
+     "xMed": 4502.9228004256975,
+     "t": 27.291432072988897,
+     "real": 24.997210093242117,
+     "realMax": 31.685609355757002,
+     "speed": 168.0693266905573,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.635,
+     "tug": 0,
+     "eCap": 0.215,
+     "star": 0.065
+    },
+    "expert": {
+     "x": 4776.022978296506,
+     "xMed": 4708.221926147986,
+     "t": 27.69070386203324,
+     "real": 25.471019617051542,
+     "realMax": 31.690371260518905,
+     "speed": 172.93264979678946,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.71,
+     "tug": 0,
+     "eCap": 0.23,
+     "star": 0.07
+    },
+    "weakAssist": {
+     "x": 4207.280689067395,
+     "xMed": 4195.237758449903,
+     "t": 25.80835104555911,
+     "real": 28.01625771228978,
+     "realMax": 37.094339514487096,
+     "speed": 164.4393005899285,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.62,
+     "tug": 0,
+     "eCap": 0.17,
+     "star": 0.065
+    },
+    "auto": {
+     "x": 3585.785472612738,
+     "xMed": 3576.327686660047,
+     "t": 25.287956580372008,
+     "real": 23.049941705579602,
+     "realMax": 32.388036943674464,
+     "speed": 144.33668593962702,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.19,
+     "tug": 0,
+     "eCap": 0.015,
+     "star": 0.065
+    }
+   }
+  },
+  {
+   "name": "střed D4",
+   "pi": 7.58,
+   "cells": {
+    "weak": {
+     "x": 4800.456194717348,
+     "xMed": 4725.845665227067,
+     "t": 27.686085662908397,
+     "real": 25.535282013569258,
+     "realMax": 37.86144917199087,
+     "speed": 173.69143510778542,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.45,
+     "tug": 0,
+     "eCap": 0.075,
+     "star": 0.095
+    },
+    "average": {
+     "x": 5410.403440233556,
+     "xMed": 5343.246160697743,
+     "t": 29.23642039024573,
+     "real": 27.344829140860764,
+     "realMax": 38.02598147158847,
+     "speed": 184.85040212791108,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.59,
+     "tug": 0,
+     "eCap": 0.165,
+     "star": 0.095
+    },
+    "good": {
+     "x": 5912.525568149771,
+     "xMed": 5801.179334798695,
+     "t": 30.291893530745742,
+     "real": 28.185305331337176,
+     "realMax": 38.3968244566325,
+     "speed": 193.0952808267271,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.76,
+     "tug": 0,
+     "eCap": 0.205,
+     "star": 0.095
+    },
+    "expert": {
+     "x": 6295.4070677764075,
+     "xMed": 6126.9762698265085,
+     "t": 31.062293636015777,
+     "real": 29.00668726722932,
+     "realMax": 38.53074078460254,
+     "speed": 199.6415369221637,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.82,
+     "tug": 0,
+     "eCap": 0.23,
+     "star": 0.095
+    },
+    "weakAssist": {
+     "x": 5417.3274517051095,
+     "xMed": 5321.643886791682,
+     "t": 28.708620929348246,
+     "real": 31.82101961705145,
+     "realMax": 45.09163121991808,
+     "speed": 188.3917570671866,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.69,
+     "tug": 0,
+     "eCap": 0.15,
+     "star": 0.095
+    },
+    "auto": {
+     "x": 4348.03638299997,
+     "xMed": 4342.551339515545,
+     "t": 26.94769079497023,
+     "real": 24.56863866467069,
+     "realMax": 37.43512652905781,
+     "speed": 162.54519181870822,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.22,
+     "tug": 0,
+     "eCap": 0.025,
+     "star": 0.1
+    }
+   }
+  },
+  {
+   "name": "plná výbava",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 5866.353509002116,
+     "xMed": 5790.486190476191,
+     "t": 27.7344504029793,
+     "real": 25.442798848436965,
+     "realMax": 40.65194868023518,
+     "speed": 212.70733407567994,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.34,
+     "tug": 0.075,
+     "eCap": 0.08,
+     "star": 0.095
+    },
+    "average": {
+     "x": 6647.600774921714,
+     "xMed": 6538.315897839163,
+     "t": 29.068623487822066,
+     "real": 26.801971998003914,
+     "realMax": 38.58763964818091,
+     "speed": 228.68494180660008,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.445,
+     "tug": 0.065,
+     "eCap": 0.185,
+     "star": 0.1
+    },
+    "good": {
+     "x": 7366.06114602072,
+     "xMed": 7258.94587451315,
+     "t": 30.86667347923084,
+     "real": 28.737662965950072,
+     "realMax": 39.05430631484757,
+     "speed": 239.33252717743315,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.635,
+     "tug": 0.095,
+     "eCap": 0.235,
+     "star": 0.1
+    },
+    "expert": {
+     "x": 7793.899529489128,
+     "xMed": 7583.700262941726,
+     "t": 31.409622147910884,
+     "real": 29.101971998003513,
+     "realMax": 39.187639648180905,
+     "speed": 247.4773046291923,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.685,
+     "tug": 0.055,
+     "eCap": 0.26,
+     "star": 0.1
+    },
+    "weakAssist": {
+     "x": 6711.004894046149,
+     "xMed": 6624.167004931682,
+     "t": 29.27664701232687,
+     "real": 32.33724329288125,
+     "realMax": 45.75511314252058,
+     "speed": 232.7229905745735,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.58,
+     "tug": 0.03,
+     "eCap": 0.18,
+     "star": 0.1
+    },
+    "auto": {
+     "x": 5323.187480795496,
+     "xMed": 5281.208672380986,
+     "t": 26.829119466564485,
+     "real": 24.5091245969179,
+     "realMax": 38.187639648181054,
+     "speed": 198.6477158921695,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.105,
+     "tug": 0.095,
+     "eCap": 0.025,
+     "star": 0.1
+    }
+   }
+  },
+  {
+   "name": "plná bez Atlasu",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 3794.314819646218,
+     "xMed": 3845.263014603186,
+     "t": 24.043129602230756,
+     "real": 21.987686283718386,
+     "realMax": 26.930520108807197,
+     "speed": 162.05595611912986,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 4129.625300347364,
+     "xMed": 4156.307575698815,
+     "t": 25.430676900846777,
+     "real": 23.099941705579514,
+     "realMax": 27.692424870711797,
+     "speed": 165.21632213332583,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "good": {
+     "x": 4331.2829180077915,
+     "xMed": 4339.431414827605,
+     "t": 26.218583236675304,
+     "real": 23.742798848436724,
+     "realMax": 28.87099629928336,
+     "speed": 167.27382601214669,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 4493.625777733575,
+     "xMed": 4517.354776204497,
+     "t": 26.98422877312682,
+     "real": 24.32851313415103,
+     "realMax": 29.34480582309303,
+     "speed": 168.63399030487926,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "weakAssist": {
+     "x": 4003.513455324177,
+     "xMed": 4086.1271342044147,
+     "t": 24.999713592213773,
+     "real": 26.80152900716697,
+     "realMax": 32.55750423579149,
+     "speed": 165.44750320511642,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "auto": {
+     "x": 3749.967765932373,
+     "xMed": 3852.301842300043,
+     "t": 23.756450330911687,
+     "real": 21.6713702770081,
+     "realMax": 25.685282013569022,
+     "speed": 161.13488959832793,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "plná, kluzák",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 6596.290296196438,
+     "xMed": 6412.985613652399,
+     "t": 32.85269510840434,
+     "real": 29.978489816382755,
+     "realMax": 45.33290106118708,
+     "speed": 197.46597461633922,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.295,
+     "tug": 0.105,
+     "eCap": 0.17,
+     "star": 0.1
+    },
+    "average": {
+     "x": 7390.553089385552,
+     "xMed": 7239.944961865914,
+     "t": 34.2551391407719,
+     "real": 31.661449171991006,
+     "realMax": 48.69478250532296,
+     "speed": 212.88707588174032,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.425,
+     "tug": 0.075,
+     "eCap": 0.285,
+     "star": 0.1
+    },
+    "good": {
+     "x": 8048.367902153912,
+     "xMed": 7942.847336499632,
+     "t": 35.05779054072607,
+     "real": 32.361472489759265,
+     "realMax": 45.94478250532341,
+     "speed": 226.08319144137116,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.535,
+     "tug": 0.065,
+     "eCap": 0.34,
+     "star": 0.105
+    },
+    "expert": {
+     "x": 8573.29938190912,
+     "xMed": 8423.282496359576,
+     "t": 36.53517170016125,
+     "real": 33.54240155294312,
+     "realMax": 48.17097298151377,
+     "speed": 234.06346094971002,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.635,
+     "tug": 0.075,
+     "eCap": 0.36,
+     "star": 0.105
+    },
+    "weakAssist": {
+     "x": 7519.691184724056,
+     "xMed": 7353.769209892927,
+     "t": 33.47539741948043,
+     "real": 36.401971998003894,
+     "realMax": 53.73607566436157,
+     "speed": 220.66250942853043,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.51,
+     "tug": 0.095,
+     "eCap": 0.295,
+     "star": 0.1
+    },
+    "auto": {
+     "x": 6099.596874584356,
+     "xMed": 5996.721922926798,
+     "t": 33.68684455038213,
+     "real": 30.299941705579435,
+     "realMax": 46.361425854221565,
+     "speed": 180.40747181600364,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.12,
+     "tug": 0.055,
+     "eCap": 0.075,
+     "star": 0.1
+    }
+   }
+  }
+ ],
+ "probes": {
+  "abilities": [
+   {
+    "profile": "weak",
+    "base": 3838.610126705638,
+    "baseReal": 23.378513134151014,
+    "cushion": {
+     "gain": 0.04776588138450566,
+     "real": 24.242424870711847,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.03306767228433993,
+     "real": 22.337686283718504,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.0237815714365186,
+     "real": 22.23327503891284,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.03857935107192623,
+     "real": 21.823061568360302,
+     "crash": 0.12307692307692308
+    },
+    "whistle": {
+     "gain": 0.0679805351854752,
+     "real": 24.061133488687346,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.0968507097976985,
+     "real": 23.404703610341457,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": 0.004407325359921055,
+     "crash": 0.0076045627376425855
+    }
+   },
+   {
+    "profile": "average",
+    "base": 4250.1993491021885,
+    "baseReal": 24.223751229389105,
+    "cushion": {
+     "gain": 0.05373047936179698,
+     "real": 25.849591045622933,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.06136723634757102,
+     "real": 23.77851313415093,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.031338380987326886,
+     "real": 23.04260683614794,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.03196516647032843,
+     "real": 23.18020442550317,
+     "crash": 0.06224066390041494
+    },
+    "whistle": {
+     "gain": 0.07954884483641611,
+     "real": 24.904016095476326,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.08836002544687394,
+     "real": 24.366608372246258,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": 0.002601056756217579,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "good",
+    "base": 4551.717348943408,
+    "baseReal": 24.997210093242117,
+    "cushion": {
+     "gain": 0.06065950250758334,
+     "real": 26.565718634321488,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.0741443949247691,
+     "real": 24.406733902765943,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.0406172524767916,
+     "real": 23.502345975729025,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.012634122168977524,
+     "real": 24.16115680645534,
+     "crash": 0.008333333333333333
+    },
+    "whistle": {
+     "gain": 0.08726148720130555,
+     "real": 25.332119770174035,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.08152563801973556,
+     "real": 24.997210093242117,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": -0.012543843782587105,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "expert",
+    "base": 4776.022978296506,
+    "baseReal": 25.471019617051542,
+    "cushion": {
+     "gain": 0.061784561604623534,
+     "real": 27.099567727854563,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.10026022099167853,
+     "real": 24.4712381102656,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.04587706033622596,
+     "real": 23.78803694367488,
+     "crash": null
+    },
+    "dive": {
+     "gain": 0.020308356909888303,
+     "real": 25.57579318069741,
+     "crash": 0
+    },
+    "whistle": {
+     "gain": 0.10963726996176493,
+     "real": 26.082924378956267,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.07746179419674104,
+     "real": 25.488036943675006,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": -0.018669546793427028,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "weakAssist",
+    "base": 4207.280689067395,
+    "baseReal": 28.01625771228978,
+    "cushion": {
+     "gain": 0.05985740098863146,
+     "real": 29.19636980691188,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.07573081846661056,
+     "real": 27.17260691863901,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.04174450934050178,
+     "real": 26.22359792746051,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.003962681355963227,
+     "real": 25.613537758836344,
+     "crash": 0.058365758754863814
+    },
+    "whistle": {
+     "gain": 0.0920801397078328,
+     "real": 29.481883623824398,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.08754994014334594,
+     "real": 28.02816247419454,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": 0.026374519677334396,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "auto",
+    "base": 3585.785472612738,
+    "baseReal": 23.049941705579602,
+    "cushion": {
+     "gain": 0.047756195165406856,
+     "real": 23.968615346902507,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.07216723636796751,
+     "real": 22.778513134151027,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.011478529480701383,
+     "real": 22.114204102096917,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.02483356172517115,
+     "real": 20.923061568360364,
+     "crash": 0.12244897959183673
+    },
+    "whistle": {
+     "gain": 0.04237019819955301,
+     "real": 23.25912651403116,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.10457408728051698,
+     "real": 23.140417896055826,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": 0.0019165228563158276,
+     "crash": 0.004
+    }
+   }
+  ],
+  "atlas": [
+   {
+    "bonus": "chain",
+    "gain": 0.030726202119448764
+   },
+   {
+    "bonus": "pinwheel",
+    "gain": 0.021884709405779468
+   },
+   {
+    "bonus": "steam",
+    "gain": -0.0009177719480043534
+   },
+   {
+    "bonus": "tape",
+    "gain": 0.007916294380728939
+   },
+   {
+    "bonus": "crane",
+    "gain": 0.037294002678402105
+   },
+   {
+    "bonus": "skip",
+    "gain": 0.055882896153088835,
+    "rate": 0.445
+   },
+   {
+    "bonus": "gull",
+    "gain": 0.03240509891690024
+   },
+   {
+    "bonus": "momentum",
+    "gain": 0.07324568036024104
+   },
+   {
+    "bonus": "thermal",
+    "gain": 0.030570591746808873
+   },
+   {
+    "bonus": "echo",
+    "gain": 0.08795213608197816
+   },
+   {
+    "bonus": "star",
+    "gain": 0.0024815133412716683,
+    "rate": 0.1
+   },
+   {
+    "bonus": "drone",
+    "gain": 0.0006332448917805156
+   },
+   {
+    "bonus": "paperCrane",
+    "gain": 0.00011093970680220444,
+    "rate": 0.065
+   },
+   {
+    "bonus": "onAir",
+    "gain": 0.046212519071118896
+   }
+  ],
+  "atlasWeak": [
+   {
+    "bonus": "chain",
+    "gain": 0.027044804073257156
+   },
+   {
+    "bonus": "pinwheel",
+    "gain": 0.02965112027008132
+   },
+   {
+    "bonus": "steam",
+    "gain": 0.002561066194206374
+   },
+   {
+    "bonus": "tape",
+    "gain": 0.02101972242041028
+   },
+   {
+    "bonus": "crane",
+    "gain": 0.04123128621297578
+   },
+   {
+    "bonus": "skip",
+    "gain": 0.04854833575463413,
+    "rate": 0.34
+   },
+   {
+    "bonus": "gull",
+    "gain": 0.031298845251602314
+   },
+   {
+    "bonus": "momentum",
+    "gain": 0.07710099461228914
+   },
+   {
+    "bonus": "thermal",
+    "gain": 0.04241009049644595
+   },
+   {
+    "bonus": "echo",
+    "gain": 0.06232235815427356
+   },
+   {
+    "bonus": "star",
+    "gain": 0.0009995560013447147,
+    "rate": 0.095
+   },
+   {
+    "bonus": "drone",
+    "gain": -0.008163528909111872
+   },
+   {
+    "bonus": "paperCrane",
+    "gain": 0.00015789792337872477,
+    "rate": 0.075
+   },
+   {
+    "bonus": "onAir",
+    "gain": 0.040564753531131315
+   }
+  ],
+  "star": {
+   "bonus": "star",
+   "level": 3,
+   "flights": 200,
+   "keys": 1280,
+   "scheduled": 0.15625,
+   "seen": 0.96,
+   "x": 6969.942927845301,
+   "x0": 6715.899449068351,
+   "gain": 0.03782717128264812
+  }
+ },
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 30,
+   "goal": "25–35",
+   "ok": true
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 30,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 14,
+   "goal": "20–30",
+   "ok": false
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 18,
+   "goal": "20–30",
+   "ok": false
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "13.4",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "16.0",
+   "goal": "10–16",
+   "ok": true
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "8.7",
+   "goal": "12–18",
+   "ok": false
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "10.9",
+   "goal": "14–20",
+   "ok": false
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "49.4",
+   "goal": "50–75",
+   "ok": false
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.4",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "23.6",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "27.9",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "28.7",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "31.3",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 8 (max 9, P90 8)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": true
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "7 / 13",
+   "goal": "≤ 8 / ≤ 14",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "0.7 % / 9 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "7 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "54 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 37,
+   "goal": "20–40",
+   "ok": true
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "78 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "60.1",
+   "goal": "≤ 60",
+   "ok": false
+  },
+  {
+   "name": "Slabý: cíl do 250 hodů",
+   "value": "100 % (max 154)",
+   "goal": "100 %",
+   "ok": true
+  },
+  {
+   "name": "Slabý / průměrný (hody)",
+   "value": "1.19",
+   "goal": "≤ 1.4",
+   "ok": true
+  },
+  {
+   "name": "Expert / průměrný (hody)",
+   "value": "0.76",
+   "goal": "≥ 0.7",
+   "ok": true
+  },
+  {
+   "name": "Expert / slabý (hody)",
+   "value": "0.64",
+   "goal": "0.6–0.75",
+   "ok": true
+  },
+  {
+   "name": "Paper napřed rychlejší o (weak)",
+   "value": "-26 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (weak)",
+   "value": "11 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Optimální nákup rychlejší o (weak, info)",
+   "value": "12 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Paper napřed rychlejší o (average)",
+   "value": "-45 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (average)",
+   "value": "18 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Optimální nákup rychlejší o (average, info)",
+   "value": "9 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Paper napřed rychlejší o (good)",
+   "value": "-58 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (good)",
+   "value": "14 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Optimální nákup rychlejší o (good, info)",
+   "value": "10 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Paper napřed rychlejší o (expert)",
+   "value": "-67 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (expert)",
+   "value": "22 %",
+   "goal": "≤ 20 %",
+   "ok": false
+  },
+  {
+   "name": "Optimální nákup rychlejší o (expert, info)",
+   "value": "9 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Paper napřed rychlejší o (weakAssist)",
+   "value": "-46 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (weakAssist)",
+   "value": "21 %",
+   "goal": "≤ 20 %",
+   "ok": false
+  },
+  {
+   "name": "Optimální nákup rychlejší o (weakAssist, info)",
+   "value": "11 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Paper napřed rychlejší o (auto)",
+   "value": "-15 %",
+   "goal": "≤ 10 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas napřed pomalejší o (auto)",
+   "value": "8 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Optimální nákup rychlejší o (auto, info)",
+   "value": "18 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Dive pády (weak)",
+   "value": "12 %",
+   "goal": "≤ 15 %",
+   "ok": true
+  },
+  {
+   "name": "Dive vysoké vybrání (průměrný)",
+   "value": "0.3 %",
+   "goal": "±2 %",
+   "ok": true
+  },
+  {
+   "name": "Dive pády (expert)",
+   "value": "0 %",
+   "goal": "≤ 3 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas chain na úr. 3",
+   "value": "3.1 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas pinwheel na úr. 3",
+   "value": "2.2 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas steam na úr. 3",
+   "value": "-0.1 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas tape na úr. 3 (info)",
+   "value": "0.8 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas crane na úr. 3",
+   "value": "3.7 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas skip na úr. 3",
+   "value": "5.6 % (v 45 % letů)",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas gull na úr. 3",
+   "value": "3.2 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas momentum na úr. 3",
+   "value": "7.3 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas thermal na úr. 3",
+   "value": "3.1 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas echo na úr. 3",
+   "value": "8.8 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas star na úr. 3 (info)",
+   "value": "0.2 % (v 10 % letů)",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas drone na úr. 3",
+   "value": "0.1 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas paperCrane na úr. 3 (info)",
+   "value": "0.0 % (v 7 % letů)",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas onAir na úr. 3",
+   "value": "4.6 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane úr. 3: podíl letů s tahem (průměrný, plná, info)",
+   "value": "7 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Shooting Star úr. 3: zisk v letu s hvězdou (průměrný, plná)",
+   "value": "3.8 % (200 letů)",
+   "goal": "≥ 3 %",
+   "ok": true
+  },
+  {
+   "name": "Packing Tape úr. 3 (slabý, plná)",
+   "value": "2.1 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Stone Skip úr. 3: podíl letů s odrazem (průměrný, plná)",
+   "value": "45 %",
+   "goal": "30 %–50 %",
+   "ok": true
+  }
+ ],
+ "seconds": 519.889
+}
