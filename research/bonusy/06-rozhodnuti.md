@@ -98,3 +98,8 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Pohlednice Atlasu bez výjimky (14. 10.):** půltón jen ve stínech platí přísně i pro pohlednice, vzor čtvrti v nebi (`ht-0…3`) se odstraní. Stopa letu dostane tušový lem (návrh art directora, beze změny voleb).
 - **Pořadí oprav grafiky (14. 10.):** dávka G0 (tokeny) až po commitu současné práce přes `/release`, pak G1, G2, P1, G3 souběžně ve worktree, P2 po dokončení češtiny v prototypu Atlasu.
 - **Pohlednice Railway (14. 10.):** zůstává s barvami jako ve 3D (tuš × obzor 7,9 : 1). Kritérium „tuš × nejsvětlejší pás ≥ 9 : 1“ platí pro referenční místo každé čtvrti (1, 5, 9, 13).
+- **Nová vizuální identita (14. 10.): směr B „Papírové město“** (`research/design/04-nove-smery.md`). Uživatel se dnešní paleta ani styl nelíbí a chce hru, kterou by chtěl hrát, i za cenu větší práce.
+  1. Styl B: diorama z papíru, den, měkké stíny. Co se líbí na referencích: Alto's Odyssey (klid, světlo, siluety), Tearaway a Paper Mario (svět z papíru, hmatové materiály), Monument Valley (čistá geometrie, pastely). Cestovní plakáty ne.
+  2. Postup: nejdřív jedna čtvrť (Violet Suburbs) v novém stylu přímo ve hře, zahrát a teprve pak přestavět zbytek.
+  3. Názvy a nálady čtvrtí se smí změnit podle nového stylu.
+  4. Bible `02-styl.md` platí pro současnou grafiku, dokud ji nenahradí nová bible stylu B. Hotové dávky G0–G4 (tokeny, jedna tuš, čitelnost vlaštovky a stopy) zůstávají jako základ.

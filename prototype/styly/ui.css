@@ -1,0 +1,131 @@
+/* Prototyp stylových směrů: stránka + UI karta (HUD, QTE, výsledek) a pohlednice pro 5 směrů. Jen systémová písma (bez stahování). */
+*{box-sizing:border-box}
+body{margin:0;background:#16151c;color:#e9e6f2;font:14px/1.4 system-ui,"Segoe UI",sans-serif}
+.bar{padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:#0f0e14;border-bottom:1px solid #2a2833}
+.bar h1{font-size:16px;margin:0 12px 0 0;width:100%}.bar h1 small{font-weight:400;color:#9c98ad;margin-left:8px}
+.picks{display:flex;gap:4px;flex-wrap:wrap}
+.picks button{font:inherit;background:#24222e;color:#e9e6f2;border:1px solid #3a3748;border-radius:6px;padding:6px 10px;min-height:36px;cursor:pointer}
+.picks button[aria-pressed=true]{background:#e9e6f2;color:#16151c;border-color:#e9e6f2;font-weight:700}
+#pitch{margin:2px 0 0;width:100%;color:#c9c5d8;max-width:1100px}
+main{padding:14px 16px 40px}
+.frame{position:relative;overflow:visible}
+#stage{position:relative;transform-origin:0 0;overflow:hidden;container-type:size;border-radius:4px;box-shadow:0 0 0 1px #2a2833}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.h2{font-size:15px;margin:22px 0 10px;color:#c9c5d8}
+.note{color:#9c98ad;font-size:12px}
+code{background:#24222e;padding:1px 4px;border-radius:3px}
+
+/* ---------- společná kostra UI ve scéně ---------- */
+.hud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:14px 18px;pointer-events:none;gap:12px}
+.hud small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.hud b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.hud-r{display:flex;gap:18px;text-align:right}
+.coin{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:.25em;vertical-align:-.05em;background:var(--value);box-shadow:inset 0 0 0 .12em rgba(0,0,0,.25)}
+#qte{position:absolute;display:none;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+#stage[data-mode=event] #qte{display:block}
+.q-disc{fill:var(--qte-disc)}.q-track{fill:none;stroke:var(--qte-track);stroke-width:6}
+.q-ok{fill:none;stroke:var(--qte-ok);stroke-width:9}.q-perfect{fill:none;stroke:var(--qte-perfect);stroke-width:11}
+.q-dot{fill:var(--qte-dot)}.q-star{fill:var(--qte-perfect)}
+.q-label{display:inline-block;margin-top:2px;font-weight:800;font-size:14px;padding:3px 8px}
+.q-label em{font-style:normal;font-weight:400}
+.result{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);min-width:300px;padding:14px 20px 16px;text-align:center;display:none}
+#stage[data-mode=still] .result{display:block}
+.result small{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.result .big{display:block;font-size:46px;line-height:1;margin:4px 0 6px;font-variant-numeric:tabular-nums}
+.result p{margin:0 0 12px;display:flex;justify-content:center;gap:16px;font-size:15px}
+.cta{font:inherit;min-height:48px;min-width:200px;padding:10px 22px;cursor:pointer;font-size:18px}
+@container (max-width:500px){.hud{padding:10px 12px}.hud b{font-size:18px}.hud small{font-size:10px}.hud-r{flex-direction:column;gap:4px}.result{min-width:0;width:86%;bottom:5%}.result .big{font-size:38px}.cta{min-width:0;width:100%}}
+@container (max-height:460px){.result{bottom:4%;padding:8px 16px 10px}.result .big{font-size:34px}.result p{margin-bottom:6px}.cta{min-height:44px}}
+
+/* ---------- A0 dnešek: tokeny Atlasu (bible kap. 7) ---------- */
+#stage[data-style=a0]{--ink:#15101f;font-family:"Bahnschrift","Segoe UI",sans-serif}
+#stage[data-style=a0] .hud b,#stage[data-style=a0] .result .big,#stage[data-style=a0] .cta,#stage[data-style=a0] .q-label{font-family:"Bahnschrift Condensed","Arial Narrow",sans-serif;font-weight:700}
+#stage[data-style=a0] .hud{background:linear-gradient(#1b1444d0,#1b144400);color:#f5f1ff}
+#stage[data-style=a0] .hud small{color:#c9c0f0}
+#stage[data-style=a0] .result{background:#251c57;color:#f5f1ff;border:3px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 var(--ink)}
+#stage[data-style=a0] .result .big{color:#f5f1ff;text-shadow:3px 3px 0 #ff4f9e}
+#stage[data-style=a0] .val{color:#ffd166}
+#stage[data-style=a0] .cta{background:#5cf2ff;color:#15101f;border:3px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 var(--ink);font-weight:700}
+#stage[data-style=a0] .q-label{background:#1b1444;color:#fff27a;border:2px solid var(--ink);border-radius:4px}
+
+/* ---------- B Papírové město ---------- */
+#stage[data-style=b]{font-family:"Trebuchet MS","Gill Sans",sans-serif;--graphite:#2b2725}
+#stage[data-style=b] .hud-l,#stage[data-style=b] .hud-r>div{background:#fbf4e4;color:var(--graphite);padding:6px 10px 7px;border-radius:3px;box-shadow:0 2px 0 #d9ccb4,0 6px 12px rgba(60,40,20,.28);transform:rotate(-1deg)}
+#stage[data-style=b] .hud-r>div:last-child{transform:rotate(1.2deg)}
+#stage[data-style=b] .hud small{color:#6b5f55;letter-spacing:.04em;text-transform:none;font-weight:700}
+#stage[data-style=b] .hud b{font-weight:700}
+#stage[data-style=b] .result{background:#fbf4e4;color:var(--graphite);border-radius:3px;box-shadow:0 3px 0 #d9ccb4,0 14px 26px rgba(50,30,10,.35);transform:translateX(-50%) rotate(-1deg)}
+#stage[data-style=b] .result::before{content:'';position:absolute;left:50%;top:-12px;width:90px;height:24px;transform:translateX(-50%) rotate(2deg);background:#f2e3a6cc;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+#stage[data-style=b] .result small{color:#6b5f55;text-transform:none;letter-spacing:.02em;font-weight:700;font-size:15px}
+#stage[data-style=b] .result .big{font-weight:700;color:var(--graphite)}
+#stage[data-style=b] .val{color:#8a5a00;font-weight:700}
+#stage[data-style=b] .cta{background:#c4432c;color:#fffaf0;border:0;border-radius:4px;box-shadow:0 4px 0 #8f2e1d;font-weight:700}
+#stage[data-style=b] .q-label{background:#fbf4e4;color:var(--graphite);border-radius:3px;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+#stage[data-style=b] .q-disc{filter:drop-shadow(0 3px 4px rgba(40,25,10,.35))}
+
+/* ---------- C Cestovní plakát ---------- */
+#stage[data-style=c]{font-family:"Futura","Century Gothic","Bahnschrift",sans-serif;--key:#161616;--cream:#f3ead2}
+#stage[data-style=c] .hud{background:var(--key);color:var(--cream);padding:8px 18px 9px;align-items:center}
+#stage[data-style=c] .hud small{color:#c9bf9f;letter-spacing:.22em}
+#stage[data-style=c] .hud b{text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+#stage[data-style=c] .result{background:var(--cream);color:var(--key);border:3px solid var(--key);border-radius:0;box-shadow:none}
+#stage[data-style=c] .result small{letter-spacing:.35em;font-weight:700}
+#stage[data-style=c] .result .big{font-weight:700;letter-spacing:.02em}
+#stage[data-style=c] .result p{text-transform:uppercase;letter-spacing:.12em;font-size:13px}
+#stage[data-style=c] .val{color:#8a5a00;font-weight:700}
+#stage[data-style=c] .cta{background:var(--key);color:var(--cream);border:0;border-radius:0;text-transform:uppercase;letter-spacing:.2em;font-weight:700;box-shadow:inset 0 -4px 0 #c94a35}
+#stage[data-style=c] .q-label{background:var(--key);color:var(--cream);letter-spacing:.2em}
+
+/* ---------- D Risograf ---------- */
+#stage[data-style=d]{font-family:"Arial Black","Segoe UI Black",Impact,sans-serif;--blue:#3d5588;--pink:#ff48b0;--paper:#f4efe4;--yellow:#ffe800}
+#stage[data-style=d] .hud{color:var(--blue)}
+#stage[data-style=d] .hud-l,#stage[data-style=d] .hud-r>div{background:var(--paper);padding:5px 10px;transform:rotate(-.8deg)}
+#stage[data-style=d] .hud small{font-family:"Segoe UI",sans-serif;font-weight:700;color:var(--blue)}
+#stage[data-style=d] .hud b{text-shadow:2px 1px 0 var(--pink)}
+#stage[data-style=d] .result{background:var(--paper);color:var(--blue);border:0;transform:translateX(-50%) rotate(-1.2deg);box-shadow:5px 4px 0 var(--pink)}
+#stage[data-style=d] .result .big{text-shadow:3px 2px 0 var(--pink);letter-spacing:-.01em}
+#stage[data-style=d] .result small,#stage[data-style=d] .result p{font-family:"Segoe UI",sans-serif;font-weight:800}
+#stage[data-style=d] .val{color:var(--blue)}
+#stage[data-style=d] .coin{box-shadow:1.5px 1px 0 var(--pink)}
+#stage[data-style=d] .cta{background:var(--yellow);color:var(--blue);border:0;border-radius:999px;box-shadow:3px 3px 0 var(--pink);font-family:inherit}
+#stage[data-style=d] .q-label{background:var(--yellow);color:var(--blue);transform:rotate(-2deg)}
+
+/* ---------- E Protisvětlo ---------- */
+#stage[data-style=e]{font-family:"Segoe UI Light","Helvetica Neue","Segoe UI",sans-serif;font-weight:300}
+#stage[data-style=e] .hud{color:#fff;text-shadow:0 1px 10px rgba(20,10,30,.55)}
+#stage[data-style=e] .hud small{letter-spacing:.3em;font-size:10px;opacity:.92}
+#stage[data-style=e] .hud b{font-weight:300;font-size:24px}
+#stage[data-style=e] .result{background:rgba(22,14,34,.62);color:#fff;border-radius:18px;backdrop-filter:blur(2px)}
+#stage[data-style=e] .result small{letter-spacing:.4em;font-size:11px}
+#stage[data-style=e] .result .big{font-weight:200;font-size:52px}
+#stage[data-style=e] .val{color:#ffd27a}
+#stage[data-style=e] .cta{background:transparent;color:#fff;border:1.5px solid #fff;border-radius:999px;letter-spacing:.25em;text-transform:uppercase;font-size:14px;font-weight:400}
+#stage[data-style=e] .q-label{color:#fff;letter-spacing:.3em;font-weight:400;background:rgba(14,10,24,.55);border-radius:999px;padding:3px 12px}
+
+/* ---------- pohlednice ---------- */
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;max-width:1280px;padding:8px}
+.card{margin:0;position:relative}
+.card-img{position:relative;overflow:hidden}.card img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}
+.card-title{display:none}
+.card figcaption{display:flex;justify-content:space-between;gap:8px;padding:6px 2px 0;font-size:13px}
+#cards[data-style=a0] .card{background:#fff;padding:8px;border:3px solid #15101f;border-radius:6px;box-shadow:6px 6px 0 #ff4f9e}
+#cards[data-style=a0] .card figcaption{color:#15101f;font-family:"Bahnschrift Condensed","Arial Narrow",sans-serif;font-size:15px}
+#cards[data-style=b] .card{background:#fbf4e4;padding:10px 10px 4px;box-shadow:0 10px 20px rgba(0,0,0,.4);transform:rotate(-1.2deg)}
+#cards[data-style=b] .card:nth-child(even){transform:rotate(1.4deg)}
+#cards[data-style=b] .card::before{content:'';position:absolute;z-index:1;left:50%;top:-9px;width:70px;height:20px;transform:translateX(-50%) rotate(-3deg);background:#f2e3a6cc}
+#cards[data-style=b] .card figcaption{color:#2b2725;font-family:"Segoe Print","Trebuchet MS",sans-serif;font-size:14px}
+#cards[data-style=c] .card{border:3px solid #161616;background:#161616}
+#cards[data-style=c] .card-title{display:block;position:absolute;left:0;right:0;bottom:0;padding:8px 10px 9px;background:#161616;color:#f3ead2;font:700 17px/1 "Futura","Century Gothic","Bahnschrift",sans-serif;letter-spacing:.14em;text-transform:uppercase}
+#cards[data-style=c] .card-title::before{content:'FLY TO ';color:#c9bf9f;font-size:11px;letter-spacing:.3em;display:block;margin-bottom:4px}
+#cards[data-style=c] .card figcaption{background:#f3ead2;color:#161616;padding:6px 10px;font:700 12px "Futura","Century Gothic",sans-serif;letter-spacing:.2em;text-transform:uppercase}
+#cards[data-style=d] .card{background:#f4efe4;padding:10px;transform:rotate(-.8deg)}
+#cards[data-style=d] .card-title{display:block;position:absolute;left:10px;top:8px;color:#ff48b0;font:900 26px/1 "Arial Black",Impact,sans-serif;text-shadow:2px 2px 0 #3d5588;mix-blend-mode:multiply;max-width:90%}
+#cards[data-style=d] .card figcaption{color:#3d5588;font:800 13px "Segoe UI",sans-serif}
+#cards[data-style=e] .card{background:#fff;padding:6px 6px 0;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+#cards[data-style=e] .card figcaption{color:#3a3245;font:300 12px "Segoe UI Light","Segoe UI",sans-serif;letter-spacing:.25em;text-transform:uppercase;padding:8px 4px 10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* ?bare: jen scéna (pro snímky do research/design/img/smery/) */
+body.bare .bar,body.bare .h2,body.bare #cards,body.bare .note{display:none}
+body.bare main{padding:4px}
+body.bare.cards #cards,body.bare.cards .h2{display:grid}
+body.bare.cards .frame{display:none}
