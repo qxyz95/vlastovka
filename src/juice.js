@@ -7,7 +7,7 @@ export const FX={
  hitstop:{perfect:.09,success:.05,land:.12},      // seconds of frozen physics
  popupLife:1.1, trailPoints:26, particles:160
 };
-// Particle kinds: 0 dust, 1 gold spark, 2 accent spark, 3 wind streak.
+// Particle kinds (colours = palette.particles[kind]): 0 dust, 1 perfect spark, 2 success spark, 3 wind streak, 4 value spark (milestone, gold = value only).
 const STRIDE=8;// x(world px), y(screen px), vx, vy, age, life, size, kind
 export function createFx(){return {trauma:0,hitstop:0,flash:0,stretch:{x:0,v:0},rot:{x:0,v:0},rotReady:false,trail:[],popups:[],queue:[],
  parts:new Float32Array(FX.particles*STRIDE),next:0,speedLines:0,seen:new Set(),landed:false};}
@@ -21,7 +21,7 @@ export function fxEvent(fx,type,info={}){
   case 'success':add(.15,FX.hitstop.success);fx.stretch.v+=4;fx.queue.push([2,12]);popup(fx,t('popup.success'),'success');break;
   case 'miss':fx.stretch.v-=3;popup(fx,t('popup.miss'),'miss');break;
   case 'boost':fx.speedLines=1;fx.queue.push([3,10]);break;
-  case 'milestone':fx.queue.push([1,14]);if(info.text)popup(fx,info.text,'milestone');break;
+  case 'milestone':fx.queue.push([4,14]);if(info.text)popup(fx,info.text,'milestone');break;
   case 'land':add(.25+.25*clamp01((info.speed??0)/30),FX.hitstop.land);fx.stretch.v-=7;fx.queue.push([0,28]);popup(fx,info.text,'land');fx.landed=true;break;
  }
 }

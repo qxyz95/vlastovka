@@ -3,7 +3,7 @@
 // (themes-verse.js), mířidla (dřív natvrdo v ui.js), uiScale pro mobil. Barvy jen z palette.js.
 // plan = {t, view:{cam,px,py,ground,k}, fx:fxMap(...), ui:{qte, aim:{angle(°),held,charge}, labels:[eventView(e,t)], reduced, uiScale, palette}}.
 import {activeEvent} from '../events.js';
-import {palette,CYBER} from './palette.js';
+import {palette,CYBER,DISPLAY} from './palette.js';
 import {eventView} from './events-view.js';
 import {fxMap} from './fx-map.js';
 import {t} from '../i18n.js';
@@ -35,11 +35,14 @@ export function uiFrame({f=null,view=AIM_VIEW,fx=null,qte=null,aim=null,reduced=
  const e=activeEvent(f);
  return {t,view,fx:fxMap(fx,view,{reduced,clock,settings,metersPerPx,vx:f?.vx??0,frame:t,flying:!!f&&!f.landed}),ui:{qte,aim,labels:e?[eventView(e,f.t)]:[],reduced,uiScale:uiScale(cssWidth)}};
 }
-// Časovací kruh kolem vlaštovky: šedá stopa, tyrkysový oblouk úspěchu, růžový perfekt, bílý bod průběhu; varování čárkovaně, výsledek jednou barvou.
+// Tmavý podklad kruhu QTE (bible kap. 5.5: ink 60 % alfa) jako mezikruží ±QTE_BASE px kolem kruhu: střed zůstává volný, vlaštovka pod ním neztmavne (S1).
+export const QTE_BASE=9;
+// Časovací kruh kolem vlaštovky: tmavý podklad, šedá stopa, tyrkysový oblouk úspěchu, magenta perfekt, bílý bod průběhu; varování čárkovaně, výsledek jednou barvou.
 export function drawQte(c,q,view=AIM_VIEW,time=0,reduced=false,p=CYBER){
  const k=p.qte,ring=eventView(q.type).ring,R=ring.r,px=view.px,py=view.py,start=-Math.PI/2,at=x=>start+x*TAU,
   arc=(from,to,color,width)=>{c.beginPath();c.arc(px,py,R,at(from),at(to));c.strokeStyle=color;c.lineWidth=width;c.stroke();};
  c.save();
+ if(q.phase==='warning'||q.result||q.zones){const ga=c.globalAlpha;c.globalAlpha=ga*(k.discAlpha??.6);c.fillStyle=k.disc??p.popup.outline;c.beginPath();c.arc(px,py,R+QTE_BASE,0,TAU);c.arc(px,py,Math.max(0,R-QTE_BASE),0,TAU,true);c.fill();c.globalAlpha=ga;}
  if(q.type==='gust'&&!q.result)for(let i=0;i<3;i++){const x=reduced?0:(time*3+i/3)%1;c.fillStyle=k.gust;c.fillRect(Math.round(px-70+x*40),Math.round(py-14+i*12),18,2);}
  if(q.type==='bird'&&!q.held&&!q.result){const bob=reduced?0:Math.sin(time*8)*3;c.fillStyle=k.bird.body;c.fillRect(px+34,py-36+bob,14,8);c.fillStyle=k.bird.wing;c.fillRect(px+30,py-40-bob,8,4);c.fillRect(px+44,py-40-bob,8,4);c.fillStyle=k.bird.beak;c.fillRect(px+48,py-33+bob,4,2);}
  if(q.phase==='warning'){c.globalAlpha=reduced?.8:.5+.4*Math.sin(time*12);c.setLineDash([6,6]);arc(0,1,k.warning,3);}
@@ -54,7 +57,7 @@ export function drawQte(c,q,view=AIM_VIEW,time=0,reduced=false,p=CYBER){
 // Štítek události: přilétá zprava k vlaštovce jako v atmosphere.js (x = px + max(55, 190 − 68·age)).
 export function drawLabel(c,l,view,p=CYBER,scale=1){
  if(!l?.label)return;const x=view.px+Math.max(55,190-(l.age??0)*68),y=Math.max(88,Math.min(245,view.py-12));
- c.save();c.font=`bold ${Math.round(10*scale)}px monospace`;const w=c.measureText(l.label).width+12*scale,h=19*scale,lx=Math.round(Math.min(625-w,x-10));
+ c.save();c.font=`bold ${Math.round(10*scale)}px ${DISPLAY}`;const w=c.measureText(l.label).width+12*scale,h=19*scale,lx=Math.round(Math.min(625-w,x-10));
  c.fillStyle=p.label.bg;c.fillRect(lx,Math.round(y-20-h),w,h);c.fillStyle=p.label.text;c.fillText(l.label,lx+6*scale,y-20-6*scale);c.restore();
 }
 // Částice z fxMap (už v obrazovkových px): prach a jiskry jako čtverečky, větrná čárka 1 px vysoká.
@@ -85,6 +88,6 @@ export function drawAim(c,aim,view=AIM_VIEW,p=CYBER){
  const k=p.aim,charge=aim.held?aim.charge??0:0,a=(aim.angle??15)*Math.PI/180,len=65+charge*45;
  c.save();c.translate(view.px,view.py);c.rotate(-a);c.strokeStyle=k.arrow;c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.moveTo(12,0);c.lineTo(len,0);c.stroke();
  c.setLineDash([]);c.beginPath();c.moveTo(len-10,-6);c.lineTo(len,0);c.lineTo(len-10,6);c.stroke();c.restore();
- c.save();c.fillStyle=k.panel;c.fillRect(205,168,265,37);c.fillStyle=k.text;c.font='bold 13px monospace';c.fillText(t(aim.held?'aim.panelHeld':'aim.panelIdle'),220,191);
+ c.save();c.fillStyle=k.panel;c.fillRect(205,168,265,37);c.fillStyle=k.text;c.font=`bold 13px ${DISPLAY}`;c.fillText(t(aim.held?'aim.panelHeld':'aim.panelIdle'),220,191);
  c.fillStyle=k.panel;c.fillRect(205,211,265,14);c.fillStyle=k.bar;c.fillRect(207,213,261*charge,10);c.strokeStyle=k.cap;c.lineWidth=1;c.strokeRect(449,212,19,12);c.restore();
 }
