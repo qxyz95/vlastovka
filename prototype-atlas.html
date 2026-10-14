@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Just Throw It · Atlas prototype</title>
+<link rel="stylesheet" href="./prototype/atlas/atlas.css">
+</head>
+<body>
+<!-- Falešná hra pod Atlasem: výsledek hodu (stav result). Atlas je překryv nad ní (návrh §6.1). -->
+<main class="game" id="game">
+ <div class="game-scene" aria-hidden="true"></div>
+ <section class="result" aria-labelledby="result-h">
+  <h1 id="result-h" class="sr-only" data-i18n="result.heading">Result</h1>
+  <div id="result-lines" aria-live="polite"></div>
+  <p id="game-state" class="game-state"></p>
+  <div class="result-actions">
+   <button class="btn" id="throw-again" type="button" data-i18n="button.throwAgain">Throw again</button>
+   <button class="btn" id="to-workshop" type="button" data-i18n="result.workshop">Workshop</button>
+   <button class="btn atlas-btn" id="open-atlas" type="button"><span data-i18n="atlas.button">Atlas</span><span class="dot" aria-hidden="true"></span></button>
+  </div>
+ </section>
+</main>
+
+<dialog id="atlas" class="atlas" aria-labelledby="atlas-h">
+ <div class="atlas-shell">
+  <div class="atlas-top">
+   <header class="atlas-head">
+    <button class="btn icon" id="atlas-close" type="button" aria-label="Close Atlas" data-i18n-aria="button.close">✕</button>
+    <h1 class="atlas-title" id="atlas-h"><span class="t1" data-i18n="atlas.title">Atlas</span><span class="t2" data-i18n="atlas.subtitle">The route</span></h1>
+    <p class="wallet" id="atlas-wallet" role="status"><span id="atlas-wallet-n" aria-hidden="true"></span></p>
+    <div class="head-actions">
+     <button class="btn" id="atlas-to-workshop" type="button" data-i18n="button.workshop">← Workshop</button>
+     <button class="btn" id="atlas-throw" type="button" data-i18n="button.throw">Throw ↗</button>
+    </div>
+   </header>
+   <div class="goal-row">
+    <p class="goal" id="atlas-goal"></p>
+    <button class="btn icon info" id="atlas-rule-btn" type="button" aria-label="How the Atlas works" data-i18n-aria="atlas.ruleButton" aria-controls="atlas-rule" hidden>i</button>
+   </div>
+   <p class="rule" id="atlas-rule" data-i18n="atlas.rule">Fly farther to find places. Every place gives your plane a bonus. Coins level it up.</p>
+   <p class="rule autonote" id="atlas-autonote" data-i18n="node.autopilotWorkshop" hidden>Autopilot is set up in the Workshop.</p>
+   <div class="pockets" id="atlas-pockets" role="group" aria-label="Pockets" data-i18n-aria="label.pockets"></div>
+  </div>
+  <div class="atlas-body">
+   <div class="atlas-map" id="atlas-map"><div class="route"></div></div>
+   <aside class="sheet" id="atlas-sheet" aria-label="Postcard details" data-i18n-aria="label.details">
+    <div class="sheet-handle" id="sheet-handle"><span class="grip" aria-hidden="true"></span><button class="btn icon" id="sheet-close" type="button" aria-label="Close" data-i18n-aria="button.closeCard">✕</button></div>
+    <div class="detail" id="atlas-detail"></div>
+   </aside>
+   <div class="scrim" aria-hidden="true"></div>
+  </div>
+  <div class="toasts" id="atlas-toasts" aria-live="polite" role="status"></div>
+ </div>
+</dialog>
+
+<dialog id="picker" class="picker"></dialog>
+<dialog id="dcard" class="dcard"></dialog>
+<dialog id="delivered" class="delivered"></dialog>
+
+<!-- Ovládání prototypu (není součást hry) -->
+<details class="controls" id="controls" lang="cs" open>
+ <summary>Ovládání prototypu <small id="proto-state"></small></summary>
+ <div class="ctl-grid">
+  <fieldset><legend>Jazyk hry</legend><label><input type="radio" name="lang" value="en"> English (výchozí)</label><label><input type="radio" name="lang" value="cs"> Čeština</label></fieldset>
+  <fieldset><legend>Scénář (falešný save)</legend><select id="ctl-scen" aria-label="Scénář"></select>
+   <div class="row"><button type="button" class="btn sm" id="ctl-hash">Otevřít přes #atlas</button><button type="button" class="btn sm" id="ctl-hint">Nápověda znovu (hintOpens = 0)</button></div></fieldset>
+  <fieldset><legend>Hod (simulace)</legend>
+   <label>Dolet [m] <input id="ctl-dist" type="number" min="1" max="6000" step="1" inputmode="numeric"></label>
+   <div class="row"><button type="button" class="btn sm" id="ctl-throw">Throw</button><button type="button" class="btn sm" data-add="150">+150 m</button><button type="button" class="btn sm" id="ctl-next">Na další místo</button><button type="button" class="btn sm" id="ctl-nextd">Do další čtvrti</button></div>
+   <div class="row"><button type="button" class="btn sm" data-coins="100">+100 ◈</button><button type="button" class="btn sm" data-coins="1000">+1,000 ◈</button><button type="button" class="btn sm" id="ctl-dcard">Karta čtvrti</button><button type="button" class="btn sm" id="ctl-deliv">Delivered</button></div></fieldset>
+  <fieldset><legend>Q1 Atlas jako</legend><label><input type="radio" name="mode" value="panel"> panel ve hře (doporučeno)</label><label><input type="radio" name="mode" value="page"> samostatná stránka</label></fieldset>
+  <fieldset><legend>Q2 Bonus u teaseru</legend><label><input type="radio" name="teaser" value="shown"> jméno + věta (doporučeno)</label><label><input type="radio" name="teaser" value="hidden"> skrytý (???)</label></fieldset>
+  <fieldset><legend>Q3 Hlášky postav</legend><label><input type="radio" name="lines" value="heard"> jen zazněné, bez počtu (doporučeno)</label><label><input type="radio" name="lines" value="hidden"> v Atlasu nejsou</label></fieldset>
+  <fieldset><legend>Q4 Tečka na tlačítku Atlas</legend><label><input type="radio" name="dot" value="novelty"> jen novinka (doporučeno)</label><label><input type="radio" name="dot" value="affordable"> i „můžeš koupit“ (nedoporučeno)</label></fieldset>
+  <fieldset><legend>Q5 Automatika QTE</legend><label><input type="radio" name="autopilot" value="atlas"> uzly v Atlasu (doporučeno)</label><label><input type="radio" name="autopilot" value="workshop"> přepínač v Dílně</label></fieldset>
+  <fieldset><legend>Čísla (zástupná)</legend><label><input type="checkbox" id="ctl-long"> dlouhý žebřík: 12 úrovní (3. kolo)</label><label><input type="checkbox" id="ctl-inc"> ceny ×100 (formát 1.2M)</label><label><input type="checkbox" id="ctl-mult"> násobitel mincí čtvrti</label>
+   <span>Náhled U1:</span><label><input type="radio" name="preview" value="real"> přepočet</label><label><input type="radio" name="preview" value="none"> ještě není</label></fieldset>
+  <fieldset><legend>Pohyb</legend><label><input type="radio" name="motion" value="system"> podle systému</label><label><input type="radio" name="motion" value="reduce"> reduced motion</label><label><input type="radio" name="motion" value="full"> plný</label></fieldset>
+ </div>
+ <p class="ctl-note">Volby jdou i v URL: <code>?scenario=docks&amp;teaser=hidden&amp;lines=hidden&amp;dot=affordable&amp;autopilot=workshop&amp;mode=page&amp;long&amp;incremental&amp;coinmult&amp;preview=none&amp;motion=reduce</code>. Ceny a hodnoty jsou PROVISIONAL (params.mjs, F5).</p>
+</details>
+<script type="module" src="./prototype/atlas/main.js"></script>
+</body>
+</html>
