@@ -116,3 +116,8 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   4. Vlaštovka na úzkých obrazovkách o 15 % větší.
   5. Písmo zatím systémové, rozhodne se po zahrání.
   6. Postup podle `06-papir-ctvrt1.md`: příznak `?styl=papir`, dávky P0–P4; nové menu (`07-menu.md`) se staví až po dávkách P, protože sdílí `ui.js` a `style.css`.
+- **K návrhu menu (`research/design/07-menu.md` B1–B4, 14. 10.):**
+  1. Nový hráč: tlačítka se odkrývají postupně (nejdřív Házet a Nastavení, Dílna po prvním hodu, Atlas po prvním místě).
+  2. Hlavní menu z pauzy za letu: hráč zvolí buď **zrušit hod** (hod se nezapočítá a může jít do menu, Dílny nebo Atlasu, je-li odemčený), nebo **vrátit se do hry** a doletět. Hod se nedopočítává automaticky.
+  3. HUD jen dolet a mince, bez řádku s nejbližším cílem.
+  4. Nastavení nabízí zdarma „Širší okna časování“ (×1,5, mince ani místa se nemění). Automatika QTE zůstává kupovaným uzlem v Atlasu.
