@@ -59,6 +59,7 @@ export function drawUi(c, plan = {}, visual = {}) {
       if (ui.qte) drawQte(c, ui.qte, v, t, reduced, p);
     });
     if (!reduced) drawFlash(c, fx.flash, p);
+    if (ui.intro) drawIntro(c, ui.intro, p, scale);
     if (ui.aim) drawAim(c, ui.aim, v, p);
   } finally {
     c.setTransform(1, 0, 0, 1, 0, 0);
@@ -309,6 +310,28 @@ export function drawSpeedLines(c, lines = [], p = PAPIR) {
     c.lineTo(x - len, y);
   }
   c.stroke();
+  c.restore();
+}
+// Nápis úvodu (H1, 03-art kap. 2.2, bible 05 kap. 9.2): „Throw it“ a pod ním nápověda, grafit bez podkladu nahoře v nebi nad hřebenem,
+// vodorovně na střed, svisle v pásu band (podíl výšky, intro.js / launch-site INTRO_SHOT.text). intro = {alpha, band, touch}.
+export const INTRO_TITLE = Object.freeze({ size: 36, sub: 13, at: 0.42, subAt: 0.86 });
+export function drawIntro(c, intro, p = PAPIR, scale = 1) {
+  if (!(intro?.alpha > 0)) return;
+  const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * 360),
+    k = INTRO_TITLE;
+  c.save();
+  c.globalAlpha = Math.min(1, intro.alpha);
+  c.fillStyle = p.aim.text;
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.font = `bold ${k.size}px ${p.popup.font}`;
+  c.fillText(t('prompt.throw'), 320, y0 + (y1 - y0) * k.at);
+  c.font = `600 ${Math.round(k.sub * scale)}px ${p.popup.font}`;
+  c.fillText(
+    t(intro.touch ? 'prompt.hintTouch' : 'prompt.hintMouse'),
+    320,
+    y0 + (y1 - y0) * k.subAt,
+  );
   c.restore();
 }
 // Mířidla (dřív natvrdo v ui.js na 148,258): čárkovaná šipka z vlaštovky pod úhlem, delší s nabitím, panel s pokynem a lišta síly.

@@ -226,6 +226,15 @@ export function createWorkshop(scene, ctx = {}) {
       if (p && (k.phase === 'idle' || k.phase === 'rest')) {
         const P = rig.palms;
         plane.position.set((P[0] + P[3]) / 2, (P[1] + P[4]) / 2, (P[2] + P[5]) / 2);
+      } else if (p && k.idle > 0) {
+        // jízda úvod → míření: vlaštovka z obou dlaní do ruky T (intro.js introIdle)
+        const P = rig.palms,
+          w = k.idle;
+        plane.position.set(
+          at.x + ((P[0] + P[3]) / 2 - at.x) * w,
+          at.y + ((P[1] + P[4]) / 2 - at.y) * w,
+          H.z + ((P[2] + P[5]) / 2 - H.z) * w,
+        );
       }
     }
   };
