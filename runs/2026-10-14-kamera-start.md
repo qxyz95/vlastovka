@@ -6,16 +6,20 @@ Smí: `src/render3d/camera.js`, `frame.js`, `pose.js`, `plane.js`, `index.js` (p
 
 ## Hotové kroky
 - S1 kamera letu (commit d3a3ca3): `EXCESS`, `EASE`, `excessOf/excessZoom/launchEase` v camera.js, `paceOf/cruiseOf/calmOf` ve frame.js, test `tests/render3d-camera-speed.test.js`.
-- S3 velikost vlaštovky: `PLANE_SIZE`, `planeLength`, `planeSizeScale` ve frame.js, plane.js měřítko v obou stylech + stopa úměrně; test `tests/render3d-plane-size.test.js`.
+- S3 velikost vlaštovky (commit 71d9c11): `PLANE_SIZE`, `planeLength`, `planeSizeScale` ve frame.js, plane.js měřítko v obou stylech + stopa úměrně; test `tests/render3d-plane-size.test.js`.
+- S2 záběr míření a výhoz (commit 393d103): `pose.REST` 16 m / `aimWidth` (≥ 27 px v ruce, min 7 m), přisunutí 6 %, `frame.launchLift`, klid přes `prev`, `index.view(null)` z klidového plánu; test `tests/render3d-camera-aim.test.js`.
+- Metriky: `reports/3d/kamera-start.md` (skript ve scratchpadu, plné znění v příloze reportu).
 
 ## Rozpracováno
-- S2 záběr míření 16 m / 7 m, přisunutí při nabíjení, posun vlaštovky z ruky (HAND.y 16 → fyzika 12) při výhozu
+- nic
 
 ## Další kroky
-- metriky (Node skript ve scratchpadu) + `reports/3d/kamera-start.md`, report
+- orchestrátor: prohlížeč (vzhled, px, výkon), `workshop.js:133` měřítko vlaštovky v ruce i v cyber stylu, BLOCKED otázky z reportu
 
 ## Změněné soubory
-- src/render3d/camera.js, frame.js, plane.js; tests/render3d-camera.test.js, render3d-frame.test.js, render3d-paper-frame.test.js, render3d-paper-hero.test.js, render3d-plane.test.js, render3d-camera-speed.test.js (nový), render3d-plane-size.test.js (nový)
+- src/render3d/camera.js, frame.js, plane.js, pose.js, index.js
+- tests/render3d-camera.test.js, render3d-frame.test.js, render3d-paper-frame.test.js, render3d-paper-hero.test.js, render3d-plane.test.js, render3d-pose.test.js
+- nové: tests/render3d-camera-speed.test.js, render3d-plane-size.test.js, render3d-camera-aim.test.js, reports/3d/kamera-start.md
 
 ## Měření
--
+- `reports/3d/kamera-start.md`: bezpečná zóna 100 %, zámek Δ 0, výhoz končí 1,2 s, W při 1. varování ≥ 1,027·W_let·T, raný Dart max W/W_let 1,342, na W_max ≤ 4,8 %; změny směru se zásahy 2–4 / 10 s (CONCERNS).
