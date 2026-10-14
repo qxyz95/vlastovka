@@ -177,3 +177,4 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   4. **Skoro každý hod má přinést novinku nebo koupi** (ne dlouhé házení naprázdno). Pořadí odemykání: nejdřív Power, Paper, Folds, Atlas po dosažení vzdálenosti.
   5. **QTE:** účinek odvozený od rychlosti vlaštovky (pomalou vlaštovku u země QTE nezachrání), události rozdělené podle role (mince, dolet, rychlost, …) a promyšlený výskyt místo stejné náhody. Návrh a simulace před kódem.
   6. Obsah na 90 min kriticky zhodnotí role společně (co ve hře mít a co ne).
+- **Kdy spouštět balance-analyst (15. 10., trvalé pravidlo):** ladění čísel (ceny, statistiky, délka hry) až ve chvíli, kdy je uživatel **spokojený s obsahem a mechanikami**. Dokud se obsah a jádro (QTE, události, progrese) mění, simulace se nespouští, aby agent neběžel zbytečně. Platí i do budoucna.
