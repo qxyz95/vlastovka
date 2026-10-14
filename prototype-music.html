@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Just Throw It · hudební prototyp</title>
+<style>
+ :root{color-scheme:dark;--bg:#0b0820;--panel:#151034;--text:#e8e6ff;--dim:#9a94c8;--accent:#ff4fc3;--cyan:#53e6ff;--gold:#ffd166}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,sans-serif;padding:16px}
+ h1{font-size:18px;margin:0 0 4px} h2{font-size:13px;margin:0 0 6px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+ p.note{margin:0 0 12px;color:var(--dim);max-width:1100px}
+ #stage{position:relative;width:min(100%,1100px);aspect-ratio:16/9;background:#120e30;border:2px solid #2a2260;touch-action:none;user-select:none;overflow:hidden;cursor:pointer}
+ #stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+ .overlay{position:absolute;pointer-events:none;white-space:pre;font:12px/1.35 ui-monospace,Consolas,monospace;background:#0b0820cc;padding:6px 8px;border-radius:4px}
+ #hud{left:8px;top:8px;color:#b8ffcf} #banner{left:50%;top:40%;transform:translateX(-50%);font-size:16px;color:var(--gold);border:1px solid var(--gold)}
+ #unlock{position:absolute;inset:0;display:grid;place-content:center;background:#0b0820b0;font-size:20px;border:0;color:var(--text);width:100%;cursor:pointer}
+ #cues{position:absolute;left:8px;right:8px;bottom:8px;display:flex;flex-wrap:wrap;gap:4px;pointer-events:none}
+ .lamp{font:11px ui-monospace,Consolas,monospace;padding:3px 6px;border-radius:3px;background:#0b0820cc;color:#6c6696;border:1px solid #2a2260;transition:background .25s,color .25s}
+ .lamp.on{background:var(--accent);color:#fff;border-color:#fff;transition:none} .lamp.beat.on{background:var(--cyan)} .lamp.bar.on{background:var(--gold);color:#000}
+ .meter{display:inline-block;width:60px;height:8px;background:#221a4f;vertical-align:middle;margin-left:4px;position:relative}.meter i{position:absolute;inset:0 auto 0 0;background:var(--cyan)}
+ #panel{width:min(100%,1100px);display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;margin-top:12px}
+ section.box{background:var(--panel);padding:12px;border-radius:6px} section.box label{display:block;color:var(--dim);margin:4px 0}
+ select{max-width:100%} select,button,input[type=text]{background:#221a4f;color:var(--text);border:1px solid #3a2f80;border-radius:4px;padding:5px 8px;font:inherit} button{cursor:pointer;margin:2px 0}
+ button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)} input[type=range]{accent-color:var(--accent);width:100%}
+ .row{display:flex;flex-wrap:wrap;gap:4px;align-items:center} pre{font:12px/1.35 ui-monospace,Consolas,monospace;white-space:pre-wrap;margin:6px 0 0;color:#cfd0ff}
+ table{border-collapse:collapse;font:12px ui-monospace,Consolas,monospace} td,th{padding:2px 6px;border-bottom:1px solid #2a2260;text-align:left}
+ .rate{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:12px} .rate span{color:var(--dim)}
+ #drop{border:2px dashed #3a2f80;padding:14px;text-align:center;color:var(--dim);border-radius:6px} #drop.over{border-color:var(--accent);color:var(--text)}
+ #fatigue-ask{background:#2a1450;border:1px solid var(--accent);padding:8px;border-radius:4px;margin-top:6px}
+ kbd{background:#221a4f;border:1px solid #3a2f80;border-radius:3px;padding:0 4px;font-size:12px}
+ a{color:var(--cyan)} [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<h1>Hudební prototyp · 6 směrů, procedurálně ve Web Audio</h1>
+<p class="note">Vše generuje kód (rozpočet 0, žádné nahrávky). Skladba se vybírá podle postupu, QTE tik je na přesném čase středu okna, kvantují se jen ozdoby a náběhy vrstev. <b>Auto flight</b> přehrává skutečný let z <code>core.js</code>; <kbd>mezerník</kbd> nebo klepnutí do scény = QTE (režim „Hraju já“), <kbd>M</kbd> ztlumí. Každý zvuk má rozsvícenou kontrolku dole ve scéně. <a href="./">Zpět do hry</a></p>
+<div id="stage"><canvas id="game" width="640" height="360" aria-label="Let vlaštovky"></canvas><div id="hud" class="overlay"></div><div id="banner" class="overlay" hidden></div><div id="cues"></div><button id="unlock">▶ Klepni pro zapnutí zvuku</button></div>
+<div id="panel">
+ <section class="box"><h2>Hudba</h2>
+  <label>Směr <select id="dir"></select></label>
+  <div id="blind-picks" class="row" hidden></div>
+  <label>Čtvrť <select id="district"></select></label>
+  <label><input type="checkbox" id="follow"> Podle postupu (čtvrť z nejdelšího doletu)</label>
+  <label>Postup / nejdelší dolet <output id="best-out"></output><input type="range" id="best" min="0" max="4876" step="1" value="0"></label>
+  <label>Intenzita (bez Auto flight) <output id="int-out"></output><input type="range" id="intensity" min="0" max="4" step="1" value="2"></label>
+ </section>
+ <section class="box"><h2>Auto flight</h2>
+  <div class="row"><button id="auto" aria-pressed="false">▶ Auto flight</button><select id="qte"><option value="player">Hraju já (mezerník)</option><option value="bot70">Bot 70 %</option><option value="bot95">Bot 95 %</option><option value="none">Bez zásahů</option></select></div>
+  <label>Fáze hry <select id="stage-lv"><option value="early">Začátek (krátké lety)</option><option value="mid" selected>Střed</option><option value="late">Pozdní (dlouhé lety)</option></select></label>
+  <label>Styl <select id="theme"></select></label>
+  <p class="note" style="margin:6px 0 0">Smyčka aim → flight → result, každý 4. hod Dílna. Seed letů se počítá zvlášť pro každý směr (stejné lety pro srovnání QTE).</p>
+ </section>
+ <section class="box"><h2>Události (ruční test)</h2>
+  <div class="row" id="ev-buttons"></div>
+ </section>
+ <section class="box"><h2>Hlasitost</h2>
+  <label>Master <output id="o-master"></output><input type="range" id="master" min="0" max="100"></label>
+  <label>Hudba <output id="o-music"></output><input type="range" id="music" min="0" max="100"></label>
+  <label>Efekty <output id="o-sfx"></output><input type="range" id="sfx" min="0" max="100"></label>
+  <label>Kalibrace tiku <output id="o-latency"></output><input type="range" id="latency" min="-150" max="150" step="5"></label>
+  <div class="row"><label><input type="checkbox" id="tick"> Tik QTE</label><label><input type="checkbox" id="calm"> Calm audio</label><label><input type="checkbox" id="muted"> Ztlumit (M)</label></div>
+ </section>
+ <section class="box"><h2>Vrstvy a zátěž</h2>
+  <div id="layers"></div><pre id="load"></pre><button id="bench">Benchmark CPU (offline, 8 s / směr)</button><pre id="bench-out"></pre>
+ </section>
+ <section class="box"><h2>Slepý režim</h2>
+  <div class="row"><label><input type="checkbox" id="blind"> Zapnout (X1–X6)</label><button id="new-session">Nové zamíchání</button><button id="reveal">Odhalit</button><button id="export">Export JSON</button></div>
+  <div id="rate-form" class="rate"></div>
+  <input type="text" id="rate-note" placeholder="Poznámka" style="width:100%;margin-top:6px"><button id="rate-save">Uložit hodnocení</button>
+  <pre id="ratings"></pre>
+ </section>
+ <section class="box"><h2>Únavový test (10 min)</h2>
+  <button id="fatigue">▶ Spustit únavový test</button><pre id="fatigue-status"></pre><div id="fatigue-ask" hidden></div>
+ </section>
+ <section class="box"><h2>Vlastní soubor pro srovnání</h2>
+  <div id="drop">Přetáhni sem audio soubor (nebo <input type="file" id="file" accept="audio/*">)<br><small>Zůstane jen v paměti prohlížeče, nic se neukládá.</small></div><pre id="file-out"></pre>
+ </section>
+ <section class="box"><h2>QTE s hudbou (tvoje zásahy)</h2><pre id="qte-stats"></pre></section>
+</div>
+<script type="module" src="./prototype/music/main.js"></script>
+</body>
+</html>
