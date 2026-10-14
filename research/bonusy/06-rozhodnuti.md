@@ -159,3 +159,6 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   - Násobič mincí: řádek Poštovní brašna (Mailbag) v Dílně. Needle: stejný dolet jako Dart, kratší let.
   - Pásma hodů a minut v 08 §10.2 se přepočítají podle plánu obsahu na 2 hodiny.
 - **Washi úr. 3 „papírový lampion“ (14. 10.):** svítí jen ve Městě lampionů (čtvrť 4), jinde teplejší výplň bez záře. Jedno pravidlo pro všechno, co svítí (stejně jako lampionový skin). Bible 05 kap. 16.3 tím uzavřena.
+- **Cílová délka hry opravena na ~90 minut (14. 10.):** uživatel: „Pokud jsou 2 hodiny problém a spíš by se obsah natahoval uměle, tak to nechci… možná bychom mohli mířit jen na 90 minut… Hra má dávat 90 minut dopamin a pak to máš dohrát.“
+  - **Kampaň průměrného hráče ~90 min** do „Delivered.“, bez umělého natahování (nahrazuje cíl 2 h). Noční trasa se zatím nestaví.
+  - Kousky (triky z kombinací) zatím nerozhodnuty: uživatel je nad nimi ještě nepřemýšlel, game designer připraví odlehčenou variantu s klady a riziky.
