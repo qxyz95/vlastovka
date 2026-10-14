@@ -6,7 +6,7 @@ import {random} from '../random.js';
 import {noise1} from '../motion.js';
 import {SCREEN_METERS} from '../scenes.js';
 import {hash,createTrail,pushTrail} from './life.js';
-import {toonRamp,outlineMaterial,windowTexture,signTexture,skyPainter,postPass,buildingMaterial} from './toon.js';
+import {toonRamp,outlineMaterial,stampOutlineMaterial,windowTexture,signTexture,skyPainter,postPass,buildingMaterial} from './toon.js';
 import {OUTLINE} from './comic.js';
 import {LAYERS} from './geometry.js';
 import {createCity} from './city.js';
@@ -36,7 +36,7 @@ export function createScene(canvas,{dpr=1,shadows=true}={}){
  // Obrysy: tloušťka z comic.OUTLINE (plan.comic.outline) v px obrazovky × DPR, mlha ručně v shaderu (vzdálené obrysy mizí s budovami).
  let look=OUTLINE;const outlines=[],line=(m,key)=>{outlines.push([m,key]);return m;},thick=()=>{for(const [m,key] of outlines)m.uniforms.thickness.value=look[key]*dpr;};
  const hull=line(outlineMaterial({fog:{color:FOG0,near:300,far:1100},color:look.color}),'building'),thinHull=line(outlineMaterial({fog:{color:FOG0,near:300,far:1100},color:look.color}),'detail');
- const planeHull=line(outlineMaterial({side:THREE.DoubleSide,color:pal.plane.outline}),'plane');planeHull.depthWrite=false;thick();
+ const planeHull=line(stampOutlineMaterial({color:pal.plane.outline}),'plane');thick();
  const signMats=new Map(),signList=[],unit=new THREE.PlaneGeometry(1,1);
  const materials={unit,colorOf,rgb:h=>C(h).toArray(),city:CP,
   building:buildingMaterial({ramp,emissiveMap:windowTexture(),farZ:(LAYERS.mid+LAYERS.far)/2}),

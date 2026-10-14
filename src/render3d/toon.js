@@ -3,7 +3,8 @@
 import * as THREE from 'three';
 import {windowPattern} from './life.js';
 import {INK,OUTLINE} from './comic.js';
-import {PAPER,DISPLAY} from './palette.js';
+import {PAPER,DISPLAY,CYBER} from './palette.js';
+import {MOOD_KEYS} from './mood.js';
 // 3 tóny s ostrými přechody (NearestFilter = žádné plynulé stínování).
 export function toonRamp(tones=[70,150,255]){const t=new THREE.DataTexture(new Uint8Array(tones),tones.length,1,THREE.RedFormat);t.minFilter=t.magFilter=THREE.NearestFilter;t.needsUpdate=true;return t;}
 // Obrys: vrcholy se posunou ve směru atributu `outline` o `thickness` pixelů na obrazovce (stejně tlustý blízko i daleko).
@@ -11,7 +12,7 @@ export function toonRamp(tones=[70,150,255]){const t=new THREE.DataTexture(new U
 // Mlhu řeší ručně, aby vzdálené obrysy mizely spolu s budovami.
 export function outlineMaterial({color=INK,thickness=OUTLINE.building,side=THREE.BackSide,fog=null}={}){
  return new THREE.ShaderMaterial({side,uniforms:{color:{value:new THREE.Color(color)},thickness:{value:thickness},resolution:{value:new THREE.Vector2(1280,720)},
-  fogColor:{value:new THREE.Color(fog?.color??'#000')},fogNear:{value:fog?.near??1e9},fogFar:{value:fog?.far??2e9}},
+  fogColor:{value:new THREE.Color(fog?.color??INK)},fogNear:{value:fog?.near??1e9},fogFar:{value:fog?.far??2e9}},
   vertexShader:`attribute vec3 outline;uniform float thickness;uniform vec2 resolution;varying float vDepth;
 void main(){mat4 M=modelViewMatrix;
 #ifdef USE_INSTANCING
@@ -24,11 +25,25 @@ void main(){gl_FragColor=vec4(mix(color,fogColor,smoothstep(fogNear,fogFar,vDept
 #include <colorspace_fragment>
 }`});
 }
+// Obrys vlaštovky razítkem (geometry.outlineStamp, atribut shift): každá kopie posunutá o thickness px obrazovky, tuš bez mlhy.
+// Transparentní s renderOrder za stopou, aby ji stopa nepřekreslila; hloubka posunutá o `push` m dozadu, takže výplň vlaštovky
+// (neprůhledná, kreslí se dřív) zakryje vnitřek razítka bez z-fightingu a obrys zůstane jen kolem siluety.
+export function stampOutlineMaterial({color=INK,thickness=OUTLINE.plane,push=2}={}){
+ return new THREE.ShaderMaterial({side:THREE.DoubleSide,transparent:true,depthWrite:false,
+  uniforms:{color:{value:new THREE.Color(color)},thickness:{value:thickness},resolution:{value:new THREE.Vector2(1280,720)},push:{value:push}},
+  vertexShader:`attribute vec2 shift;uniform float thickness;uniform vec2 resolution;uniform float push;
+void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vec4 clip=projectionMatrix*mv,back=projectionMatrix*vec4(mv.xy,mv.z-push,1.);
+clip.z=back.z/back.w*clip.w;clip.xy+=shift*thickness*2./resolution*clip.w;gl_Position=clip;}`,
+  fragmentShader:`uniform vec3 color;void main(){gl_FragColor=vec4(color,1.);
+#include <colorspace_fragment>
+}`});
+}
 const canvas=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
-// Okna: 8 × 8 v dlaždici, část svítí (růžová, tyrkysová, teplá žlutá). Okraj (uv 0,0) zůstává tmavý pro střechy.
+// Okna: 8 × 8 v dlaždici, část svítí (palette city.windows: magenta, azurová, zlatá, teplá). Okraj (uv 0,0) zůstává tmavý pro střechy.
+// Černé pozadí není barva, ale nulová emise (emissiveMap): tmavá okna a střechy nesvítí.
 export function windowTexture(seed=7,lit=.38){
  const c=canvas(256,256),g=c.getContext('2d');
- g.fillStyle='#000';g.fillRect(0,0,256,256);const colors=['#ff6fd0','#62ecff','#ffc86b','#ffe9a8'];
+ g.fillStyle='#000';g.fillRect(0,0,256,256);const colors=CYBER.city.windows;
  // Vzor sdílí life.js (facadeWindows), aby okna za vlaštovkou svítila přesně v tmavých buňkách.
  for(const p of windowPattern(seed,lit))if(p.lit){g.fillStyle=colors[p.color];g.globalAlpha=p.alpha;g.fillRect(p.col*32+10,p.row*32+11,13,12);}
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.NearestFilter;t.anisotropy=8;return t;
@@ -38,7 +53,7 @@ const signs=new Map();
 export function signTexture(text,color,vertical=false){
  const key=text+color+vertical;if(signs.has(key))return signs.get(key);
  const w=vertical?96:512,h=vertical?384:128,c=canvas(w,h),g=c.getContext('2d');
- g.fillStyle='#0c0820';g.fillRect(0,0,w,h);g.strokeStyle=color;g.lineWidth=8;g.shadowColor=color;g.shadowBlur=18;g.strokeRect(10,10,w-20,h-20);
+ g.fillStyle=INK;g.fillRect(0,0,w,h);g.strokeStyle=color;g.lineWidth=8;g.shadowColor=color;g.shadowBlur=18;g.strokeRect(10,10,w-20,h-20);
  g.fillStyle=PAPER;g.font=`bold ${vertical?54:68}px ${DISPLAY}`;g.textAlign='center';g.textBaseline='middle';
  if(vertical){const ch=[...text.replace(/[^A-Z0-9]/g,'')].slice(0,6);ch.forEach((s,i)=>g.fillText(s,w/2,h/2+(i-(ch.length-1)/2)*56));}else g.fillText(text,w/2,h/2+4,w-40);
  g.globalCompositeOperation='source-atop';g.shadowBlur=0;g.fillStyle=color;g.globalAlpha=.35;g.fillRect(0,0,w,h);
@@ -72,8 +87,8 @@ export function buildingMaterial({ramp,emissiveMap=null,farZ=-1e9}={}){
   sh.fragmentShader=F.head+after(after(after(sh.fragmentShader,'emissivemap_fragment',F.emissive),'lights_fragment_end',F.mask),'dithering_fragment',F.out);};
  m.customProgramCacheKey=()=>'jti-building';return m;
 }
-// Nebe jako přechod na pozadí scény (barvy kyber nebe: tmavě fialová → růžový obzor).
-export function skyTexture(stops=['#0b0824','#1d1150','#52206a','#b0407e']){
+// Nebe jako přechod na pozadí scény (jen prototypy; výchozí = neonová noc Core z mood.js).
+export function skyTexture(stops=MOOD_KEYS[13].sky){
  const c=canvas(4,256),g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);stops.forEach((s,i)=>gr.addColorStop(i/(stops.length-1),s));g.fillStyle=gr;g.fillRect(0,0,4,256);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }

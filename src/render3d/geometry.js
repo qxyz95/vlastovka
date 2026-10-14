@@ -6,6 +6,7 @@ import {SUBURBS_LAYOUT} from './districts/suburbs-layout.js';
 import {DOCKS_LAYOUT} from './districts/docks-layout.js';
 import {HORIZON_LAYOUT} from './districts/horizon-layout.js';
 import {CORE_LAYOUT} from './districts/core-layout.js';
+import {CYBER} from './palette.js';
 // Ve 2D je vlaštovka vždy na px 148 a kamera = dolet, takže ve světě trasy leží 148 px (~70 m) před doletem.
 export const PLANE_OFFSET=148/PIXELS_PER_METER;
 export const WINDOW_TILE={w:24,h:28};// metry na jednu dlaždici textury oken (8 × 8 oken)
@@ -26,6 +27,15 @@ export function planeShape(model='dart'){
  // Přehyby: hřbet a hrana kýlu (čáry v barvě tématu).
  const creases=[...N,...T,...N,s.tail,s.keel,0];
  return {positions,normals,outline,creases,triangles:tris.length};
+}
+// Obrys vlaštovky razítkem (bible kap. 3: celý, ≥ 2,6 px, nejsilnější): n kopií trojúhelníků posunutých v px obrazovky po kružnici
+// (toon.stampOutlineMaterial). Sjednocení obtáhne siluetu v každém natočení; radiální hull z `outline` mizel, kde mířil do hloubky (křídla).
+// Délka posunu 1/cos(π/n): hrana libovolného směru dostane aspoň plnou tloušťku, nejvýš 1/cos(π/n) ≈ 1,08× (n = 8).
+export const STAMP_DIRS=8;
+export function outlineStamp(positions,n=STAMP_DIRS){
+ const k=positions.length/3,pos=new Float32Array(k*3*n),shift=new Float32Array(k*2*n),r=1/Math.cos(Math.PI/n);
+ for(let i=0;i<n;i++){const a=i*2*Math.PI/n,c=Math.cos(a)*r,s=Math.sin(a)*r;pos.set(positions,i*k*3);for(let j=0;j<k;j++){shift[(i*k+j)*2]=c;shift[(i*k+j)*2+1]=s;}}
+ return {positions:pos,shift,count:k*n};
 }
 // Kvádr {x (levý okraj), w, z (střed), d, h, y (spodek, výchozí 0)}. Vrací zploštělé pole vrcholů bez dna.
 // outline = součet normál stěn v rohu (±1,±1,±1): posun o t posune každou stěnu přesně o t (inverted hull).
@@ -59,7 +69,8 @@ export function mergeBlocks(blocks,colorOf=()=>[1,1,1]){
 }
 // Vymyšlené neonové reklamy (anglicky jako ve hře, žádné skutečné značky).
 export const SIGNS=['PAPER LAB','NOODLES','OPEN 24H','FOLD & FLY','KARAOKE','HOTEL','RAMEN','ARCADE','GLIDE','SKY BAR','CAFE','TAXI'];
-export const NEON=['#ff4fc3','#53e6ff','#ffb347','#9dff6a','#c77dff'];
+// Neon cedulí a lamp jen CYAN, MAGENTA, GOLD (bible kap. 2.2), pořadí: 0 = PAPER LAB, 1 = cedule bloků; lampy podle čtvrti.
+export const NEON=CYBER.city.neon;
 // Vrstvy hloubky za vlaštovkou (z=0): ulice, střed a panorama. Popředí (z>0) jen nízké lampy, aby nezakrylo let.
 export const LAYERS={near:-26,mid:-110,far:-380};
 // Parametry a zvláštnosti míst jsou v districts/<id>-layout.js (vlastní je agent čtvrti); tady jen obecné řady domů, reklamy a lampy.

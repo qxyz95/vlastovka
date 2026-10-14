@@ -12,6 +12,8 @@ export const DISPLAY='"Bahnschrift Condensed","Bahnschrift SemiBold Condensed","
 // Dekorace: maják a červená světla (jen dekorace, kap. 2.2), kouř a pára šedofialové pod jas vlaštovky (kap. 5.3: ≤ 60 % svítivosti papíru).
 const SMOKE='#8a7aa8',BEACON='#ff4d6d';
 export const STEAM=mix('#f3e6ff',SMOKE,.5);
+// Teplý pastel místo zlaté v dekoracích (zlatá jen hodnota a neon, kap. 2.2).
+const PEACH=mix(GOLD,MAGENTA,.25);
 export const TOKENS=Object.freeze({ink:INK,paper:PAPER,cyan:CYAN,magenta:MAGENTA,gold:GOLD,focus:FOCUS,miss:MISS,night:NIGHT,plate:PLATE,plate2:PLATE2,
  text:TEXT,dim:DIM,mute:MUTE,display:DISPLAY,body:BODY,steam:STEAM,beacon:BEACON});
 // Role (kap. 2.2): úspěch azurová, perfekt magenta všude, hodnota (mince, milník, cena) zlatá, minutí neutrální, varování „Get ready“ fokus.
@@ -31,8 +33,8 @@ export const CYBER={
  // Popupy: perfekt magenta, milník zlatý (hodnota), obrys písma tuš, písmo DISPLAY.
  popup:{perfect:ROLE.perfect,success:ROLE.success,miss:ROLE.miss,milestone:ROLE.value,land:PAPER,outline:INK,font:DISPLAY},
  flash:PAPER,
- // QTE kruh (ui-layer drawQte): stopa, úspěch, perfekt, bílý bod, čárkované varování, výsledek jednou barvou; disc = tmavý podklad pod kruhem (kap. 5.5).
- qte:{track:'#3b4170',success:ROLE.success,perfect:ROLE.perfect,dot:PAPER,warning:ROLE.warning,disc:INK,discAlpha:.6,
+ // QTE kruh (ui-layer drawQte): stopa MUTE (≥ 3 : 1 na tušovém disku, G4), úspěch, perfekt, bílý bod, čárkované varování, výsledek jednou barvou; disc = tmavý podklad pod kruhem (kap. 5.5).
+ qte:{track:MUTE,success:ROLE.success,perfect:ROLE.perfect,dot:PAPER,warning:ROLE.warning,disc:INK,discAlpha:.6,
   result:{perfect:ROLE.perfect,success:ROLE.success,other:'#6b6f8a'},
   gust:mix(CYAN,PAPER,.6),bird:{body:'#ad9fce',wing:CYAN,beak:COMPANION.beak}},
  // Štítky událostí a mířicí panel na tokenech UI (kap. 7); lišta síly fokusová žlutá na desce PLATE.
@@ -43,7 +45,10 @@ export const CYBER={
  // akcent (tón 3), střechy a lemy (tóny 4, 5), zem čtvrti (groundDark = ztmavení), pastelové domy Violet Suburbs (mísí se s duskFog), mlha fog0,
  // záře majáků (beacon) a pruhy u vody / ulic (water, lane).
  city:{biomes:['#322749','#215a8c','#63384e','#44214e'],
-  accent:['#3d7fa8','#a8458f','#c27a3a',mix(CYAN,INK,.4)],ground:['#4b3778','#10294a','#342b38','#101a2c'],groundDark:[0,0,.25,.25],
+  // Zem Docks indigová: #10294a po světle Docks, mlze a posterizaci padal na tyrkysovou (G4, test render3d-leftovers).
+  accent:['#3d7fa8','#a8458f','#c27a3a',mix(CYAN,INK,.4)],ground:['#4b3778','#1c2878','#342b38','#101a2c'],groundDark:[0,0,.25,.25],
+  // Neon jen v cedulích, lampách a oknech: CYAN, MAGENTA, GOLD (kap. 2.2); 4. barva oken = teplé světlo mix(GOLD,PAPER).
+  neon:[MAGENTA,CYAN,GOLD],windows:[MAGENTA,CYAN,GOLD,mix(GOLD,PAPER,.5)],
   suburbs:['#8f6ad8','#c56fb5','#6f86e0','#e08aa0','#ae5fc8','#a58be8','#d98ad0'],far:'#7a4f9e',light:PAPER,shade:'#1a1240',roof:'#2a1d52',trim:'#2b2352',
   fog0:'#4a1d63',duskFog:'#9c5598',beacon:BEACON,water:'#2f6f9a',lane:'#3b2d6e'},
  // Nebe ve scene.js (měsíc, slunce ve 3 kruzích, hvězdy) a výchozí světla, než přijde první nálada z mood.js.
@@ -61,7 +66,13 @@ export const CYBER={
   robot:{body:mix(CYAN,INK,.15),panel:MAGENTA,wheel:'#2a1d44',head:mix(CYAN,PAPER,.3),antenna:'#d8c8ff',eye:CYAN,tip:BEACON,stick:'#d9a35a',broom:'#e0a050'},
   pigeon:{body:'#9a8ac8',head:'#b8a8e8',beak:'#ffb347',tail:'#6a5aa8',bread:'#e0a050',eye:MAGENTA,wing:'#7a6ab0'},
   // Otočná reklama v pořadí FOLD & FLY, DUMPLINGS, BOLTS SWEEPS, NOODLES 24H: nejbližší z CYAN / MAGENTA / GOLD k dřívějším #ff4fc3, #ffb347, #53e6ff, #9dff6a.
-  ads:[MAGENTA,GOLD,CYAN,GOLD]},
+  ads:[MAGENTA,GOLD,CYAN,GOLD],
+  // Rozmístění Suburbs (life.js): oblečení a pastely bez zelené a bez GOLD (dřív #5ee0c8, #b4f06a, #ffd166 → CYAN, MAGENTA, PEACH),
+  // statické doplňky (komíny, nádrže, antény, stánky, šňůry, tunel s kopcem, koleje, nástupiště, sloupy billboardu).
+  people:{cloth:['#ff6fae',PEACH,CYAN,'#9d7dff','#ff8f5a','#7fd0ff',PAPER,MAGENTA],skin:['#ffd9b8','#e8b48f','#c98b62','#8d5a3b','#ffe6d0']},
+  pastel:['#ff6fae',PEACH,CYAN,'#a48bff','#ff9a6a','#7fd0ff'],
+  chimney:'#7a4f86',tanks:{body:'#6a9ad8',leg:'#3a2a5a',roof:'#ff8fb8'},mast:'#d8c8ff',stall:{base:'#a0627a',post:'#f0e0ff',stripe:'#fff4e8'},line:'#efe6ff',
+  tunnel:{wall:'#5b4a92',mouth:'#1a1030'},pyramid:'#5a3f86',rail:{bed:'#3a2a4a',track:'#d0c0f0'},platform:'#8a6aa8',pole:'#3a2a5a'},
  // Dílna PAPER LAB (workshop.js PAL): vlaštovka v ruce jako letící (papír, záhyb magenta), azurová a magenta sjednocené.
  workshop:{wall:'#2c3c66',annex:'#3a3f74',roof:'#a24a86',trim:'#1a2142',door:'#4b4a72',frame:'#141a33',window:'#2a4d63',light:CYAN,warm:'#ffd59a',
   skin:'#c4b6e8',visor:CYAN,shirt:MAGENTA,legs:'#45558a',rail:'#7a5bb0',plane:PAPER,crease:MAGENTA}
