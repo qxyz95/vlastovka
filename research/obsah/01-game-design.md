@@ -1,10 +1,18 @@
-# Odemykatelný obsah: modely, skiny a co dál (game design)
+# Odemykatelný obsah: modely, násobič mincí, skiny a co dál (game design)
 
-**Založeno 14. 10. 2026** (game designer). Odpověď na zadání uživatele: „rozšířit naší dílnu o další vlaštovky které budou zamčené a půjdou odemknout za mince. A zároveň by to chtělo vymyslet další kontent ve hře aby ve hře bylo dostatek odemykatelnýho kontentu a různé skiny vlaštovek které by byly odemykatelné za progress ve hře.“
+**Založeno 14. 10. 2026** (game designer), **revize 14. 10. 2026** podle rozhodnutí uživatele (06, „Odemykatelný obsah…“, body 1–8). Odpověď na zadání uživatele: „rozšířit naší dílnu o další vlaštovky které budou zamčené a půjdou odemknout za mince. A zároveň by to chtělo vymyslet další kontent ve hře aby ve hře bylo dostatek odemykatelnýho kontentu a různé skiny vlaštovek které by byly odemykatelné za progress ve hře.“
 
-**Souběžně:** UX Dílny řeší product-designer, vzhled skinů a modelů art-director, ekonomiku balance-analyst. Tento dokument dává **pravidla, identitu a pořadí**. Čísla jsou zástupná, vzhled a obrazovky jen naznačené.
+## Změny 14. 10. (revize)
+- **Statistiky modelů znovu (06 bod 2, §2.1):** každý nový model je **o něco lepší celkově** (+3–5 % doletu bez událostí, Needle místo doletu +10 % mincí za minutu) a **výrazně lepší ve své specialitě** (+15–25 % jen v jeho situaci), s jednou slabinou, kde je horší než Dart nebo Glider. Statistiky se rozdělují podle páky z `04-ekonomika.md` §3.1: obecný přínos nesou `glide` a `cruise`, nikdy `speed` a `ideal`. **Hawk už nemá ideal 34°**, ale 18° jako Dart.
+- **Ceny dražší a pravidlem** `cena = k × R(místo)`, k roste s pořadím 4 → 6 (Hawk 450, Kite 770, Skimmer 1 100, Sail 1 560, Needle 2 190 ◈, celkem ~6 100 ◈). Nové pravidlo „dražší smí být o něco lepší, ale nikdy ve všech situacích“ nahrazuje 04 §3.3 bod 8.
+- **Nová karta E1 Mailbag / Poštovní brašna** (06 bod 3, §2.11): koupený násobič „+X % mincí z každého hodu“, 3 úrovně v Dílně, odemykané příchodem do čtvrti, s viditelnou návratností a stropem, aby příjem nerostl rychleji než ceny.
+- **Cíl ~60 min (§5, §6.1):** křivka obsahu přepočtená na cílovou osu 60 min (průměrný hráč, sada SKILLS). Zadání simulace s pořadím pák. Upozornění: férové modely kampaň samy neprodlouží, viz BLOCKED 1.
+- **Výklad polí pro simulátor rozhodnut (§2.9):** `perfectK`, `missK`, `ground`, úhel náhledu a odhad doletu v náhledu (odpověď na dotaz game-deva).
+- **Rozhodnutí 4–8 promítnuta:** Glider zdarma, Night Owl po finále (bod 4); Dílna ukazuje 2 nejbližší zamčené modely plně s cenou, náhled dvou drah a odhad doletu, **bez zkušebního hodu**, koupě s potvrzením rovnou do ruky, rychlá volba Sail (bod 5); klepnutí na vlastněnou vlaštovku ji dá do ruky, bez „Letět s touhle“ (bod 6); skiny jen za postup, jeden skin pro všechny vlaštovky, lampionový skin svítí, 7 razítek (bod 7); papíry pro Papírové město (světlý Kraft, stříbrná fólie místo Neon Foil, grafitový obrys) (bod 8). Původní BLOCKED 1–5 jsou vyřešené (§7).
 
-**Podklady:** `06-rozhodnuti.md` (přednost), `08-navrh-kolo2.md` (Dílna W1–W3, Atlas A01–A16, kapsy S1–S6, události §7), `04-svet-cile-sbirky.md` (SV14–SV16), `07-review.md` (verdikty SV14–SV16, E19), `01-vylepseni-dilna.md` (D08 Sokol, D09 Albatros, D11 Střela), `research/atlas/01-navrh-atlasu.md`, `research/design/07-menu.md`, `01-papiry.md`, `05-styl-papir.md`, `simulation/progression/params.mjs` a výstup `out/f5-start-skills.md` (časová osa), KB P1–P15.
+**Souběžně:** UX Dílny product-designer (`02-ux-dilna.md`), vzhled art-director (`03-vzhled-modelu-a-skinu.md`), ekonomika balance-analyst (`04-ekonomika.md`, simulátor `simulation/progression/`, `--modelset`). Tento dokument dává **pravidla, identitu, rozpočet statistik a pořadí**. Čísla jsou zástupná.
+
+**Podklady:** `06-rozhodnuti.md` (přednost), `08-navrh-kolo2.md`, `04-svet-cile-sbirky.md`, `07-review.md`, `01-vylepseni-dilna.md`, `13-rippleloop.md`, `research/atlas/01-navrh-atlasu.md`, `research/design/07-menu.md`, `01-papiry.md`, `05-styl-papir.md`, `research/obsah/02–04`, `simulation/progression/params.mjs` a `README.md`, KB P1–P15.
 
 **Herní texty** jsou anglicky s českým ekvivalentem pro i18n (EN / CS), návrh je česky.
 
@@ -12,322 +20,394 @@
 
 ## 0. Shrnutí
 
-1. **Pět nových modelů za mince** (Dart a Glider zůstávají): **Hawk** (perfekty a kombo), **Kite** (výška z událostí), **Skimmer** (nízký let a konec letu), **Sail** (vítr), **Needle** (krátké rychlé lety). Každý je postavený na jedné ose, kde je nejlepší, a jinde je horší. Žádný model není „lepší Dart“.
-2. **Model se odemyká dvojím klíčem:** objeví se doletem na své místo (Atlas, silueta je vidět předem) a koupí se za mince. Cena je zhruba 4–5 hodů příjmu v době odemčení, takže koupě je volba stylu, ne zeď.
-3. **Před koupí hráč model vyzkouší očima:** v Dílně se jeho oblouk přehraje nad obloukem posledního hodu (stejný úhel a síla), s čísly Speed / Airtime a jednou větou „Loves: tailwind“. Volitelně jeden zkušební hod zdarma.
-4. **Skin = potisk na papíře, ne jiný papír.** Druh papíru (Copy → Kraft → Washi → Neon Foil) dál určuje materiál, obrys a tvar stopy, protože nese rychlost (W2). Skin je kresba grafitem a jedna drobnost (stuha, razítko) přes papír. Tím se pravidlo „barvu stopy dává čtvrť, tvar dává papír“ (01-papiry) nerozbije.
-5. **Skiny za postup, ne za grind:** 4 suvenýry čtvrtí (s postavou čtvrti), 1 za finále, 5 „podpisových“ za první předvedení triku každého nového modelu. Navíc **razítka** (malá nálepka na křídle) za první perfekt každého typu události. Bez počitadel „7/12“, bez upozornění na chybějící kusy.
-6. **Další obsah navíc k Atlasu:** **Polička suvenýrů** v okně Dílny (živá scéna hlavního menu), **Rádio** (výběr hudby čtvrti v menu, až bude hudba ve hře) a obsah po finále pro Night Route (noční model a skin, později).
-7. **Křivka:** Atlas dává věc na každém místě, nové věci z tohoto návrhu padají hlavně do **dlouhé D2** (dnes 30 hodů / 16 min) a do přestávek mezi místy. Pravidlo „jedna novinka za hod“ (U3) platí i pro ně.
-
-Otevřené volby jsou v §7 jako `BLOCKED:`.
+1. **Pět nových modelů za mince** (Dart a Glider zůstávají): **Hawk** (perfekty), **Kite** (výška z událostí), **Skimmer** (nízký let a konec letu), **Sail** (vítr), **Needle** (krátké rychlé lety). Každý je o něco lepší celkově, výrazně lepší ve své situaci a v jedné situaci horší. Žádný není „o 10 % lepší Dart“.
+2. **Dvojí klíč:** doletem na své místo se model odemkne, pak se koupí za mince. Cena je 4–6 hodů příjmu v místě odemčení, roste s pořadím: model je cíl, na který se šetří.
+3. **Před koupí náhled:** dvě dráhy (aktuální a vybraný model) a odhad doletu z hráčových posledních hodů, včetně jeho událostí a větru. Bez zkušebního hodu.
+4. **Mailbag / Poštovní brašna:** jediná koupená investice do mincí, +10 / +20 / +30 % z každého hodu, úroveň se otevře s každou novou čtvrtí (D2–D4). Ukazuje „teď → po koupi“ a návratnost v hodech. Strop všech „+X % mincí“ je +50 %.
+5. **Skiny = potisk přes papír**, jeden skin pro všechny vlaštovky, jen za postup: 4 suvenýry (K1–K4), finále (K5), 5 podpisových za první trik modelu (K6–K10) a 7 razítek. Bez počítadla. Stopa bez kosmetiky.
+6. **Další obsah:** Polička suvenýrů, Rádio (po hudbě), obsah po finále (Night Owl, Night Mail).
+7. **Cílová délka ~60 min** (dnes SKILLS 52 min, x2 61 min). Ceny modelů, které hráči vrátí, co stály, kampaň samy neprodlouží. Kde vzít zbytek, je BLOCKED 1.
 
 ---
 
 ## 1. Pravidla, která platí pro všechno níže
 
-- **Rozhodnutí 06 mají přednost.** Zvlášť: „Příběh a sběratelství: ne. Stačí Atlas“ (13. 10.), SV14 (šuplík vzorů) a E19 (vzory za mince) byly v 08 vyřazené („vzhled nese druh papíru“). **Nové zadání uživatele skiny výslovně chce**, takže je vracím, ale v podobě, která není sbírka navíc: skin je **památka na čin nebo místo** a sedí u něj v Atlasu, žádný katalog s procenty (viz §7, BLOCKED 1).
-- **Volitelné výzvy nejsou žádoucí, pokud nebaví samy** (06, B16, SV13). Proto žádný skin za umělou podmínku („doleť 500 m bez QTE“). Odemyká to, co se v běžné hře stane samo: příchod do čtvrti, finále, první perfekt, první předvedení triku modelu, který si hráč koupil.
-- **Etika (P13, KB 02 §4.3):** nic nevyprší, nic není limitované, žádná náhoda za mince, žádný odpočet, žádná tečka na Dílně kvůli možnosti koupě (07-menu §2.1). Model ani skin se nekupují za skutečné peníze.
-- **Jedna měna** ◈. Modely jsou jediná nová položka za mince. Skiny a razítka se za mince **nekupují** (kosmetika za výkon, ne za grind).
-- **Jedna novinka za hod (U3)** platí pro modely, skiny i razítka. Když se jich sejde víc, další se ohlásí po dalším hodu. Razítka se hlásí nejtišeji (jeden řádek ve výsledku).
-- **Sdílený strom:** všechna vylepšení Dílny a Atlasu platí pro všechny modely (rozhodnutí 0.6, `core.js`). Modely se neliší výbavou, jen chováním.
-- **Model se mění zdarma mezi hody** (jako kapsy). Poslední koupi modelu lze vrátit do dalšího hodu (pravidlo Dílny z 08).
+- **Rozhodnutí 06 mají přednost.** Skiny jsou schválené jako památka na čtvrť, finále nebo trik, bez katalogu s procenty a bez stránky sbírky (06 bod 7).
+- **Volitelné výzvy nejsou žádoucí, pokud nebaví samy** (06, B16, SV13). Skin ani razítko se neodemyká umělou podmínkou, jen tím, co se v běžné hře stane samo.
+- **Etika (P13, KB 02 §4.3):** nic nevyprší, nic není limitované, žádná náhoda za mince, žádný odpočet, žádný výdělek offline, žádná tečka na Dílně kvůli možnosti koupě (07-menu §2.1, 06 Atlas bod 4). Nic se nekupuje za skutečné peníze.
+- **Jedna měna** ◈. Za mince jsou nové jen **modely** a **Mailbag**. Skiny a razítka se za mince nekupují.
+- **Jedna novinka za hod (U3)** platí pro modely, Mailbag, skiny i razítka. Razítka se hlásí nejtišeji (řádek ve výsledku).
+- **Sdílený strom:** vylepšení Dílny a Atlasu platí pro všechny modely. Modely se liší chováním, ne výbavou. Mailbag platí bez ohledu na model.
+- **Model se mění zdarma mezi hody**, za letu nikdy. **Koupě s potvrzením, koupený model jde rovnou do ruky** (06 bod 5). Doporučuji, aby potvrzení u modelů nahradilo obecné „vrátit poslední koupi“ (koupě modelu je velká a vědomá). Rozhoduje product-designer v 02.
 
 ---
 
-## 2. Nové modely vlaštovek (za mince)
+## 2. Nové modely vlaštovek a násobič mincí (za mince)
 
-### 2.1 Mapa modelů: každý má svou osu
+### 2.1 Rozpočet statistik (nové)
 
-Dnešní čísla: Dart `speed 20, glide 3.2, cruise 11, ideal 18°, qte 1`, Glider (přeladěný v 08/F5) `14, 4.0, 11, 30°, 1.15`. Všechna čísla níže jsou **zástupná** a ladí je balance-analyst. Nové pole = nové pravidlo v modelu letu (§2.9).
+**Co uživatel chce (06 bod 2):** nový model je o něco lepší celkově, výrazně lepší ve své specialitě a dražší. **Co říká měření (04 §3):** `speed` a `ideal` jsou nejsilnější páky (+5 % `speed` = −14 % hodů, +4° `ideal` = −23 %), `glide` a `cruise` slabé (−4,5 % a −2 %). Strmý model dostane výšku, čas a události zadarmo (Hawk 34° = −29 % hodů, CRITICAL).
 
-| Model | Osa (kde je nejlepší) | Oblouk / úhel | Doba letu | Události | Typ hráče | Místo odemčení |
-|---|---|---|---|---|---|---|
-| **Dart** (od začátku) | univerzál, rychlé hody | plochý, 18° | krátká | běžné | každý, nováček | – |
-| **Glider** (Atlas A01, zdarma) | delší lety, víc událostí | vysoký, 30° | delší | o něco silnější | klidný hráč | 100 m |
-| **Hawk** | perfekty a kombo | strmý, 34° | střední | perfekt silný, minutí bolí | šikovný v QTE | 4 Railway to the River |
-| **Kite** | výška z událostí | velmi strmý, 40° | dlouhá | svislá část silná, vodorovná slabá | rád „plave“, termiky | 6 Crane Forest |
-| **Skimmer** | nízký let, konec letu | velmi plochý, 10° | krátká, dlouhý konec | méně událostí (nízko nezačínají) | rád dotahuje dopad, Cushion | 8 Lighthouse at the Pier's End |
-| **Sail** | vítr | střední, 26° | střední | slabší | taktik, čte vítr před hodem | 10 Wind Ridge |
-| **Needle** | krátké a rychlé lety | velmi plochý, 12° | nejkratší | dron ho vystřelí dopředu | chce rychlé hody, málo klepání | 14 Sky Terraces |
-| *(později)* **Night Owl** | Night Route | – | – | – | po dohrání | Night Route |
+**Pravidla rozpočtu (nahrazují 04 §3.3 body 2, 3 a 8):**
 
-Proč tahle místa: každý model přijde **po nebo spolu s** bonusem Atlasu, se kterým hraje nejlépe (Hawk po Crowd Chain na 2, Kite spolu s Crane Lift na 6, Skimmer po Stone Skip na 7, Sail po Pinwheel, ve „Wind Ridge“ spolu s Thermal, Needle po Ad Drone na 13). Odemčený model je cíl na mince, ne okamžitá věc, takže se s bonusem místa nepere: ohlásí se řádkem a koupí se, až na něj hráč našetří. Nový model tak hned ukáže nový způsob, jak využít to, co hráč právě našel. Místa 3, 7 a 11 (nový papír) a 1, 5, 9, 13 (karta čtvrti) jsou záměrně volná, aby se novinky nehromadily. Dvě nové věci v D2, protože D2 je nejdelší čtvrť (§5).
+1. **Obecný přínos** = dolet bez událostí, průměr přes rozložení větru, průměrný hráč, stejná výbava, proti **lepšímu z Dartu a Glideru** (sonda 04 §3.2). Nese ho jen `glide` a `cruise` (a u Skimmeru `ground`). Cíl roste s pořadím: **Hawk +3 %, Kite +3 %, Skimmer +4 %, Sail +5 %** (v bezvětří), **Needle 0 až −3 % doletu, ale +10 % mincí za minutu**.
+2. **`speed` ≤ 20 a `ideal` nikdy strmější než model, ze kterého vychází** (Dart 18° při `speed` 20, Glider 30° při `speed` 14). Žádný nový model nemá vyšší úhel při stejné nebo vyšší rychlosti.
+3. **Specialita** = nové pole modelu, které působí jen v jedné situaci. Cíl: v té situaci **+15–25 %** doletu proti lepšímu z Dartu a Glideru, nikdy nad +30 %. Situace nastává v **20–40 % hodů**, ne ve všech.
+4. **Slabina:** každý model má aspoň jednu běžnou situaci, kde je **o ≥ 5 % horší** než lepší z Dartu a Glideru. Hráč, který bere model vždy, dopadne hůř než ten, kdo volí.
+5. **Pořadí smí přidávat sílu jen v obecném přínosu**, a to nejvýš o ~1 procentní bod na model. Specialita s pořadím neroste. Dražší model tak je o něco lepší, ale nikdy nejlepší ve všech situacích.
+6. **Realizovaný zisk volby** (nejlepší vlastněný model pro daný hod, s náhledem, proti lepšímu z Dartu a Glideru, průměr přes hody po koupi): D2 ≤ +7 %, D3 ≤ +9 %, D4 ≤ +10 %. Je to strop, který měří simulace. Nahrazuje 04 §3.3 bod 3 (+5 %), protože uživatel chce modely znatelně lepší.
+
+**Rozpočet po modelech** (zástupná čísla, start pro simulaci; „síto“ = 04 §3.3 vzorec, změna hodů proti modelu, ze kterého vychází, kdyby ho nahradil ve všech hodech; síto přestřeluje asi 1,4×):
+
+| Model | Vychází z | Základní statistiky `speed / glide / cruise / ideal / qte` | Síto | Obecný přínos (cíl) | Specialita: pole → situace (cíl) | Slabina (cíl) |
+|---|---|---|---:|---|---|---|
+| Dart | – | 20 / 3,2 / 11 / 18° / 1,0 | – | – | – | – |
+| Glider | – | 14 / 4,0 / 11 / 30° / 1,15 | – | – | – | – |
+| **Hawk** | Dart | 20 / **3,3** / **11,5** / 18° / 1,0 | −4,5 % | +3 % | `perfectK 1,6`, `missK 0,06` → hráč s ≥ 40 % perfektů (+15–20 %) | auto a slabý hráč s častým minutím (−5 %) |
+| **Kite** | Glider | 14 / **4,2** / 11 / 30° / 1,15 | −4,5 % | +3 % | `liftK 1,5`, `pushK 0,8` → let s termikou, párou nebo Crane Lift (+15–20 %) | lety s ptáky a drony (vodorovný push ×0,8), D4 (−5 %) |
+| **Skimmer** | Dart | 20 / **3,0** / **12** / **16°** / 0,95 | +7 % bez `ground` | +4 % (nese `ground`) | `ground {6 m, ×1,6}`, `skip +1` → konec letu s Stone Skip, Cushion nebo Packing Tape, voda D2 (+18–25 %) | lety bohaté na události (nízko méně událostí), D1 a D4 (−5 %) |
+| **Sail** | Glider | **15** / **4,1** / **10,5** / **26°** / 0,95 | ladit | +5 % v bezvětří | `windK 2,5` → zadní vítr ≥ +0,08 (+15–25 %) | protivítr (−10 až −15 %) |
+| **Needle** | Dart | 20 / **2,9** / **13,5** / **16°** / 0,9, `drag 0,09` | ladit | dolet 0 až −3 %, let −20 %, ◈/min +10 % | `droneBurst 1,5`, `windK 0,4` → let se 2+ drony v D4 (+15 %), silný protivítr (bez ztráty) | zadní vítr (nebere ho), lety s poryvy a párou (`qte 0,9`) |
+
+**Proč takhle:**
+- **Hawk zkrocený (06 bod 2):** ideal 18° jako Dart, takže nedostane výšku zadarmo. „Znatelně lepší“ nese `perfectK`: šikovný hráč to cítí v každém perfektu, slabý to vidí v náhledu pravdivě. Obecný přínos +3 % je malá částka přes `glide` a `cruise`.
+- **Kite** zůstává na přímce Glideru (30°, 14), ne 40°. Výška přichází jen z událostí (`liftK`), takže vyhlídkový let je odměna za termiku, ne vlastnost každého hodu. Hlídá se doba letu.
+- **Skimmer** má plošší úhel (16°), který by ho bez `ground` zpomalil o ~7 %. Přízemní efekt působí na konci každého letu, takže je to jeho obecný přínos; odrazy a Cushion jsou specialita.
+- **Sail** je situační z podstaty: v bezvětří o kousek lepší než Glider, v zadním větru výrazně, v protivětru horší. Rychlá volba Sail při míření (06 bod 5) z toho dělá rozhodnutí před hodem.
+- **Needle** je jediný, jehož „celkově lepší“ není dolet, ale čas: kratší let při skoro stejném doletu. Kdyby měl i +5 % doletu, dával by +25 % mincí za minutu a zkracoval hru (04: +26 % už se starými čísly). Pokud uživatel chce i u Needle vyšší dolet, viz BLOCKED 3.
 
 ### 2.2 Karta M1 — Hawk (Sokol)
-- **Cíl:** dát šikovnému hráči model, kde se perfekty a kombo vyplatí víc, než kolik stojí minutí.
-- **Pravidlo:** `speed 17, glide 3.0, cruise 11, ideal 34°, qte 1.0`, nové pole `perfectK 1.6` (perfekt dá push ×1,6 místo ×1,25) a `missK 0.06` (minutí sebere 6 % vodorovné rychlosti, vlaštovka viditelně zakolísá). Pasivně (bez událostí) letí asi o 8 % kratší než Dart.
-- **Proč je to zábavné:** perfekt je s Hawkem cítit a slyšet, kombo s Crowd Chain roste rychleji. Šikovnost je znát, aniž by slabší hráč přišel o cokoli, protože Dart a Glider zůstávají (06: šikovnost středně, P7 přičitatelnost).
-- **Typ hráče, čtvrť:** expert a „sběratel komba“. Nejlíp v D1–D2, kde je událostí hodně a hráč se je učí. S kapsou **Sharp Edge** nebo **Whistle** tvoří čistý styl „risk za odměnu“.
-- **Odemčení:** místo 4 Railway to the River. Cena **400 ◈** (≈ 4 hody příjmu v té fázi).
-- **Okraje a zneužití:** s automatikou QTE (Atlas) Hawk nikdy nedá perfekt (06: automatika jen běžný zásah), takže je pro „auto“ hráče horší. Náhled to musí říct pravdivě („Auto-hits don't count as perfect“). S Echem a Gull Escort se push násobí: **koš E (strop 2,0) platí i pro `perfectK`**, aby se nevytvořil únik ze stropu.
-- **Náhled:** oblouk je kratší než u Dartu, vedle něj věta „Perfect hits push much harder. Misses cost speed.“ a odhad z hráčových dat: „Your last 10 throws: 4 perfects → ≈ +6 %“ (D16 / U1).
-- **Vychází z:** D08 Sokol (vráceno po MC, jak 08 §9 navrhl).
-- **Pracnost:** data S, logika S (`perfectK`, `missK` v `resolve`), 3D model M (ostrá silueta s dlouhými úzkými křídly), UI S, texty S.
+- **Cíl:** model, kde se perfekty vyplatí víc, než kolik stojí minutí.
+- **Pravidlo:** statistiky z §2.1. Perfekt dá vodorovný push ×1,6 místo ×1,25 (`perfectK`), minutí běžné události sebere 6 % vodorovné rychlosti (`missK`), vlaštovka viditelně zakolísá.
+- **Proč je to zábavné:** perfekt je s Hawkem cítit a slyšet, kombo s Crowd Chain roste rychleji. Šikovnost je znát, slabší hráč o nic nepřijde, Dart a Glider zůstávají (06: šikovnost středně, P7).
+- **Typ hráče, čtvrť:** expert a sběratel komba, nejlíp D1–D2. S kapsou Sharp Edge nebo Whistle čistý styl „risk za odměnu“.
+- **Odemčení:** místo 4 Railway to the River. Cena **450 ◈** (k = 4). Kupuje se v praxi na začátku D2. Pokud simulace ukáže přeplnění D1 (x2 > 35 hodů), přesunout na místo 5.
+- **Okraje a zneužití:** s automatikou QTE Hawk nikdy nedá perfekt (06), náhled to řekne („Auto-hits don't count as perfect.“). `perfectK` je mimo strop E (§2.9), proto má vlastní hlídání: podíl letů nad stropem E a nejdelší let s Echem a Gull Escort.
+- **Náhled:** dráha stejně dlouhá jako u Dartu, odhad z hráčových hodů („For your throws: ≈ +12 %“), věta „Perfect hits push much harder. Misses cost speed.“
+- **Pracnost:** data S, logika S, 3D M (silueta „letadýlko“ podle `siluety.png`), UI S, texty S.
 
 ### 2.3 Karta M2 — Kite (Drak)
-- **Cíl:** model, který staví na výšce. Hráč „chytá“ události kvůli stoupání, ne kvůli rychlosti.
-- **Pravidlo:** `speed 12, glide 4.6, cruise 8, ideal 40°, qte 1.1`, nové pole `liftK 1.6` (svislá část událostí ×1,6: poryv, pára, termika) a `pushK 0.6` (vodorovný push ×0,6). Startuje hodně strmě, nad městem visí déle a pomaleji.
-- **Proč je to zábavné:** jiný obraz letu (vysoko nad střechami, vidí víc města), termika v D3 s ním je „vrchol“ letu. Volba pro hráče, kterého baví klidný let a výhled (P14).
-- **Typ hráče, čtvrť:** klidný hráč, nejlíp s **Crane Lift** (výška startu, místo 6) a **Thermal** (místo 10). Kombinace s Calm Sky dává „vyhlídkový“ let.
-- **Odemčení:** místo 6 Crane Forest. Cena **700 ◈**.
-- **Okraje a zneužití:** **riziko délky letu.** Výška = doba ve vzduchu a 06 chce krátké lety. Kite proto platí nízkou rychlostí (`cruise 8`): dolet podobný Glideru, ale let delší. Simulace musí potvrdit, že medián letu Kite je nejvýš o 15 % delší než Glider a žádný let > 60 s. Když ne, snížit `liftK`, ne zvyšovat rychlost. Zrychlení klouzání (Z2) mu pomáhá, při reduced motion je vypnuté, tam bude let znatelně delší: náhled musí ukázat airtime.
-- **Náhled:** nejvyšší oblouk v Dílně, číslo Airtime výrazně vyšší, věta „Rides every updraft. Slow, high, scenic.“
-- **Vychází z:** D09 Albatros (role „klidný plachtař“), přestavěno na svislé události, aby to nebyl jen „víc glide“.
-- **Pracnost:** data S, logika S (`liftK`, `pushK` v `resolve`), 3D M (široká křídla, krátké tělo), UI S, texty S.
+- **Cíl:** model, který staví na výšce z událostí.
+- **Pravidlo:** statistiky z §2.1. Svislá část poryvu, páry a termiky ×1,5 (`liftK`), vodorovný push ×0,8 (`pushK`).
+- **Proč je to zábavné:** jiný obraz letu (vysoko nad střechami), termika v D3 je vrchol letu (P14). Volba pro klidného hráče.
+- **Typ hráče, čtvrť:** klidný hráč, s Crane Lift (místo 6), Thermal (10) a Calm Sky.
+- **Odemčení:** místo 6 Crane Forest. Cena **770 ◈** (k = 4,5).
+- **Okraje a zneužití:** **délka letu.** Medián letu Kite ≤ 1,15× Glider, P90 ≤ 45 s, žádný let > 60 s, i bez zrychlení klouzání (reduced motion hlásit zvlášť). Když ne, snížit `liftK`, ne zvyšovat rychlost.
+- **Náhled:** nejvyšší dráha, Airtime výrazně vyšší, věta „Rides every updraft. Slow, high, scenic.“
+- **Pracnost:** data S, logika S, 3D M (vysoký lichoběžník), UI S, texty S.
 
 ### 2.4 Karta M3 — Skimmer (Žabka)
-- **Cíl:** model pro konec letu. Letí nízko nad střechami a vodou a dopad umí natáhnout.
-- **Pravidlo:** `speed 21, glide 2.8, cruise 12, ideal 10°, qte 0.9`, nové pole `ground {below 6 m, glide ×1.7}` (přízemní efekt: pod 6 m klesá pomaleji) a `skip +1` (Stone Skip má s ním o jeden odraz víc). Protože pod 8 m události nezačínají (Z6 bod 4), Skimmer jich zažije **méně**.
-- **Proč je to zábavné:** úplně jiný let, nízký průlet nad městem, voda v D2 a odrazy. Dává smysl kapsám **Cushion** a **Dive** (Low Pass) a bonusu **Packing Tape**: hráč, který rád „dotahuje“ dopad, dostane celý styl na tom postavený.
-- **Typ hráče, čtvrť:** hráč, kterého baví konec letu a málo klepání. Nejlíp v D2 (Bridge, Lighthouse, voda).
-- **Odemčení:** místo 8 Lighthouse at the Pier's End (po Stone Skip na 7). Cena **1 000 ◈**.
-- **Okraje a zneužití:** přízemní efekt + Cushion (klesání 0 na 1,6 s) + odrazy nesmí dát „nekonečné klouzání“. Pravidla: přízemní efekt jen násobí klouzavost (nevypíná klesání), Cushion a odraz 1× za let jako dnes. Simulace hlídá nejdelší let a podíl doletu získaný pod 6 m. Kolize se zemí: Skimmer startuje nízko, první hody s ním můžou skončit brzy, náhled to musí ukázat pravdivě.
-- **Náhled:** nejplošší oblouk s dlouhým „ocasem“ nad zemí, věta „Loves flying low. Skips one more time.“
-- **Vychází z:** nový nápad, navazuje na A07 Stone Skip, S2 Cushion, S1 Low Pass.
-- **Pracnost:** data S, logika S–M (přízemní efekt v `integrate`, `skip` v odrazu), 3D M (nízký široký „tupý“ tvar), UI S, texty S.
+- **Cíl:** model pro konec letu, nízko nad střechami a vodou.
+- **Pravidlo:** statistiky z §2.1. Pod 6 m klesá pomaleji (`ground`: klouzavost ×1,6 v běžném klesání), se Stone Skip o jeden odraz víc (`skip +1`). Pod 8 m události nezačínají (Z6), takže jich zažije méně.
+- **Proč je to zábavné:** nízký průlet, voda v D2, odrazy. Dává smysl Cushion, Dive a Packing Tape.
+- **Odemčení:** místo 8 Lighthouse at the Pier's End. Cena **1 100 ◈** (k = 5). Kupuje se v praxi na začátku D3.
+- **Okraje a zneužití:** přízemní efekt jen násobí klouzavost, nevypíná klesání. Cushion a odraz 1× za let jako dnes. Hlídat nejdelší let a podíl doletu pod 6 m. První hody mohou skončit brzy, náhled to ukáže pravdivě.
+- **Náhled:** nejplošší dráha s dlouhým ocasem nad zemí, věta „Loves flying low. Skips one more time.“
+- **Pracnost:** data S, logika S–M, 3D M (plochá tupá deska), UI S, texty S.
 
 ### 2.5 Karta M4 — Sail (Plachta)
-- **Cíl:** udělat z větru (Z3, ukázaný před hodem) skutečnou volbu před hodem.
-- **Pravidlo:** `speed 15, glide 4.2, cruise 10, ideal 26°, qte 0.9`, nové pole `windK 2.5` (vítr na Sail působí 2,5× víc, **oběma směry**). Při bezvětří je asi o 5 % kratší než Glider, v plném zadním větru (+0,12) o ~20 % delší, v protivětru o tolik horší.
-- **Proč je to zábavné:** hráč čte ukazatel větru a rozhoduje: „Tailwind. Beru Sail.“ Situační, předvídatelná volba (D11, Compton). Dává smysl bonusu **Pinwheel** (přehození větru): Pinwheel + Sail = hráč si „počká na vítr“.
-- **Typ hráče, čtvrť:** taktik. Nejlíp v D3 (Golden Fields, Wind Ridge), ale vítr fouká všude stejně (08 Z3), takže se hodí kdekoli.
-- **Odemčení:** místo 10 Wind Ridge. Cena **1 400 ◈**.
-- **Okraje a zneužití:** **Pinwheel úr. 3 ruší protivítr** (`noHeadwind`). Se Sail by to byl jistý bonus +10–20 % v každém hodu, což je dominance. Doporučení: Sail s Pinwheel úr. 3 ano, ale simulace musí ukázat, že „Sail + Pinwheel 3“ není nejlepší sestava u všech profilů. Pokud je, `windK` u Sail při `noHeadwind` snížit, nebo Pinwheel 3 dá „slabý protivítr“ místo bezvětří (rozhodne balance-analyst s orchestrátorem). Přepínání modelu podle větru stojí hráče jedno klepnutí v Dílně: na obrazovce míření nabídnout **jen** malé tlačítko „Sail ↺“, když je model odemčený a fouká víc než lehce (product-designer). Žádná výzva „změň model!“.
-- **Náhled:** oblouk ve třech variantách (protivítr / klid / zadní vítr) a věta „Wind matters twice as much. Both ways.“
-- **Vychází z:** D10 a D11 (vítr a „model podle větru“), Z3.
-- **Pracnost:** data S, logika S (`windK` v `integrate`, vítr už má simulátor), 3D M (vysoká „plachta“ kýlu), UI S–M (rychlá volba u míření), texty S.
+- **Cíl:** vítr (Z3, vidět před hodem) jako skutečná volba před hodem.
+- **Pravidlo:** statistiky z §2.1. Vítr působí 2,5× víc oběma směry (`windK`). S Pinwheel úr. 3 (bez protivětru) `windK` 1,8, aby kombinace nebyla jistý bonus v každém hodu.
+- **Proč je to zábavné:** hráč čte vítr a rozhoduje „Tailwind. Beru Sail.“ (D11). Pinwheel + Sail = počkat si na vítr.
+- **Odemčení:** místo 10 Wind Ridge. Cena **1 560 ◈** (k = 5,5).
+- **Okraje a zneužití:** Sail + Pinwheel 3 nesmí být nejlepší sestava u všech profilů. **Rychlá volba Sail při míření je schválená** (06 bod 5): malé tlačítko „Sail ↺“, jen když je Sail koupený a fouká víc než lehce. Nic nedoporučuje, jen nabízí.
+- **Náhled:** dráha ve třech variantách (protivítr / klid / zadní vítr), věta „Wind matters twice as much. Both ways.“
+- **Pracnost:** data S, logika S, 3D M (plachta), UI S–M (rychlá volba), texty S.
 
 ### 2.6 Karta M5 — Needle (Jehla)
-- **Cíl:** model pro hráče, který chce krátké hody. Méně času ve vzduchu, méně klepání, stejný postup za minutu.
-- **Pravidlo:** `speed 24, glide 2.6, cruise 14, ideal 12°, qte 0.9, drag 0.08`, nové pole `windK 0.4` (vítr ho skoro nebere) a `droneBurst` (zásah Ad Drone ho nevyhodí nahoru, ale vystřelí dopředu: push ×1,5, bez svislé složky). Dolet asi 85–90 % Dartu, **doba letu asi o 25–30 % kratší**.
-- **Proč je to zábavné:** v D4 je let 28–31 s (F5). Needle dá hráči „rychlou“ variantu: přes celé město za 20 s, ostré průlety mezi drony. Jiný rytmus, ne lepší číslo.
-- **Typ hráče, čtvrť:** hráč s málo časem, nebo kterého unavují dlouhé lety (P14). Nejlíp v D4 (drony, rychlost).
-- **Odemčení:** místo 14 Sky Terraces (po Ad Drone na 13). Cena **2 000 ◈**.
-- **Okraje a zneužití:** mince jsou z doletu za hod, ne za minutu. Kratší let s 85–90 % doletu znamená **víc mincí za minutu**. Simulace musí změřit mince a nová místa za skutečnou minutu: Needle smí být nejvýš o 10 % lepší než nejlepší jiný model, jinak snížit dolet. Hod s Needle stále trvá aspoň 8 s UI, takže výhoda je omezená.
-- **Náhled:** nejkratší oblouk s číslem Airtime výrazně nižším, věta „Short, sharp flights. Ignores the wind.“
-- **Vychází z:** D11 Střela (plochý úhel, odolnost proti větru), nové pravidlo s dronem.
-- **Pracnost:** data S, logika S (`droneBurst` v události dronu), 3D M (úzká jehla), UI S, texty S.
+- **Cíl:** model pro hráče, který chce krátké hody: méně času ve vzduchu, víc postupu za minutu.
+- **Pravidlo:** statistiky z §2.1. Vítr ho skoro nebere (`windK 0,4`), dron ho nevyhodí nahoru, ale vystřelí dopředu (`droneBurst 1,5`, bez svislé části). Dolet 97–100 % Dartu, doba letu asi −20 %.
+- **Proč je to zábavné:** přes D4 za 20 s, ostré průlety mezi drony. Jiný rytmus (P14).
+- **Odemčení:** místo 14 Sky Terraces. Cena **2 190 ◈** (k = 6), nejdražší.
+- **Okraje a zneužití:** mince jsou za dolet, ne za minutu. Needle smí mít nejvýš **+10–12 % mincí za minutu** proti nejlepšímu jinému modelu, jinak snížit dolet. Expert s Needle nesmí ubrat víc hodů než průměrný (poměr expert / slabý).
+- **Náhled:** nejkratší dráha, Airtime výrazně nižší, věta „Short, sharp flights. Ignores the wind.“
+- **Pracnost:** data S, logika S, 3D M (tenká jehla), UI S, texty S.
 
-### 2.7 Karta M6 — Night Owl (Sova), později
-- **Cíl:** důvod si Night Route (06: dobrovolné druhé kolo po odemčení) zahrát jinak než ve dne.
-- **Pravidlo (náčrt):** model jen pro Night Route, „vidí“ události dřív (delší varování), světlo luceren v D4 mu dává malý vztlak. Detaily až s návrhem Night Route.
-- **Odemčení:** uzel Night Route v Atlasu, model za mince po prvním nočním letu.
-- **Priorita:** nápad na později. **Pracnost:** M–L (závisí na Night Route).
+### 2.7 Karta M6 — Night Owl (Sova), po finále
+- **Cíl:** důvod hrát Night Route jinak než ve dne. **Až po finále** (06 bod 4).
+- **Pravidlo (náčrt):** jen pro Night Route, delší varování událostí, světlo luceren dává malý vztlak. Detaily s návrhem Night Route.
+- **Odemčení:** uzel Night Route v Atlasu, model za mince po prvním nočním letu. Cena po finále (z nekoupeného katalogu, 04 §1.4).
+- **Priorita:** později. **Pracnost:** M–L.
 
-### 2.8 Pořadí, ceny a závislosti
+### 2.8 Pořadí, ceny a viditelnost
 
-| # | Model | Viditelný v Dílně | Koupit lze | Cena (zástupná) | ≈ hodů příjmu | Synergie |
-|---|---|---|---|---:|---:|---|
-| – | Dart | od začátku | – | 0 | – | – |
-| – | Glider | silueta od 1. hodu | 100 m, zdarma (A01) | 0 | – | Calm Sky |
-| 1 | Hawk | silueta po objevení místa 2 | doletem na 4 | 400 | 4 | Crowd Chain, Sharp Edge, Whistle |
-| 2 | Kite | silueta po místě 5 | doletem na 6 | 700 | 4–5 | Crane Lift, Thermal, Calm Sky |
-| 3 | Skimmer | silueta po místě 7 | doletem na 8 | 1 000 | 4–5 | Stone Skip, Cushion, Dive, Packing Tape |
-| 4 | Sail | silueta po místě 9 | doletem na 10 | 1 400 | 4–5 | Pinwheel |
-| 5 | Needle | silueta po místě 13 | doletem na 14 | 2 000 | 5 | Ad Drone, Paper Rocket |
+**Viditelnost v Dílně (06 bod 5):** vlastněné modely, **2 nejbližší zamčené plně s cenou a místem**, další jako silueta („Opens further along the route“). Zamčený model se ukazuje i před dosažením místa: karta s cenou a řádkem „Reach Crane Forest, then 770 ◈“.
 
-- **Proč dvojí klíč (místo + mince):** místo dává modelu příběh a správný okamžik (hráč už zná synergii), mince z něj dělají vlastní volbu (zadání uživatele). Viditelná silueta s místem odpovídá teaseru Atlasu (06: teaser předem, bez čísel).
-- **Silueta se ukazuje jen o jedno místo napřed**, ne všech 5 modelů od začátku: blízký cíl (P6), ne katalog.
-- **Pravidlo ceny:** ≈ 4–5 hodů průměrného příjmu v době odemčení. Když 3. kolo zrychlí mince (06: násobitel podle čtvrti), ceny se přepočtou stejným pravidlem, ne ručně.
-- **Celkem 5 500 ◈**, asi 10 % všech útrat kampaně (Dílna ~30 000 ◈ podle `params.mjs`). Hráč, který model nekoupí, dojde do cíle stejně.
+| # | Model | Místo odemčení | R(místo) [◈/hod] | k | **Cena (zástupná)** | Kdy se koupí (cíl, osa §5) | Synergie |
+|---|---|---:|---:|---:|---:|---|---|
+| – | Dart | od začátku | – | – | 0 | – | – |
+| – | Glider | 100 m (A01), zdarma | – | – | 0 | ~2. hod | Calm Sky |
+| 1 | Hawk | 4 | 112 | 4 | **450** | ~hod 28–32 (začátek D2) | Crowd Chain, Sharp Edge, Whistle |
+| 2 | Kite | 6 | 171 | 4,5 | **770** | ~hod 42–46 | Crane Lift, Thermal, Calm Sky |
+| 3 | Skimmer | 8 | 220 | 5 | **1 100** | ~hod 57–62 (začátek D3) | Stone Skip, Cushion, Dive, Packing Tape |
+| 4 | Sail | 10 | 284 | 5,5 | **1 560** | ~hod 70–74 | Pinwheel |
+| 5 | Needle | 14 | 365 | 6 | **2 190** | ~hod 95–99 | Ad Drone, Paper Rocket |
+| | **celkem** | | | | **~6 070** | ≈ 24 hodů příjmu | |
 
-### 2.9 Co to znamená pro model letu
-Nová pole v `MODELS` (a v `params.mjs` pro simulátor): `perfectK`, `missK` (Hawk), `liftK`, `pushK` (Kite), `ground`, `skip` (Skimmer), `windK` (Sail, Needle), `droneBurst` (Needle). Každé je **jedno místo v kódu** (`resolve`, `integrate`, odraz, událost dronu). Pravidla:
-- Všechno, co násobí push, jde do **koše E** se stropem (08 §2.7).
-- `liftK` patří do koše **doba ve vzduchu** a hlídá se mediánem letu.
-- `windK` násobí `w`, ne rychlost, takže se nesčítá s tempem π.
-- Model **nikdy nemění** tempo π (Paper) ani ceny: progrese je pro všechny modely stejná.
+- **Pravidlo ceny:** `cena = round10(k × R(místo))`, R = medián příjmu za hod průměrného hráče, když má rekord na místě odemčení, **měřený bez modelů a bez Mailbagu** (04 §2.4, utlumení zpětné vazby). Ve 3. kole (násobitel čtvrti) se R přepočte a ceny s ním, ne ručně.
+- **k roste s pořadím** (4 → 6): model je cíl, na který se šetří (06 bod 2), a dražší model je o něco lepší celkově (§2.1 bod 5).
+- **Férovost koupě:** model musí hráči za zbytek kampaně zhruba vrátit, co stál. Kritérium: strategie `no-models` nesmí být o víc než 5 % hodů rychlejší než `models-first`. Proto ceny modelů kampaň **samy o sobě** neprodlouží o 8–11 minut (BLOCKED 1).
+- R(místo) je z `04` §1.2 (x2 průměrný). Pro SKILLS je R o ~3–5 % vyšší, ceny se zaokrouhlí stejně.
 
-### 2.10 Jak hráč pozná model předem (náhled letu)
-1. **Oblouk v Dílně (jádro).** Po výběru modelu se přes záběr Dílny nakreslí dva oblouky: plný = aktuální model, čárkovaný = vybraný. Oba z **posledního hodu hráče** (stejný úhel, síla, vítr, výbava), pasivně bez událostí. Fyzika je deterministická, takže je to levné a pravdivé (stejný princip jako náhled U1 a `bestAngle`).
-2. **Dvě čísla a jedna věta:** `Speed 46 m/s · Airtime 19 s` (08 §2.2) a „Loves: …“ s ikonou události nebo větru. U Hawka navíc odhad z vlastních perfektů.
-3. **Smyčka 3 snímků** jako u karet Atlasu (08 §8.5): podpisový moment modelu (Hawk perfekt, Kite termika, Skimmer odraz, Sail zadní vítr, Needle dron).
-4. **Zkušební hod (rozšíření, BLOCKED 4):** jeden hod s odemčeným nekoupeným modelem zdarma. Počítá se normálně (mince, rekord). Jeden na model, takže to není půjčovna.
-5. **Pravdivě i pro slabé:** náhled nesmí lhát ve prospěch koupě. Pokud by nový model hráči podle jeho dat dal méně, náhled to ukáže („For your throws: ≈ −4 %“).
+### 2.9 Co to znamená pro model letu (výklad polí, rozhodnuto)
+
+Nová pole v `MODELS` a v `params.mjs`. Chybějící pole = neutrální (1 / 0). Rozhodnutí na dotaz game-deva (14. 10.), simulátor je už většinou implementuje takto:
+
+| Pole | Rozhodnutí | Proč |
+|---|---|---|
+| `perfectK` (Hawk) | **Jen vodorovný push** při perfektu (nahrazuje `push.perfect`). Svislá část poryvu nebo dronu beze změny (tu nese `qte`, u Kite `liftK`). **Mimo strop E**: násobí push po stropu, nesčítá se do E. Hlídá se vlastní metrikou (podíl letů, kdy by push s `perfectK` přesáhl strop E ×1,6, nejdelší let s Echem a Gull Escort) a rozsahem `perfectK` ≤ 1,7. | Kdyby šel do E, Hawk by ztratil identitu přesně v pozdní hře, kdy má hráč nejvíc bonusů. Strop E hlídá hromadění bonusů, ne identitu modelu. Svislá část by Hawka posunula k výšce, což je osa Kite. |
+| `missK` (Hawk) | **Jen běžné události** (poryv, pták, pára, termika, dron), **ne Shooting Star**. Podíl z **`vx`** (vodorovná rychlost vůči zemi). Odpuštění předčasného stisku platí, minutí = mimo okno nebo bez stisku. | Hvězda je bonus navíc, minutí bonusu nemá trestat. `vx` je jednoduché, předvídatelné a vidět (zakolísání). Rychlost vůči vzduchu by trest míchala s větrem a Sail. |
+| `ground` (Skimmer) | **Jen běžné klesání**, ne ve střemhlavu (Dive) a ne během Cushion (tam je klesání 0). Po vytažení ze střemhlavu platí znovu. | Dive má vlastní zrychlení a strop odvozený od `cruise` bez π (06, F5 bod 3). Přízemní efekt ve střemhlavu by z Dive + Skimmer udělal nekonečné klouzání. |
+| `skip` (Skimmer) | Odraz navíc **jen s bonusem Stone Skip**, s jeho podmínkou `vx > 0,5·cruise` a koeficientem posledního odrazu. | Skimmer prohlubuje bonus místa, nevytváří vlastní. |
+| `liftK`, `pushK` (Kite) | `liftK` svislá část poryvu, páry, termiky (a Crane Lift ne, to je výška startu). `pushK` vodorovný push všech událostí. Mimo E jako `perfectK`. `liftK` patří do koše **doba ve vzduchu**. | |
+| `windK` (Sail, Needle) | Násobí vítr `w`, ne rychlost, nesčítá se s π. Sail s Pinwheel úr. 3 `windK 1,8`. | |
+| `droneBurst` (Needle) | Dron bez svislé části, vodorovný push dronu ×1,5. Mimo E. | |
+
+- Model **nikdy nemění** tempo π ani ceny. Mailbag (§2.11) nemění let.
+- Všechny násobiče pushe z modelu jsou v simulátoru vidět zvlášť (podíl zisku z `perfectK`, `pushK`, `droneBurst`), aby šlo poznat, kdy specialita přeroste rozpočet §2.1.
+
+### 2.10 Jak hráč pozná model předem (náhled, rozhodnuto)
+
+Podle 06 bod 5: **náhled dvou drah a odhad doletu, bez zkušebního hodu.**
+
+1. **Dvě dráhy přes scénu Dílny:** plná = model v ruce, čárkovaná = vybraný. Obě pasivní (bez událostí), se **známým větrem** příštího hodu (včetně Pinwheel) a se silou posledního hodu. **Úhel:** úhel posledního hodu **posunutý o rozdíl ideálů** obou modelů (hráč, který hází o 3° nad ideálem Dartu, uvidí Kite o 3° nad ideálem Kite). Tím se neznevýhodní model s jiným ideálem a zároveň se respektuje, jak hráč hází. Dráha ukazuje **tvar** (výška, délka letu), ne celé číslo.
+2. **Odhad doletu je z přehrání posledních 5 hodů**, ne z pasivní dráhy: stejný seed letu, stejný vítr, **stejné výsledky QTE hráče** (perfekt / zásah / minutí u každé události), s vybraným modelem a posunutým úhlem. Výsledek „For your throws: ≈ +6 %“ (medián z 5). Pasivní dráha by podcenila modely, které těží z událostí (Glider, Hawk, Kite), a bot s `preview` by pak volil skoro vždy Dart (zjištění game-deva).
+3. **Dvě čísla a jedna věta:** `Speed 46 m/s · Airtime 19 s` a „Loves: …“ s ikonou události nebo větru. Situační modely navíc druhý řádek: Sail „In tailwind ≈ +20 %“, Kite „With thermals ≈ +18 %“.
+4. **Pravdivě i pro slabé:** pokud by model hráči podle jeho hodů dal méně, náhled to řekne („For your throws: ≈ −4 %“). U Hawka s automatikou „Auto-hits don't count as perfect.“
+5. **Smyčka 3 snímků** podpisového momentu (jako karty Atlasu): rozšíření, ne jádro.
+6. Hráč s méně než 5 hody s výbavou: odhad z dostupných hodů, při 0 hodech jen dráhy bez čísla.
+
+### 2.11 Karta E1 — Mailbag / Poštovní brašna (násobič mincí, nové)
+
+- **Cíl:** dát hráči viditelnou investici „+X % mincí z každého hodu“ (06 bod 3, plán 3. kola: násobitel čtvrti + bonusy +X % mincí, RippleLoop: hodnota teď → po koupi), bez toho, aby příjem utekl cenám.
+- **Pravidlo:**
+  - Řádek **Mailbag** v Dílně (vedle Power, Folds, Paper). 3 úrovně, **každá se otevře příchodem do další čtvrti** (D2 místo 5, D3 místo 9, D4 místo 13), oznámí ji Karta čtvrti řádkem „Also opens: Mailbag II in the Workshop“. Pošťák čtvrti dá hráči větší brašnu (příběhová vazba na „Delivered.“).
+  - Úrovně (zástupné): **I +10 % za 500 ◈, II +20 % za 800 ◈, III +30 % za 900 ◈** (celkem 2 200 ◈).
+  - Odměna za hod: `(10 + floor(dolet/10)) × násobek čtvrti × (1 + min(M, 0,5))`, zaokrouhleno dolů. M = součet všech „+X % mincí“ (koš M: Mailbag, mince za kombo z RippleLoop bod 3, budoucí uzly Atlasu). **Strop koše M je +50 %.** Násobek čtvrti (3. kolo) je zvlášť a promítá se do R, tedy do cen.
+  - Cena úrovně: `round50(ΔM × R(místo otevření) × H)`, H = **horizont návratnosti v hodech**, zástupně 30 / 30 / 26 (I: 0,1 × 171 × 30 ≈ 500; II: 0,1 × 268 × 30 ≈ 800; III: 0,1 × 347 × 26 ≈ 900).
+- **Návratnost (odhad, NOT ASSESSED):**
+
+| Úroveň | Koupě (cíl, osa §5) | ◈ navíc za hod při koupi | Návratnost | Zisk do finále (čistý) |
+|---|---|---:|---:|---:|
+| I (+10 %) | ~hod 33–36 | ~17 | ~30 hodů (v D3) | ~+1 500 ◈ |
+| II (+20 %) | ~hod 62–66 | ~27 | ~30 hodů (konec D4) | ~+500 ◈ |
+| III (+30 %) | ~hod 87–90 | ~35 | ~26 hodů (**po finále**) | ~−150 ◈ (vrátí se v Night Route) |
+
+  Úroveň III je **skutečná volba**: Needle teď, nebo investice, která se vrátí až po finále. Náhled to řekne pravdivě.
+- **Proč je to zábavné:** číslo, které roste s každým hodem (06 směr žánru bod 5), a rozhodnutí „utratit teď, nebo investovat“. Každý hod po koupi ukáže malé „+24 ◈ Mailbag“ jako potvrzení, že investice pracuje.
+- **Proti inflaci (příjem nesmí růst rychleji než ceny):**
+  1. Úrovně jsou vázané na čtvrť, nedají se koupit dopředu.
+  2. Strop koše M +50 %, Mailbag sám nejvýš +30 %.
+  3. Ceny modelů, Dílny a Atlasu se počítají z R **bez** koše M. Majitel Mailbagu tedy platí za model o něco méně hodů, ale nejvýš 1/1,3.
+  4. Metriky simulace: celkový příjem s Mailbagem ≤ 1,2× bez něj; „hody na další koupi“ (cena další koupě / ◈ za hod) nesmí v žádné čtvrti klesnout pod běh bez Mailbagu o víc než 15 %; strategie „Mailbag napřed“ nesmí být o víc než 8 % hodů rychlejší než `realistic`.
+- **Vazba na ceny vlaštovek:** Mailbag I (D2) soupeří o mince s Kite a Skimmerem, III s Needle. Hráč, který investuje brzy, si modely koupí o pár hodů dřív. Je to záměr: dvě cesty (investovat, nebo hned letět jinak) s podobným výsledkem.
+- **Viditelná čísla (06 směr žánru bod 5, RippleLoop):**
+  - Dílna: „**Mailbag II** · Coins per throw: +10 % → **+20 %** · Your last throw: 284 ◈ → 310 ◈ · Pays back in ≈ 30 throws.“ / „**Brašna II** · Mince za hod: +10 % → **+20 %** · Poslední hod: 284 ◈ → 310 ◈ · Vrátí se za ≈ 30 hodů.“
+  - Výsledek: hlavní řádek zůstává dolet a mince za dolet, pod ním malý řádek „+24 ◈ Mailbag“. Hráčův podíl (dolet) je vždy první (P7).
+  - Ve čtvrti 4 u úrovně III navíc „Most of it pays back after the finale.“ (pravda bez odhadu zbytku kampaně).
+- **Etika:** žádný výdělek offline nebo za čas, žádná náhoda, žádný odpočet, žádná tečka na Dílně. Nekupuje se za skutečné peníze. Hra má konec, proto ukazujeme návratnost v hodech a u III i to, že se vrátí až po finále.
+- **Okraje a zneužití:**
+  - Hod s doletem 0 dá `10 × 1,3 = 13 ◈` za ~8 s UI, skutečný hod v D4 ~400 ◈ za ~35 s. Spamování krátkých hodů se nevyplatí (hlídat ◈ za minutu u Needle s Mailbagem III).
+  - Zrušený hod z pauzy (07-menu B2) se nepočítá, Mailbag nic nedá.
+  - Koupě po finále: úroveň III zůstane v nabídce, platí v Night Route.
+  - Save: `p.mailbag` (0–3), migrace s výchozí 0, poškozený save se neztrácí.
+- **Náhled předem:** celý řádek Dílny (teď → po koupi, návratnost). Zamčená úroveň: „Opens in Golden Fields“, bez ceny dopředu (stejně jako teaser Atlasu bez čísel).
+- **Zástupná čísla k ladění:** ΔM 0,10 / úroveň, H 30 / 30 / 26, strop M 0,5.
+- **Pracnost:** data S, logika S (odměna v `core.js` a `params.economy.reward`), 3D 0 (volitelně brašna na háčku v Dílně, S), UI S (řádek Dílny, řádek výsledku), texty S. **Priorita: jádro** (06 bod 3).
+- **Kde se kupuje:** doporučuji Dílnu, viz BLOCKED 2.
 
 ---
 
 ## 3. Skiny a další kosmetika za postup
 
-### 3.1 Tři vrstvy vzhledu vlaštovky (rozlišení)
+### 3.1 Vrstvy vzhledu vlaštovky (sjednoceno s 03 §2.1, 06 body 7 a 8)
 
 | Vrstva | Co mění | Odkud | Volí hráč? |
 |---|---|---|---|
-| **Papír** (existuje, W2) | materiál, tóny, obrys, tvar stopy, částice, rychlostní čáry | Dílna, žebřík rychlosti | ne, je to nejvyšší koupený druh |
-| **Skin** (nové) | **potisk** grafitem a barvou přes papír (vzor, kresba) + jedna drobnost (stuha na ocase, štítek) | postup: čtvrti, finále, triky modelů | ano, jeden |
-| **Razítko** (nové) | malá nálepka na křídle (ikona) | první perfekt každého typu události, finále | ano, jedno, nebo žádné |
-| *Stopa* | barvu dává čtvrť, tvar papír (01-papiry) | automaticky | ne, **zůstává bez kosmetiky** |
-| *Model* | tvar (silueta) | Dílna za mince | ano |
+| **Model** | silueta, přehyby, let | Dílna za mince | ano |
+| **Papír** (Copy → světlý Kraft → Washi → stříbrná fólie) | tón listu, vlákna, korunka, tvar stopy | žebřík rychlosti | ne, nejvyšší koupený |
+| **Potisk (skin)** | kresba přes papír, ≤ 30 % plochy | postup | ano, **jeden pro všechny vlaštovky** |
+| **Ozdoba** (součást skinu) | mašle, nit, lem, záře lampionu | se skinem | se skinem |
+| **Razítko** | nálepka na pravém křídle | první perfekty, finále | ano, jedno nebo žádné |
+| *Obrys, stín, velikost* | grafit 2,6 px | bible | **nikdy** |
+| *Stopa* | barva podle čtvrti, tvar podle papíru | automaticky | **ne, bez kosmetiky** (06 bod 7) |
 
-**Proč skin jako potisk, ne jiný papír:** druh papíru nese informaci o rychlosti (hráč z pohledu pozná „z čeho letím“, 01-papiry §0). Kdyby skin papír přebarvil, informace by zmizela. Potisk zachová tón papíru a obrys, takže čitelnost vlaštovky (bible P1, kontrast ≥ 3 : 1) se nezmění. Stopu nechávám bez kosmetiky: má dvě funkce (čtvrť, papír) a třetí by ji přetížila. Rozhodnutí potvrzuje uživatel (BLOCKED 2).
+**Papíry pro Papírové město (06 bod 8):** světlý Kraft `#ead7b5`, místo Neon Foil **stříbrná fólie** (pracovní název „Silver Foil / Stříbrná fólie“, jméno potvrdí product-designer), obrys vždy grafit. Neon Foil (úr. 10–12) a 2. kapsa se přeladí ve 3. kole, spolu s Mailbagem, protože berou ze stejných mincí v D3 a D4.
 
-**Pravidla pro vzhled (pro art-directora):** potisk pokrývá nejvýš ~30 % plochy, nikdy neruší obrys a přehyby, funguje ve všech 4 papírech a na všech 7 modelech (jeden UV rozvrh na model, potisk kreslený kódem jako `paintPattern` v `prototype/papers/`). Zdálky se slije do tónu papíru (vzory jsou čitelné v Dílně, menu a výsledku, ne za letu na telefonu).
+**Viditelnost za letu na telefonu** se řeší až s telefonem na konci (06 bod 7). Skiny jsou naplno vidět v Dílně, při míření, ve výsledku a v hlavním menu (03 §2.5).
 
-### 3.2 Katalog skinů
+### 3.2 Katalog skinů (schválený, 06 bod 7)
 
-| # | Skin (EN / CS) | Odemkne | Kdy (průměrný hráč) | Motiv (pro art-directora) |
+| # | Skin (EN / CS) | Odemkne | Kdy (cílová osa §5) | Motiv (03 §3) |
 |---|---|---|---|---|
 | K0 | **Plain** / Čistý | od začátku | – | bez potisku |
-| K1 | **Sunrise Postcard** / Pohled ze střech | první přelet do 2. čtvrti (Sunrise Roofs dokončena) | ~30. hod, 13 min | střechy a komíny grafitem, malá kresba postavy čtvrti 1 v rohu křídla |
-| K2 | **Harbor Chart** / Přístavní mapa | první přelet do 3. čtvrti | ~60. hod, 29 min | linky mapy, kotva, postava čtvrti 2 |
-| K3 | **Field Almanac** / Polní kalendář | první přelet do 4. čtvrti | ~74. hod, 38 min | klasy, větrník, hvězdy, postava čtvrti 3 |
-| K4 | **Lantern Night** / Lampionová noc | finále („Delivered.“) | ~93. hod, 49 min | ornament lampionů, postava čtvrti 4 |
-| K5 | **Airmail Delivered** / Doručeno | finále, spolu s K4 (ohlásí se po dalším hodu) | ~94. hod | poštovní razítko „Delivered“ přes celé křídlo, stuha na ocase |
-| K6 | **Hawk Feather** / Sokolí pero | první let s Hawkem s 3 perfekty za sebou | pár hodů po koupi | peří tahy |
-| K7 | **Kite Tail** / Drakův ocas | první perfekt termiky s Kite, nebo výška 40 m s Kite | po koupi, v D3 | mašle na ocase |
-| K8 | **Skimmer Ripples** / Kruhy na vodě | první dvojitý odraz se Skimmerem | po koupi v D2 | soustředné kruhy |
-| K9 | **Sail Stripes** / Plachtové pruhy | první let se Sail v plném zadním větru (+0,12) | po koupi, ~1 z 8 hodů | námořnické pruhy |
-| K10 | **Needle Thread** / Nit | první průlet Needle skrz 2 drony v jednom letu | po koupi v D4 | stehy po délce |
-| K11 | *(později)* **Night Mail** / Noční pošta | dokončená Night Route | po dohrání | hvězdná mapa, svítící okraj |
+| K1 | **Sunrise Postcard** / Pohled ze střech | první přelet do 2. čtvrti | ~hod 31, 14 min | střechy a komíny, postava čtvrti 1 |
+| K2 | **Harbor Chart** / Přístavní mapa | první přelet do 3. čtvrti | ~hod 59, 28 min | vrstevnice, kotva |
+| K3 | **Field Almanac** / Polní kalendář | první přelet do 4. čtvrti | ~hod 85, 44 min | klasy, větrník, hvězdičky |
+| K4 | **Lantern Night** / Lampionová noc | finále („Delivered.“) | ~hod 110, 60 min | lampiony; **ve čtvrti 4 jemně svítí** (06 bod 7) |
+| K5 | **Airmail Delivered** / Doručeno | finále, ohlásí se po dalším hodu | ~hod 111 | šipky letecké pošty, razítko |
+| K6 | **Hawk Feather** / Sokolí pero | první let s Hawkem s 3 perfekty za sebou | pár hodů po koupi | tahy per |
+| K7 | **Kite Tail** / Drakův ocas | první perfekt termiky s Kite, nebo výška 40 m s Kite | po koupi, D3 | kosočtverce, mašle |
+| K8 | **Skimmer Ripples** / Kruhy na vodě | první dvojitý odraz se Skimmerem | po koupi | soustředné kruhy |
+| K9 | **Sail Stripes** / Plachtové pruhy | první let se Sail v zadním větru ≥ +0,08 | po koupi, ~1 z 5 hodů | pruhy |
+| K10 | **Needle Thread** / Nit | první průlet Needle 2 drony v jednom letu | po koupi, D4 | steh, cihlová nit |
+| K11 | *(po finále)* **Night Mail** / Noční pošta | dokončená Night Route | po dohrání | souhvězdí |
 
-- **Suvenýry čtvrtí (K1–K4)** přicházejí spolu s **3. hláškou postavy** čtvrti (08 §7.1: „3 = první přelet do další čtvrti“). Postava „dá“ hráči suvenýr na cestu. Je to nejsilnější vazba na místo a nevzniká nový spouštěč. Na Kartě čtvrti (U2) jeden řádek „Souvenir from Sunrise Roofs: Sunrise Postcard“.
-- **Podpisové skiny modelů (K6–K10)** jsou důvod nový model vyzkoušet a zároveň **učí jeho trik**: podmínka je přesně to, v čem je model dobrý. Všechny se stanou v běžném hraní s daným modelem během několika hodů (simulace ověří, §6). Nejsou to výzvy navíc: hráč nic nevolí ani nesází.
-- **Žádný skin za počet** („100 perfektů“, „50 hodů“). Žádný za rekord v číslech mimo trasu.
+- **Suvenýry čtvrtí (K1–K3)** přicházejí s 3. hláškou postavy čtvrti (08 §7.1). Řádek na Kartě čtvrti „Souvenir from Sunrise Roofs: Sunrise Postcard“.
+- **Podpisové skiny (K6–K10)** učí trik modelu a stanou se v běžném hraní během několika hodů (simulace ověří). Podmínka K9 změněna z +0,12 na **+0,08**, aby seděla se situací Sail z §2.1.
+- **Skiny N1–N4 z 03** (Ruled Notebook, Morning Paper, Asanoha, Daybreak) nejsou ve schváleném seznamu. Zůstávají jako rezerva art-directora, nezařazuji je.
+- **Žádný skin za počet ani za mince.**
 
-### 3.3 Razítka (malá nálepka na křídle)
+### 3.3 Razítka (schválená, 06 bod 7)
 
 | # | Razítko (EN) | Odemkne |
 |---|---|---|
 | R1 | **Gust** | první perfektní poryv |
-| R2 | **Pigeon** (podle čtvrti: Cyber Pigeon…) | první perfektní holub |
-| R3 | **Steam** | první perfektní Steam Hop (všechny obláčky) |
-| R4 | **Thermal** | první perfekt termiky (střed jádra, 06) |
+| R2 | **Pigeon** | první perfektní holub |
+| R3 | **Steam** | první perfektní Steam Hop |
+| R4 | **Thermal** | první perfekt termiky |
 | R5 | **Drone** | první perfektní Ad Drone |
 | R6 | **Shooting Star** | první chycená padající hvězda |
 | R7 | **Delivered** | finále |
 
-- **Proč:** perfekt je hlavní dovednostní okamžik hry (P1, P7). Razítko je tichá památka na první, ne počitadlo. Navazuje na SV16 (razítka na křídle), které review vyřadilo jen proto, že stálo na zakázkách a výzvách (zamítnutých). Tady stojí na události, kterou hráč potká v každém letu.
-- **Okraj:** první perfekty poryvu a holuba přijdou v prvních hodech, kdy je novinek nejvíc. Razítka R1 a R2 se proto **ohlásí až po odemčení Dílny** (07-menu B1: Dílna po 1. hodu) a jen řádkem ve výsledku, nikdy přes obrazovku. Hráč s automatikou QTE perfekty nemá (06), takže razítka nezíská. To je pravdivé (razítko = vlastní perfekt), ale jde o přístupnost: „Širší okna časování“ z Nastavení (07-menu B4) perfekt **umožňují**, takže hráč se slabší motorikou cestu má.
-- **Priorita:** rozšíření (levné, ale není jádro).
+- Tichá památka na první perfekt, **bez počítadla**. R1 a R2 se ohlásí až po odemčení Dílny a jen řádkem ve výsledku.
+- Hráč s automatikou perfekty nemá, takže razítka R1–R5 nezíská. „Širší okna časování“ z Nastavení perfekt umožňují (přístupnost).
 
 ### 3.4 Kde hráč skiny vidí a vybírá
-- **Dílna, záložka „Look“ / „Vzhled“** (product-designer): model, skin, razítko na jednom místě, náhled vlaštovky zblízka v aktuálním papíru.
-- **Zamčený skin:** silueta s jednou větou, kde se získá („From the Sunrise Roofs postman, when you reach Bright Harbor“). Bez počtu „3/11“ (stejně jako hlášky postav v Atlasu, 06).
-- **Atlas:** u každé čtvrti malá ikona suvenýru (K1–K4), klepnutí otevře Vzhled. Žádná samostatná stránka sbírky.
-- **Hlavní menu:** vlaštovka, která krouží nad městem (07-menu §2.1), nese hráčův model, papír, skin a razítko. To je místo, kde se kosmetika ukáže bez vychloubání.
+- **Dílna, záložka „Look“ / „Vzhled“:** skin a razítko, náhled vlaštovky zblízka v aktuálním modelu a papíru. Klepnutí na odemčený skin ho rovnou nasadí (stejně jako model podle 06 bod 6).
+- **Zamčený skin:** tužková skica s jednou větou, kde se získá. Bez počtu „3/11“.
+- **Atlas:** ikona suvenýru u čtvrti, klepnutí otevře Vzhled. Žádná stránka sbírky.
+- **Hlavní menu:** kroužící vlaštovka nese hráčův model, papír, skin a razítko.
 
-### 3.5 Co se z SV14–SV16 převzalo a co ne
-
-| Karta | Původně | Stav po 06/08 | Teď |
-|---|---|---|---|
-| SV14 Šuplík s papíry | vzory za sady známek a dopisy, volitelně za mince | vyřazeno (sbírka; vzhled nese papír) | **vráceno jako skin = potisk** za čtvrti, finále a triky modelů; bez známek a dopisů (SV11, SV12 zamítnuté); **ne za mince** |
-| SV15 Barevná stopa čtvrti | odemykaná barva, volí hráč | barvu stopy dává čtvrť automaticky (01-papiry) | **beze změny**, stopa zůstává bez kosmetiky |
-| SV16 Razítka na křídle | za zakázky a výzvy | vyřazeno | **vráceno** za první perfekt typu události (jiný zdroj) |
-| E19 Vzory za mince | přiznaný sink | sloučeno do SV14 | **ne**: mince mají modely, kosmetika je za výkon |
+### 3.5 Co se z SV14–SV16 převzalo
+SV14 (šuplík vzorů) vrácen jako skin = potisk za postup, ne za mince. SV15 (barevná stopa) ne, stopa bez kosmetiky. SV16 (razítka) vrácena za první perfekt typu události. E19 (vzory za mince) ne.
 
 ---
 
 ## 4. Další odemykatelný obsah (mimo Atlas a vylepšení)
 
-Atlas už dává věc na každém místě (16 bonusů, kapsy, papíry, postavy, Night Route). Nové věci proto **nesmějí přidávat sílu** (to je Atlas a Dílna) a mají být vidět mimo let.
+Nové věci tady **nepřidávají sílu** (to je Atlas, Dílna, modely a Mailbag) a jsou vidět mimo let.
 
 ### 4.1 Karta C1 — Polička suvenýrů (Workshop Shelf)
 - **Cíl:** domov hráče se mění s jeho cestou.
-- **Pravidlo:** na parapetu okna Dílny (záběr hlavního menu a Dílny) přibude **drobný 3D předmět** z každé dokončené čtvrti a z finále: větrník (Sunrise Roofs), maják v lahvi (Bright Harbor), snop klasů (Golden Fields), lampion (Lantern City), poštovní schránka s nápisem „Delivered“ (finále). Spouštěč stejný jako suvenýr K1–K4 (jedna oslava, dvě podoby).
-- **Proč je to zábavné:** paměťová kotva (08 §3.7), pamětní, ne výkonová odměna. Hráč ji vidí při každém návratu do menu, bez čísla.
-- **Okraje:** nic neodemyká, nic se nedá „dosbírat navíc“. Reduced motion: předměty stojí.
-- **Pracnost:** 3D S–M (modely z katalogu čtvrtí, `research/design/10-katalog-modelu.md`, zmenšené), data S, UI 0. **Priorita:** rozšíření.
+- **Pravidlo:** na parapetu okna Dílny přibude drobný 3D předmět z každé dokončené čtvrti a z finále: větrník, maják v lahvi, snop klasů, lampion, schránka „Delivered“. Spouštěč stejný jako suvenýr K1–K4.
+- **Proč:** paměťová kotva (08 §3.7), bez čísla. **Okraje:** nic neodemyká, reduced motion: předměty stojí.
+- **Pracnost:** 3D S–M (z katalogu `10-katalog-modelu.md`), data S. Závisí na přepracování začátku hodu a Dílny (06, K4 bod 3). **Priorita:** rozšíření.
 
-### 4.2 Karta C2 — Rádio v Dílně (Workshop Radio)
-- **Cíl:** hudba čtvrtí jako odměna za cestu.
-- **Pravidlo:** v Nastavení (nebo malé rádio na poličce) jde vybrat skladbu hlavního menu z čtvrtí, kam hráč už doletěl. Výchozí = nejvzdálenější čtvrť (06: skladba podle postupu).
-- **Proč:** levné rozšíření hudby generované v kódu (06: rozpočet 0). Hráč si nechá „svou“ čtvrť.
-- **Okraje:** závisí na tom, že hudba bude ve hře (dnes není, `docs/stav.md`). Žádné skladby za mince.
-- **Pracnost:** S (UI přepínač, hudba už je per čtvrť). **Priorita:** později (po hudbě).
+### 4.2 Karta C2 — Rádio v Dílně
+- **Pravidlo:** výběr skladby hlavního menu z čtvrtí, kam hráč doletěl. Výchozí = nejvzdálenější čtvrť.
+- **Pracnost:** S. **Priorita:** později (po hudbě).
 
 ### 4.3 Karta C3 — Obsah po finále (Night Route)
-- **Cíl:** naplnit dobrovolné druhé kolo (06: Night Route až po odemčení v Atlasu) vlastními věcmi.
-- **Pravidlo:** Night Owl (M6), skin Night Mail (K11), noční varianty razítek podle čtvrti. Nic nového do denní trasy.
-- **Pracnost:** závisí na Night Route (M–L). **Priorita:** později.
+- Night Owl (M6), skin Night Mail (K11), noční varianty razítek. Mailbag III a nekoupený katalog dávají mincím smysl i po finále. **Priorita:** později.
 
 ### 4.4 Co záměrně nenavrhuji
-- **Další zdroje mincí, výzvy, zakázky, známky, dopisy:** zamítnuté (06, 08 §9).
-- **Kosmetika stopy:** stopa už nese čtvrť a papír (01-papiry).
-- **Kosmetika za mince, „obchod“ po dohrání:** možná později jako přiznaný sink (E19), ale uživatel chce kosmetiku za postup. Nenavrhuji teď.
-- **Sezónní, denní nebo časově omezené věci:** P13.
-- **Letka / Wingmen:** 06 (RippleLoop) říká nanejvýš pozdní bonus. Patří do Atlasu ve 3. kole, ne sem.
+Další zdroje mincí, výzvy, zakázky, známky, dopisy (zamítnuto). Kosmetika stopy (06 bod 7). Kosmetika za mince. Sezónní a denní věci (P13). Výdělek offline (RippleLoop: nepřevzít). Letka jen jako pozdní bonus Atlasu (06).
 
 ---
 
-## 5. Křivka obsahu
+## 5. Křivka obsahu (cílová osa 60 min)
 
-**Časová osa:** průměrný hráč, realistický nákup, F5 (`simulation/progression/out/f5-start-skills.md`): D1 30 hodů / 13 min, D2 30 / 16, D3 14 / 9, D4 18 / 11, celkem **93 hodů / ~49 min**. Hody u míst jsou **odhad rozdělením rovnoměrně po místech uvnitř čtvrti**, ne měření (NOT ASSESSED po místech). 3. kolo progrese a rozhodnutí o ~2 h hry (06) osu posunou. Tučně je obsah z tohoto návrhu.
+**Osa:** **cíl** průměrného hráče, sada SKILLS, realistický nákup, s modely a Mailbagem: D1 30 hodů / 13,5 min, D2 28 / 15, D3 26 / 15,5, D4 26 / 16, celkem **~110 hodů / ~60 min**. Dnes (04 §1.2) SKILLS 96 hodů / 52 min, x2 113 / 61. Hody po místech jsou rovnoměrné rozdělení uvnitř čtvrti, **ne měření** (NOT ASSESSED). Osa platí, až simulace potvrdí cíl. Tučně obsah z tohoto návrhu.
 
-| Místo | ~hod / min | Atlas a Dílna (existující návrh) | Nový obsah |
+| Místo | ~hod / min | Atlas a Dílna (existující) | Nový obsah |
 |---|---|---|---|
-| 1 Workshop & First Roofs | 1–5 / 0–2 | Power 1, Paper 1, Glider (100 m) | razítka Gust, Pigeon (až po odemčení Dílny, tiše) |
-| 2 Market | ~6 / 3 | Crowd Chain | **silueta Hawk** |
-| 3 Gardens | ~13 / 6 | Pinwheel, **Kraft** | – |
-| 4 Railway | ~20 / 9 | Steam Hop | **Hawk (400 ◈)**, razítko Steam |
-| 5 Warehouses (D2) | ~30 / 13 | Karta čtvrti, Packing Tape, Dive, Calm Sky, 1. kapsa (~37. hod) | **skin K1 Sunrise Postcard, polička: větrník**, silueta Kite |
-| 6 Crane Forest | ~37 / 17 | Crane Lift | **Kite (700 ◈)** |
-| 7 Bridge | ~45 / 21 | Stone Skip, **Washi** | silueta Skimmer |
-| 8 Lighthouse | ~52 / 25 | Gull Escort | **Skimmer (1 000 ◈)**, podpisové skiny K6–K8 podle modelu |
-| 9 Fields (D3) | ~60 / 29 | Karta čtvrti, Momentum, Whistle, Rocket, 2. kapsa | **skin K2 Harbor Chart, polička: maják**, silueta Sail |
-| 10 Wind Ridge | ~64 / 31 | Thermal | **Sail (1 400 ◈)**, razítko Thermal |
-| 11 Saddle | ~68 / 34 | Echo, **Neon Foil** | – |
-| 12 Observatory | ~71 / 36 | Shooting Star | razítko Star |
-| 13 Gates (D4) | ~74 / 38 | Karta čtvrti, Ad Drone | **skin K3 Field Almanac, polička: klasy**, silueta Needle, razítko Drone |
-| 14 Sky Terraces | ~79 / 41 | Paper Crane | **Needle (2 000 ◈)** |
-| 15 Broadcast Tower | ~84 / 44 | On Air | podpisové skiny K9–K10 |
-| 16 Rooftop Harbor | ~89 / 47 | Encore | – |
-| Finále | ~93 / 49 | „Delivered.“, souhrn, uzel Night Route | **skin K4 + K5, razítko Delivered, polička: lampion a schránka** |
-| Po dohrání | – | Night Route (za ◈) | Night Owl, Night Mail (později) |
+| 1 Workshop & First Roofs | 1–5 / 0–2 | Power 1, Paper 1, Glider (100 m) | razítka Gust, Pigeon (tiše, po odemčení Dílny) |
+| 2 Market | ~8 / 3,5 | Crowd Chain | karty Hawk a Kite v Dílně (2 nejbližší) |
+| 3 Gardens | ~15 / 6,5 | Pinwheel, světlý Kraft | – |
+| 4 Railway | ~23 / 10 | Steam Hop | **Hawk k prodeji (450 ◈)**, razítko Steam |
+| 5 Warehouses (D2) | ~31 / 13,5 | Karta čtvrti, Packing Tape, Dive, Calm Sky, 1. kapsa | **skin K1, polička: větrník, Mailbag I (500 ◈)**, koupě Hawka (~hod 30) |
+| 6 Crane Forest | ~38 / 17 | Crane Lift | **Kite k prodeji (770 ◈)** |
+| 7 Bridge | ~45 / 21 | Stone Skip, Washi | koupě Kite (~hod 44) |
+| 8 Lighthouse | ~52 / 24,5 | Gull Escort | **Skimmer k prodeji (1 100 ◈)**, podpisové K6–K7 |
+| 9 Fields (D3) | ~59 / 28,5 | Karta čtvrti, Momentum, Whistle, Rocket, 2. kapsa | **skin K2, polička: maják, Mailbag II (800 ◈)**, koupě Skimmeru (~hod 60) |
+| 10 Wind Ridge | ~65 / 32 | Thermal | **Sail k prodeji (1 560 ◈)**, razítko Thermal, K8 |
+| 11 Saddle | ~72 / 36 | Echo, stříbrná fólie | koupě Sailu (~hod 72) |
+| 12 Observatory | ~78 / 40 | Shooting Star | razítko Star, K9 |
+| 13 Gates (D4) | ~85 / 44 | Karta čtvrti, Ad Drone | **skin K3, polička: klasy, Mailbag III (900 ◈)**, razítko Drone |
+| 14 Sky Terraces | ~91 / 48 | Paper Crane | **Needle k prodeji (2 190 ◈)** |
+| 15 Broadcast Tower | ~98 / 52 | On Air | koupě Needle (~hod 97), K10 |
+| 16 Rooftop Harbor | ~104 / 56 | Encore | – |
+| Finále | ~110 / 60 | „Delivered.“, souhrn, uzel Night Route | **skin K4 + K5, razítko Delivered, polička: lampion a schránka** |
+| Po dohrání | – | Night Route (za ◈) | Night Owl, Night Mail, Mailbag III se vrací |
 
 **Čtení:**
-- **Žádné místo není hluché:** každé dává bonus Atlasu. Mezery jsou **mezi** místy (F5: medián 7, P90 13 hodů). Do nich padají koupě modelů (cíl na mince mezi místy, jako 1. kapsa) a podpisové skiny (stanou se v letu, kdykoli).
-- **D1 je hustá už teď** (Power, Paper, Folds, Glider, 3 bonusy, Kraft). Proto v D1 jen Hawk na jejím konci a razítka tiše.
-- **D2 je nejdelší** (30 hodů, 16 min) a měla mezi místy nejvíc „sucha“. Dostává dva modely (Kite, Skimmer) a první suvenýr. To je hlavní přínos tohoto návrhu ke křivce.
-- **D3 a D4 jsou krátké** (14 a 18 hodů). Sail a Needle tam jsou spíš nová chuť než cíl. Pokud 3. kolo hru prodlouží, jejich role vzroste.
-- **Finále** dává tři kosmetické věci naráz. Jednu novinku za hod: K4 ve finále, K5 a razítko po dalším hodu, polička vidět hned v menu (bez ohlášení).
+- **Koupě padají mezi místa** (cíl na mince mezi místy, jako 1. kapsa). Odemčení je na místě, koupě o 4–6 hodů později, takže sucho P90 (dnes 9–11, cíl ≤ 8) přeruší koupě, ne další ohlášení.
+- **Každá čtvrť D2–D4 dostane jednu úroveň Mailbagu a jeden suvenýr na svém prvním místě.** Karta čtvrti je tak „velký okamžik“: nový skin, nová úroveň brašny, nové bonusy. Pravidlo jedné novinky za hod: skin s kartou, Mailbag jen řádkem na kartě („Also opens“), ne vlastním ohlášením.
+- **D1 zůstává bez koupě nového obsahu**: Hawk je k prodeji na místě 4, ale koupí se až kolem přechodu do D2 (x2 má v D1 rezervu 1 hod).
+- **D2 má dva modely a Mailbag I**, ale Skimmer se kupuje až v D3. Útrata D2 ≈ Hawk + Kite + Mailbag I ≈ 1 720 ◈ ≈ 9 hodů příjmu. Kvůli tomu má D2 na cílové ose 28 hodů, ne 23.
+- **D3 je nejbohatší na koupě** (Skimmer, Sail, Mailbag II ≈ 3 460 ◈), přesně tam, kde bylo nejvíc sucha (04 §2.5).
+- **D4** má Needle a Mailbag III jako skutečnou volbu (rychlejší lety teď, nebo investice na Night Route).
 
 ---
 
 ## 6. Předávky
 
-### 6.1 Co musí změřit simulace (balance-analyst)
-Do `simulation/progression/` (nové modely jako parametry + pravidla v `model.mjs`, nová strategie volby modelu):
-1. **Identita modelů:** pro každý profil (weak, average, good, expert, weakAssist, auto) a čtvrť dolet, doba letu, mince za skutečnou minutu a nová místa za minutu pro všech 7 modelů na stejné výbavě. **Cíl:** každý nový model je nejlepší aspoň v jednom profilu nebo situaci (vítr, čtvrť, kapsa) a v žádné situaci není o > 10 % lepší než druhý nejlepší. Žádný model není nejlepší pro všechny profily.
-2. **Podíl modelů** u strategie „better“ (volí nejlepší model před hodem): žádný model > 50 % hodů napříč profily, Dart a Glider dál ≥ 15 %.
-3. **Délka letu:** Kite medián ≤ 1,15× Glider, žádný let > 60 s (i bez zrychlení klouzání pro reduced motion: hlásit zvlášť). Needle: mince za minutu ≤ 1,10× nejlepšího jiného modelu.
-4. **Cena modelu jako zpoždění:** o kolik hodů posune cíl koupě modelu ihned po odemčení (cíl ≤ 2 hody, nebo se do konce kampaně vrátí). „Nekupovat modely“ nesmí být o > 5 % rychlejší než „koupit hned a používat podle situace“.
-5. **Synergie a strop E:** Hawk + Sharp Edge + Echo + Gull Escort (zasažení stropu E ≤ 20 % letů), Sail + Pinwheel 3 (není dominantní), Skimmer + Cushion + Stone Skip + Packing Tape (nejdelší let, podíl doletu pod 6 m).
-6. **Hawk a automatika:** profil `auto` s Hawkem musí být horší než s Dartem (pravdivý náhled).
-7. **Kdy přijdou podpisové skiny K6–K10** po koupi modelu (medián a P90 hodů s tím modelem; cíl medián ≤ 5, P90 ≤ 15), a razítka R1–R6 (hod, kdy padne první perfekt, podle profilu). Když je skin pro slabého hráče nad 15 hodů, podmínku zmírnit.
-8. **Citlivost:** ceny modelů ×0,5 / ×2, `windK` 2 / 3, `liftK` 1,4 / 1,8, `perfectK` 1,4 / 1,8.
+### 6.1 Co musí změřit a vyladit simulace (balance-analyst)
+
+**Reference:** průměrný hráč, sada **SKILLS**, strategie `realistic`, volba modelu `preview` s odhadem z přehrání (§2.10 bod 2). Sada x2 jako kontrola. Modely z §2.1 jako nový `MODEL_SETS` (např. `obsah02`), Mailbag jako `params.economy.mailbag = {levels:[.1,.1,.1], unlockPlace:[5,9,13], H:[30,30,26], capM:.5}` a ceny modelů `price = k × R` s `R` z běhu bez modelů a bez Mailbagu.
+
+**A. Výklad polí (rozhodnuto, §2.9):** `perfectK` jen vodorovný push, mimo E, rozsah ≤ 1,7. `missK` jen běžné události (ne hvězda), podíl z `vx`. `ground` jen běžné klesání, ne Dive, ne Cushion. Simulátor to dnes implementuje stejně, kromě **volby `preview`**: změnit z pasivního letu na **přehrání posledních 5 hodů se stejnými výsledky QTE** a úhlem posunutým o rozdíl ideálů (§2.10). Bez toho bot volí skoro vždy Dart a modely z událostí (Glider, Hawk, Kite) se podcení. Změna mechaniky simulátoru je pro game-dev.
+
+**B. Cíle (verdikty jako 08 §10.2):**
+
+| # | Metrika | Cíl |
+|---|---|---|
+| 1 | Délka kampaně SKILLS průměrný | **57–63 min** (cíl 60) |
+| 2 | Délka x2 průměrný | ≤ 72 min, každá čtvrť ≤ 20 min |
+| 3 | Hody po čtvrtích SKILLS | D1 25–35, D2–D4 22–32 (pásmo 08 posunuté pro 60 min, viz BLOCKED 4) |
+| 4 | Obecný přínos (sonda, pevná výbava, průměr větru) | Hawk +3, Kite +3, Skimmer +4, Sail +5 % (±1,5 p. b.); Needle dolet 0 až −3 %, ◈/min +8–12 % |
+| 5 | Specialita v její situaci | +15–25 %, nikdy > +30 %; situace v 20–40 % hodů |
+| 6 | Slabina | každý model aspoň v 1 běžné situaci ≤ −5 % |
+| 7 | Realizovaný zisk volby (nejlepší vlastněný vs lepší z Dart/Glider) | D2 ≤ +7 %, D3 ≤ +9 %, D4 ≤ +10 % |
+| 8 | Podíl modelů po jejich koupi | žádný > 45 % hodů; každý koupený ≥ 10 % hodů aspoň u 2 ze 3 profilů (není past) |
+| 9 | Férovost koupě modelů | `no-models` nejvýš o 5 % hodů rychlejší než `models-first` |
+| 10 | Mailbag proti inflaci | příjem kampaně ≤ 1,2× bez Mailbagu; „hody na další koupi“ v žádné čtvrti < 0,85× běhu bez Mailbagu; „Mailbag napřed“ ≤ 8 % rychlejší než `realistic` |
+| 11 | Šikovnost | expert / průměrný ≥ 0,69 a expert / slabý se proti `no-models` nesmí zhoršit; slabý do 250 hodů 100 % |
+| 12 | Délka letu | medián čtvrti ≤ 22 / 27 / 30 / 35 s, P90 ≤ 45, max ≤ 60; Kite medián ≤ 1,15× Glider; vše i s `warp.factor=1` (hlásit zvlášť) |
+| 13 | Hawk | `auto` s Hawkem horší než s Dartem; strop E: podíl letů, kdy by push s `perfectK` přesáhl strop ×1,6, ≤ 20 % |
+| 14 | Synergie | Sail + Pinwheel 3 není nejlepší sestava u všech profilů; Skimmer + Cushion + Stone Skip + Packing Tape: nejdelší let, podíl doletu pod 6 m |
+| 15 | Podpisové skiny K6–K10 | medián ≤ 5, P90 ≤ 15 hodů s modelem po koupi |
+| 16 | Sucho P90 | ≤ 8 (koupě modelu a úrovně Mailbagu jako novinka) |
+
+**C. Pořadí pák při ladění k 60 min** (od první):
+1. **Statistiky na rozpočet §2.1** (body 4–7), na pevné výbavě, bez kampaně. Specialitu měnit až poslední.
+2. **Mailbag:** `H` a `ΔM` tak, aby splnil bod 10.
+3. **k modelů** (jedno měřítko pro všech 5) tak, aby platil bod 9.
+4. **Délka:** pokud po 1–3 kampaň nevychází na 57–63 min, **zbytek se bere podle odpovědi na BLOCKED 1** (doporučení: měřítko cen katalogu Dílny a Atlasu `economy.priceScale`, odhad ×1,10–1,15, rovnoměrně po čtvrtích; ve 3. kole nahradí násobek čtvrti).
+5. **Citlivost:** k ×0,75 / ×1,25, `ΔM` 0,07 / 0,13, `windK` 2 / 3, `liftK` 1,3 / 1,7, `perfectK` 1,4 / 1,7, `ground.glide` 1,4 / 1,8.
+
+**D. Hrubý odhad (NOT ASSESSED, jen pro orientaci):** modely ~6 070 ◈ ≈ 24 hodů příjmu; pokud se vrátí (bod 9), délka se nezmění. Mailbag čistě ~+1 900 ◈ do finále ≈ −6 až −9 hodů. Bez páky 4 by tedy kampaň SKILLS vyšla spíš **kolem 50 min** než 60. Malý běh game-deva (n 4) se starými čísly: 83 hodů / 45,5 min proti 87 bez modelů, tedy stejný směr.
 
 ### 6.2 Co potřebuje UX (product-designer)
-- Dílna: výběr modelu pro 7 modelů na mobilu 360 px, stavy **skrytý / silueta s místem / k prodeji s cenou / koupený / nasazený**, cíl nákupu „Hawk · 120 ◈ to go“ (E09), vrácení koupě do dalšího hodu.
-- Náhled letu (§2.10): dva oblouky přes scénu Dílny, Speed / Airtime, „Loves: …“, smyčka 3 snímků, zkušební hod (pokud schválen).
-- Záložka „Look“ / „Vzhled“: model, skin, razítko, zamčené kusy se siluetou a jednou větou, **bez počtu**.
-- Výsledek a Karta čtvrti: řádek suvenýru, ohlášení skinu nebo razítka (fronta, jedna novinka za hod).
-- Míření: malá rychlá volba Sail, když fouká (jen pokud ji orchestrátor schválí, BLOCKED 5).
-- Atlas: ikona suvenýru u čtvrti a odkaz do Vzhledu, řádky „Also opens: Hawk in the Workshop“.
-- Texty EN + CS přes i18n: 5 jmen modelů, 5 vět „Loves“, 11 skinů, 7 razítek, podmínky.
-- Save: `p.models` (koupené), `p.look {skin, stamp}`, `p.cosmetics` (odemčené), migrace v4 → v5 s dopočtem suvenýrů a skinu finále z `best`/Atlasu (razítka se dopočítat nedají, dají se při dalším perfektu). Poškozený save se nesmí ztratit (pravidlo projektu).
+- Dílna podle 06 body 5–6: vlastněné modely a **2 nejbližší zamčené plně s cenou a místem**, další jako silueta. **Klepnutí na vlastněnou vlaštovku ji dá do ruky**, tlačítko „Letět s touhle“ (`planes.use`, `result.useIt`) se ruší. U zamčené jen „Koupit“, dole vždy jedno „Hodit“. Koupě s potvrzením, koupený model rovnou do ruky. Cíl nákupu „Hawk · 120 ◈ to go“ (E09).
+- Náhled §2.10: dvě dráhy, odhad z přehrání, Speed / Airtime, „Loves: …“, u situačních modelů druhý řádek. **Bez zkušebního hodu.**
+- Rychlá volba „Sail ↺“ při míření (schválená).
+- **Řádek Mailbag v Dílně** (teď → po koupi, poslední hod → po koupi, návratnost), zamčená úroveň „Opens in …“. Řádek „+24 ◈ Mailbag“ ve výsledku pod hlavním údajem.
+- Záložka Vzhled: skin (jeden pro všechny vlaštovky), razítko, zamčené kusy jako skica s jednou větou, bez počtu.
+- Karta čtvrti: řádek suvenýru a „Also opens: Mailbag II in the Workshop“.
+- Texty EN + CS: 5 jmen modelů, věty „Loves“ a situační řádky, Mailbag (název, 3 úrovně, návratnost, „pays back after the finale“), 11 skinů, 7 razítek, podmínky.
+- Save: `p.models`, `p.mailbag`, `p.look {skin, stamp}`, `p.cosmetics`, migrace s dopočtem suvenýrů a skinů finále z `best` a Atlasu.
 
 ### 6.3 Co potřebuje art (art-director)
-- **5 nových siluet modelů** odlišných od Dartu a Glideru i na telefonu (~21–25 px): Hawk (dlouhá úzká křídla), Kite (široká křídla, krátké tělo, mašle), Skimmer (nízký tupý tvar), Sail (vysoký kýl), Needle (úzká jehla). Obrys a čitelnost podle bible P1. Každý model s UV pro potisk.
-- **Potisky K1–K10** jako kresba kódem (jako `paintPattern`), čitelné ve 4 papírech, pokrytí ≤ 30 %, bez zásahu do obrysu.
-- **7 ikon razítek** (rozlišitelné bez barvy).
-- **5 předmětů na poličku** (z katalogu čtvrtí, zmenšené).
-- Pravidlo „skin = potisk, papír = materiál“ zapsat do bible, pokud ho uživatel schválí.
+- 5 siluet podle `siluety.png` (06 bod 1), s UV pro potisk.
+- Potisky K1–K10, ozdoby, záře K4 jen ve čtvrti 4, 7 ikon razítek.
+- Papíry pro Papírové město (06 bod 8): světlý Kraft, stříbrná fólie, grafitový obrys.
+- 5 předmětů na poličku, volitelně brašna v Dílně.
 
 ---
 
 ## 7. Otevřené volby
 
-BLOCKED: **Skiny a „sběratelství ne“ (06, 13. 10.).** Dřív jsi řekl „žádné sbírky navíc, stačí Atlas“, teď chceš skiny za postup. Návrh: 11 skinů a 7 razítek **bez počitadla a bez stránky sbírky**, každý je památka na čtvrť, finále nebo trik modelu a sedí u své čtvrti v Atlasu. Možnosti: (a) takhle, (b) jen suvenýry čtvrtí a finále (5 skinů, bez podpisových a razítek), (c) víc skinů včetně „výkonových“ (např. za 1 000 perfektů). **Doporučení: (a).** (c) je grind, kterému se KB vyhýbá (08 N8).
+**Vyřešeno 14. 10. (06 „Odemykatelný obsah“):** skiny za postup bez počítadla (bod 7), skin = potisk (bod 7), Glider zdarma (bod 4), zkušební hod ne (bod 5), rychlá volba Sail ano (bod 5).
 
-BLOCKED: **Co skin mění na vlaštovce.** (a) **Potisk přes papír**: tón, obrys a stopa zůstávají podle druhu papíru, skin přidá kresbu a drobnost (stuhu, štítek). (b) Skin nahradí celý vzhled a papír pozná hráč jen podle stopy. (c) Hráč si zvolí, jestli chce vidět papír, nebo skin. **Doporučení: (a)**, protože papír ukazuje rychlost a (b) by ji schoval.
+BLOCKED: **Odkud vzít ~8–11 minut navíc do 60 min?** Modely jsou dražší, ale aby se vyplatily, musí hráči čas vrátit. Kampaň proto samy neprodlouží (odhad i s Mailbagem spíš ~50 min). Možnosti: (a) **mírně zdražit Dílnu a Atlas rovnoměrně** (např. ×1,12), do 3. kola, kde to převezme násobek čtvrti s cenami v tisících; (b) nechat modely kampaň prodlužovat: hráč, který je koupí, dohraje o pár minut později než ten, kdo je nekoupí; (c) delší hru nechat až na 3. kolo a teď cílit jen na „ne kratší než dnes“. **Doporučení: (a)**, protože koupě modelu má být radost, ne daň, a čísla se ve 3. kole stejně přepočítají.
 
-BLOCKED: **Glider zůstává zdarma?** Dnes se Glider odemyká zdarma na 100 m (Atlas A01). (a) Zůstává zdarma, nové modely za mince. (b) I Glider za mince (malá cena, např. 60 ◈). **Doporučení: (a)**: první model zdarma učí pravidlo „místo dá věc“ a dává volbu stylu hned na začátku.
+BLOCKED: **Kde se kupuje násobič mincí?** (a) **Dílna**, řádek Mailbag vedle Power a Paper, úroveň se otevře s každou novou čtvrtí; (b) Atlas, uzel u Karty čtvrti (např. „Postman's Bag“ u místa 5, 9, 13); (c) obojí (Dílna 3 úrovně + drobné uzly v Atlasu, společný strop +50 %). **Doporučení: (a)** teď, (c) zvážit ve 3. kole. Dílna je místo pro „sílu za mince“, Atlas pro bonusy letu a událostí, a jeden řádek je nejsrozumitelnější.
 
-BLOCKED: **Zkušební hod.** (a) Jen náhled oblouku a čísel v Dílně. (b) Navíc jeden hod s nekoupeným modelem zdarma (počítá se normálně). **Doporučení: (b)** jako rozšíření až po jádru; jádro je náhled (a). Pozn.: zkušební hod zavádí jeden řádek v savu na model.
+BLOCKED: **Needle „celkově lepší“ v čase, ne v doletu?** Needle letí stejně daleko jako Dart, ale o pětinu kratší dobu (víc mincí za minutu). Kdyby měl i delší dolet, byl by nejlepší skoro všude a hru zkracoval. (a) Ano, Needle je lepší v čase; (b) Needle i +3 % doletu a delší let (méně „rychlý“); (c) Needle jen situační, bez obecného přínosu. **Doporučení: (a).**
 
-BLOCKED: **Rychlá volba Sail při míření.** Když fouká, ukázat při míření malé tlačítko „Sail ↺“? (a) Ano, jen pro Sail a jen při větru ≥ „Light“, (b) ne, model jen v Dílně. **Doporučení: (a)**, jinak se bude hráč kvůli větru vracet do Dílny před každým hodem (tření, ne volba). Tlačítko nic nedoporučuje, jen nabízí.
+BLOCKED: **Pásmo hodů po čtvrtích pro 60 min.** Dnes je cíl 20–30 hodů na čtvrť (D1 25–35), což při 60 min a delších pozdních letech nevychází. Návrh: D2–D4 22–32 hodů, minuty beze změny (celkem 50–75). (a) Posunout takhle; (b) nechat 20–30 a 60 min hledat delšími lety; (c) rozhodnout po prvním měření. **Doporučení: (a)**, hlavní cíl jsou minuty.
 
 ---
 
@@ -337,20 +417,20 @@ Pracnost: S do půl dne, M 1–2 dny, L víc. Rozpad: data / logika / 3D / UI / 
 
 | Pořadí | Položka | Druh | Priorita | Pracnost (data / logika / 3D / UI / texty) | Závisí na |
 |---:|---|---|---|---|---|
-| 1 | Systém modelů za mince (stavy v Dílně, save v5, místo + cena, vrácení koupě) | systém | **jádro** | M (S / S / – / M / S) | nový model letu v `src/`, menu M3 |
-| 2 | Náhled letu modelu (dva oblouky, Speed / Airtime, Loves) | UX | **jádro** | M (– / S / – / M / S) | 1 |
-| 3 | M1 Hawk | model | **jádro** | M (S / S / M / S / S) | 1, kombo Z5 |
-| 4 | M3 Skimmer | model | **jádro** | M (S / S–M / M / S / S) | 1, Stone Skip |
-| 5 | M4 Sail | model | **jádro** | M (S / S / M / S–M / S) | 1, vítr Z3, Pinwheel |
-| 6 | Vrstva skinu (potisk) + záložka Vzhled | systém | **jádro** | M (S / S / M / M / S) | rozhodnutí BLOCKED 1–2 |
-| 7 | Suvenýry čtvrtí K1–K4 + K5 finále | skin | **jádro** | M (S / S / M / S / S) | 6, Karta čtvrti U2, postavy |
-| 8 | M2 Kite | model | rozšíření | M (S / S / M / S / S) | 1, Crane Lift, Thermal |
-| 9 | M5 Needle | model | rozšíření | M (S / S / M / S / S) | 1, Ad Drone |
-| 10 | Podpisové skiny K6–K10 | skin | rozšíření | M (S / S / M / S / S) | 6, modely |
-| 11 | Razítka R1–R7 | kosmetika | rozšíření | S (S / S / S / S / S) | 6 |
-| 12 | Zkušební hod | UX | rozšíření | S (S / S / – / S / S) | 1, BLOCKED 4 |
-| 13 | Polička suvenýrů C1 | obsah | rozšíření | S–M (S / – / S–M / – / –) | menu se živou scénou (M4) |
+| 1 | Systém modelů za mince (Dílna podle 06 body 5–6, save, místo + cena k×R, potvrzení koupě) | systém | **jádro** | M (S / S / – / M / S) | model letu v `src/`, menu |
+| 2 | Náhled modelu (dvě dráhy, odhad z přehrání 5 hodů, Speed / Airtime, Loves) | UX | **jádro** | M (– / M / – / M / S) | 1, preview v simulátoru (§6.1 A) |
+| 3 | **E1 Mailbag** (3 úrovně, koš M se stropem, řádek Dílny a výsledku) | ekonomika | **jádro** | S (S / S / – / S / S) | `economy.reward` v params, BLOCKED 2 |
+| 4 | M1 Hawk | model | **jádro** | M (S / S / M / S / S) | 1, kombo Z5 |
+| 5 | M3 Skimmer | model | **jádro** | M (S / S–M / M / S / S) | 1, Stone Skip |
+| 6 | M4 Sail + rychlá volba | model | **jádro** | M (S / S / M / S–M / S) | 1, vítr Z3, Pinwheel |
+| 7 | Vrstva skinu (potisk, jeden pro všechny) + záložka Vzhled | systém | **jádro** | M (S / S / M / M / S) | papíry pro Papírové město (06 bod 8) |
+| 8 | Suvenýry K1–K3, K4 (záře ve čtvrti 4), K5 | skin | **jádro** | M (S / S / M / S / S) | 7, Karta čtvrti, postavy |
+| 9 | M2 Kite | model | rozšíření | M (S / S / M / S / S) | 1, Crane Lift, Thermal, kontrola délky letu |
+| 10 | M5 Needle | model | rozšíření | M (S / S / M / S / S) | 1, Ad Drone, BLOCKED 3 |
+| 11 | Podpisové skiny K6–K10 | skin | rozšíření | M (S / S / M / S / S) | 7, modely |
+| 12 | Razítka R1–R7 | kosmetika | rozšíření (schváleno) | S (S / S / S / S / S) | 7 |
+| 13 | Polička suvenýrů C1 | obsah | rozšíření | S–M (S / – / S–M / – / –) | nový začátek hodu a Dílna |
 | 14 | Rádio C2 | obsah | později | S | hudba ve hře |
 | 15 | Night Owl M6, Night Mail K11 (C3) | model, skin | později | M–L | Night Route |
 
-**Proč jádro takhle:** tři modely (Hawk, Skimmer, Sail) pokrývají tři různé osy (perfekty, konec letu, vítr) a tři čtvrti, a k nim jen jednoduchá pravidla v kódu. S nimi a se suvenýry čtvrtí má hráč novou věc v každé čtvrti. Kite a Needle prohlubují D2 a D4, ale jsou rizikovější pro délku letu a mince za minutu, takže přijdou po prvním měření.
+**Proč jádro takhle:** tři modely (Hawk, Skimmer, Sail) pokrývají tři osy (perfekty, konec letu, vítr) a tři čtvrti. Mailbag je levný a dává incrementalové „číslo, které roste“, které uživatel chce, a zároveň je to hlavní páka, kterou musí simulace hlídat proti inflaci. Kite a Needle jsou rizikovější pro délku letu a mince za minutu, přijdou po prvním měření. **Před implementací do `src/` musí simulace projít §6.1 B body 1–10.**
