@@ -11,6 +11,7 @@ import {createDecorations,stepDecorations} from './decorations.js';
 import {THEMES,THEME_IDS,setTheme,pickTheme} from './themes.js';
 import {drawAim} from './render3d/ui-layer.js';
 import {eventView} from './render3d/events-view.js';
+import {PAPER_TOKENS} from './render3d/palette.js';
 // Renderer: 3D výchozí (src/render3d/), ?render=2d nebo prohlížeč bez WebGL2 → 2D render.js (do smazání 2D, fáze f plánu 3D).
 // Oba mají stejné rozhraní render(canvas,f,model,time,visual) a view(f); 3D kreslí mířidla v UI vrstvě, 2D je dostane přes drawAim.
 const webgl2=()=>{try{const g=document.createElement('canvas').getContext('webgl2');g?.getExtension('WEBGL_lose_context')?.loseContext();return !!g;}catch{return false;}};
@@ -33,6 +34,9 @@ document.body.dataset.render=mode;$('theme-picker').hidden=mode==='3d';// styly 
 function applyTheme(id){setTheme(id);document.body.dataset.theme=id;for(const b of document.querySelectorAll('[data-theme-id]'))b.setAttribute('aria-pressed',b.dataset.themeId===id);try{localStorage.setItem(THEME_KEY,id);}catch{}}
 if(mode==='2d'){for(const id of THEME_IDS){const b=document.createElement('button');b.type='button';b.dataset.themeId=id;b.textContent=t('theme.'+id);b.onclick=()=>applyTheme(id);$('theme-picker').append(b);}
 {let stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch{}applyTheme(pickTheme(new URLSearchParams(location.search).get('styl'),stored));}}
+// ?styl=papir: Papírové město (dávky P0–P4, výchozí vypnuto). Jen vzhled: renderer dostane visual.style, UI body[data-styl] a theme-color.
+const STYLE=new URLSearchParams(location.search).get('styl')==='papir'?'papir':'cyber',coarse=matchMedia('(pointer: coarse)');
+if(STYLE==='papir'){document.body.dataset.styl=STYLE;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',PAPER_TOKENS.desk);}
 function persist(){const w=save(p);if(w){warning=w;showWarning();}}
 const m=(x,d=0)=>unit(x,'m',d);
 // Language: ?lang= in the URL wins, then the last choice, otherwise English. Stored outside the save, like the theme.
@@ -139,7 +143,7 @@ function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;i
  if(fx)stepFx(fx,elapsed,shown,view(shown));
  const dist=m(Math.floor(f?.x??0)),sceneLabel=state==='aim'?t('scene.aim'):districtAt(f?.x??0).name;if($('distance').textContent!==dist)$('distance').textContent=dist;if($('scene-label').textContent!==sceneLabel)$('scene-label').textContent=sceneLabel;
  const charge=state==='aim'&&held?chargeAt(heldTime):0,aim=state==='aim'?{angle,held,charge}:null;
- try{render($('game'),shown,p.model,f?f.t+(f.landed&&landedAt?(now-landedAt)/1000:0):now/1000,{decorations,reduced:reduced.matches,qte:qteVisual(),fx,charge,clock:now/1000,state,aim,best:p.best});}catch(e){if(mode!=='3d')throw e;fallback2d(e);}
+ try{render($('game'),shown,p.model,f?f.t+(f.landed&&landedAt?(now-landedAt)/1000:0):now/1000,{decorations,reduced:reduced.matches,qte:qteVisual(),fx,charge,clock:now/1000,state,aim,best:p.best,style:STYLE,touch:coarse.matches});}catch(e){if(mode!=='3d')throw e;fallback2d(e);}
  // 2D renderer mířidla nekreslí: stejná kresba jako UI vrstva 3D, z promítnuté vlaštovky view(null).
  if(aim&&mode==='2d'){const c=$('game').getContext('2d'),k=c.canvas.width/640;c.setTransform(k,0,0,k,0,0);drawAim(c,aim,view(null));c.setTransform(1,0,0,1,0,0);}
  }tick();}

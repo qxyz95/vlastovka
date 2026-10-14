@@ -80,7 +80,7 @@ test('nové tokeny pro scene/life3d/workshop existují; stará jména zůstávaj
  for(const k of ['track','success','perfect','dot','warning','result','gust','bird'])assert.ok(k in C.qte,k);for(const k of ['arrow','panel','text','bar','cap'])assert.ok(k in C.aim,k);
  for(const k of ['biomes','accent','ground','groundDark','suburbs','far','light','shade','roof','trim','fog0','duskFog','beacon','water','lane'])assert.ok(k in C.city,k);
  for(const k of ['body','head','beak','tail','bread','wing','eye','steam','vent','grate'])assert.ok(k in C.companion,k);
- assert.equal(palette('cyber'),CYBER);assert.equal(palette('nope'),CYBER);assert.deepEqual(Object.keys(PALETTES),['cyber']);
+ assert.equal(palette('cyber'),CYBER);assert.equal(palette('nope'),CYBER);assert.deepEqual(Object.keys(PALETTES),['cyber','papir']);
 });
 
 test('budovy a život bez zelené (U11): Docks modré, Suburbs bez tyrkysové, žádný odstín se zelenou nad červenou i modrou',()=>{

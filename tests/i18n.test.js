@@ -59,11 +59,17 @@ test('i18n: every dynamic key built from game data exists',()=>{
 });
 test('i18n: switching the language at run time changes place, district and event texts',()=>{
  const x=SCREEN_METERS*1.5;
- setLang('en');assert.equal(routeAt(x).name,'Market under the Antennas');assert.equal(districtAt(x).name,'VIOLET SUBURBS · 2/4 · Market under the Antennas');
+ setLang('en');assert.equal(routeAt(x).name,'Market under the Bunting');assert.equal(districtAt(x).name,'SUNRISE ROOFS · 2/4 · Market under the Bunting');
  assert.equal(eventView({type:'gust',phase:'warning',at:0,result:null},.1).label,'! GET READY');
- setLang('cs');assert.equal(routeAt(x).name,'Tržnice pod anténami');assert.equal(routeAt(0).story,'Z okna dílny vyrážíš nad spící ulici.');
- assert.equal(districtAt(x).name,'FIALOVÉ PŘEDMĚSTÍ · 2/4 · Tržnice pod anténami');
+ setLang('cs');assert.equal(routeAt(x).name,'Trh pod praporky');assert.equal(routeAt(0).story,'Z okna dílny vyrážíš nad spící ulici.');
+ assert.equal(districtAt(x).name,'STŘECHY ZA ÚSVITU · 2/4 · Trh pod praporky');
  assert.equal(eventView({type:'gust',phase:'interaction',at:0,result:null},1).label,'↓ KLEPNI');assert.equal(eventView('bird').title,'Kyberholub-kurýr');
+ setLang('en');
+});
+test('i18n: district and place names follow the Paper City bible, set C (decision 14. 10.)',()=>{
+ const want={en:['SUNRISE ROOFS','BRIGHT HARBOR','GOLDEN FIELDS','LANTERN CITY'],cs:['STŘECHY ZA ÚSVITU','SLUNNÝ PŘÍSTAV','ZLATÁ POLE','MĚSTO LAMPIONŮ']};
+ const places={en:{market:'Market under the Bunting',turbines:'Windmill Ridge',gate:'Gates of the Lantern City',tower:'Clock Tower'},cs:{market:'Trh pod praporky',turbines:'Hřeben větrníků',gate:'Brány Města lampionů',tower:'Hodinová věž'}};
+ for(const lang of ['en','cs']){setLang(lang);assert.deepEqual(DISTRICTS.map(d=>t('district.'+d.id)),want[lang]);for(const [k,v] of Object.entries(places[lang]))assert.equal(t('place.'+k),v);}
  setLang('en');
 });
 // Strážní test: v hráčských souborech nezůstal natvrdo český text (česká písmena mimo komentáře) a všechny klíče existují.

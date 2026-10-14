@@ -1,7 +1,7 @@
 // Komiksový vzhled (čisté): půltón, posterizované pásy oblohy, „on twos“, rychlostní čáry, obloha VERSE, obrysy. Vlastní R4.
 // Čisté části zkopírované ze src/themes-verse.js a mix ze src/themes.js (oba se budou mazat, proto se neimportují).
 // comicLook(mood,quality) → plan.comic: parametry toon rampy (toon.toonRamp), obrysu (toon.outlineMaterial) a post-procesu (toon.postPass).
-import {INK} from './palette.js';
+import {INK,PAPER_TOKENS} from './palette.js';
 import {MOOD_KEYS} from './mood.js';
 import {SCREENS_PER_BIOME} from '../scenes.js';
 export {INK};
@@ -43,9 +43,14 @@ const qLevel=q=>{const v=typeof q==='string'?Q[q]:typeof q==='number'?q:q?.level
 //  levels    posterizace post-procesu (úrovně na kanál) · dotSize perioda půltónu v px obrazovky · halftone 0|1 (uniform mode)
 //  outline   OUTLINE {color,building,detail,plane} pro outlineMaterial (px × DPR, nezávisí na kvalitě) · lineWidth obrys UI v logických px
 //  bands     skyBands(mood.sky,SKY_EDGES) pro 2D zálohu oblohy (logické px 640×360) · paletteId index VERSE/čtvrti · twos fps „on twos“
-export function comicLook(mood={},quality=2){
+// Papírové město (style 'papir', bible 05 kap. 3–4): bez půltónu, bez posterizace (levels 8), bez toon rampy a bez obrysů světa;
+// obrys zůstává jen vlaštovce (grafit 2,6 px na všech kvalitách). style výchozí z mood.style (moodAt s {style}).
+export const PAPER_OUTLINE=Object.freeze({color:PAPER_TOKENS.graphite,building:0,detail:0,plane:2.6});
+export function comicLook(mood={},quality=2,style=mood.style){
  const q=qLevel(quality),night=Math.max(0,Math.min(1,mood.night??0)),hold=Math.max(0,Math.min(1,mood.hold??0));
  const sky=mood.sky?.length?mood.sky:VERSE[mood.district??0].sky;
+ if(style==='papir')return {style:'papir',quality:q,ramp:[255,255,255],shadeLimit:0,levels:8,dotSize:6,halftone:0,outline:PAPER_OUTLINE,worldOutline:false,lineWidth:[1.8,2.2,2.6][q],
+  bands:skyBands(sky,SKY_EDGES,0),paletteId:Math.max(0,Math.min(3,mood.district??0)),twos:TWOS,ink:PAPER_TOKENS.graphite};
  return {quality:q,ramp:[Math.round(70-12*night),Math.round(150-10*night),255],shadeLimit:.42,
   levels:q?Math.round(6-hold):8,dotSize:q===2?5:6,halftone:q?1:0,
   outline:OUTLINE,lineWidth:[1.8,2.2,2.6][q],
