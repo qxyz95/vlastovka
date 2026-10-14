@@ -107,7 +107,8 @@ export const THEMES={cyber,paper,blueprint,dusk};
 export const THEME_IDS=Object.keys(THEMES);
 let current=cyber;
 export const theme=()=>current;
-export function setTheme(id){current=Object.hasOwn(THEMES,id??'')?THEMES[id]:cyber;return current;}
+// Preview-only themes (themes-verse.js) are passed as objects; the game only ever passes ids from THEMES.
+export function setTheme(id){current=id&&typeof id==='object'?id:Object.hasOwn(THEMES,id??'')?THEMES[id]:cyber;return current;}
 // URL (?styl=paper) wins over the stored choice; unknown ids fall back to cyber.
 export function pickTheme(param,stored){return [param,stored].find(id=>id&&Object.hasOwn(THEMES,id))??'cyber';}
 
@@ -116,6 +117,8 @@ export function paint(c,color,path,area=Infinity){
  const t=current;c.beginPath();path();
  if(t.mode==='line'){c.fillStyle=t.base;c.fill();c.strokeStyle=t.ink(color);c.lineWidth=1.2;c.stroke();}
  else if(t.mode==='paper'&&area>60)shadowed(c,()=>{c.fillStyle=color;c.fill();},3);
+ // Ink: flat fill plus a thick dark outline whose width is given in screen pixels (tiny shapes stay flat).
+ else if(t.mode==='ink'){c.fillStyle=color;c.fill();if(area>40){c.strokeStyle=t.line;c.lineJoin='round';c.lineWidth=t.lineWidth/(c.getTransform?.().a||1);c.stroke();}}
  else{c.fillStyle=color;c.fill();}
 }
 export function box(c,color,x,y,w,h){

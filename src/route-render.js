@@ -5,7 +5,7 @@ const noise=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v
 const rect=box,triangle=tri,S=Math.sin;
 // A few windows (~7 %) switch on and off at irregular, noise-driven moments.
 function building(c,x,base,w,h,p,seed,time=0){
- rect(c,p[1],x,base-h,w,h);rect(c,p[0],x+w-5,base-h,5,h);
+ rect(c,p[1],x,base-h,w,h);rect(c,p[0],x+w-5,base-h,5,h);theme().shade?.(c,x,base-h,w,h,p);
  for(let row=0;row<Math.floor((h-15)/15);row++)for(let col=0;col<Math.floor((w-10)/12);col++){
   const n=seed+row*17+col,flicker=noise(n*3.7)>.93&&noise1(time*(.15+noise(n)*.2),n)>.1;
   if((noise(n)>theme().lights)!==flicker)rect(c,p[2],x+7+col*12,base-h+10+row*15,4,3);
@@ -32,6 +32,7 @@ export function drawRouteLayer(c,camera,height,foreground=false,time=0){
    c.fillStyle=t.ground[biome];c.fillRect(0,base-8,640,Math.max(100,360-base+8));
    if(t.mode==='line'){c.strokeStyle=t.ink('#ffffff');c.lineWidth=1.2;c.beginPath();c.moveTo(0,base-8);c.lineTo(640,base-8);c.stroke();}
    else if(t.mode==='paper'){c.fillStyle='#00000018';c.fillRect(0,base-8,640,3);}
+   else if(t.mode==='ink'){c.fillStyle=t.line;c.fillRect(0,base-9,640,2);}
    for(let j=0;j<16;j++){c.fillStyle=t.mode==='line'?t.ink(t.dash):t.dash??p[0];c.fillRect(j*41,base+12+(j%3)*9,26,t.mode==='line'?1:2);}
    // Docks: glints drift and fade on the water.
    if(biome===1)for(let j=0;j<22;j++){const a=noise1(time*1.2,j);if(a<.2)continue;c.globalAlpha=a*.6;c.fillStyle=t.mode==='line'?t.ink(t.fx.water):t.fx.water;c.fillRect(j*29+noise1(time*.4,j+50)*8,base+6+(j*7)%38,6+(j%3)*4,1.5);}

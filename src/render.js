@@ -22,29 +22,34 @@ export function render(canvas,f,model,time=0,visual={}) {
  const r=(color,x,y,w,h)=>box(c,color,Math.round(x),Math.round(y),w,h);
  // Reduced motion freezes ambient animation; gameplay feedback still moves.
  const anim=visual.reduced?0:time,thrown=f&&f.t>0;
+ // A theme may step the environment's own animation (e.g. 12 fps "on twos"); camera, parallax and the plane stay smooth.
+ const env=t.frame?t.frame(anim):anim;
  // Camera shake from trauma (real clock, so it also reads during hitstop); slight zoom hides the edges.
  const sh=shake(fx,visual.clock??time,visual.reduced);
  if(sh.x||sh.y||sh.a){const z=1+fx.trauma**2*.03;c.translate(320+sh.x,180+sh.y);c.rotate(sh.a);c.scale(z,z);c.translate(-320,-180);}
- drawBackground(c,x,cam,ground-300,anim);
- drawRouteLayer(c,cam,ground-300,true,anim);
+ drawBackground(c,x,cam,ground-300,env);
+ drawRouteLayer(c,cam,ground-300,true,env);
  // Workshop: the neon sign flickers now and then, the window light breathes.
- const shop=20-cam,s=t.shop,k=t.kid,flick=t.fx.glow&&noise1(anim*.6,7)>.45&&noise1(anim*30,9)>0;r(s.wall,shop,ground-82,95,74);r(s.roof,shop,ground-84,95,4);c.save();if(flick)c.globalAlpha=.35;r(s.sign,shop+7,ground-69,80,17);c.restore();c.fillStyle=s.text;c.font='bold 11px monospace';c.fillText('PAPER LAB',shop+12,ground-56);r(s.window,shop+10,ground-43,42,34);c.save();c.globalAlpha=.7+.3*Math.sin(anim*1.6);r(s.light,shop+13,ground-39,34,3);r(s.light,shop+20,ground-30,6,6);c.restore();r(s.door,shop+64,ground-40,21,32);
+ const shop=20-cam,s=t.shop,k=t.kid,flick=t.fx.glow&&noise1(env*.6,7)>.45&&noise1(env*30,9)>0;r(s.wall,shop,ground-82,95,74);r(s.roof,shop,ground-84,95,4);c.save();if(flick)c.globalAlpha=.35;r(s.sign,shop+7,ground-69,80,17);c.restore();c.fillStyle=s.text;c.font='bold 11px monospace';c.fillText('PAPER LAB',shop+12,ground-56);r(s.window,shop+10,ground-43,42,34);c.save();c.globalAlpha=.7+.3*Math.sin(env*1.6);r(s.light,shop+13,ground-39,34,3);r(s.light,shop+20,ground-30,6,6);c.restore();r(s.door,shop+64,ground-40,21,32);
  // Kid breathes while aiming, leans back while charging and waves after the throw.
- const kx=124-cam-Math.round(charge*3),bob=thrown?0:Math.round(Math.sin(anim*2.5));
+ const kx=124-cam-Math.round(charge*3),bob=thrown?0:Math.round(Math.sin(env*2.5));
  r(k[0],kx+3,ground-48-bob,10,11);r(k[1],kx+6,ground-44-bob,9,3);r(k[2],kx,ground-37-bob,16,20);r(k[3],kx+1,ground-17,5,10);r(k[3],kx+11,ground-17,5,10);
- if(thrown){const a=-1.25+Math.sin(anim*9)*.45;c.save();c.translate(Math.round(kx+14),Math.round(ground-35-bob));c.rotate(a);r(k[2],0,-2,15,4);r(k[0],14,-3,5,6);c.restore();}
+ if(thrown){const a=-1.25+Math.sin(env*9)*.45;c.save();c.translate(Math.round(kx+14),Math.round(ground-35-bob));c.rotate(a);r(k[2],0,-2,15,4);r(k[0],14,-3,5,6);c.restore();}
  // Anticipation: the plane is pulled back and trembles near full charge.
  const tremble=charge>.9&&!visual.reduced?noise1((visual.clock??time)*40,6)*1.5:0,v=view(f),px=v.px-charge*8,py=v.py+(f?0:fbm(anim*.5,8)*2+tremble);
- drawRain(c,x,anim);
- drawDecorations(c,visual.decorations,f,px,py,visual.reduced);
+ drawRain(c,x,env);
+ drawDecorations(c,visual.decorations,f&&env!==anim?{...f,t:t.frame(f.t)}:f,px,py,visual.reduced);
  drawAtmosphere(c,f,px,py,f?.t??time,visual.reduced);
  if(fx){drawTrail(c,fx,cam,px,py);drawParticles(c,fx,cam);}
  else if(f&&!f.landed&&!visual.reduced)for(let i=1;i<6;i++){c.fillStyle=t.trail[i%2?0:1];c.fillRect(Math.round(px-i*9),Math.round(py+i%2),5,2);}
  // Plane: spring-smoothed rotation, noise flutter, squash & stretch along the nose axis.
  const stretch=fx?fx.stretch.x:-charge*.2,flutter=f&&!f.landed?noise1(anim*3,4)*.05:noise1(anim*.7,4)*.04;
- c.save();c.translate(Math.round(px),Math.round(py));c.rotate((fx?.rotReady?fx.rot.x:flightAngle(f))-charge*.25+flutter);c.scale(1+stretch,1-stretch*.6);c.beginPath();c.moveTo(17,0);c.lineTo(-14,model==='glider'?-13:-7);c.lineTo(-7,0);c.lineTo(-14,model==='glider'?13:7);c.closePath();c.fillStyle=t.plane.fill;c.fill();c.strokeStyle=t.plane.outline;c.lineWidth=2;c.stroke();c.beginPath();c.moveTo(-7,0);c.lineTo(17,0);c.strokeStyle=t.plane.crease[model==='glider'?1:0];c.stroke();c.restore();
+ const plane=(dx,dy,fill,outline,crease)=>{c.save();c.translate(Math.round(px)+dx,Math.round(py)+dy);c.rotate((fx?.rotReady?fx.rot.x:flightAngle(f))-charge*.25+flutter);c.scale(1+stretch,1-stretch*.6);c.beginPath();c.moveTo(17,0);c.lineTo(-14,model==='glider'?-13:-7);c.lineTo(-7,0);c.lineTo(-14,model==='glider'?13:7);c.closePath();c.fillStyle=fill;c.fill();c.strokeStyle=outline;c.lineWidth=2;c.stroke();c.beginPath();c.moveTo(-7,0);c.lineTo(17,0);c.strokeStyle=crease;c.stroke();c.restore();};
+ // Print misregistration: offset ink plates peek out from under the plane (off with reduced motion).
+ if(t.misregister&&!visual.reduced)for(const [dx,dy,color] of t.misregister)plane(dx,dy,color,color,color);
+ plane(0,0,t.plane.fill,t.plane.outline,t.plane.crease[model==='glider'?1:0]);
  if(fx){drawPopups(c,fx,px,py,visual.reduced);drawFlash(c,fx,visual.reduced);}
- t.overlay?.(c);
+ t.overlay?.(c,{f,env,reduced:visual.reduced});
  if(visual.qte)drawQte(c,visual.qte,px,py,time,visual.reduced);
  if(f?.carry>0){r(t.tint('#ad9fce'),px-10,py-20,20,8);r(t.tint('#65f7ef'),px-16,py-24+(visual.reduced?0:Math.sin(time*14)*4),12,5);r(t.tint('#65f7ef'),px+5,py-24-(visual.reduced?0:Math.sin(time*14)*4),12,5);}
 }

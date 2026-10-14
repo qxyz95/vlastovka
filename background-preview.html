@@ -4,15 +4,25 @@
 <section class="scene"><canvas id="preview" width="640" height="360" aria-label="Animovaný náhled dlouhého letu"></canvas></section>
 <p id="location" aria-live="off"></p><p id="story"></p><label for="place">Přejít na místo </label><select id="place"></select><p><progress id="route-progress" max="4" value="0" style="width:100%"></progress></p><label for="meters">Vzdálenost</label><input id="meters" type="range" min="0" max="10000" step="1" value="0" style="width:100%">
 <p><label for="speed">Rychlost letu </label><select id="speed"><option value="15">15 m/s</option><option value="50" selected>50 m/s</option><option value="150">150 m/s</option></select> <label for="theme">Styl </label><select id="theme"></select> <button id="pause">Pozastavit</button> <a class="back-link" href="./">Zpět do hry</a></p>
+<div id="perf" hidden><p><output id="perf-now" style="font-family:monospace"></output> <button id="bench">Benchmark all styles</button></p><pre id="perf-table" style="font-family:monospace"></pre></div>
 <p>QTE ve hře: mezerník nebo tlačítko Zasáhnout. Poryvy i pomoc holuba mají dvousekundové okno; další výzvy se vracejí během dlouhého letu. Hejna, déšť a vzdušné stopy jsou pouze vizuální.</p>
 </main><script type="module">
 import {render} from './src/render.js';
 import {THEMES,THEME_IDS,setTheme} from './src/themes.js';
+// Preview-only comic prototype: not part of THEMES, so the game's picker and ?styl= never see it.
+import {verse} from './src/themes-verse.js';
+import {frameStats,ring} from './src/perf.js';
 import {districtAt,routeAt,ROUTE,SCREEN_METERS} from './src/scenes.js';
 const canvas=document.getElementById('preview'),meters=document.getElementById('meters'),speed=document.getElementById('speed'),pause=document.getElementById('pause');
 let distance=0,time=0,last=0,running=true;
 const place=document.getElementById('place');
-const theme=document.getElementById('theme');THEME_IDS.forEach(id=>theme.add(new Option(THEMES[id].name,id)));theme.value=new URLSearchParams(location.search).get('styl')??'cyber';setTheme(theme.value);theme.onchange=()=>setTheme(theme.value);
+const params=new URLSearchParams(location.search),STYLES={...THEMES,verse},theme=document.getElementById('theme');Object.keys(STYLES).forEach(id=>theme.add(new Option(STYLES[id].name,id)));
+const pick=id=>{theme.value=Object.hasOwn(STYLES,id??'')?id:'cyber';setTheme(STYLES[theme.value]);samples.clear();};
+// ?perf=1: ms spent in render() per frame (average and P95 of the last 240 frames); "Benchmark" runs every style for 3 s at the current place.
+const perf=params.get('perf')==='1',samples=ring(240),perfNow=document.getElementById('perf-now'),table=document.getElementById('perf-table');let bench=null;
+document.getElementById('perf').hidden=!perf;
+document.getElementById('bench').onclick=()=>{bench={ids:Object.keys(STYLES),i:0,frames:0,rows:[],start:theme.value};pick(bench.ids[0]);table.textContent='running…';};
+pick(params.get('styl'));theme.onchange=()=>pick(theme.value);
 ROUTE.forEach((p,i)=>{const option=document.createElement('option');option.value=i;option.textContent=(Math.floor(i/4)+1)+'.'+(i%4+1)+' · '+p.name;place.append(option);});
 place.onchange=()=>{distance=Number(place.value)*SCREEN_METERS;meters.value=distance;};
 meters.oninput=()=>{distance=Number(meters.value);};
@@ -20,7 +30,11 @@ pause.onclick=()=>{running=!running;pause.textContent=running?'Pozastavit':'Pokr
 document.addEventListener('visibilitychange',()=>{last=0;});
 function frame(now){const dt=last?Math.min(.1,(now-last)/1000):0;last=now;
  if(!document.hidden&&running){distance=(distance+dt*Number(speed.value))%10000;time+=dt;meters.value=distance;}
- render(canvas,{x:distance,y:35,vx:Number(speed.value),vy:0,t:time,events:[],landed:false},'glider',time);
+ const t0=performance.now();render(canvas,{x:distance,y:35,vx:Number(speed.value),vy:0,t:time,events:[],landed:false},'glider',time,{reduced:matchMedia('(prefers-reduced-motion: reduce)').matches});
+ if(perf){samples.push(performance.now()-t0);const s=frameStats(samples.values);perfNow.value=`${theme.value}: avg ${s.avg.toFixed(2)} ms · P95 ${s.p95.toFixed(2)} ms (${s.n} frames)`;
+  if(bench&&++bench.frames===20)samples.clear();
+  if(bench&&bench.frames>=200){bench.rows.push(`${theme.value.padEnd(10)} avg ${s.avg.toFixed(2).padStart(6)} ms  P95 ${s.p95.toFixed(2).padStart(6)} ms`);
+   if(++bench.i<bench.ids.length){bench.frames=0;pick(bench.ids[bench.i]);}else{table.textContent=bench.rows.join('\n');pick(bench.start);bench=null;}}}
  document.getElementById('location').textContent=`${Math.floor(distance)} m · ${districtAt(distance).name}`;
  const route=routeAt(distance);document.getElementById('story').textContent=route.story;document.getElementById('route-progress').value=route.part-1+route.progress;place.value=route.index;
  requestAnimationFrame(frame);
