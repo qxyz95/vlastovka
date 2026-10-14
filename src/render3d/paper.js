@@ -51,6 +51,32 @@ void main(){vec3 c=vC,n=normalize(vN);
  gl_FragColor=vec4(c,1.);}`});
 }
 
+// Dítě C (bible 05 kap. 9.4, výjimka z kap. 3; research/plan-hratelnost/03-art.md kap. 1.5, náčrt hratelnost.mjs shade()): rampa po stěnách,
+// jeden tón na stěnu (normála stěny je stejná ve všech 3 vrcholech): horní plochy mix(cut, .25), spodní mix(side, .42), ostatní podle natočení
+// ke kameře k = max(0, .32·(1 − smoothstep(.5, .95, n.z)) − .08·max(0, n·L)), k < .02 → mix(cut, .03), jinak mix(side, k); L = slunce [.62, .5, .6].
+// Vlákna a opar jako paperMaterial (sdílené uniformy kitu), bez stínu z masky, bez obrysu, toon rampy a lesku. Kreslí i praporek ve stejném bufferu.
+export const KID_SHADE=Object.freeze({top:.75,topK:.25,bottom:-.6,bottomK:.42,side:.32,lit:.08,front:.03,u:Object.freeze([.5,.95]),L:Object.freeze([.62,.5,.6])});
+export function kidShade(n,col=[1,1,1],cut=[1,1,1],side=[0,0,0],K=KID_SHADE){
+ const mixc=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),l=Math.hypot(...K.L),dl=Math.max(0,(n[0]*K.L[0]+n[1]*K.L[1]+n[2]*K.L[2])/l);
+ if(n[1]>K.top)return mixc(col,cut,K.topK);if(n[1]<K.bottom)return mixc(col,side,K.bottomK);
+ const x=Math.max(0,Math.min(1,(n[2]-K.u[0])/(K.u[1]-K.u[0]))),u=x*x*(3-2*x),k=Math.max(0,K.side*(1-u)-K.lit*dl);return k<.02?mixc(col,cut,K.front):mixc(col,side,k);
+}
+export function kidMaterial(u=paperUniforms(),{fiber=.07,haze=1}={}){
+ const K=KID_SHADE;
+ return new THREE.ShaderMaterial({vertexColors:true,
+  uniforms:{cut:u.cut,side:u.side,hazeLow:u.hazeLow,hazeHigh:u.hazeHigh,hz:u.hz,fiberOn:u.fiberOn,fiber:{value:fiber},hazeK:{value:haze},Lk:{value:new THREE.Vector3(...K.L).normalize()}},
+  vertexShader:`varying vec3 vC;varying vec3 vN;varying vec3 vW;void main(){vC=color;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`,
+  fragmentShader:`uniform vec3 cut,side,hazeLow,hazeHigh,Lk;uniform float fiber,fiberOn,hazeK;uniform vec4 hz;
+varying vec3 vC;varying vec3 vN;varying vec3 vW;${NOISE}
+void main(){vec3 c=vC,n=normalize(vN);
+ if(n.y>${K.top.toFixed(2)})c=mix(c,cut,${K.topK.toFixed(2)});
+ else if(n.y<${K.bottom.toFixed(2)})c=mix(c,side,${K.bottomK.toFixed(2)});
+ else{float u=smoothstep(${K.u[0].toFixed(2)},${K.u[1].toFixed(2)},n.z),k=max(0.,${K.side.toFixed(2)}*(1.-u)-${K.lit.toFixed(2)}*max(0.,dot(n,Lk)));c=k<.02?mix(c,cut,${K.front.toFixed(2)}):mix(c,side,k);}
+ if(fiberOn>.5){vec3 a=abs(n);vec2 q=a.z>=a.x&&a.z>=a.y?vW.xy:a.y>=a.x?vW.xz:vW.zy;float f=vn(q*.9)*.55+vn(q*3.7)*.3+vn(q*13.)*.15;c*=1.+(f-.5)*fiber;}
+ float h=hz.z*hazeK*pow(clamp((-vW.z-hz.x)/(hz.y-hz.x),0.,1.),hz.w);c=mix(c,mix(hazeLow,hazeHigh,clamp(vW.y/160.,0.,1.)),h);
+ gl_FragColor=vec4(c,1.);}`});
+}
+
 // ── Geometrie karet (paper-cards.cardVertices → BufferGeometry s barvou vrcholů v lineárním RGB).
 export function cardGeometry(list){
  const v=cardVertices(list),n=v.p.length/3,g=new THREE.BufferGeometry(),C=new Float32Array(n*3);

@@ -10,12 +10,15 @@ import {follow,sideCamera,PLANE_OFFSET,LAYERS,chunkOffset,placeIndex} from './ge
 import {companion} from './life.js';
 import {moodAt} from './mood.js';
 import {planePose,kidPose,HAND,REST as AIM,aimWidth} from './pose.js';
+import {SCALE} from './models/scale.js';
 import {comicLook} from './comic.js';
 import {fxMap} from './fx-map.js';
 import {eventView} from './events-view.js';
 import {uiScale} from './ui-layer.js';
 import {initialQuality} from './quality.js';
 
+// Výška dítěte H1 (person × 0,7 = 1,2 m, models/kid.js KID.h) pro LOD podle px na obrazovce.
+const KID_H=SCALE.person*.7;
 export const LOGICAL={w:640,h:360},ASPECT=16/9,REST={px:148,py:258};
 // Vlaštovka na scéně užší než `width` CSS px o 15 % větší (rozhodnutí 14. 10., spec 06 kap. 6), jen vzhled, fyzika ani kamera beze změny.
 // Jediný styl je Papírové město (R0): visual.style se ignoruje.
@@ -105,7 +108,8 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  // Póza z pose.js (R3). Tam je angle = rotation.z three.js (−úhel 2D); plan.plane.angle drží znaménko juice.flightAngle podle smlouvy.
  const anim=reduced?0:t,own=planePose({f:rest?null:f,fx:rest?null:visual.fx,charge,anim,clock,reduced,size:scale});
  const plane={x:X+own.dx,y:Y+own.dy+(f?.landed?.6:0),z:0,angle:-own.angle,...tilt(t,anim,flying,reduced),squash:own.squash,model,look:null,visible:!rest,scale};// v klidu drží vlaštovku workshop.js
- const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced,rest,state,since:f?.t??0}),visible:rest};
+ // dítě: px = výška dítěte 1,2 m na obrazovce (CSS px v hloubce ruky, LOD 44/52 px), aim = úhel mířidel ve ° (ruka F ukazuje směr hodu)
+ const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced,rest,state,since:f?.t??0}),visible:rest,px:KID_H*cssWidth/director.camera.width,aim:visual.aim?.angle??null};
  const e=rest?null:activeEvent(f),events=e?[eventView(e,f.t)]:[];
  // „Zadržení dechu“: od varování QTE do 0,3 s po výsledku (qteLock) se pozadí tlumí; náběh i doznění přes damp (stav v prev.mood.hold).
  const goal=!rest&&qteLock(f)?1:0,hold=prev&&!rest?damp(prev.mood?.hold??0,goal,.12,Math.max(0,Math.min(.1,dirT-(prev.dirT??dirT)))):goal;

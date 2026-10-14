@@ -2,13 +2,14 @@
 // Souřadnice světa místa 1 (x od startu města, y zem, čelo ulice z ≈ +1,2), převzaté z náčrtu research/design/img/start/start.mjs conceptB.
 // Modely H1–H6 mají vlastní souřadnice (x na střed, y = 0 pata, čelo z = 0); DIORAMA je posune na místo (index.js diorama). Hra je zapojí v dávce S4.
 import {PLANE_OFFSET} from '../geometry.js';
+import {KID} from './kid.js';
 
 // Ruka dítěte ve výšce výhozu fyziky (core.js y 12 m, M-3), x jako vlaštovka v klidu (PLANE_OFFSET); podlaha pavlače a podkroví 10,6 m.
 export const LAUNCH=Object.freeze({hand:Object.freeze({x:PLANE_OFFSET,y:12,z:0}),floor:10.6,wall:1.1,front:1.2,
  // dům 12 × 8 m (x 55,5–67,5), přízemí 3,5 + 2 patra × 3 m, podkroví: nadezdívka 2,3 m, střecha 4,6 m; pavlač končí u ruky (x 71,6).
  house:Object.freeze({x0:55.5,x1:67.5,d:8,ground:3.5,floors:2,knee:2.3,rise:4.6,back:-6.2}),deckEnd:71.6,deckFront:1,
- // opěrná zeď 31 × 1,1 m od x 44, čelo 3 m před domem; dítě stojí na pavlači v z 0,1 (za zábradlím), trám 9 m od vrcholu štítu.
- wallX:44,wallW:31,wallFront:4.2,kidZ:.1,beam:Object.freeze({len:9,y:5.8,front:.35})});
+ // opěrná zeď 31 × 1,1 m od x 44, čelo 3 m před domem; dítě stojí na pavlači za zábradlím (z podle dlaně, DIORAMA), trám 9 m od vrcholu štítu.
+ wallX:44,wallW:31,wallFront:4.2,beam:Object.freeze({len:9,y:5.8,front:.35})});
 const H=LAUNCH.house,HX=(H.x0+H.x1)/2;
 // Umístění modelů (posun place): id, poloha počátku modelu ve světě.
 export const DIORAMA=Object.freeze([
@@ -17,7 +18,8 @@ export const DIORAMA=Object.freeze([
  {id:'workshop-interior',at:{x:HX,y:LAUNCH.floor,z:LAUNCH.front}},
  {id:'loft-balcony',at:{x:(H.x1+LAUNCH.deckEnd)/2,y:LAUNCH.floor,z:LAUNCH.deckFront}},
  {id:'hoist-beam',at:{x:HX+LAUNCH.beam.len/2,y:LAUNCH.floor,z:LAUNCH.beam.front}},
- {id:'kid',at:{x:LAUNCH.hand.x-.32,y:LAUNCH.floor,z:LAUNCH.kidZ}}
+ // dítě C (03-art kap. 1.5): v póze míření je dlaň ruky T přesně v LAUNCH.hand (posun celého dítěte jednou, chodidla na podlaze pavlače)
+ {id:'kid',at:{x:LAUNCH.hand.x-KID.aimPalm[0],y:LAUNCH.floor,z:LAUNCH.hand.z-KID.aimPalm[2]}}
 ].map(o=>Object.freeze({...o,at:Object.freeze(o.at)})));
 // Záběr míření (bible 05 kap. 9.2): šířka 16 m (telefon na výšku 7 m), sklon −8° (kamera mírně zespodu), ruka na (0,38; 0,60) obrazu.
 export const AIM_SHOT=Object.freeze({width:16,portraitWidth:7,pitch:-8,fov:20,at:Object.freeze([.38,.6]),portraitAt:Object.freeze([.4,.62]),planeInHand:.5});
