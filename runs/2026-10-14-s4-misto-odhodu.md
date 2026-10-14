@@ -16,7 +16,10 @@ Smí: `src/render3d/*`, `tests/render3d-*.test.js`, tento soubor. Prohlížeč n
 - [x] Cyber ověřen proti HEAD: 341 plánů snímků, cityChunk 0–3 a 16, suburbLife, karty místa 2 shodné (skript scratchpad/cyber.mjs)
 
 ## Rozpracovaný krok
-- commit kroku, report
+- nic (commity 2367d9c, 052a8bd)
+
+## Další kroky (orchestrátor)
+- prohlížeč ?styl=papir: vzhled míření, výhozu a oddálení, art-review, perf-check (DC, P95), test úniku; BLOCKED otázky z reportu; docs/stav.md
 
 ## Technická rozhodnutí
 - Ruka podle stylu místo globálních 12 m: cyber Dílna (přístavek, ruka 16 m) musí zůstat beze změny, proto `launchLift` zůstává jen pro cyber (a pro budoucí f.d.y0 Crane Lift); v papíru je 0.
