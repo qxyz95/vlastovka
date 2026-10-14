@@ -124,7 +124,9 @@ function set(o={}){
  if(o.params)o={...o,params:{...state.params,...o.params}};Object.assign(state,o);
  if('spin' in o&&o.spin==='still')state.t=0;rebuild();
 }
-$('#model').innerHTML=MODELS.map(m=>`<option value="${m.id}">${m.name}${m.replacedBy?' (nahrazeno)':''}${m.hero?' · G2b':''}</option>`).join('');
+// Skupina G3 trh (11 kap. 5): štítek v seznamu, aby šla dávka projít za sebou.
+const G3=new Set(['stall','bunting','market-hall','antenna','laundry']);
+$('#model').innerHTML=MODELS.map(m=>`<option value="${m.id}">${m.name}${m.replacedBy?' (nahrazeno)':''}${m.hero?' · G2b':G3.has(m.id)?' · G3':''}</option>`).join('');
 $('#model').addEventListener('change',e=>set({model:e.target.value}));
 $('#figures').addEventListener('change',e=>set({figures:e.target.checked}));
 $('#params').addEventListener('change',e=>{const k=e.target.dataset.param;if(k){const v=e.target.value;set({params:{[k]:Number.isNaN(+v)?v:+v}});}});
