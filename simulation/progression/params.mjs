@@ -18,7 +18,11 @@ const DEFAULTS={
  // ground {below, glide} (pod `below` m klouzavost ×glide), skip (odrazů Stone Skip navíc, jen s bonusem), windK (vítr ×),
  // droneBurst (zásah dronu bez svislé části, push dronu ×droneBurst).
  models:{dart:{...MODELS.dart},glider:{speed:14,glide:4,drag:.12,cruise:11,ideal:30,qte:1.15}},
- economy:{reward:{base:10,perMeter:.1}},          // odměna za hod = base + floor(max(0, dolet)·perMeter)
+ economy:{reward:{base:10,perMeter:.1},          // odměna za hod = base + floor(max(0, dolet)·perMeter)
+  // Mailbag / Poštovní brašna (01 §2.11): koupený násobič „+X % mincí“, úroveň k v nabídce od rekordu na začátek místa unlockPlace[k] (příchod
+  // do čtvrti 2/3/4), jen popořadě. Odměna = floor(základní odměna·(1 + min(M, capM))), M = koš všech „+X % mincí“ (dnes jen Mailbag).
+  // on:false = Mailbag v nabídce není (výchozí, výsledky jako dřív), zapíná run.mjs --mailbag. Ceny zástupné z 01: round50(ΔM·R·H), H = horizont návratnosti v hodech.
+  mailbag:{on:false,levels:[.1,.1,.1],prices:[500,800,900],unlockPlace:[5,9,13],H:[30,30,26],capM:.5}},
  workshop:{
   power:{prices:[50,160,350],step:.14},                         // 08: ceny 40/120/260
   folds:{prices:[50,160,350],steady:.30,window:.25,push:.20},     // 08: 40/120/260, steady .25, window .15; F3 window .20
@@ -90,13 +94,21 @@ const DEFAULTS={
   pocketFallback:['cushion','sharp'],fallbackThrows:3, // záloha se nasadí jen při kladném náhledu na posledních hodech (F3)
   // realistický nákupčí (F3): odhad přínosu na minci s log-normální chybou, netrpělivost (nečeká na cíl déle než patience hodů)
   // preference viditelného: papír mění vzhled vlaštovky a má největší náhled, hráč mu dá o čtvrtinu větší váhu
-  realistic:{noise:.5,patience:6,kind:{workshop:1,paper:1.25,atlas:1,pocket:1,model:1}},
-  // volba modelu 'preview' (náhled v Dílně, 01 §2.10): pasivní let bez událostí každého vlastněného modelu se známým větrem, úhlem
-  // záměru modelu a silou mu profilu; noise = log-normální chyba odhadu (0 = hráč náhledu věří přesně)
-  modelPick:{noise:0},
+  realistic:{noise:.5,patience:6,kind:{workshop:1,paper:1.25,atlas:1,pocket:1,model:1,mailbag:1}},
+  // volba modelu 'preview' (náhled v Dílně, 01 §2.10); noise = log-normální chyba odhadu (0 = hráč náhledu věří přesně).
+  // mode 'replay' (01 §2.10 bod 2): odhad z přehrání posledních `throws` hodů se současnou výbavou a stejnými výsledky QTE (perfekt / zásah /
+  // minutí u každé události), úhel hodu posunutý o rozdíl ideálů, medián poměru doletu proti modelu v ruce. wind 'same' = vítr původního
+  // hodu (01: „stejný seed, stejný vítr“), 'next' = známý vítr příštího hodu. mode 'passive' = náhled do 14. 10. (pasivní let bez událostí
+  // s úhlem záměru modelu, silou mu a známým větrem).
+  modelPick:{noise:0,mode:'replay',throws:5,wind:'same'},
  },
  // fallback = čím se řídí paper-/atlas-/models-first a no-models mimo svou prioritu; no-models modely nekupuje, models-first šetří na model hned po odemčení
- campaign:{maxThrows:400,strategies:['balanced','realistic','paper-first','atlas-first','cheapest','random','no-models','models-first'],fallback:'realistic'},
+ // no-mailbag Mailbag nekupuje, mailbag-first šetří na další úroveň Mailbagu hned po jejím otevření (01 §2.11 „Mailbag napřed“)
+ campaign:{maxThrows:400,strategies:['balanced','realistic','paper-first','atlas-first','cheapest','random','no-models','models-first','no-mailbag','mailbag-first'],fallback:'realistic'},
+ // Kousky (05 §4.5, ověření §4.6): podmínky detektorů jen v simulátoru (tricks.mjs), ve hře nejsou. Okna v s simulovaného času letu:
+ // pigeonWindow puštění perfektního holuba → klepnutí perfektního poryvu, droneWindow mezi vyhodnocením dvou perfektních dronů,
+ // lineWindow Paper Rocket před dopadem. ok = výsledky, které se počítají jako „úspěšně“ (All the Verbs, Needle).
+ tricks:{pigeonWindow:1.5,droneWindow:2,lineWindow:1,wishCombo:5,hawkRun:3,kiteY:40,sailWind:.08,needleDrones:2,skimmerSkips:2,ok:['success','perfect']},
  // Výbavy pro tabulku křivky (08 §2.4). atlas: úroveň každého bonusu; '*' = všechny odemčené na danou úroveň.
  curve:[
   {name:'1. hod (nic)',power:0,folds:0,paper:0,atlas:{}},
@@ -120,6 +132,16 @@ const DEFAULTS={
   capE:.20,capBeta:.25,gliderShare:[.3,.7],firstPocket:[20,40],levelsBought:[.6,.85],
   skipRate:[.3,.5],          // 06, oprava 3: Stone Skip na úr. 3 zhruba ve 30–50 % letů
   reference:'realistic',     // referenční nákupčí pro délku hry, kapsy a srovnání strategií (F3, AUDIT #37)
+  // Mailbag (01 §2.11, §6.1 B10 a B17): příjem s Mailbagem ≤ income× bez něj, hody na další koupi ≥ toGo× běhu bez něj, „Mailbag napřed“
+  // nejvýš o first rychlejší než reference, úroveň III vrácená do finále do payback podílu zbývajících hodů. Jen když běh Mailbag má.
+  mailbag:{income:1.2,toGo:.85,first:.08,payback:.7},
+  // Kousky (05 §4.6), jen když běh detekuje kousky: výskyt bez záměru (vzácný < rare, zdravý healthy, samozřejmý > obvious), se záměrem
+  // ≥ intentMin a ≥ intentRatio× (< chance× = náhoda), 1. provedení medián v first (> firstRare nebo nikdy u > never kampaní = vzácný,
+  // ≤ firstObvious = samozřejmý), expert / slabý ≤ expertWeak (> expertWeakRare = jen test perfektnosti); kousky modelů: hody s modelem
+  // do 1. provedení medián ≤ model[0], P90 ≤ model[1] (01 §6.1 bod 15). Systém: 1. kousek do firstTrick (medián průměrného), nalezeno
+  // found (průměrný) / ≥ foundWeak (slabý) z 13, korelace > corr = tentýž čin, brána gate zdravých z 8.
+  tricks:{rare:.01,healthy:[.02,.20],obvious:.25,intentMin:.08,intentRatio:1.5,chance:1.2,first:[3,25],firstRare:40,firstObvious:1,never:.5,
+   expertWeak:4,expertWeakRare:5,model:[5,15],firstTrick:15,found:[.4,.75],foundWeak:.25,corr:.8,gate:6},
  },
 };
 
@@ -127,6 +149,17 @@ const DEFAULTS={
 // lapse = SKILLS + výpadek pozornosti (hráč na událost vůbec nezareaguje), jen informativně.
 const qte2=k=>Object.fromEntries(Object.entries(DEFAULTS.profiles).map(([p,v])=>[p,{qte:+(v.qte*k).toFixed(3)}]));
 export const PROFILE_SETS={skills:{},x2:{profiles:qte2(2)},lapse:{profiles:{weak:{lapse:.12},average:{lapse:.07},good:{lapse:.04},expert:{lapse:.02},weakAssist:{lapse:.12}}}};
+// Sady cílů (run.mjs --targets). t90 = pásma kampaně na 90 min z research/obsah/05-plan-90-minut.md §7.2 (průměrný SKILLS, realistic,
+// volba modelu preview podle 01 §6.1). Klíče, které výchozí cíle nemají, hodnotí checks jen s touto sadou; metriky, které simulátor
+// neumí (zastávky, varianty událostí, fronta novinek), vypíše jako NOT ASSESSED (notAssessed).
+// droughtA = sucho bez novinky (A) z toho, co simulátor zná: nové místo, Glider, koupě modelu, první setkání s typem události, první nasazení
+// speciálu, nový kousek (s --tricks); droughtP90 = P90 sucha bez nákupu ani novinky; repeat = podíl poryvu + holuba mezi QTE po čtvrtích;
+// buyGap = hody mezi nákupy (medián po čtvrtích, P90).
+export const TARGET_SETS={default:{},t90:{targets:{
+ throwsPerDistrict:[[34,46],[36,48],[37,49],[36,48]],minutesPerDistrict:[[14,20],[18,24],[21,27],[23,29]],totalMinutes:[82,98],totalThrows:[150,185],
+ weakFinishWithin:250,weakVsAverage:1.35,weakVsAverageStat:'minutes',expertVsAverage:.69,
+ droughtA:{median:3,p90:6,maxP90:12},droughtP90:5,placeGapMedian:11,placeGapP90:17,
+ repeat:[.95,.6,.6,.6],buyGap:{median:[1,2,2,2],p90:4},model:'preview',notAssessed:true}}};
 // Sady modelů za mince (run.mjs --modelset). obsah01 = zástupná čísla z research/obsah/01-game-design.md §2.2–2.6 a §2.8.
 // drag 01 uvádí jen u Needle, ostatní mají .12 jako Dart a Glider (stejně jako sonda 04 §3.2).
 export const MODEL_SETS={none:{},obsah01:{models:{

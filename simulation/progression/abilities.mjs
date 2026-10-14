@@ -22,14 +22,30 @@ export function cushionBot(f){
 // Whistle: píská hned po vyhodnocení, když má kombo ≥ 2 (08 S3).
 export function whistleBot(f){if(f.combo>=override(f,'whistle').combo&&f.y>=P.specials.whistle.minY&&canAct(f))whistle(f);}
 // Paper Rocket: když odhad dopadu skončí do margin před hranicí místa, jinak na konci (nízko nad zemí).
+// ctx.bot.rocket.offAfter = od tohoto času už nestřílí (protifaktický let pro kousek Over the Line).
 export function rocketBot(f){
  const B=override(f,'rocket'),left=P.specials.rocket.charges-(f.abil.rocket??0);
- if(left<=0||f.vy>=0||burstLeft(f)>.05||!canAct(f))return;
+ if(left<=0||f.vy>=0||burstLeft(f)>.05||!canAct(f)||B.offAfter!=null&&f.t>=B.offAfter-1e-9)return;
  const pred=f.x+f.y*f.glide,bound=Math.ceil(pred/P.route.place)*P.route.place,gap=bound-pred;
  if(gap>0&&gap<=B.margin*pred)return void rocket(f);
  const th=B.endY*left+eps(f,'rocket')*Math.abs(f.vy);if(th>0&&f.y<=th)rocket(f);
 }
 export const BOTS={dive:diveBot,cushion:cushionBot,whistle:whistleBot,rocket:rocketBot};
-export const botsFor=kit=>(kit.slots??[]).filter(s=>BOTS[s]).map(s=>BOTS[s]);
+// Boti se záměrem pro kousky (05 §4.6, ctx.intent = id kousku) nahrazují běžného bota téže schopnosti.
+// Whistle po perfektní události daného typu: přivolá další událost, jakmile to jde (Pigeon Express: holub, Drone Ping-Pong: dron).
+const whistleAfter=type=>f=>{const e=f.lastEv;if(e?.type===type&&e.result==='perfect'&&f.y>=P.specials.whistle.minY&&canAct(f))whistle(f);};
+// Over the Line: náboje šetří a vystřelí jen v poslední sekundě letu (odhad y/|vy| ≤ tricks.lineWindow), když odhad dopadu končí před
+// hranicí místa, kterou výtrysk do dopadu dožene (amp·cruise·τ·(1 − e^(−t/τ))). Jinak nestřílí (záměr = kousek, ne dolet).
+// Dokud čeká odraz Stone Skip (rychlý dopad), nestřílí: odraz by let prodloužil a odhad by neplatil.
+export function lineRocketBot(f){
+ const R=P.specials.rocket,left=R.charges-(f.abil.rocket??0),off=f.ctx.bot?.rocket?.offAfter;
+ if(left<=0||f.vy>=0||burstLeft(f)>.05||!canAct(f)||off!=null&&f.t>=off-1e-9)return;
+ if(f.skips>0&&f.vx+burstLeft(f)*f.cruise>(f.stats.skips?P.atlas.skip.chainVx:P.atlas.skip.minVx)*f.cruise)return;
+ const tr=f.y/Math.max(1e-6,-f.vy);if(tr>P.tricks.lineWindow)return;
+ const pred=f.x+(f.vx+burstLeft(f)*f.cruise)*tr,gap=Math.ceil(pred/P.route.place)*P.route.place-pred,reach=R.amp*f.cruise*R.tau*(1-Math.exp(-tr/R.tau));
+ if(gap>0&&gap<=reach)rocket(f);
+}
+export const INTENT_BOTS={pigeonExpress:{whistle:whistleAfter('bird')},dronePingPong:{whistle:whistleAfter('drone')},overTheLine:{rocket:lineRocketBot}};
+export const botsFor=(kit,intent)=>(kit.slots??[]).filter(s=>BOTS[s]).map(s=>INTENT_BOTS[intent]?.[s]??BOTS[s]);
 // Celý hod s boty schopností podle nasazených kapes.
-export const throwOnce=(kit,ctx)=>fly(kit,ctx,botsFor(kit));
+export const throwOnce=(kit,ctx)=>fly(kit,ctx,botsFor(kit,ctx.intent));
