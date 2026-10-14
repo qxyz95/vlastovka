@@ -1,4 +1,4 @@
-> **Rozhodnutí uživatele 15. 10. (06, „Karty mechanik, odpovědi na BLOCKED“) mají přednost:** K4 čip **nekupuje**, otevře Dílnu (odtud Atlas), bez `p.lastBranch` a migrace; K2 řádek rozdílu (a); rozkládání nese informaci (a); díra 21–24 zatím bez výplně (c).
+> **Rozhodnutí uživatele 15. 10. (06, „Karty mechanik, odpovědi na BLOCKED“) mají přednost:** K4 čip **nekupuje**, otevře Dílnu (odtud Atlas), bez `p.lastBranch` a migrace; K2 řádek rozdílu (a); rozkládání nese informaci (a); díra 21–24 zatím bez výplně (c). **Nálezce ve finále (K9) je pejsek, ne dítě**, a občas krátce i při dopadu (06, „Pejsek místo nálezce“).
 
 # Karty mechanik „chuti hrát dál“ (game designer)
 
