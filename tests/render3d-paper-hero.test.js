@@ -66,10 +66,10 @@ test('P3 plane: S4 shadow = castPlane of the plane geometry as a child of the me
  pl.dispose();kit.dispose();
 });
 
-test('P3 plane: scale × plan.plane.scale in paper (+15 % narrow), cyber ignores it',()=>{
+test('P3 plane: scale × plan.plane.scale in both styles (length by the shot width, S3; +15 % paper narrow)',()=>{
  const pp=createPlane(planeCtx(PAPIR));pp.apply({x:0,y:30,angle:0,scale:1.15},{flying:true});assert.ok(Math.abs(pp.current.root.scale.x-PLANE_SCALE*1.15)<1e-9);
  pp.apply({x:1,y:30,angle:0},{flying:true});assert.equal(pp.current.root.scale.x,PLANE_SCALE,'missing scale = 1');
- const cp=createPlane(planeCtx(CYBER));cp.apply({x:0,y:30,angle:0,scale:1.15},{flying:true});assert.equal(cp.current.root.scale.x,PLANE_SCALE);
+ const cp=createPlane(planeCtx(CYBER));cp.apply({x:0,y:30,angle:0,scale:.5},{flying:true});assert.equal(cp.current.root.scale.x,PLANE_SCALE*.5);
 });
 
 test('P3 trail: graphite pencil dashes (1.5 m of 2.4 m along the path, fixed in the world), half width max(0.22 m, 1.1 CSS px), no edge, alpha 0.85·√k',()=>{

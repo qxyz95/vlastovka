@@ -5,16 +5,17 @@ Spec: `research/start/01-zacatek-a-kamera.md` §2–§4, `02-misto-odhodu-vzhled
 Smí: `src/render3d/camera.js`, `frame.js`, `pose.js`, `plane.js`, `index.js` (předání), `tests/render3d-*.test.js`, report, tento soubor.
 
 ## Hotové kroky
-- (žádné)
+- S1 kamera letu (commit d3a3ca3): `EXCESS`, `EASE`, `excessOf/excessZoom/launchEase` v camera.js, `paceOf/cruiseOf/calmOf` ve frame.js, test `tests/render3d-camera-speed.test.js`.
+- S3 velikost vlaštovky: `PLANE_SIZE`, `planeLength`, `planeSizeScale` ve frame.js, plane.js měřítko v obou stylech + stopa úměrně; test `tests/render3d-plane-size.test.js`.
 
 ## Rozpracováno
-- S1 kamera letu
+- S2 záběr míření 16 m / 7 m, přisunutí při nabíjení, posun vlaštovky z ruky (HAND.y 16 → fyzika 12) při výhozu
 
 ## Další kroky
-- S3, S2, metriky + report, commity po dávkách
+- metriky (Node skript ve scratchpadu) + `reports/3d/kamera-start.md`, report
 
 ## Změněné soubory
--
+- src/render3d/camera.js, frame.js, plane.js; tests/render3d-camera.test.js, render3d-frame.test.js, render3d-paper-frame.test.js, render3d-paper-hero.test.js, render3d-plane.test.js, render3d-camera-speed.test.js (nový), render3d-plane-size.test.js (nový)
 
 ## Měření
 -

@@ -54,3 +54,9 @@ test('U3: trail ribbon, two vertices per point (side ±1), ink edge, district co
  pl.apply({x:0,y:30,angle:0},{flying:true});assert.equal(tr.points.length,1,'jump back = new throw');assert.equal(tr.mesh.visible,false);
  assert.doesNotThrow(()=>pl.dispose());
 });
+
+test('S3: plan.plane.scale sizes the plane in both styles and the trail width follows it',()=>{
+ const pl=createPlane(ctx());for(let i=0;i<5;i++)pl.apply({x:i*2,y:30,angle:0,scale:.25},{flying:true});
+ assert.equal(pl.current.root.scale.x,PLANE_SCALE*.25);const h=pl.trail.mesh.geometry.attributes.halfW.array;assert.ok(Math.abs(h[4*2]-TRAIL.width*.25)<1e-6,'trail head half width × scale');
+ pl.apply({x:10,y:30,angle:0},{flying:true});assert.equal(pl.current.root.scale.x,PLANE_SCALE,'missing scale = 1');pl.dispose();
+});

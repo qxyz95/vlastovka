@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {QUALITY,DROP,initialQuality,nextQuality,qualityPreset} from '../src/render3d/quality.js';
 import {comicLook,PAPER_OUTLINE,OUTLINE} from '../src/render3d/comic.js';
-import {planFrame,PLANE_NARROW,planeScale,styleOf} from '../src/render3d/frame.js';
+import {planFrame,PLANE_NARROW,planeScale,styleOf,planeSizeScale,planeLength,PLANE_SIZE} from '../src/render3d/frame.js';
 import {moodAt} from '../src/render3d/mood.js';
 import {PAPER_TOKENS} from '../src/render3d/palette.js';
 import {createFlight,step} from '../src/core.js';
@@ -48,7 +48,7 @@ test('planFrame: plan.style a plan.quality, výchozí hra beze změny',()=>{
  assert.equal(styleOf({}),'cyber');assert.equal(styleOf({style:'papir'}),'papir');assert.equal(styleOf({style:'neon'}),'cyber');assert.equal(styleOf(null),'cyber');
  const f=flight(),base={clock:1.5,state:'flight'};
  for(const v of [{},{cssWidth:390,touch:true},{cssWidth:1280}]){const a=planFrame({f,time:f.t,visual:{...base,...v}});
-  assert.equal(a.style,'cyber');assert.equal(a.quality,2,'cyber kvalita vždy 2 bez visual.quality');assert.equal(a.plane.scale,1);assert.ok(!('style' in a.mood));
+  assert.equal(a.style,'cyber');assert.equal(a.quality,2,'cyber kvalita vždy 2 bez visual.quality');assert.equal(a.plane.scale,planeSizeScale(a.camera.width,'cyber',v.cssWidth??640));assert.ok(!('style' in a.mood));
   assert.deepEqual(a.mood,{...moodAt(a.X,a.t,{hold:0}),fog:a.mood.fog});}
  assert.equal(planFrame({f,time:f.t,visual:{...base,quality:0}}).quality,0);
  const p=planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:1280}});
@@ -56,14 +56,14 @@ test('planFrame: plan.style a plan.quality, výchozí hra beze změny',()=>{
  assert.equal(planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:390,touch:true}}).quality,1);
  assert.equal(planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:390,touch:true,quality:0}}).quality,0);
  // Stejný let a kamera v obou stylech (styl mění jen vzhled).
- const c=planFrame({f,time:f.t,visual:base});assert.deepEqual(p.camera,c.camera);assert.deepEqual(p.view,c.view);assert.deepEqual({...p.plane,scale:1},c.plane);
+ const c=planFrame({f,time:f.t,visual:base});assert.deepEqual(p.camera,c.camera);assert.deepEqual(p.view,c.view);assert.deepEqual({...p.plane,scale:c.plane.scale},c.plane);assert.equal(p.plane.scale,c.plane.scale,'širší než 500 px: stejná velikost v obou stylech');
 });
 
 test('vlaštovka na úzké scéně o 15 % větší jen v papíru (let i Dílna), fyzika a záběr beze změny',()=>{
  assert.deepEqual(PLANE_NARROW,{width:500,scale:1.15});
  assert.equal(planeScale('papir',390),1.15);assert.equal(planeScale('papir',499),1.15);assert.equal(planeScale('papir',500),1);assert.equal(planeScale('cyber',390),1);
  const f=flight(),fl=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:375}}),wide=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:1280}});
- assert.equal(fl.plane.scale,1.15);assert.equal(wide.plane.scale,1);assert.equal(fl.plane.x,wide.plane.x);assert.deepEqual(fl.view,wide.view);
- const rest=planFrame({visual:{clock:1,state:'workshop',style:'papir',cssWidth:375}});assert.equal(rest.hand.scale,1.15);assert.deepEqual(rest.view,planFrame({visual:{clock:1,state:'workshop'}}).view);
- assert.equal(planFrame({visual:{clock:1,state:'workshop',cssWidth:375}}).hand.scale,1);
+ const W=fl.camera.width;assert.equal(fl.plane.scale,planeLength(W,375)/PLANE_SIZE.max*1.15);assert.equal(wide.plane.scale,planeLength(W,1280)/PLANE_SIZE.max);assert.equal(fl.plane.x,wide.plane.x);assert.deepEqual(fl.view,wide.view);
+ const rest=planFrame({visual:{clock:1,state:'workshop',style:'papir',cssWidth:375}});assert.equal(rest.hand.scale,planeSizeScale(rest.camera.width,'papir',375));assert.deepEqual(rest.view,planFrame({visual:{clock:1,state:'workshop'}}).view);
+ const rc=planFrame({visual:{clock:1,state:'workshop',cssWidth:375}});assert.equal(rc.hand.scale,planeSizeScale(rc.camera.width,'cyber',375));
 });

@@ -21,6 +21,12 @@ export const LOGICAL={w:640,h:360},ASPECT=16/9,REST={px:148,py:258};
 export const PLANE_NARROW=Object.freeze({width:500,scale:1.15});
 export const styleOf=visual=>visual?.style==='papir'?'papir':'cyber';
 export const planeScale=(style,cssWidth=640)=>style==='papir'&&cssWidth<PLANE_NARROW.width?PLANE_NARROW.scale:1;
+// Délka vlaštovky podle šířky záběru W (research/start/02 M-2, 01 §3.7): v ruce 0,5 m při 16 m, L(W) = 0,5·(W/16)^1,36 až do 7,75 m
+// (plane.PLANE_SCALE, W 120 m), dál stálá. Na úzké scéně (< PLANE_NARROW.width CSS px) aspoň minPx CSS px. Jen vzhled, fyzika je bod.
+export const PLANE_SIZE=Object.freeze({hand:.5,ref:16,exp:1.36,max:7.75,minPx:24});
+export const planeLength=(W,cssWidth=640)=>Math.max(Math.min(PLANE_SIZE.max,PLANE_SIZE.hand*(W/PLANE_SIZE.ref)**PLANE_SIZE.exp),cssWidth<PLANE_NARROW.width?PLANE_SIZE.minPx*W/cssWidth:0);
+// Násobek PLANE_SCALE pro plan.plane.scale a plan.hand.scale: délka podle záběru × +15 % papíru na úzké scéně.
+export const planeSizeScale=(W,style,cssWidth=640)=>planeLength(W,cssWidth)/PLANE_SIZE.max*planeScale(style,cssWidth);
 // Záběr Follow: šířka 120 m ve hloubce letu (k ≈ 2,5), úzký FOV a mírný pohled shora jako v prototypu. V klidu záběr Dílny z pose.js (k = 1,25).
 export const CAMERA={width:120,fov:20,pitch:6};
 // ── Projekce (stejná jako THREE.PerspectiveCamera.lookAt, up = +y, bez zoomu a posunu pohledu; náklon camera.roll ve ° jako camera.js).
@@ -74,7 +80,7 @@ const tilt=(t,anim,flying,reduced)=>({roll:.42+(flying&&!reduced?noise1(t*1.3,4)
 const cheerAge=f=>{let at=null;if(f)for(const e of f.events)if(e.result&&e.result!=='miss'&&e.result!=='interrupted'&&e.doneAt!=null)at=at==null?e.doneAt:Math.max(at,e.doneAt);return at==null?null:f.t-at;};
 
 export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}={}){
- const style=styleOf(visual),paper=style==='papir',cssWidth=visual.cssWidth??640,scale=planeScale(style,cssWidth);
+ const style=styleOf(visual),paper=style==='papir',cssWidth=visual.cssWidth??640;
  // Kvalita: ve výchozím stylu jako dřív (visual.quality ?? 2); v papíru výchozí z quality.js (pokles podle P95 drží volající přes nextQuality).
  const quality=visual.quality??(paper?initialQuality({touch:!!visual.touch,cssWidth}):2);
  const flying=!!f&&!f.landed,t=flying?f.t:visual.clock??time,clock=visual.clock??time,reduced=!!visual.reduced,charge=f?0:visual.charge??0;
@@ -83,7 +89,7 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f);
  // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
  const director=rest?restDirector():directorFor({f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=calmOf(visual);
- const v=cameraView(director.camera,X,Y),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
+ const v=cameraView(director.camera,X,Y),scale=planeSizeScale(director.camera.width,style,cssWidth),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
  const fxv=fxMap(visual.fx,v,opts);
  // otřes: x,y logické px (UI vrstva), dx,dy m a roll rad (3D kamera); Calm camera bez otřesu
  const camera={...director.camera,shake:calm?{x:0,y:0,roll:0,dx:0,dy:0}:fxv.shake??{x:0,y:0,roll:0,dx:0,dy:0}};if(calm)fxv.shake=camera.shake;
