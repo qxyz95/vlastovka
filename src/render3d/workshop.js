@@ -9,13 +9,14 @@ import * as THREE from 'three';
 import {mergeBlocks,planeShape,cityChunk} from './geometry.js';
 import {toonRamp,outlineMaterial,signTexture} from './toon.js';
 import {HAND,kidPose,planePose} from './pose.js';
+import {CYBER,INK} from './palette.js';
 export const S=.25;// m na 1 px 2D dítěte (2D: dítě 41 px, vlaštovka 31 px)
 // Dítě ve 2D: levý okraj kx, vlaštovka 24 px vpravo a 35 px nad chodidly; rameno (14, 28).
 export const KID={x:HAND.x-24*S,y:HAND.y-35*S,z:HAND.z,shoulder:[14*S,28*S]};
 const C=h=>new THREE.Color(h);
-// Barvy z tématu cyber (themes.js shop/kid), zesvětlené pro toon světlo.
-const PAL={wall:'#2c3c66',annex:'#3a3f74',roof:'#a24a86',trim:'#1a2142',door:'#4b4a72',frame:'#141a33',window:'#2a4d63',light:'#53dbea',warm:'#ffd59a',
- skin:'#c4b6e8',visor:'#61eafa',shirt:'#ee50b4',legs:'#45558a',rail:'#7a5bb0',plane:'#fff6fb',crease:'#ff8fd8'};
+const PAL=CYBER.workshop;
+// Obrysy (bible kap. 3): budova 2,5, dítě a drobnosti 1,7, vlaštovka v ruce 2,6 (nejsilnější), vše tuš INK.
+export const OUTLINE={hull:2.5,thin:1.7,plane:2.6};
 function bufferOf(m){const g=new THREE.BufferGeometry();for(const [k,n] of [['position',3],['normal',3],['uv',2],['color',3],['outline',3]])g.setAttribute(k,new THREE.BufferAttribute(m[k],n));g.computeBoundingSphere();return g;}
 const boxes=list=>bufferOf(mergeBlocks(list,b=>C(b.color).toArray()));
 // Kvádr dítěte v px 2D postavičky: x0,y0 (od chodidel), w,h, hloubka d (střed z=0).
@@ -24,7 +25,7 @@ const px=(x,y,w,h,d,color)=>({type:'box',x:x*S,w:w*S,y:y*S,h:h*S,z:0,d:d*S,color
 export function createWorkshop(scene,ctx={}){
  const group=new THREE.Group(),own=[],outlines=[],ramp=ctx.ramp??toonRamp(),fog=scene?.fog;
  const mk=(o,m)=>(own.push(o),m===undefined?o:m);
- const hull=ctx.hull??mk(outlineMaterial({fog,thickness:2.2})),thin=mk(outlineMaterial({fog,thickness:1.6}));outlines.push(thin);if(!ctx.hull)outlines.push(hull);
+ const hull=ctx.hull??mk(outlineMaterial({fog,color:INK,thickness:OUTLINE.hull})),thin=mk(outlineMaterial({fog,color:INK,thickness:OUTLINE.thin}));outlines.push(thin);if(!ctx.hull)outlines.push(hull);
  const toon=mk(new THREE.MeshToonMaterial({vertexColors:true,gradientMap:ramp}));
  const glow=mk(new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:false}));
  const solid=(list,line=hull,parent=group)=>{const g=mk(boxes(list)),m=new THREE.Mesh(g,toon),o=new THREE.Mesh(g,line);m.castShadow=m.receiveShadow=true;parent.add(m,o);return m;};
@@ -55,7 +56,7 @@ export function createWorkshop(scene,ctx={}){
  arm.position.set(KID.shoulder[0]-8*S,KID.shoulder[1],6.5*S);// ruka před trupem (ke kameře)
  solid([px(0,-2,15,4,4,PAL.shirt),px(14,-3,5,6,5,PAL.skin)],thin,arm);
  // Vlaštovka v ruce: planeShape (toon, obrys zvětšenou kopií, přehyby), skupiny root (poloha) → tilt (rotace z) → squash → roll.
- const planeHull=mk(outlineMaterial({side:THREE.DoubleSide,thickness:2.4}));planeHull.depthWrite=false;outlines.push(planeHull);
+ const planeHull=mk(outlineMaterial({side:THREE.DoubleSide,color:INK,thickness:OUTLINE.plane}));planeHull.depthWrite=false;outlines.push(planeHull);
  const planeMat=mk(new THREE.MeshToonMaterial({color:PAL.plane,gradientMap:ramp,side:THREE.DoubleSide})),creaseMat=mk(new THREE.LineBasicMaterial({color:PAL.crease}));
  const shapes={},shapeOf=model=>shapes[model]??=(s=>{const g=mk(new THREE.BufferGeometry()),l=mk(new THREE.BufferGeometry());
   g.setAttribute('position',new THREE.Float32BufferAttribute(s.positions,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(s.normals,3));g.setAttribute('outline',new THREE.Float32BufferAttribute(s.outline,3));
@@ -77,6 +78,7 @@ export function createWorkshop(scene,ctx={}){
    arm.rotation.z=Math.atan2(ty,tx)-body.rotation.z;arm.scale.x=Math.max(.6,Math.min(1.4,Math.hypot(tx,ty)/(16*S)));}
  };
  group.dispose=()=>{for(const o of own)o.dispose?.();group.removeFromParent();};
+ for(const o of outlines)o.userData.base=o.uniforms.thickness.value;// základ v CSS px; scéna ho může násobit DPR jako u svých obrysů
  group.userData.outlines=outlines;group.userData.kid=kid;group.userData.plane=plane;
  group.update(kidPose(),planePose());
  scene?.add?.(group);
