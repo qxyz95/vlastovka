@@ -154,3 +154,7 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   5. Domy do 150 m za startem nejvýš 13 m (výhled na nebe a slunce).
   6. Dítě: pláštěnka `#f2b65a` místo hořčicové, čepice z kraftového papíru místo bílé; zábradlí tmavomodré `#3d4f7a` místo grafitu.
   7. Pořadí: S1 kamera letu → S3 velikost vlaštovky → S2 záběr míření a výhoz → modely podkroví do katalogu → S4 místo odhodu → S5 menu.
+- **Oprava cílové délky hry (14. 10.):** uživatel: „Nemíříme jenom na 60 minut. Délka hry by byla ideální na 2 hodiny. Ale to by musela být dostatečně zábavná a hráč by musel chtít objevovat, co dál půjde ve hře s bonusy a eventy dokázat.“
+  - **Cílová délka kampaně ~2 hodiny**, ale jen pokud ji nese obsah a objevování (nové bonusy, eventy, výzvy), ne zdražování a grind (P13). Nahrazuje „~60 min“ z bodu 2 rozhodnutí o odemykatelném obsahu.
+  - Násobič mincí: řádek Poštovní brašna (Mailbag) v Dílně. Needle: stejný dolet jako Dart, kratší let.
+  - Pásma hodů a minut v 08 §10.2 se přepočítají podle plánu obsahu na 2 hodiny.
