@@ -4,7 +4,7 @@
 >
 > Agenty jsem spustit nemohl (nemám k tomu nástroj), rešerši jsem udělal sám přes WebSearch.
 
-**Vyzkoušej to:** `npm start` → http://127.0.0.1:4173/prototype-styly.html?stiny. Přepínač „stíny“ nahoře: **NOVÉ: stíny na zem (08)**, **dnes: siluety**, **bez stínů**. Kód návrhu je v `prototype/styly/stiny.js` (kopie `papir.js` s novým režimem, originál se nemění).
+**Vyzkoušej to:** `npm start` → http://127.0.0.1:4173/prototype-styly.html?stiny. Přepínač „stíny“ nahoře: **NOVÉ: stíny na zem (08)**, **dnes: siluety**, **bez stínů**. Kód návrhu je v `archiv/prototype/styly/stiny.js` (kopie `papir.js` s novým režimem, originál se nemění).
 
 ---
 
@@ -84,7 +84,7 @@ Stíny jsou v dávce **P1 Scéna**. Návrh mění jen její obsah. Stencil pro s
 
 | Krok | Soubory | Co | Test a ověření |
 |---|---|---|---|
-| **S0 Schválení** | `prototype/styly/stiny.js` (hotovo) | uživatel porovná režimy „stíny na zem“ × „siluety“ | `BLOCKED` níže |
+| **S0 Schválení** | `archiv/prototype/styly/stiny.js` (hotovo) | uživatel porovná režimy „stíny na zem“ × „siluety“ | `BLOCKED` níže |
 | **S1 Čistá data** | `src/render3d/paper-shadow.js` (nový, čistý) | `shadowLight(mood)` (směr z polohy slunce v náladě, z < 0, když je slunce za městem), `SHADOW_LOOK` (tint, síla, fade, rozmazání, AO výšky podle vrstvy, vlaštovka), `projectToGround(p,L)` jako referenční funkce pro test | `tests/render3d-paper-shadow.test.js`: projekce bodu leží na y = 0 a posun odpovídá směru světla; fade monotónní; čtvrť 1 má stíny doleva (x < 0) a ke kameře (z > 0). Přidat modul do `render3d-purity.test.js` |
 | **S2 Maska** | `src/render3d/paper.js` | `shadowProjectMaterial()` (vertex: `w −= L·(w.y/L.y)`, síla podle výšky, MaxEquation do R), `shadowBlur()` (2 průchody, 5 vzorků), render targety 1/3 rozlišení bez hloubky, `dispose` při ztrátě kontextu | vizuálně A/B ve 3 velikostech; `renderer.info.memory` se po 10 hodech nezvyšuje |
 | **S3 Příjemci** | `src/render3d/paper.js` (`paperMaterial`), `scene.js` | uniformy `tMask`, `res`, `tint`, `k`; zem čte masku na `gl_FragCoord`; AO paty podle vrstvy; `scene.apply` nastaví směr a sílu z `plan.mood` | šedotónový test (bible 02 kap. 5): vlaštovka první; stěny bez šmouh |
@@ -100,7 +100,7 @@ Stíny jsou v dávce **P1 Scéna**. Návrh mění jen její obsah. Stencil pro s
 
 ## 7. Otázky pro uživatele
 
-1. **Líbí se ti „stíny na zem“ víc než dnešní?** Porovnej `img/stiny/dnes-misto2-celek.png` a `img/stiny/navrh-zem-misto2-celek.png`, nebo živě `prototype-styly.html?stiny` (přepínač stínů). Doporučuji nové.
+1. **Líbí se ti „stíny na zem“ víc než dnešní?** Porovnej `img/stiny/dnes-misto2-celek.png` a `img/stiny/navrh-zem-misto2-celek.png`, nebo živě `archiv/prototype-styly.html?stiny` (přepínač stínů). Doporučuji nové.
 2. **Jak výrazné?** (a) jako v ukázce (jemné, ranní), (b) výraznější a delší (síla 0,8, víc „Alto“), (c) skoro žádné, jen tmavší pata domů. Doporučuji (a) ve dne, (b) jen v Zlatých polích (nízké slunce).
 
 ## 8. Ověření

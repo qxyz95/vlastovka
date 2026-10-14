@@ -2,7 +2,7 @@
 
 # Živý svět: návrh pro 3D komiksové město
 
-Návrhový dokument, 14. 10. 2026. Jen návrh, kód se nemění. Navazuje na `research/bonusy/08-navrh-kolo2.md` (dále **08**), rozhodnutí `research/bonusy/06-rozhodnuti.md` (**06**), zásady P1–P15 z `research/kb/README.md` a na 3D prototyp (`prototype-3d.html`, `prototype/3d/`). Herní texty jsou anglicky, výklad česky. Štítky jako v KB: **V** opřeno o výzkum, **H** praxe nebo norma, **N** náš návrh nebo odhad k ověření.
+Návrhový dokument, 14. 10. 2026. Jen návrh, kód se nemění. Navazuje na `research/bonusy/08-navrh-kolo2.md` (dále **08**), rozhodnutí `research/bonusy/06-rozhodnuti.md` (**06**), zásady P1–P15 z `research/kb/README.md` a na 3D prototyp (`archiv/prototype-3d.html`, `archiv/prototype/3d/`). Herní texty jsou anglicky, výklad česky. Štítky jako v KB: **V** opřeno o výzkum, **H** praxe nebo norma, **N** náš návrh nebo odhad k ověření.
 
 **Zadání uživatele:** „Chceme mít živý a barevný svět, kde bude zábava se pohybovat a létat. Většinu hry hráč pouze sleduje obrazovku a prohlíží si animace.“ Směr: 3D město ve stylu komiksu. Techniky z `src/themes-verse.js` (tuš, půltón, posterizace, „on twos“, misregistrace) slouží jako inspirace.
 
@@ -323,7 +323,7 @@ Rychlosti jsou hrubý odhad podle 08 §2.4 (střední hráč, průměrná rychlo
 ## 4. Kamera jako režisér
 
 ### 4.1 Základ: sledování
-- Výchozí stav = dnešní `follow` / `render.view(f)` v metrech (`prototype/3d/geometry.js`): vlaštovka na `px` 148/640 zleva, zem 60/360 nad spodním okrajem, kamera se zvedá nad 190/360 výšky.
+- Výchozí stav = dnešní `follow` / `render.view(f)` v metrech (`archiv/prototype/3d/geometry.js`): vlaštovka na `px` 148/640 zleva, zem 60/360 nad spodním okrajem, kamera se zvedá nad 190/360 výšky.
 - **Oddálení podle tempa** z 08 §2.5: `zoom = clamp(1 − .035·(π − 1), .70, 1)` a posun vlaštovky z px 148 na 120 (`tempoZoom`, `tempoPx`, už v prototypu). Ve 3D se nemění FOV, ale vzdálenost kamery (méně deformace).
 - **Prostor před vlaštovkou** roste s rychlostí: při 160 m/s je vidět ~2 s letu dopředu. Ještě víc (px 110) jen ve vyhlídce, nikdy během události.
 - Všechny pohyby kamery jdou přes `damp`/`spring` z `motion.js` (nezávislé na fps).
@@ -481,7 +481,7 @@ Hráč, který hraje hodinu (~115 hodů), uvidí každé místo poprvé v klidu 
 
 ## 8. Plán realizace po fázích
 
-Odhady: **S** do 1 dne, **M** 2–4 dny, **L** 1–2 týdny práce agenta s ověřením. Vše nejdřív v `prototype/3d/` a `prototype-3d.html`, hra (`src/`) se mění až po rozhodnutí, že 3D nahradí 2D.
+Odhady: **S** do 1 dne, **M** 2–4 dny, **L** 1–2 týdny práce agenta s ověřením. Vše nejdřív v `archiv/prototype/3d/` a `archiv/prototype-3d.html`, hra (`src/`) se mění až po rozhodnutí, že 3D nahradí 2D.
 
 | Fáze | Obsah | Odhad | Závisí na |
 |---|---|---|---|

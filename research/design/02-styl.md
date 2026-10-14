@@ -241,7 +241,7 @@ Pravidla:
 |---|---|---|---|---|---|
 | 1 „Neon District“ | `style.css` (hra, `bonus.html`) | `#090d1b`, radiální `#302044` | azurová `#66f7ef`, magenta stín `#8d3e83` | Segoe UI, monospace (navigace, výsledek) | hranaté, 1–2 px, tvrdý stín 4–5 px |
 | 2 Atlas | `prototype/atlas/atlas.css` (spec `research/atlas/02-design-spec.md` §3) | `#1b1444`, panely `#251c57` | `gold`, barvy čtvrtí jen v grafice | Bahnschrift Condensed (nadpisy), Bahnschrift / Segoe UI (text), tabulková čísla | 3 px `ink`, rádius 6, stín 4 px `ink` |
-| 3 Papíry | `prototype-papers.html` | světle levandulová stránka s tečkami | `gold` | těžké zúžené písmo | 3 px tuš, tvrdý stín (`papiry-prototyp.png`) |
+| 3 Papíry | `archiv/prototype-papers.html` | světle levandulová stránka s tečkami | `gold` | těžké zúžené písmo | 3 px tuš, tvrdý stín (`papiry-prototyp.png`) |
 | zbytek | `style.css` základ, `<meta theme-color #162e32>`, mířicí panel `palette.aim.panel #203b3e` | tmavě zelenomodrá | zlatá `#f2ce87` | | z původní zelené verze, ve snímku `desktop-mireni.jpg` panel „Aim and hold“ zelený |
 
 Plus 2D styly `paper`, `blueprint`, `dusk` v `style.css` (`body[data-theme]`), které se smažou s 2D (06, 14. 10.). Uložený styl `dusk` v prohlížeči se ve 3D neprojeví (přepínač jen ve 2D).

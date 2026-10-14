@@ -1,6 +1,5 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {existsSync} from 'node:fs';
 import {placeCards,lifeCards,hills,groundCards,cardVertices,cardTriangles,cardKind,ID,CARD_D,FAR_H,PLACE_W,THIN,LISTA} from '../src/render3d/paper-cards.js';
 import {cityChunk,chunkOffset} from '../src/render3d/geometry.js';
 import {palette} from '../src/render3d/palette.js';
@@ -28,15 +27,7 @@ test('placeCards: deterministické, nemutuje chunk, lokální x, tloušťka kare
  assert.deepEqual(placeCards(cityChunk(1),'cyber'),placeCards(cityChunk(1)));
 });
 
-test('prototyp a hra dávají stejné karty (přenos 1:1 z papir-data.js)',async t=>{
- const url=new URL('../prototype/styly/papir-data.js',import.meta.url);if(!existsSync(url))return t.skip('prototyp smazán');
- const proto=await import(url.href);
- for(let i=0;i<4;i++)assert.deepEqual(placeCards(cityChunk(i)).map(k=>({...k,x:k.x+chunkOffset(i)})).map(k=>JSON.stringify(k)),proto.placeCards(i).map(k=>JSON.stringify(k)),`místo ${i}`);
- assert.deepEqual(lifeCards().cards,proto.lifeCards().cards);assert.deepEqual(hills(-400,1600),proto.hills(-400,1600));
- // Prototyp nezná tenké karty (K3, 11-katalog kap. 1.3): shoda platí pro plné kreslení (thin:false).
- const list=proto.placeCards(1);assert.deepEqual(cardVertices(list,{thin:false}),proto.cardVertices(list));
-});
-
+// Test přenosu 1:1 z prototypu papir-data.js zrušen 15. 10.: prototyp je zmrazený v archiv/prototype/styly, zdrojem pravdy je hra.
 test('cardVertices: počet vrcholů odpovídá cardTriangles, normály jednotkové',()=>{
  const list=[...placeCards(cityChunk(1)),...lifeCards().cards.slice(0,200),...groundCards()],v=cardVertices(list);
  assert.equal(v.p.length,v.n.length);assert.equal(v.c.length*3,v.p.length);assert.equal(v.p.length/9,cardTriangles(list));

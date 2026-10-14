@@ -1,4 +1,4 @@
-/* Katalog modelů: vývojářská stránka ve stylu prototype/styly/papir.css (tmavý pult, světlé ovládání). */
+/* Katalog modelů: vývojářská stránka ve stylu archiv/prototype/styly/papir.css (tmavý pult, světlé ovládání). */
 body{margin:0;background:#2b2826;color:#efe9df;font:14px/1.45 system-ui,"Segoe UI",sans-serif}
 .bar{padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:#1e1c1a;border-bottom:1px solid #3a3632}
 .bar h1{font-size:16px;margin:0;width:100%}.bar h1 small{font-weight:400;color:#b3aa9e;margin-left:8px}

@@ -8,7 +8,7 @@
 
 **Vyzkoušej si to:** `npm start` → http://127.0.0.1:4173/prototype-styly.html (výchozí stránka je teď tento návrh; srovnání 5 směrů z `04-nove-smery.md` je na `?srovnani=1`). Nahoře se přepíná záběr (Dílna, let, událost s QTE, výsledek), místo 1–4, velikost (1280×800, telefon 375×667 a 932×430), druh stínů a jazyk. Tlačítko „Změřit“ vypíše kontrast vlaštovky z pixelů a výkon.
 
-Prototyp kreslí **skutečné rozložení hry**: místa z `cityChunk` (`src/render3d/geometry.js`), život čtvrti ze `suburbLife` (`src/render3d/life.js`), kamery `cameraFor` (`frame.js`) a `restCamera` (`pose.js`), polohu ruky dítěte `HAND` a `KID`. Mění jen to, jak se to kreslí. Kód: `prototype/styly/papir-data.js` (čistá data a geometrie, běží v Node), `papir.js` (three.js), `papir.css` (UI).
+Prototyp kreslí **skutečné rozložení hry**: místa z `cityChunk` (`src/render3d/geometry.js`), život čtvrti ze `suburbLife` (`src/render3d/life.js`), kamery `cameraFor` (`frame.js`) a `restCamera` (`pose.js`), polohu ruky dítěte `HAND` a `KID`. Mění jen to, jak se to kreslí. Kód: `archiv/prototype/styly/papir-data.js` (čistá data a geometrie, běží v Node), `papir.js` (three.js), `papir.css` (UI).
 
 **Jak číst:** „Pravidlo“ má platit, „proč“ odkazuje na pilíř (**P1–P4**) nebo referenci, kterou si uživatel vybral. Čísla jsou z prototypu, kontrasty změřené (WCAG poměr), ne odhadnuté.
 
@@ -52,7 +52,7 @@ Po pořízení snímků se v prototypu ještě ztmavil malý text na stole (`#4a
 
 Obrázek: `img/papir/paleta.png`. Pravidlo: **každá role má jednu barvu**, odstíny jen jako `mix()` z tokenu (převzato z 02). Tokeny ve třech vrstvách: primitivní (hex) → role → komponenty (kap. 8).
 
-### 2.1 Primitivní tokeny (`prototype/styly/papir-data.js TOKENS`, `papir.css`)
+### 2.1 Primitivní tokeny (`archiv/prototype/styly/papir-data.js TOKENS`, `papir.css`)
 
 | Token | Hex | Kde |
 |---|---|---|

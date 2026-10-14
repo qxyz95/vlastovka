@@ -61,7 +61,7 @@ Moje diagnóza (kvůli srovnání, ne kritika schválené práce):
 
 ## 5. Čtyři směry
 
-Hodnoty kontrastu: **WCAG poměr změřený z vykresleného snímku** (prototyp, `__styly.measure()`: pixely vlaštovky = ty, které zmizí, když ji skryjeme; pozadí = okolí 48 × 48 px; 5 okamžiků letu, uvádím nejhorší). „Dvojí hrana“ = výplň nebo obrys vlaštovky ≥ 3 : 1 vůči okolí (bible 02 kap. 5 tento cíl má a nové směry ho přebírají). QTE a UI počítané z hex hodnot (disk QTE smíchaný s nejsvětlejším i nejtmavším pásem nebe dané čtvrti, uvádím nejhorší). Barvy: `prototype/styly/styles.js`.
+Hodnoty kontrastu: **WCAG poměr změřený z vykresleného snímku** (prototyp, `__styly.measure()`: pixely vlaštovky = ty, které zmizí, když ji skryjeme; pozadí = okolí 48 × 48 px; 5 okamžiků letu, uvádím nejhorší). „Dvojí hrana“ = výplň nebo obrys vlaštovky ≥ 3 : 1 vůči okolí (bible 02 kap. 5 tento cíl má a nové směry ho přebírají). QTE a UI počítané z hex hodnot (disk QTE smíchaný s nejsvětlejším i nejtmavším pásem nebe dané čtvrti, uvádím nejhorší). Barvy: `archiv/prototype/styly/styles.js`.
 
 ### B Papírové město
 
@@ -260,11 +260,11 @@ Navrhovaný další krok (po volbě uživatele): jedna čtvrť ve skutečné hř
 - **Názvy čtvrtí** (`src/locales`: VIOLET SUBURBS, NEON CORE) nesou styl A0. Při změně směru návrh pro product-designera: přejmenovat podle denní doby nebo dominanty (C: Sunrise Suburbs, Moon Harbour, Great Sunset, Night Metropolis; E: Golden Suburbs, Blue Docks, Great Sun, Night City). Jen pracovní názvy.
 - **Nový nález v A0 (platí i bez změny směru):** perfekt QTE `#ff4f9e` na tušovém disku 60 % nad světlým nebem má 1,97–2,24 : 1, stopa kruhu `MUTE #a79cd8` 2,4–2,7 : 1 (výpočet z hex, disk smíchaný s pásy nebe z `mood.js`). Bible kap. 5.5 chce ≥ 3 : 1. Návrh pro game-dev: disk 75 % nebo perfekt světlejší (`mix(MAGENTA, PAPER, .3)`). Měřeno analyticky, ve hře NOT ASSESSED.
 - **„Perfekt = magenta, zlatá = jen hodnota“** (06, 14. 10.): v nových směrech má perfekt vždy vlastní barvu + tvar hvězdy a hodnota (mince) vlastní teplou barvu; princip „jedna role = jedna barva“ se zachová, konkrétní barvy se změní.
-- **Prototyp** (`prototype-styly.html`, `prototype/styly/`) je jen pro srovnání; importuje ze `src/render3d/` (geometry, toon, plane, palette, mood) a nic v `src/` nemění.
+- **Prototyp** (`archiv/prototype-styly.html`, `archiv/prototype/styly/`) je jen pro srovnání; importuje ze `src/render3d/` (geometry, toon, plane, palette, mood) a nic v `src/` nemění.
 
 ## 9. Otázky pro uživatele
 
-Obrázky ke každé otázce jsou v `research/design/img/smery/` a živě v `prototype-styly.html`.
+Obrázky ke každé otázce jsou v `research/design/img/smery/` a živě v `archiv/prototype-styly.html`.
 
 1. **Kterou z pěti bys chtěl hrát?** A0 Dnešek, B Papírové město, C Cestovní plakát, D Risograf, E Protisvětlo. Porovnej např. stejné místo: `a0-3-horizont-let.png`, `b-3-horizont-let.png`, `c-3-horizont-let.png`, `d-3-horizont-let.png`, `e-3-horizont-let.png`. Doporučení: C, druhá E.
 2. **Co se ti líbí na referencích?** Alto's Odyssey (klid, světlo, siluety), Tearaway a Paper Mario (svět z papíru), staré cestovní plakáty (ploché barvy, slunce, písmo), riso tisky (zářivé barvy, zrno), Monument Valley (čistá geometrie). Stačí „tohle ano, tohle ne“; pomůže to doladit vybraný směr.

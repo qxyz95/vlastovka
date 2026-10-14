@@ -157,7 +157,7 @@ function bench(n=240,{seed=1,fromLast=false}={}){
  const a=frameStats(all),c=frameStats(cpu),r2=v=>+v.toFixed(2),st=R.s.stats();
  return {frames:a.n,avg:r2(a.avg),p95:r2(a.p95),cpu:r2(c.avg),cpuP95:r2(c.p95),calls,tris,size:st.size,dpr:st.dpr,post:st.post,quality:st.quality,distance:Math.round(f.x)};
 }
-// measurePlane({size}): kontrast vlaštovky z pixelů (spec 06 kap. 5, krit. 1, jako prototype/styly/papir.js measure). Překreslí poslední plán
+// measurePlane({size}): kontrast vlaštovky z pixelů (spec 06 kap. 5, krit. 1, jako archiv/prototype/styly/papir.js measure). Překreslí poslední plán
 // dvakrát se skrytou stopou (s vlaštovkou a bez ní), okno ±size CSS px kolem plan.view (px,py), pak vrátí viditelnost a snímek obnoví.
 function measurePlane({size=24}={}){
  const {s,plan,gl}=R??{};if(!s||!plan||R.lost)return null;

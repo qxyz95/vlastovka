@@ -246,7 +246,7 @@ Rozhodnutí 06 bod 1: jediný styl je Papírové město. Co uživatel viděl: od
 | Vlaštovka | `plane.js` cyber větev (magenta a azurový přehyb) | jen papír (bible kap. 17) |
 | UI styly | `style.css`: výchozí tmavé tokeny Atlasu (indigo), papír jen pod `body[data-styl=papir]` (~100 pravidel) | papírové tokeny na `:root`, tmavé smazat. `color-scheme: light`, `meta theme-color` v `index.html` |
 | 2D záloha | `render.js` + `themes.js` (cyber pixel, paper collage, blueprint, dusk), `?render=2d` | **neměnit bez rozhodnutí**: CLAUDE.md drží 2D zálohu do fáze f plánu 3D. Je to jen záloha, hráč ji nevidí |
-| Prototypy | `prototype/3d/`, `prototype/styly/` (srovnání 5 směrů), `prototype/atlas/art.js`, `prototype/menu/` | `prototype/3d/` se maže ve fázi g (render3d.md). Srovnání směrů zachovat jako archiv. Atlas a menu převést na papírové tokeny, až se budou dál používat |
+| Prototypy | `archiv/prototype/3d/`, `archiv/prototype/styly/` (srovnání 5 směrů), `prototype/atlas/art.js`, `prototype/menu/` | `archiv/prototype/3d/` se maže ve fázi g (render3d.md). Srovnání směrů zachovat jako archiv. Atlas a menu převést na papírové tokeny, až se budou dál používat |
 | Hudba | `src/music/a-neon-glide.js` aj. | mimo vzhled, nerozhoduji (jen jméno skladby) |
 | Testy | `render3d-living-colors`, `render3d-palette`, `render3d-mood`, `render3d-ink`, `themes` aj. čtou `CYBER` | upravit s mazáním, ne předem |
 

@@ -9,7 +9,7 @@
 2. `juice.stepFx` ukládá částice ve „světových px“ (`cam+px`). Ve 3D musí `cam` zůstat v pevné jednotce 2,1 px/m nezávislé na zoomu (smlouva níže).
 3. `tests/events.test.js` importuje `createDecorations`/`stepDecorations` z `decorations.js`. Soubor zůstává, smaže se jen `drawDecorations`.
 4. `scenes.js` se nemění. `moodAt` bude v `src/render3d/mood.js`.
-5. Prototyp `prototype/3d/main.js` (varianta a) importuje 2D `render.js`. Varianta (a) se musí vyřadit před smazáním 2D.
+5. Prototyp `archiv/prototype/3d/main.js` (varianta a) importuje 2D `render.js`. Varianta (a) se musí vyřadit před smazáním 2D.
 6. Testované moduly nesmí importovat `three` ani DOM (Node nemá `node_modules`). Hlídá to strážní test.
 7. `simulation/progression/` a `tests/progression*` nejsou v gitu. Pravidlo „nesahat“.
 8. Riziko střetu s hudbou je jen v `ui.js` a `index.html`.
@@ -69,7 +69,7 @@
 | **d3 Mobil** | DPR ≤ 1,5, bez stínů, `uiScale` | S | telefon ≥ 30 fps |
 | **e Papíry a události** | `paperLook` (Copy, Kraft, Washi, Neon Foil), herci pára, termika, dron, hvězda, `drawQte` podle typu | M | každý typ má pohled, neznámý nespadne |
 | **f Odstranění 2D** (samostatný commit) | smazat `render.js`, `route-render.js`, `backgrounds.js`, `ambient.js`, `atmosphere.js` (2D části), `fx-render.js`, `themes.js`, `themes-verse.js`, `assets/backgrounds/`, `scripts/build-backgrounds.mjs`, `background-preview.html`, `tests/themes.test.js` (rozdělit `verse.test.js`); upravit `decorations.js`, `ui.js`, `index.html`, `style.css`, `CLAUDE.md`, `README.md`; zachovat `scenes.js`, `perf.js`, `motion.js`, `juice.js` | S–M | brána níže |
-| **g Úklid prototypů** | smazat `prototype-3d.html`, `prototype/3d/` | S | žádný import z `prototype/` |
+| **g Úklid prototypů** | smazat `archiv/prototype-3d.html`, `archiv/prototype/3d/` | S | žádný import z `prototype/` |
 
 **Brána pro smazání 2D:**
 - hotové fáze 0, a1–a6 a b0,

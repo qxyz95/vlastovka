@@ -99,7 +99,7 @@ Záběr míření se podle šířky scény volí sám (`aimWidth`): 360 a 375 px
 - **Cyber styl, vlaštovka v ruce:** `workshop.js` (není v mém zadání) bere `plan.hand.scale` jen v papíru (`sc=scale*(paper?p.scale??1:1)`). V cyber stylu je proto vlaštovka v ruce dál 7,75 m, tedy v záběru 16 m přes polovinu obrazu, a po výhozu (plane.js už měří v obou stylech) skočí na 0,5 m. Oprava je jeden řádek ve `workshop.js:133`: `sc=scale*(p.scale??1)`.
 - **Částice v klidu a při výhozu:** `fx-map.particleScreen` násobí světové px `k` z `view`. V klidu je teď `k ≈ 19` (dřív 1,25), takže efekty juice v klidu a v prvních snímcích výhozu (`fxEvent('throw')`) budou ~15× větší. NOT ASSESSED, `fx-map.js`/`juice.js` nejsou v zadání.
 - **Mimo zadání, neudělané:** opoždění kamery 0,1 s při puštění, zástava 70 ms při perfektu (01 §2.2), sklon −8° při míření (02 §3) a prolnutí 0,2 s v reduced motion (renderer má jen příznak `camera.cut`).
-- **Prototypy:** `prototype/styly/papir.js` volá `restCamera()` bez šířky, takže dostane nový záběr 16 m místo 244 m.
+- **Prototypy:** `archiv/prototype/styly/papir.js` volá `restCamera()` bez šířky, takže dostane nový záběr 16 m místo 244 m.
 - Dítě v klidu: `kidPose` couvá o 1,43 m a dýchá ±0,48 m (měřítko obřího dítěte), v záběru 16 m to bude výrazné. Patří k S4 (dítě 1,2 m).
 
 ## Příloha: skript metrik

@@ -384,7 +384,7 @@ p.atlas={levels:{chain:1},        // jen KOUPENÉ úrovně navíc (0…max−1);
 
 | # | Kdo | Co | Soubory (vlastník) |
 |---|---|---|---|
-| A1 | **product designer** | Wireframy mobil (portrét a na šířku) a desktop. Vizuální jazyk: komiksová pohlednice, půltón, obrys, palety čtvrtí ze světa §2.2. Všechny stavy karty z 3.2, karta čtvrti, souhrn Delivered, výběr kapsy. Specifikace pohybu včetně reduced motion. Změřené kontrasty. **Kompletní sada anglických textů:** 16 teaserů (věta, která slibuje rozuzlení), 4 věty rámce čtvrtí, šablony účinků, štítky, tlačítka, prázdné stavy, toasty. **Klikací prototyp s falešnými daty.** | nové `prototype-atlas.html` + `prototype/atlas/` (vzor `prototype-3d.html`), `src/` beze změny |
+| A1 | **product designer** | Wireframy mobil (portrét a na šířku) a desktop. Vizuální jazyk: komiksová pohlednice, půltón, obrys, palety čtvrtí ze světa §2.2. Všechny stavy karty z 3.2, karta čtvrti, souhrn Delivered, výběr kapsy. Specifikace pohybu včetně reduced motion. Změřené kontrasty. **Kompletní sada anglických textů:** 16 teaserů (věta, která slibuje rozuzlení), 4 věty rámce čtvrtí, šablony účinků, štítky, tlačítka, prázdné stavy, toasty. **Klikací prototyp s falešnými daty.** | nové `prototype-atlas.html` + `prototype/atlas/` (vzor `archiv/prototype-3d.html`), `src/` beze změny |
 | A2 | **vývojář „logika Atlasu“** | `atlas-content.js` (struktura a dočasné texty, finální dodá A1), `atlas.js`, `atlas-text.js`, čísla jako fixture `PROVISIONAL` z dnešního `params.mjs`, testy z 6.4 | `src/atlas-content.js`, `src/atlas.js`, `src/atlas-text.js`, `tests/atlas*.test.js` |
 | A3 | **vývojář „save“** | save v4, migrace, sanitace, výchozí `fresh()` | `src/storage.js`, `fresh()` v `src/core.js` (jen tento řádek), `tests/storage.test.js` |
 

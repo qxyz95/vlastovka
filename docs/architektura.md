@@ -69,10 +69,10 @@ Priorita 1 z `reports/Vylepšení animací a nástroje zdarma.md`.
 - Testy `tests/audio-mix.test.js`. Offline benchmark ve skrytém okně je nespolehlivý, zátěž ověřovat výpadky (`playbackStats`) v reálném čase.
 
 ## Prototypy
-- **3D prototyp** (14. 10. 2026, původně zkouška stylu): `prototype-3d.html` + `prototype/3d/` (`geometry.js` čisté funkce bez three.js: vlaštovka, kvádry/jehlany, `cityChunk(screen)` podle `ROUTE`, kamera `follow` = `render.view` v metrech; `toon.js` toon rampa, obrys inverted hull vlastním shaderem, půltón/posterizace; `main.js` varianty (a) 3D vlaštovka nad 2D renderem a (b) 3D město 2,5D). Dnes `prototype/3d/main.js` importuje z `src/render3d/`. 2D vlaštovku skrývá kopie tématu cyber s průhlednými barvami. Smaže se ve fázi g plánu 3D.
+- **3D prototyp** (14. 10. 2026, původně zkouška stylu): `archiv/prototype-3d.html` + `archiv/prototype/3d/` (`geometry.js` čisté funkce bez three.js: vlaštovka, kvádry/jehlany, `cityChunk(screen)` podle `ROUTE`, kamera `follow` = `render.view` v metrech; `toon.js` toon rampa, obrys inverted hull vlastním shaderem, půltón/posterizace; `main.js` varianty (a) 3D vlaštovka nad 2D renderem a (b) 3D město 2,5D). Dnes `archiv/prototype/3d/main.js` importuje z `src/render3d/`. 2D vlaštovku skrývá kopie tématu cyber s průhlednými barvami. Smaže se ve fázi g plánu 3D.
 - **three.js r170** vendorováno ve `vendor/three/` (MIT, import map, bez npm).
 - **Atlas:** `prototype/atlas/` (`content.js`, `logic.js`, `numbers.js`, `art.js`; zástupné SVG pohlednice), stránka `prototype-atlas.html` vzniká (fáze A1).
-- Další: `prototype-papers.html` + `prototype/papers/`, `render3d-preview.html`.
+- Další: `archiv/prototype-papers.html` + `archiv/prototype/papers/`, `render3d-preview.html`.
 
 ## Simulátor progrese (`simulation/progression/`)
 - `params.mjs`, `model.mjs`, `abilities.mjs`, `campaign.mjs`, `run.mjs`, `README.md` (spuštění a přepínače), `AUDIT.md`, `REPORT.md`, výstupy `out/`, testy `tests/progression*.test.js`.

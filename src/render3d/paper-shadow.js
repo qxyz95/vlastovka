@@ -1,4 +1,4 @@
-// Stíny Papírového města „na zem“ (čisté, bez three.js). Zdroj: research/design/08-stiny.md kap. 5–6 (S1), prototyp prototype/styly/stiny.js (VY, LIGHT, projMat).
+// Stíny Papírového města „na zem“ (čisté, bez three.js). Zdroj: research/design/08-stiny.md kap. 5–6 (S1), prototyp archiv/prototype/styly/stiny.js (VY, LIGHT, projMat).
 // Rozhodnutí 14. 10. (06-rozhodnuti.md „Stíny, přechody a modely“): stíny na zem, ráno jemné, ve Zlatých polích výraznější a delší; siluety ze skyline zrušeny.
 // Každá karta (i vlaštovka) se promítne podél světla na zem (y = 0) do malé masky, maska se rozmaže a zem ji čte na stejném místě obrazovky.
 // Síla klesá s výškou bodu (u paty ostře a tmavě), vlaštovka slábne s výškou letu. Karty stín nedostávají, jen pata karty se jemně ztmaví (AO).

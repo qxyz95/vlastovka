@@ -1,5 +1,5 @@
 // Palety barev pro 3D a UI vrstvu (čisté). Jediný styl je Papírové město (R0, rozhodnutí 06 15. 10.): zdroj pravdy bible
-// research/design/05-styl-papir.md (kap. 2, 8, 9, 11), prototyp prototype/styly/papir-data.js. Nová barva = nový token se jménem role zde,
+// research/design/05-styl-papir.md (kap. 2, 8, 9, 11), prototyp archiv/prototype/styly/papir-data.js. Nová barva = nový token se jménem role zde,
 // odchylky jen mix() z tokenu. Nebe, opar a světlo čtvrtí jsou v paper-mood.js. palette() → PAPIR (parametr se ignoruje).
 export const mix=(a,b,k)=>{const h=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),x=h(a),y=h(b);return '#'+x.map((v,i)=>Math.round(v+(y[i]-v)*k).toString(16).padStart(2,'0')).join('');};
 // Tokeny kap. 2.1 (stejná jména jako papir-data.js TOKENS), role kap. 2.2. Nebe, opar a světlo čtvrtí jsou v paper-mood.js.

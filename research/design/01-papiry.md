@@ -2,7 +2,7 @@
 
 # Design: čtyři druhy papíru (Copy → Kraft → Washi → Neon Foil)
 
-Autor: product-designer, 14. 10. 2026. Stav: **návrh k odsouhlasení**. Prototyp: `prototype-papers.html` + `prototype/papers/` (spuštění `npm start`, http://127.0.0.1:4173/prototype-papers.html, pro automat `?timer`).
+Autor: product-designer, 14. 10. 2026. Stav: **návrh k odsouhlasení**. Prototyp: `archiv/prototype-papers.html` + `archiv/prototype/papers/` (spuštění `npm start`, http://127.0.0.1:4173/prototype-papers.html, pro automat `?timer`).
 
 Vychází z: `research/bonusy/08-navrh-kolo2.md` (W2 Paper, §8.2, §8.5), `research/bonusy/06-rozhodnuti.md` (14. 10.: další druh se otevře doletem na 3. místo čtvrti; 3D komiksové město; čísla mají být vidět; bez nutkavých prvků), `research/svet/01-zivy-svet.md` §2 (cesta za sluncem, palety a barva stopy podle čtvrti), KB P1, P2, P3, P7, P11, P13, P15, bloky 05 §4, 07 N1/N8, 08 N1.
 
@@ -37,7 +37,7 @@ Odemčení podle 06 (14. 10.): Kraft na **Gardens at the Edge** (3. místo Viole
 | Korunka (3. úroveň druhu) | **Ruled contrails**: dvě modré linky z konců křídel (viz §6 ot. 1) | **Sea spray**: kapky tříště za ocasem (08 W2) | **Paper lantern**: vlaštovka svítí zevnitř, teplá aura (08 W2) | **Neon comet**: delší kometa a tiché „pop“ hvězdiček při průletu místem (08 W2) |
 | Ikona v UI | list s linkami | balík s provázkem | vlnky | čtyřcípá hvězda |
 
-Data a vzory jsou v `prototype/papers/papers.js` (`PAPERS`, `paintPattern`), shader v `prototype/papers/main.js`.
+Data a vzory jsou v `archiv/prototype/papers/papers.js` (`PAPERS`, `paintPattern`), shader v `archiv/prototype/papers/main.js`.
 
 ## 2. Vzhled na 3D vlaštovce (toon)
 
@@ -108,8 +108,8 @@ Závěr: proti světlému obzoru (růžový soumrak, zlatý západ) má **každ�
 
 ## 7. Poznámky k implementaci (pro game-dev, nic z toho prototyp v `src/` nemění)
 
-- **`palette.js` (R2):** přidat `papers` (tóny, obrys, přehyby, stopa, částice, styl čar, pružina) a barvu stopy podle čtvrti (`trail` dnes jen 2 barvy kyber). Data jsou v `prototype/papers/papers.js` připravená k přenesení.
-- **`plane.js` (R1):** materiál vlaštovky z `MeshToonMaterial` na vlastní shader (`prototype/papers/main.js` → `VS/FS`): 3 tóny, vzor, půltón ve stínu, foil, glow, `clipLo/clipHi/edge` pro výměnu. Druhý obrys pro Foil. Stopa podle `papers[i].trail.ribbons` (víc pásků, kroucení, zúžení, duhové úseky). `setModel` rozšířit na `setPaper`.
+- **`palette.js` (R2):** přidat `papers` (tóny, obrys, přehyby, stopa, částice, styl čar, pružina) a barvu stopy podle čtvrti (`trail` dnes jen 2 barvy kyber). Data jsou v `archiv/prototype/papers/papers.js` připravená k přenesení.
+- **`plane.js` (R1):** materiál vlaštovky z `MeshToonMaterial` na vlastní shader (`archiv/prototype/papers/main.js` → `VS/FS`): 3 tóny, vzor, půltón ve stínu, foil, glow, `clipLo/clipHi/edge` pro výměnu. Druhý obrys pro Foil. Stopa podle `papers[i].trail.ribbons` (víc pásků, kroucení, zúžení, duhové úseky). `setModel` rozšířit na `setPaper`.
 - **`fx-map.js` / `ui-layer.js`:** `speedLines` beze změny, styl kresby předat z palety papíru. Částice z `juice.js` dostanou druh podle papíru (dnes 0–3 prach/jiskry).
 - **`workshop.js` (R3):** vlaštovka v ruce dítěte ve stejném materiálu, výměna „přeložením“ v Dílně.
 - **Výkon:** prototyp ~1 ms CPU/snímek (desktop, 4 výřezy). Na iPhonu neměřeno (NOT ASSESSED).

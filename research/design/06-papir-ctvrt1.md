@@ -1,10 +1,10 @@
-> **ZASTARALÉ (15. 10. 2026):** příznak `?styl=papir`, „zbytek hry ve starém stylu“ a záloha `?styl=cyber` (jediný styl je Papírové město, cyber větve a přepínač smazané v U0 a R0); dávky P0–P4 jsou hotové; platí `research/design/05-styl-papir.md`. Popis čtvrti 1 a prototypu `prototype-styly.html` zůstává jako podklad. Nečíst jako zadání.
+> **ZASTARALÉ (15. 10. 2026):** příznak `?styl=papir`, „zbytek hry ve starém stylu“ a záloha `?styl=cyber` (jediný styl je Papírové město, cyber větve a přepínač smazané v U0 a R0); dávky P0–P4 jsou hotové; platí `research/design/05-styl-papir.md`. Popis čtvrti 1 a prototypu `archiv/prototype-styly.html` zůstává jako podklad. Nečíst jako zadání.
 
 # Spec: Papírové město, čtvrť 1 ve hře
 
 > **NÁVRH, čeká na schválení bible `05-styl-papir.md`** (pilíře, paleta, názvy). Napsal art-director 14. 10. 2026 pro game-deva (a product-designera v kap. 7). Cíl podle rozhodnutí uživatele (06, 14. 10.): **nejdřív jedna čtvrť (místa 1–4 a Dílna) v novém stylu přímo ve hře, zahrát, pak zbytek.** Zbytek hry zatím běží ve starém stylu.
 
-Předloha: prototyp `prototype-styly.html` (výchozí stránka), kód `prototype/styly/papir-data.js` (čistý, přenést skoro beze změny), `prototype/styly/papir.js` (three.js, vzor materiálů a stínů), `prototype/styly/papir.css` (UI). Snímky `research/design/img/papir/`. Čísla a barvy jsou v bibli 05; tady je jen *co a kde* změnit.
+Předloha: prototyp `archiv/prototype-styly.html` (výchozí stránka), kód `archiv/prototype/styly/papir-data.js` (čistý, přenést skoro beze změny), `archiv/prototype/styly/papir.js` (three.js, vzor materiálů a stínů), `archiv/prototype/styly/papir.css` (UI). Snímky `research/design/img/papir/`. Čísla a barvy jsou v bibli 05; tady je jen *co a kde* změnit.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 paths:
   - "src/render3d/**"
-  - "prototype/3d/**"
+  - "archiv/prototype/3d/**"
 ---
 
 # 3D renderer
@@ -13,5 +13,5 @@ paths:
 - Rozpočty: desktop P95 ≤ 16,7 ms, CPU ≤ 6 ms, ≤ 120 draw calls; na místo nejvýš 14 draw calls a 15 tis. trojúhelníků; telefon ≥ 30 fps, DPR ≤ 1,5. Dílna a výsledek 30 fps, skrytá záložka nekreslí.
 - Reduced motion: bez otřesu a zoomu, zpětná vazba zůstává.
 - Výkon měřit ve viditelném okně (`?perf=1`, `__r3d.bench`), výsledky do `reports/3d/`. Ve skrytém okně jen funkční kontrola (`?timer`).
-- `prototype/3d/` importuje z `src/render3d/`, nové věci psát do `src/render3d/`. Prototyp se smaže ve fázi g.
+- `archiv/prototype/3d/` importuje z `src/render3d/`, nové věci psát do `src/render3d/`. Prototyp se smaže ve fázi g.
 - Testy `tests/render3d-*.test.js`, autopilot `tests/helpers/auto-input.js`.
