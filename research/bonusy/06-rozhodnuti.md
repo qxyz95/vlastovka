@@ -198,3 +198,9 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Modely a dohled (15. 10.):** levnější modely podle úkolu (Opus návrh a složitá logika, Sonnet dávky se specifikací, Haiku hledání), nejvýš 2 souběžní agenti, orchestrátor kontroluje diff a sám ověřuje testy, eskalace na Opus po druhém neúspěchu. Pravidla v `.claude/rules/orchestrace.md`. Zkouška: úklid dokumentů a U1 na Sonnetu.
 - **Práh QTE v tutoriálu (15. 10.):** výškový práh 8 m platí i pro tutoriálový let (seed 1) bez výjimky. Při plochém nebo velmi strmém prvním hodu holub nepřijde a hráč ho potká v dalším hodu. Karta QS2 („tutoriál beze změny“) tím neplatí.
 - **Rozbité prototypy (15. 10.):** `prototype/3d`, `prototype/styly`, `prototype/papers` a jejich stránky přesunuty do `archiv/` (zmrazené, nespustitelné). Test přenosu 1:1 z `papir-data.js` zrušen, zdrojem pravdy je hra.
+- **Chuť hrát dál, odpovědi na BLOCKED z `research/plan-hratelnost/04-chut-hrat-dal.md` (15. 10.):** návrh se opírá o KB a studie (uživatel: řídit se výzkumem, ne jeho zjednodušeným popisem).
+  1. **(a)** „Skoro každý hod novinka nebo koupě“ se mění na **„skoro každý hod důvod hodit znovu“** (blízký cíl, závod s minulým výkonem, novinka ve vzduchu); koupě a novinky střídměji (Mekler 02 [13], Lomas 2017).
+  2. **(a)** Na výsledku **jeden čip na nejbližší koupi**, výběr dál v Dílně (mění rozhodnutí 12 z plánu hratelnosti).
+  3. **(c)** **Žádná tužková stopa** minulého ani nejlepšího hodu v letu.
+  4. **(c)** Druhé dítě (nálezce) **až ve finále**, ne od začátku.
+  5. **(a)** Vystřihovánka se rozkládá **v každé čtvrti jinak** (4 způsoby).
