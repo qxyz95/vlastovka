@@ -1,8 +1,14 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {registerHooks} from 'node:module';
-import {MODELS,modelById,buildModel,buildShadow,modelTriangles,defaults,bounds,place,drawnLods,nearestLod,SCALE,LOD_LAYER} from '../src/render3d/models/index.js';
-import {windowCut,door,gate,tones,hash,chimney,gableRoof,eaveRoof,roofAt,balcony,downpipe,dormer,shopfront,steppedGable,gableOutline,GATE} from '../src/render3d/models/parts.js';
+import {MODELS,ACTIVE_MODELS,modelById,buildModel,buildShadow,modelTriangles,defaults,bounds,place,drawnLods,nearestLod,SCALE,LOD_LAYER,diorama,dioramaShadow,DIORAMA,LAUNCH,AIM_SHOT,MENU_SHOT} from '../src/render3d/models/index.js';
+import {windowCut,door,gate,tones,hash,chimney,gableRoof,eaveRoof,roofAt,balcony,downpipe,dormer,shopfront,steppedGable,gableOutline,GATE,cutRoof,CUT_ROOF} from '../src/render3d/models/parts.js';
+import {KID as CHILD} from '../src/render3d/models/kid.js';
+import {ATTIC} from '../src/render3d/models/workshop-attic.js';
+import {LOFT} from '../src/render3d/models/loft-balcony.js';
+import {HOIST} from '../src/render3d/models/hoist-beam.js';
+import {WALL} from '../src/render3d/models/retaining-wall.js';
+import {PLANE_OFFSET} from '../src/render3d/geometry.js';
 import {skylineLayout} from '../src/render3d/models/far-skyline.js';
 import {gableHeight} from '../src/render3d/models/house-gable.js';
 import {WORKSHOP_AT,SIGN,KID,S} from '../src/render3d/models/workshop.js';
@@ -18,6 +24,7 @@ import {palette,PAPIR,PAPER_TOKENS as PT,mix} from '../src/render3d/palette.js';
 // Katalog modelů (research/design/10-katalog-modelu.md, K1) a modely skupin G1 (11-katalog-ctvrt1.md, K3) a G2 (K4): rozhraní, LOD, stropy, měřítko, determinismus.
 const HEX=/^#[0-9a-f]{6}$/,SHAPES=new Set(['box','panel','lista','gable','eave','pyr','disc','flag','poly','prism']),near=(a,b,e=1e-6)=>Math.abs(a-b)<=e;
 const D1=()=>palette('papir').city.districts[0];
+const G2B=['kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam','retaining-wall'];
 // Kombinace parametrů (kartézský součin); barvy a vrstva nemění počet karet, proto se u velkých modelů berou jen výchozí.
 const variants=(m,{all=false}={})=>Object.entries(m.params).reduce((acc,[k,v])=>acc.flatMap(p=>(all||!['color','roof','layer'].includes(k)?v.values:[v.default]).map(x=>({...p,[k]:x}))),[{}]);
 const inScope=(m,p)=>!m.trisScope||Object.entries(m.trisScope).every(([k,v])=>p[k]<=v);
@@ -27,8 +34,11 @@ const EXEMPT={workshop:{kid:[PT.mustard,PT.paper],deskPlane:[PT.paper]}};
 // Prostor variant K1 (2–4 patra × 2–3 osy × seed 1–5, ostatní výchozí) a průměr △ před K3 (11 kap. 1.3: LOD 0 ⌀ 488, LOD 1 ⌀ 85).
 const K1_SPACE=[2,3,4].flatMap(floors=>[2,3].flatMap(bays=>[1,2,3,4,5].map(seed=>({floors,bays,seed}))));
 
-test('registr: G1 a G2 objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy',()=>{
- assert.deepEqual(MODELS.map(m=>m.id),['house-row','house-gable','far-skyline','chimney','workshop','corner-turret','person','street-lamp']);
+test('registr: G1, G2 a G2b objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy, workshop nahrazený',()=>{
+ assert.deepEqual(MODELS.map(m=>m.id),['house-row','house-gable','far-skyline','chimney','workshop','corner-turret','person','street-lamp',
+  'kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam','retaining-wall']);
+ assert.equal(modelById('workshop').replacedBy,'workshop-attic');assert.ok(!ACTIVE_MODELS.includes(modelById('workshop')),'K4 workshop zůstává v registru do S4, ale je nahrazený');
+ assert.deepEqual(MODELS.filter(m=>m.hero).map(m=>m.id),G2B,'G2b = LOD H (hrdina)');assert.equal(ACTIVE_MODELS.length,MODELS.length-1);
  assert.equal(new Set(MODELS.map(m=>m.id)).size,MODELS.length);assert.deepEqual([...LOD_LAYER],['near','mid','far']);
  for(const m of MODELS){
   for(const k of ['id','name','prototype','purpose'])assert.ok(typeof m[k]==='string'&&m[k].length>2,`${m.id}.${k}`);
@@ -258,4 +268,114 @@ test('street-lamp: sloup 4,5 × 0,25 m, patka 0,5 m, rameno 0,8 m, lucerna 0,6 �
  assert.ok(l.filter(c=>c.part!=='glass').every(c=>c.color===D.window));assert.equal(by('glass')[0].color,D.glass);
  assert.equal(modelTriangles(m,0),21);assert.equal(modelTriangles(m,1),7);assert.equal(modelTriangles(m,0,{basket:1})-modelTriangles(m,0),7,'koš +7');
  const two=buildModel(m,0,{arms:2});assert.equal(two.filter(c=>c.part==='glass').length,2);assert.ok(near(bounds(two).x0,-bounds(two).x1),'dvouramenná souměrná');
+});
+
+// ── G2b (místo odhodu, 11-katalog-ctvrt1.md kap. 3.7, bible 05 kap. 3.1 a 9): dítě, dům s podkrovím v řezu, dílna, pavlač, trám, opěrná zeď.
+const NAVY='#3d4f7a',CUT=()=>palette('papir').city.cut,SIDE=()=>palette('papir').city.side;
+const richest={'workshop-interior':{rolls:4,cards:16},'hoist-beam':{crane:3}};
+test('G2b stropy △ (11 kap. 3.7 a 4.3) po LOD, pokles mezi LOD a dioráma ≤ 720 △ (dřív workshop 1 000)',t=>{
+ const CAP={kid:[80,20,0],'workshop-attic':[230,0,20],'workshop-interior':[200,0,0],'loft-balcony':[55,0,0],'hoist-beam':[60,0,0],'retaining-wall':[95,0,4]};
+ for(const id of G2B){const m=modelById(id);assert.deepEqual([...m.tris],CAP[id],id);
+  const max=[0,1,2].map(l=>Math.max(...variants(m).map(p=>modelTriangles(m,l,p))));max.forEach((v,l)=>assert.ok(v<=CAP[id][l],`${id} LOD ${l}: ${v}`));
+  for(let l=1;l<3;l++)if(!CAP[id][l])assert.equal(max[l],0,`${id} LOD ${l} se nekreslí`);
+  for(const p of variants(m)){const n=[0,1,2].map(l=>modelTriangles(m,l,p)),L=drawnLods(m);for(let i=1;i<L.length;i++)assert.ok(n[L[i-1]]>n[L[i]],`${id} pokles ${n}`);}
+  t.diagnostic(`${id}: max △ ${max.join(' / ')} (strop ${CAP[id].join(' / ')})`);}
+ assert.ok(Object.values(CAP).reduce((s,c)=>s+c[0],0)<=720);
+ const all=cardTriangles(diorama(0,richest));assert.ok(all<=720,`dioráma ${all} △`);assert.ok(all>=400,'hodně detailu (odhad 615–635)');
+ assert.ok(cardTriangles(diorama(2))<=24,'dálka: dům + zeď');t.diagnostic(`dioráma LOD H ${all} △ (výchozí ${cardTriangles(diorama(0))}), LOD 2 ${cardTriangles(diorama(2))} △`);
+});
+
+test('G2b měřítko: dítě 1,2 m, ruka 12 m, podlaha 10,6 m, zábradlí 0,95 m, skutečné dveře a okna, zeď 1,1 m',()=>{
+ const d=diorama(),of=(id,part)=>d.filter(c=>c.model===id&&(!part||c.part===part)),top=c=>c.shape==='disc'?c.y+c.r:c.y+c.h;
+ // dítě = person × 0,7 (hlava končí v 1,2 m, čepice nad ní), chodidla na podlaze pavlače, dlaň v póze míření ve výšce výhozu fyziky (core.js y 12 m)
+ const kid=buildModel('kid',0),head=kid.find(c=>c.part==='head');assert.ok(near(top(head),1.2,1e-9)&&near(CHILD.h,1.19,1e-9),`hlava ${top(head)}`);
+ assert.ok(near(bounds(kid).y0,0)&&top(kid.find(c=>c.part==='cap'))>1.3,'čepice nad hlavou');
+ for(const pose of Object.keys(CHILD.hand)){const l=buildModel('kid',0,{pose}),h=l.find(c=>c.part==='hand');assert.ok(near(h.x,CHILD.hand[pose][0])&&near(h.y,CHILD.hand[pose][1]),pose);
+  assert.ok(near(bounds(l).y0,0),`${pose} na podlaze`);}
+ const hand=of('kid','hand')[0];assert.ok(near(hand.x,PLANE_OFFSET,1e-9)&&near(hand.y,12,1e-9),`ruka ${hand.x} ${hand.y}`);assert.deepEqual([LAUNCH.hand.y,LAUNCH.floor],[12,10.6]);
+ assert.ok(near(bounds(of('kid')).y0,LAUNCH.floor),'dítě stojí na pavlači');
+ // pavlač: horní plocha desky = podlaha podkroví 10,6 m; madlo 0,95 m; sloupky po 0,5 m; dítě za zábradlím, ruka nad madlem (za vlaštovkou nebe)
+ const deck=of('loft-balcony','deck')[0],rail=of('loft-balcony','railing'),posts=rail.filter(c=>c.w<.1).sort((a,b)=>a.x-b.x);
+ assert.ok(near(deck.y+deck.h,10.6,1e-9)&&near(deck.w,4.1,1e-9)&&near(deck.d,2.4)&&near(deck.h,.2));
+ assert.ok(near(Math.max(...rail.map(top))-10.6,.95,1e-9),'zábradlí 0,95 m');assert.equal(posts.length,9);posts.slice(1).forEach((c,i)=>assert.ok(near(c.x-posts[i].x,.5,1e-9)));
+ assert.ok(Math.max(...of('kid').map(c=>c.z+c.d/2))<Math.min(...rail.map(c=>c.z-c.d/2)),'dítě za zábradlím');assert.ok(hand.y-10.6>.95+.4,'ruka nad madlem');
+ assert.ok(near(deck.x+deck.w,LAUNCH.deckEnd,1e-9)&&deck.x+deck.w>hand.x&&near(deck.x,LAUNCH.house.x1,1e-9),'pavlač od domu po ruku');
+ // dveře: vchod domu 1,1 × 2,2 m (u paty hlídá obecný test), půdní dveře 0,95 × 2,05 m na pavlači, okna 1,2 × 1,4 m ve 2 patrech po 4
+ const attic=buildModel('workshop-attic',0),dr=attic.filter(c=>c.part==='door');assert.equal(dr.length,1);assert.ok(near(dr[0].w,1.1)&&near(dr[0].h,2.2));
+ const ld=of('loft-balcony','loftDoor').find(c=>c.color===NAVY);assert.ok(near(ld.w,.95)&&near(ld.h,2.05)&&near(ld.y,10.6),'půdní dveře');
+ const win=attic.filter(c=>c.part==='window');assert.equal(win.length,8);assert.deepEqual([...new Set(win.map(c=>c.y))].sort(),[4.4,7.4]);
+ // dům: 12 × 8 m, přízemí 3,5 + 2 × 3 m na zdi 1,1 m = podlaha podkroví 10,6 m, nadezdívka 2,3 m, střecha 4,6 m
+ const body=of('workshop-attic','wall')[0];assert.ok(near(body.w,12)&&near(body.d,8)&&near(body.y,1.1)&&near(body.y+body.h,10.6,1e-9));
+ assert.ok(near(ATTIC.knee-ATTIC.floor,2.3)&&near(ATTIC.ridge-ATTIC.knee,4.6));
+ const wall=of('retaining-wall','wall')[0];assert.ok(near(wall.w,31)&&near(wall.h,1.1)&&wall.y===0);
+ const st=of('retaining-wall','stair').sort((a,b)=>a.x-b.x);assert.equal(st.length,7);assert.ok(near(top(st[0]),1.1)&&st.every((c,i)=>!i||near(top(st[i-1])-top(c),1.1/7,1e-9)),'7 schodů dolů do ulice');
+ assert.ok(near(st[6].x+st[6].w,wall.x+wall.w,1e-9),'schody končí s koncem zdi');
+ // trám 9 m z vrcholu štítu nad pavlač, košík nad dítětem (S-6), kladka ⌀ 0,45 m
+ const beam=of('hoist-beam','beam')[0];assert.ok(near(beam.w,9)&&near(beam.x,(LAUNCH.house.x0+LAUNCH.house.x1)/2,1e-9)&&near(beam.h,.3));
+ assert.ok(of('hoist-beam','basket')[0].y>Math.max(...of('kid').map(top)),'košík nad dítětem');assert.ok(near(of('hoist-beam','pulley')[0].r*2,.45));
+ assert.deepEqual({...AIM_SHOT,at:[...AIM_SHOT.at],portraitAt:[...AIM_SHOT.portraitAt]},{width:16,portraitWidth:7,pitch:-8,fov:20,at:[.38,.6],portraitAt:[.4,.62],planeInHand:.5});
+ assert.ok(MENU_SHOT.width>=25&&MENU_SHOT.width<=43&&MENU_SHOT.pitch===2,'menu 25–43 m, sklon +2°');
+});
+
+test('G2b barvy: pláštěnka #f2b65a, čepice kraft, zábradlí a rámy #3d4f7a, žádná hořčicová, bílá ani grafit, klika krémová, interiér o tón tmavší',()=>{
+ const D=D1(),P=palette('papir');assert.equal(D.near[1],'#f2b65a');assert.equal(D.window,NAVY);
+ for(const pose of modelById('kid').params.pose.values)for(const l of [0,1]){const k=buildModel('kid',l,{pose}),col=part=>k.filter(c=>c.part===part).map(c=>c.color);
+  assert.deepEqual(col('coat'),['#f2b65a']);assert.deepEqual(col('cap'),[PT.kraft]);assert.ok(col('legs').every(c=>c===NAVY));assert.ok(col('head').every(c=>c===P.life.people.skin[0]));
+  if(!l){assert.deepEqual(col('capBand'),[PT.tomato]);assert.ok([...col('shoe'),...col('eye')].every(c=>c===PT.pencil700));}}
+ const d=diorama(0,richest);
+ for(const c of d)assert.ok(![PT.mustard,PT.paper,PT.graphite].includes(c.color),`${c.model} ${c.part}: ${c.color}`);
+ assert.ok(d.filter(c=>c.part==='railing').length>=10&&d.filter(c=>c.part==='railing').every(c=>c.color===NAVY),'zábradlí tmavomodré (S-2)');
+ assert.equal(d.filter(c=>c.model==='workshop-attic'&&c.part==='frame'&&c.color===NAVY).length,8,'rámy oken tmavomodré');
+ assert.deepEqual(d.filter(c=>c.part==='knob').map(c=>c.color),[PT.cream],'klika krémová');assert.ok(d.filter(c=>c.part==='loftDoor').some(c=>c.color===NAVY));
+ assert.ok(d.filter(c=>c.part==='door').every(c=>c.color===NAVY),'dveře tmavomodré');
+ // dům: stěna krémová, střecha rajčatová, řez mix(tomato, cut, .55), teplé sklo jen v domě (S-4)
+ const A=d.filter(c=>c.model==='workshop-attic');assert.equal(A.find(c=>c.part==='wall').color,PAPIR.workshop.wall);
+ assert.ok(A.filter(c=>c.part==='roof').every(c=>c.color===PT.tomato));assert.ok(A.filter(c=>c.part==='roofCut').every(c=>c.color===mix(PT.tomato,CUT(),.55)));
+ assert.ok(d.filter(c=>c.color===P.city.warm).every(c=>c.model==='workshop-attic'),'teplé světlo jen domov');assert.ok(A.filter(c=>c.part==='window').every(c=>c.color===P.city.warm));
+ // pavlač, trám, zeď
+ assert.ok(d.filter(c=>c.part==='deck'||c.part==='beam'||c.part==='basket').every(c=>c.color===PT.kraftDark));assert.equal(d.find(c=>c.part==='flag').color,PT.tape);
+ assert.ok(d.filter(c=>c.part==='rope'||c.part==='pulley').every(c=>c.color===PT.pencil));
+ assert.ok(d.filter(c=>c.model==='retaining-wall').every(c=>c.color===D.ground.near||c.color===mix(D.ground.near,SIDE(),.3)));
+ // interiér: každá barva = mix(token nebo barva palety, city.side, .2)
+ const base=[...Object.values(PT),...P.life.pastel,...P.city.districts.flatMap(x=>[...x.near,x.glass])],dim=new Set(base.map(c=>mix(c,SIDE(),.2)));
+ for(const c of d.filter(c=>c.model==='workshop-interior'))assert.ok(dim.has(c.color),`interiér ${c.part} ${c.color}`);
+});
+
+test('G2b díl cutRoof: 2 sklony × (čelo + světlé jádro) = 8 △, LOD 2 4 △, CCW, hřeben a přesah, podhled na líci nadezdívky',()=>{
+ const r=cutRoof({x:-6,w:12,y:11.8,h:4.6,roof:PT.tomato,cut:'#f0a090'});assert.equal(cardTriangles(r),8);assert.equal(cardTriangles(cutRoof({x:-6,w:12,y:11.8,h:4.6,roof:PT.tomato,cut:'#f0a090',lod:2})),4);
+ const area=pts=>pts.reduce((s,[x,y],i)=>{const [u,v]=pts[(i+1)%pts.length];return s+x*v-u*y;},0)/2;for(const c of r)assert.ok(area(c.pts)>0,'CCW');
+ const b=bounds(r);assert.ok(near(b.x0,-6-CUT_ROOF.ov)&&near(b.x1,6+CUT_ROOF.ov)&&near(b.y1,11.8+4.6+CUT_ROOF.t));
+ const sk=r[0].pts,slope=(sk[1][1]-sk[0][1])/(sk[1][0]-sk[0][0]);assert.ok(near(sk[0][1]+slope*CUT_ROOF.ov,11.8,1e-9),'podhled prochází hranou nadezdívky');
+ const core=r.filter(c=>c.part==='roofCut');assert.equal(core.length,2);assert.ok(core.every(c=>c.z>r[0].z),'jádro před čelem');
+ const v=cardVertices(r);for(let i=2;i<v.n.length;i+=3)assert.equal(v.n[i],1,'jen čela');
+});
+
+test('G2b varianty: pózy dítěte, role a pohlednice v dílně, hák Crane Lift úr. 1–3, praporek po větru',()=>{
+ const k=modelById('kid');assert.deepEqual([...k.params.pose.values],['aim','charge','throw','wave','sit','desk']);
+ const hy=p=>buildModel(k,0,{pose:p}).find(c=>c.part==='hand').y;assert.ok(hy('wave')>hy('aim')&&hy('aim')>hy('throw'));assert.ok(bounds(buildModel(k,0,{pose:'sit'})).y1<1);
+ const I=modelById('workshop-interior'),n=(p,part)=>buildModel(I,0,p).filter(c=>c.part===part).length;
+ for(const rolls of [1,2,3,4])assert.equal(n({rolls},'roll'),rolls*2,'role s dutinkou');for(const cards of [0,5,16])assert.equal(n({cards},'postcard'),cards*2);
+ assert.ok(modelTriangles(I,0,{rolls:1,cards:0})<modelTriangles(I,0));
+ // pohlednice: řádek = čtvrť Atlasu, obrázek v barvě místa (tónovaně)
+ const pics=buildModel(I,0).filter(c=>c.part==='postcard'&&c.w<.5),rows=[...new Set(pics.map(c=>c.y))];assert.equal(rows.length,4);
+ assert.equal(pics[4].color,mix(palette('papir').city.districts[1].near[0],SIDE(),.2));
+ assert.ok(['desk','lamp','papers','cup','pencils','cutter','shelf','board','string','planes'].every(part=>n({},part)>0));
+ const H=modelById('hoist-beam');assert.ok(buildModel(H,0).some(c=>c.part==='basket')&&!buildModel(H,0).some(c=>c.part==='platform'));
+ for(const crane of [1,2,3]){const l=buildModel(H,0,{crane}),pf=l.find(c=>c.part==='platform');assert.ok(near(pf.y,crane*HOIST.platform.step),`plošina úr. ${crane}`);
+  assert.ok(near(l.find(c=>c.part==='basket').y,pf.y+pf.h),'košík na plošině');assert.ok(l.some(c=>c.part==='hook'));}
+ const fl=w=>bounds([buildModel(H,0,{wind:w}).find(c=>c.part==='flag')]);assert.ok(fl(1).x0>=LAUNCH.beam.len/2-1e-9&&fl(-1).x1<=LAUNCH.beam.len/2+1e-9);
+ assert.ok(near(LOFT.rail.h,.95)&&near(WALL.h,1.1));
+});
+
+test('G2b dioráma: rozvržení, determinismus, stínový proxy H2 + H6 ≤ 11 △ a dítě ≤ 4 △',()=>{
+ assert.deepEqual(DIORAMA.map(o=>o.id).sort(),[...G2B].sort());const a=diorama(),b=diorama();assert.deepEqual(a,b);
+ assert.equal(JSON.stringify(diorama(0,{kid:{pose:'wave'}})),JSON.stringify(diorama(0,{kid:{pose:'wave'}})));assert.notEqual(JSON.stringify(diorama(0,{kid:{pose:'wave'}})),JSON.stringify(a));
+ assert.equal(a.length,G2B.reduce((s,id)=>s+buildModel(id,0).length,0));assert.ok(diorama(0,{},{only:['kid']}).every(c=>c.model==='kid'));
+ const by=id=>cardTriangles(buildShadow(id));assert.ok(by('workshop-attic')+by('retaining-wall')<=11);assert.ok(by('kid')<=4);
+ for(const id of ['workshop-interior','loft-balcony','hoist-beam'])assert.equal(buildShadow(id).length,0,`${id} bez stínu (11 kap. 4.2)`);
+ assert.ok(cardTriangles(dioramaShadow())<=15);
+ // dům stojí na zdi, interiér na podlaze podkroví uvnitř domu, dům vlevo od ruky
+ const box=id=>bounds(a.filter(c=>c.model===id));assert.ok(near(box('workshop-attic').y0,LAUNCH.wall)&&near(box('workshop-interior').y0,LAUNCH.floor));
+ assert.ok(box('workshop-interior').x0>=LAUNCH.house.x0&&box('workshop-interior').x1<=LAUNCH.house.x1,'dílna uvnitř domu');
+ assert.ok(box('workshop-attic').x1<LAUNCH.hand.x&&box('retaining-wall').x0<LAUNCH.house.x0);
 });

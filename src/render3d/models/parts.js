@@ -136,6 +136,21 @@ export function steppedGable({kind,x,w,y,h,front=0,color,lod=0}){
 export const outline=(pts,{z=0,color,part='shadow'})=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys);
  return {shape:'poly',x,w:Math.max(...xs)-x,y,h:Math.max(...ys)-y,z:z-.025,d:.05,pts,color,part};};
 
+// Vystřižené čelo z bodů (CCW, jen čelo, pts.length − 2 △) a proužek mezi dvěma body šířky w (2 △): provázek, lano, rameno, konzola.
+export const cutout=(pts,{front=0,color,part})=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys);
+ return {shape:'poly',x,w:Math.max(...xs)-x,y,h:Math.max(...ys)-y,z:front-.025,d:.05,pts,color,part};};
+export const strip=([x0,y0],[x1,y1],w,o)=>{const l=Math.hypot(x1-x0,y1-y0),nx=-(y1-y0)/l*w/2,ny=(x1-x0)/l*w/2;return cutout([[x0-nx,y0-ny],[x1-nx,y1-ny],[x1+nx,y1+ny],[x0+nx,y0+ny]],o);};
+// Střecha v řezu (G2b, 11 kap. 3.7 H2): domeček pro panenky bez přední stěny podkroví. Dva sklony jako silné rajčatové pásy (čelo řezu, svislá
+// tloušťka t) se světlým jádrem kartonu podél horní hrany (pás core, barva cut = mix(střecha, city.cut, .55)): 2 × (2 + 2) = 8 △; LOD 2 bez jádra 4 △.
+// x,w stěna, y výška okapu na líci stěny (nadezdívka), h podhled hřebene nad ní, ov přesah za stěnu. Vrchní plochy sklonů se nekreslí:
+// kamera míření (sklon −8°) i menu jsou pod hřebenem, světlé jádro zastoupí horní řez (jako u lista).
+export const CUT_ROOF=Object.freeze({ov:.7,t:.45,core:.08});
+export function cutRoof({x,w,y,h,front=0,roof,cut,ov=CUT_ROOF.ov,t=CUT_ROOF.t,core=CUT_ROOF.core,lod=0}){
+ const s=h/(w/2),cx=x+w/2,A=[x-ov,y-ov*s],B=[x+w+ov,y-ov*s],R=[cx,y+h],up=([a,b],d)=>[a,b+d];
+ const out=[cutout([A,R,up(R,t),up(A,t)],{front,color:roof,part:'roof'}),cutout([R,B,up(B,t),up(R,t)],{front,color:roof,part:'roof'})];
+ if(lod<2)out.push(cutout([up(A,t-core),up(R,t-core),up(R,t),up(A,t)],{front:front+.02,color:cut,part:'roofCut'}),cutout([up(R,t-core),up(B,t-core),up(B,t),up(R,t)],{front:front+.02,color:cut,part:'roofCut'}));
+ return out;
+}
 // Posun seznamu karet (umístění modelu do místa / vrstvy). Nemutuje vstup (body obrysu poly se posunou také).
 export const place=(list,{x=0,y=0,z=0}={})=>list.map(c=>({...c,x:c.x+x,y:c.y+y,z:c.z+z,...(c.pts?{pts:c.pts.map(([a,b])=>[a+x,b+y])}:{})}));
 // Obalový kvádr karet (kotouč podle poloměru, štít, jehlan a poly po obalu x,w,y,h).
