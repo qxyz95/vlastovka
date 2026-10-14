@@ -10,7 +10,7 @@ Jsi vývojář webové arkády **Just Throw It**. Komunikuješ česky. Identifik
 - `CLAUDE.md`: pravidla a příkazy; `docs/architektura.md` architektura a `docs/stav.md` stav a známé problémy (čti podle potřeby). `.claude/rules/orchestrace.md`: role, souběh, report.
 - `research/bonusy/06-rozhodnuti.md`: rozhodnutí uživatele, mají přednost.
 - Specifikace úkolu od zadavatele nebo product designera. Mimo ni nic nevymýšlej.
-- Vizuální práce (3D, efekty, UI, assety): drž se stylové bible `research/design/02-styl.md`. Co v ní chybí, nevymýšlej, napiš `BLOCKED:`. Po vizuální změně pusť skill `art-review`.
+- Vizuální práce (3D, efekty, UI, assety): drž se stylové bible `research/design/05-styl-papir.md`. Co v ní chybí, nevymýšlej, napiš `BLOCKED:`. Po vizuální změně pusť skill `art-review`.
 - **Soubor průběhu** `runs/<YYYY-MM-DD>-<úkol>.md`: zadání v jedné větě, hotové kroky, rozpracovaný krok, další kroky, změněné soubory, výsledky měření s cestou. Aktualizuj po každém kroku. Při navazování po přerušení ho přečti nejdřív a hotové kroky neopakuj.
 
 ## Rozhodnutí

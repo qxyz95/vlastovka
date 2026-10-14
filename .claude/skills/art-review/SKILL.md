@@ -1,6 +1,6 @@
 ---
 name: art-review
-description: Art review grafiky Just Throw It proti stylové bibli research/design/02-styl.md - snímky 3D hry, prototypu nebo UI na mobilní i desktopové šířce, kontrola palety, siluet, obrysů, půltónu, světla, čitelnosti letu, efektů a UI, se závažností Critical / Major / Minor / Suggestion a konkrétním doporučením.
+description: Art review grafiky Just Throw It proti stylové bibli research/design/05-styl-papir.md - snímky 3D hry, prototypu nebo UI na mobilní i desktopové šířce, kontrola palety, siluet, obrysů, půltónu, světla, čitelnosti letu, efektů a UI, se závažností Critical / Major / Minor / Suggestion a konkrétním doporučením.
 when_to_use: „zkontroluj grafiku“, „sedí to do stylu?“, „art review“, po každé vizuální změně v src/render3d/, style.css, prototypech nebo nových assetech.
 argument-hint: "[URL nebo soubor, např. index.html, prototype-atlas.html; volitelně oblast: čtvrť, efekt, UI]"
 ---
@@ -16,7 +16,7 @@ Cíl: `$ARGUMENTS` (bez argumentu hra `index.html`, všechny čtvrti).
 - Co nešlo ověřit (skryté okno, chybí stav), je **NOT ASSESSED**, ne „prošlo“.
 
 ## Postup
-1. Přečti `research/design/02-styl.md`. Když chybí nebo má hlavičku „NÁVRH“, uveď to v reportu a hodnoť proti návrhu.
+1. Přečti `research/design/05-styl-papir.md`. Když chybí nebo má hlavičku „NÁVRH“, uveď to v reportu a hodnoť proti návrhu.
 2. Načti skill `claude-in-chrome` a nástroje jedním `ToolSearch` (tabs_context_mcp, tabs_create_mcp, navigate, computer, javascript_tool, resize_window, read_console_messages). Pracuj ve vlastní nové záložce.
 3. `npm start` na pozadí, pak `http://127.0.0.1:4173/<cíl>` (ne `file://`). Ověř `document.hidden === false`, jinak vzhled = NOT ASSESSED.
 4. Předem vypiš matici snímků: šířky 375×667, 932×430, 1280×800 × stavy (Dílna, míření, let, událost/QTE, výsledek, panely) × čtvrti (posun přes `window.__r3d.advance`). Neúspěšné body nevyškrtávej.

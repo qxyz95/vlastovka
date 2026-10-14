@@ -1,6 +1,6 @@
 # Just Throw It
 
-Webová arkáda o házení papírové vlaštovky nad neonovým komiksovým městem (16 míst ve 4 čtvrtích). Vanilla JS, ES moduly, bez npm závislostí a bez build kroku. three.js r170 je vendorovaný ve `vendor/three/` a načítá se přes import map.
+Webová arkáda o házení papírové vlaštovky nad 3D městem (16 míst ve 4 čtvrtích). Výchozí je starší neonový (cyber) styl, nový směr je **Papírové město** za příznakem `?styl=papir` (schváleno, nahradí cyber). Cílová délka kampaně ~90 min. Vanilla JS, ES moduly, bez npm závislostí a bez build kroku. three.js r170 je vendorovaný ve `vendor/three/` a načítá se přes import map.
 Hra je anglicky s přepínáním EN/CS (`src/i18n.js`, slovníky `src/locales/`, výchozí EN). Dokumenty a komunikace s uživatelem jsou česky.
 Repozitář: https://github.com/qxyz95/vlastovka (větev `main`).
 
@@ -36,5 +36,6 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`).
 - `docs/architektura.md`: podrobná architektura (logika, renderer 3D a 2D, `src/render3d/`, styly, animace, game feel, hudba, prototypy).
 - `docs/stav.md`: stav s daty, hotové části, známé problémy, rozpracované práce. Aktualizovat po větší práci.
 - `.claude/rules/*.md`: pravidla pro části projektu (simulace, render3d, Atlas, i18n, save), načtou se podle cesty.
+- **Aktuální směr (14. 10.), čti před prací na obsahu nebo vzhledu:** stylová bible Papírového města `research/design/05-styl-papir.md`, katalog modelů `research/design/10-katalog-modelu.md` a `11-katalog-ctvrt1.md` (kód `src/render3d/models/`, stránka `prototype-katalog.html`), menu `research/design/07-menu.md`, obsah (vlaštovky za mince, skiny, Poštovní brašna, plán 90 min) `research/obsah/01–05`, začátek hodu a kamera `research/start/01–02`. Co právě běží a jak navázat: `docs/stav.md` a soubory průběhu `runs/`.
 - Plány: 3D `research/3d/01-plan-prevodu.md`, Atlas `research/atlas/01-navrh-atlasu.md`, progrese `research/bonusy/08-navrh-kolo2.md` a `11-plan-implementace.md`, hudba `research/hudba/01-vyzkum-a-plan.md`.
 - Research designu: `research/kb/README.md` (zásady P1–P15, bloky `research/kb/01–09`). Starší: `KB vlastovky.md`, `KB zabavnost a motivace.md`, `Plan realizace.md`, historie verzí v `README.md`.
