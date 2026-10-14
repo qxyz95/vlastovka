@@ -5,5 +5,5 @@ import C from './c-verse-drop.js';
 import D from './d-chip-courier.js';
 import E from './e-above-the-city.js';
 import F from './f-city-mixtape.js';
-export const TRACKS={A,B,C,D,E,F};
-export const TRACK_IDS=Object.keys(TRACKS);
+export const TRACKS = { A, B, C, D, E, F };
+export const TRACK_IDS = Object.keys(TRACKS);

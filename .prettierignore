@@ -1,0 +1,13 @@
+# Prettier formátuje jen kód (JS, CSS). Dokumenty, HTML, vendor a archiv ne.
+*.md
+*.html
+*.json
+vendor/
+archiv/
+.claude/
+runs/
+reports/
+research/
+simulation/progression/out/
+simulation/*.json
+assets/

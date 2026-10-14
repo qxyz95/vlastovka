@@ -1,1 +1,1 @@
-{"name":"just-throw-it","private":true,"type":"module","scripts":{"start":"node server.mjs","test":"node --test","simulate":"node simulation/run.mjs"}}
+{"name":"just-throw-it","private":true,"type":"module","scripts":{"start":"node server.mjs","test":"node --test","simulate":"node simulation/run.mjs","format":"npx --yes prettier@3.3.3 --write .","format:check":"npx --yes prettier@3.3.3 --check ."}}
