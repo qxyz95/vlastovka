@@ -1,6 +1,7 @@
-// 3D vykreslení hry (three.js). Vlastní integrátor. Kostra fáze 0 z research/3d/01-plan-prevodu.md, implementace přijde ve fázi a1/a5.
+// 3D vykreslení hry (three.js). Vlastní integrátor, naplnil R1 ve fázi a1 (research/3d/01-plan-prevodu.md). Ztráta kontextu přijde v a6.
 // Veřejné rozhraní je stejné jako 2D render.js, aby ui.js jen přepnul import (3D výchozí, ?render=2d nebo bez WebGL → 2D):
-//   render(canvas,f,model,time,visual)  canvas = #scene3d (WebGL); 2D UI kreslí ui-layer.js do #game (průhledný, drží posluchače).
+//   render(canvas,f,model,time,visual)  canvas = #game (2D UI vrstva, průhledná, drží posluchače; kreslí do ní ui-layer.js);
+//                                       WebGL canvas #scene3d je jeho sourozenec v .scene (chybí-li, vytvoří se před #game). Vrací plan.
 //   view(f)                             čistá funkce (žádné three.js), smí ji volat ui.js i juice.stepFx každým snímkem.
 // Líná inicializace při prvním render(), resize podle canvas.clientWidth × DPR, ztráta/obnova kontextu, ?perf=1, window.__r3d (advance, snapshot, bench).
 //
@@ -47,6 +48,51 @@
 //   events     plan.events; comp = life.companion(activeEvent(f),f.t) (holub, pára) nebo null
 //   quality    plan.quality (LOD: čtvrť smí vynechat drobnosti)
 // update volá city.js jen pro viditelná místa; nesmí alokovat geometrii každým snímkem.
-const todo=who=>{throw new Error(`render3d: ${who} zatím neimplementováno`);};
-export function view(f){return todo('view (integrátor, a1)');}
-export function render(canvas,f,model,time=0,visual={}){return todo('render (integrátor, a1/a5)');}
+import {planFrame,viewOf} from './frame.js';
+import {createScene} from './scene.js';
+import {drawUi} from './ui-layer.js';
+import {frameStats} from '../perf.js';
+import {createFlight,step,eventInput} from '../core.js';
+const MAX_DPR=2;
+let R=null;
+export const view=f=>viewOf(f);
+const dprNow=()=>Math.min(MAX_DPR,globalThis.devicePixelRatio||1);
+function init(canvas){
+ let gl=canvas.parentElement?.querySelector('#scene3d');if(!gl){gl=document.createElement('canvas');gl.id='scene3d';canvas.before(gl);}
+ const s=createScene(gl,{dpr:dprNow()}),r={gl,s,plan:null,last:null,debug:null};
+ const resize=()=>{s.resize(gl.clientWidth||640,gl.clientHeight||360,dprNow());if(r.plan){s.apply(r.plan);s.draw();}};
+ r.ro=new ResizeObserver(resize);r.ro.observe(gl);s.resize(gl.clientWidth||640,gl.clientHeight||360,dprNow());s.city.prewarm([0,1]);
+ window.__r3d={advance,bench,snapshot,reset,get plan(){return R?.plan;},get stats(){return R?.s.stats();},get scene(){return R?.s;}};
+ return r;
+}
+// UI vrstva (ui-layer.js R2) v rozlišení podle CSS šířky × DPR (1–2× logického 640×360).
+function drawLayer(canvas,plan,visual){
+ const w=Math.round(640*Math.min(2,Math.max(1,(canvas.clientWidth||640)*dprNow()/640)));if(canvas.width!==w){canvas.width=w;canvas.height=w*9/16;canvas.style.imageRendering='auto';}
+ drawUi(canvas.getContext('2d'),plan,visual);
+}
+export function render(canvas,f,model,time=0,visual={}){
+ const r=R??=init(canvas),plan=planFrame({f,model,time,visual:{...visual,cssWidth:canvas.clientWidth||640},prev:r.plan});
+ r.s.apply(plan);r.s.draw();drawLayer(canvas,plan,visual);r.plan=plan;r.last={canvas,f,model,time,visual};return plan;
+}
+// ── Ladění a měření (window.__r3d). Vlastní let ladění (seed z ?seed=, výchozí 1) hru neovlivní.
+const seedQ=()=>+new URLSearchParams(globalThis.location?.search).get('seed')||1;
+function reset(seed=seedQ(),model=R?.last?.model??'dart',levels){R.debug=createFlight(model,levels,seed);return R.debug;}
+// advance(s, input): přetočí ladicí let o s sekund (input(f) → 'down'|'up'|null, např. autopilot) a vykreslí jeden snímek.
+function advance(s=1,input=null){
+ const f=R.debug??reset(),L=R.last??{};for(let i=0;i<Math.round(s*60)&&!f.landed;i++){const c=input?.(f);if(c)eventInput(f,c,'auto');step(f);}
+ render(L.canvas,f,L.model??f.model,f.t,{...(L.visual??{}),fx:null,qte:null,clock:f.t});return {x:f.x,y:f.y,t:f.t,landed:f.landed};
+}
+// Snímek obrazovky: 3D + UI vrstva složené do PNG (překreslí aktuální plán, takže nepotřebuje preserveDrawingBuffer).
+function snapshot(type='image/png'){
+ const {gl,s,plan,last}=R;s.draw();const c=document.createElement('canvas');c.width=gl.width;c.height=gl.height;const g=c.getContext('2d');g.drawImage(gl,0,0);
+ if(last?.canvas)g.drawImage(last.canvas,0,0,c.width,c.height);return c.toDataURL(type);
+}
+// bench(n): n snímků synchronně na kopii letu (seed 1, nebo kopie posledního letu), readPixels čeká na GPU. ms celkem a CPU zvlášť.
+function bench(n=240,{seed=1,fromLast=false}={}){
+ const L=R.last??{},f=fromLast&&L.f&&!L.f.landed?structuredClone(L.f):createFlight(L.model??'dart',undefined,seed),ctx=R.s.renderer.getContext(),px=new Uint8Array(4),all=[],cpu=[];let calls=0,tris=0;
+ for(let i=0;i<n;i++){const t0=performance.now();if(!f.landed)step(f);const plan=planFrame({f,model:f.model,time:f.t,visual:{clock:f.t}});R.s.apply(plan);R.s.draw();const t1=performance.now();
+  ctx.readPixels(0,0,1,1,ctx.RGBA,ctx.UNSIGNED_BYTE,px);const t2=performance.now();if(i>=10){all.push(t2-t0);cpu.push(t1-t0);}const st=R.s.stats();calls=Math.max(calls,st.calls);tris=Math.max(tris,st.triangles);}
+ if(R.plan){R.s.apply(R.plan);R.s.draw();}
+ const a=frameStats(all),c=frameStats(cpu),r2=v=>+v.toFixed(2),st=R.s.stats();
+ return {frames:a.n,avg:r2(a.avg),p95:r2(a.p95),cpu:r2(c.avg),cpuP95:r2(c.p95),calls,tris,size:st.size,dpr:st.dpr,post:st.post,distance:Math.round(f.x)};
+}

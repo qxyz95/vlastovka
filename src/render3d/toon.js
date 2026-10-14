@@ -47,14 +47,19 @@ export function skyTexture(stops=['#0b0824','#1d1150','#52206a','#b0407e']){
  const c=canvas(4,256),g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);stops.forEach((s,i)=>gr.addColorStop(i/(stops.length-1),s));g.fillStyle=gr;g.fillRect(0,0,4,256);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
 }
+// Obloha, která se překreslí jen při změně barev (nálada se mění plynule, textura zůstává stejná a jen se nahraje znovu).
+export function skyPainter(){
+ const c=canvas(4,256),g=c.getContext('2d'),t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;let key='';
+ return {texture:t,paint(stops){const k=stops.join();if(k===key)return t;key=k;const gr=g.createLinearGradient(0,0,0,256);stops.forEach((s,i)=>gr.addColorStop(i/(stops.length-1),s));g.fillStyle=gr;g.fillRect(0,0,4,256);t.needsUpdate=true;return t;},dispose(){t.dispose();}};
+}
 // Post-process bez EffectComposer: scéna do render targetu, pak celoobrazovkový trojúhelník s tímto shaderem.
 export function postPass(){
- const mat=new THREE.ShaderMaterial({uniforms:{tDiffuse:{value:null},resolution:{value:new THREE.Vector2(1,1)},levels:{value:6},dotSize:{value:5},mode:{value:1}},
+ const mat=new THREE.ShaderMaterial({uniforms:{tDiffuse:{value:null},resolution:{value:new THREE.Vector2(1,1)},levels:{value:6},dotSize:{value:5},mode:{value:1},shade:{value:.42}},
   vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
-  fragmentShader:`uniform sampler2D tDiffuse;uniform vec2 resolution;uniform float levels;uniform float dotSize;uniform float mode;varying vec2 vUv;
+  fragmentShader:`uniform sampler2D tDiffuse;uniform vec2 resolution;uniform float levels;uniform float dotSize;uniform float mode;uniform float shade;varying vec2 vUv;
 void main(){vec4 c=texture2D(tDiffuse,vUv);vec3 s=pow(max(c.rgb,0.),vec3(1./2.2));vec3 p=floor(s*levels+.5)/levels;
 float l=dot(s,vec3(.299,.587,.114));vec2 g=mat2(.7071,-.7071,.7071,.7071)*(vUv*resolution)/dotSize;float d=length(fract(g)-.5);
-float shade=clamp((.42-l)/.42,0.,1.);float ink=mode>.5?(1.-smoothstep(.5*sqrt(shade)-.06,.5*sqrt(shade),d))*step(.03,shade):0.;
+float k=clamp((shade-l)/shade,0.,1.);float ink=mode>.5?(1.-smoothstep(.5*sqrt(k)-.06,.5*sqrt(k),d))*step(.03,k):0.;
 gl_FragColor=vec4(mix(p,p*.25+vec3(.02,0.,.06),ink*.85),c.a);}`,depthTest:false,depthWrite:false});
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-1,-1,0,3,-1,0,-1,3,0],3));geo.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,2,0,0,2],2));
  const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1),mesh=new THREE.Mesh(geo,mat);mesh.frustumCulled=false;scene.add(mesh);

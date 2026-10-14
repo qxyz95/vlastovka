@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Just Throw It · náhled 3D jádra</title>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
+<style>
+ :root{color-scheme:dark}*{box-sizing:border-box}
+ body{margin:0;background:#0b0820;color:#e8e6ff;font:14px/1.4 system-ui,sans-serif;padding:16px}
+ h1{font-size:18px;margin:0 0 4px}p{margin:0 0 12px;color:#9a94c8;max-width:1280px}
+ .scene{position:relative;width:min(100%,1280px);aspect-ratio:16/9;background:#120e30;border:2px solid #2a2260;overflow:hidden;touch-action:none;user-select:none;cursor:pointer}
+ .scene canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+ #scene3d{pointer-events:none}
+ .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+ button{background:#221a4f;color:#e8e6ff;border:1px solid #3a2f80;border-radius:4px;padding:6px 10px;font:inherit;cursor:pointer}
+ pre{margin:8px 0 0;font:12px/1.4 ui-monospace,Consolas,monospace;color:#b8ffcf;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<h1>Náhled 3D jádra (R1, fáze a1)</h1>
+<p>Skutečná fyzika ze <code>src/core.js</code> (bez násobku tempa), autopilot QTE, vykreslení přes <code>src/render3d/index.js</code> (<code>render</code>/<code>view</code>). Mezerník nebo klepnutí = hod / QTE. <code>?seed=</code>, <code>?cross=1</code> ukáže bod <code>view(f)</code>, <code>?auto=0</code> vypne autopilota.</p>
+<section class="scene" id="stage"><canvas id="scene3d" aria-hidden="true"></canvas><canvas id="game" width="640" height="360"></canvas></section>
+<div class="bar"><button id="throw">Hodit</button><button id="pause">Pauza</button><button id="bench">Benchmark 240</button></div>
+<pre id="stats"></pre><pre id="out"></pre>
+<script type="module">
+import {render,view} from './src/render3d/index.js';
+import {createFlight,step,eventInput,activeEvent} from './src/core.js';
+import {DT} from './src/config.js';
+import {lerp} from './src/motion.js';
+import {createFx,fxEvent,stepFx} from './src/juice.js';
+import {frameStats,ring} from './src/perf.js';
+import {autoInput} from './tests/helpers/auto-input.js';
+const $=id=>document.getElementById(id),Q=new URLSearchParams(location.search),auto=Q.get('auto')!=='0',cross=Q.get('cross')==='1';
+let seed=+Q.get('seed')||1,f=null,prev=null,acc=0,fx=null,last=performance.now(),clock=0,landedAt=null,paused=false,errors=0;
+addEventListener('error',()=>errors++);
+const throwIt=()=>{f=createFlight('dart',undefined,seed++);prev=null;acc=0;fx=createFx();fxEvent(fx,'throw');landedAt=null;};
+const press=o=>{if(!f||f.landed)throwIt();else eventInput(f,'down',o);};
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();if(!e.repeat)press('key');}});
+addEventListener('keyup',e=>{if(e.code==='Space')eventInput(f??{events:[]},'up','key');});
+$('stage').addEventListener('pointerdown',e=>{e.preventDefault();press('pointer');});$('stage').addEventListener('pointerup',()=>f&&eventInput(f,'up','pointer'));
+$('throw').onclick=throwIt;$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'Pokračovat':'Pauza';};
+$('bench').onclick=()=>{const b=__r3d.bench(240);$('out').textContent=JSON.stringify(b);console.log('bench',b);};
+const frames=ring(240);let shownAt=0;
+function frame(now){
+ const dt=Math.min(.1,(now-last)/1000);frames.push(now-last);last=now;
+ if(!paused){clock+=dt;
+  if(auto){if(!f){if(clock>1)throwIt();}else if(f.landed){landedAt??=clock;if(clock-landedAt>2.6)throwIt();}}
+  if(f&&!f.landed){acc+=dt;while(acc>=DT&&!f.landed){if(auto){const c=autoInput(f,DT);if(c)eventInput(f,c,'auto');}prev={x:f.x,y:f.y,vx:f.vx,vy:f.vy,t:f.t};step(f);acc-=DT;}}
+  const a=Math.min(1,acc/DT),shown=f&&prev&&!f.landed?{...f,x:lerp(prev.x,f.x,a),y:lerp(prev.y,f.y,a),vx:lerp(prev.vx,f.vx,a),vy:lerp(prev.vy,f.vy,a),t:lerp(prev.t,f.t,a)}:f;
+  if(fx)stepFx(fx,dt,shown,view(shown));
+  const plan=render($('game'),shown,'dart',f?f.t:clock,{fx,reduced:false,clock});
+  if(cross){const c=$('game').getContext('2d'),s=$('game').width/640,v=view(shown);c.setTransform(s,0,0,s,0,0);c.strokeStyle='#0f0';c.lineWidth=1;c.beginPath();c.moveTo(v.px-12,v.py);c.lineTo(v.px+12,v.py);c.moveTo(v.px,v.py-12);c.lineTo(v.px,v.py+12);c.moveTo(0,v.ground);c.lineTo(640,v.ground);c.stroke();}
+  if(now-shownAt>250){shownAt=now;const fr=frameStats(frames.values),st=__r3d.stats,e=activeEvent(f);
+   $('stats').textContent=`${(1000/(fr.avg||1)).toFixed(0)} FPS · snímek ${fr.avg.toFixed(1)} ms (P95 ${fr.p95.toFixed(1)}) · ${st.calls} draw calls · ${(st.triangles/1000).toFixed(1)}k tri · ${st.size} DPR ${st.dpr}\n`+
+    `${Math.floor(f?.x??0)} m · y ${(f?.y??0).toFixed(1)} · místa ${st.screens.join(',')} (keš ${st.cached}) · view px ${plan.view.px.toFixed(1)} py ${plan.view.py.toFixed(1)} k ${plan.view.k.toFixed(2)}${e?` · ${e.type} ${e.phase}`:''} · chyby ${errors}`;}
+ }
+ requestAnimationFrame(frame);
+}
+render($('game'),null,'dart',0,{clock:0});// první snímek hned (a __r3d i ve skryté záložce)
+requestAnimationFrame(frame);
+window.preview={get f(){return f;},throwIt,pause(v=true){paused=v;}};
+</script>
+</body>
+</html>
