@@ -11,7 +11,14 @@ const DEFAULTS={
  route:{place:SCREEN_METERS,places:ROUTE.length,perDistrict:4,finish:SCREEN_METERS*ROUTE.length},
  physics:{dt:DT,gravity:GRAVITY,steepPenalty:STEEP_PENALTY,y0:12,maxT:180,eventMinY:8},
  // Dart beze změny z dnešního config.js, Glider přeladěný podle 08 (Pravidla Dílny).
+ // Katalog modelů. Dart od začátku, Glider zdarma z Atlasu (atlas.gliderAt). Model s `price` je za mince: v nabídce od rekordu na začátek
+ // místa `unlockPlace` (1–16), koupě = nabídka kind:'model'. Výchozí katalog = dnešní stav (žádný model za mince), návrh 01 je v MODEL_SETS.
+ // Volitelná pole chování (research/obsah/01-game-design.md §2.9), chybějící = neutrální: perfectK (násobek vodorovného pushe při perfektu
+ // místo push.perfect), missK (minutí ubere tento podíl vx), liftK (svislá část poryvu, páry a termiky ×), pushK (vodorovný push ×),
+ // ground {below, glide} (pod `below` m klouzavost ×glide), skip (odrazů Stone Skip navíc, jen s bonusem), windK (vítr ×),
+ // droneBurst (zásah dronu bez svislé části, push dronu ×droneBurst).
  models:{dart:{...MODELS.dart},glider:{speed:14,glide:4,drag:.12,cruise:11,ideal:30,qte:1.15}},
+ economy:{reward:{base:10,perMeter:.1}},          // odměna za hod = base + floor(max(0, dolet)·perMeter)
  workshop:{
   power:{prices:[50,160,350],step:.14},                         // 08: ceny 40/120/260
   folds:{prices:[50,160,350],steady:.30,window:.25,push:.20},     // 08: 40/120/260, steady .25, window .15; F3 window .20
@@ -83,9 +90,13 @@ const DEFAULTS={
   pocketFallback:['cushion','sharp'],fallbackThrows:3, // záloha se nasadí jen při kladném náhledu na posledních hodech (F3)
   // realistický nákupčí (F3): odhad přínosu na minci s log-normální chybou, netrpělivost (nečeká na cíl déle než patience hodů)
   // preference viditelného: papír mění vzhled vlaštovky a má největší náhled, hráč mu dá o čtvrtinu větší váhu
-  realistic:{noise:.5,patience:6,kind:{workshop:1,paper:1.25,atlas:1,pocket:1}},
+  realistic:{noise:.5,patience:6,kind:{workshop:1,paper:1.25,atlas:1,pocket:1,model:1}},
+  // volba modelu 'preview' (náhled v Dílně, 01 §2.10): pasivní let bez událostí každého vlastněného modelu se známým větrem, úhlem
+  // záměru modelu a silou mu profilu; noise = log-normální chyba odhadu (0 = hráč náhledu věří přesně)
+  modelPick:{noise:0},
  },
- campaign:{maxThrows:400,strategies:['balanced','realistic','paper-first','atlas-first','cheapest','random'],fallback:'realistic'}, // fallback = čím se řídí paper-/atlas-first mimo svou prioritu
+ // fallback = čím se řídí paper-/atlas-/models-first a no-models mimo svou prioritu; no-models modely nekupuje, models-first šetří na model hned po odemčení
+ campaign:{maxThrows:400,strategies:['balanced','realistic','paper-first','atlas-first','cheapest','random','no-models','models-first'],fallback:'realistic'},
  // Výbavy pro tabulku křivky (08 §2.4). atlas: úroveň každého bonusu; '*' = všechny odemčené na danou úroveň.
  curve:[
   {name:'1. hod (nic)',power:0,folds:0,paper:0,atlas:{}},
@@ -116,6 +127,14 @@ const DEFAULTS={
 // lapse = SKILLS + výpadek pozornosti (hráč na událost vůbec nezareaguje), jen informativně.
 const qte2=k=>Object.fromEntries(Object.entries(DEFAULTS.profiles).map(([p,v])=>[p,{qte:+(v.qte*k).toFixed(3)}]));
 export const PROFILE_SETS={skills:{},x2:{profiles:qte2(2)},lapse:{profiles:{weak:{lapse:.12},average:{lapse:.07},good:{lapse:.04},expert:{lapse:.02},weakAssist:{lapse:.12}}}};
+// Sady modelů za mince (run.mjs --modelset). obsah01 = zástupná čísla z research/obsah/01-game-design.md §2.2–2.6 a §2.8.
+// drag 01 uvádí jen u Needle, ostatní mají .12 jako Dart a Glider (stejně jako sonda 04 §3.2).
+export const MODEL_SETS={none:{},obsah01:{models:{
+ hawk:{speed:17,glide:3.0,drag:.12,cruise:11,ideal:34,qte:1.0,perfectK:1.6,missK:.06,unlockPlace:4,price:400},
+ kite:{speed:12,glide:4.6,drag:.12,cruise:8,ideal:40,qte:1.1,liftK:1.6,pushK:.6,unlockPlace:6,price:700},
+ skimmer:{speed:21,glide:2.8,drag:.12,cruise:12,ideal:10,qte:.9,ground:{below:6,glide:1.7},skip:1,unlockPlace:8,price:1000},
+ sail:{speed:15,glide:4.2,drag:.12,cruise:10,ideal:26,qte:.9,windK:2.5,unlockPlace:10,price:1400},
+ needle:{speed:24,glide:2.6,drag:.08,cruise:14,ideal:12,qte:.9,windK:.4,droneBurst:1.5,unlockPlace:14,price:2000}}}};
 
 const clone=o=>JSON.parse(JSON.stringify(o));
 export let P=clone(DEFAULTS);

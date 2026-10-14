@@ -6,9 +6,9 @@ Monte Carlo model návrhu `research/bonusy/08-navrh-kolo2.md` (Workshop + Atlas 
 - `params.mjs`: **všechna laditelná čísla** (ceny, kroky papíru, síla bonusů, stropy košů, váhy a okna událostí, vítr, schopnosti, zrychlení, čas UI, profily, boti, výbavy křivky, cíle §10.2). `setParams(over)` je přepíše na místě, `parseSet('a.b=1')`.
 - `model.mjs`: let 1.0 (π, β, výtrysky, push E se stropem, S, `y0`, vítr se střihem, švih), rozvrh a vyhodnocení událostí (gust, bird, steam, thermal, drone, star, plující střed, odpuštění předčasného stisku, pravidlo pod 8 m), kombo a bonusy Atlasu za letu (Crowd Chain, Packing Tape, Gull Escort, Echo, Momentum, On Air, Stone Skip, Paper Crane, Pinwheel, Crane Lift, Shooting Star), mechanika schopností, QTE bot hráče, skutečný čas se zrychlením klouzání, `bestAngle`.
 - `abilities.mjs`: boti Dive, Cushion, Whistle, Paper Rocket s chybou časování podle profilu. `throwOnce(kit,ctx)` = hod s boty podle nasazených kapes.
-- `campaign.mjs`: kampaň po místech až do 4 876 m: odemykání, druhy papíru po čtvrtích, kapsy 600 / 3 500, speciály po čtvrtích, strategie `balanced` / `paper-first` / `atlas-first` / `cheapest` / `random`, volba kapes, volba modelu, učení úhlu, měření času.
+- `campaign.mjs`: kampaň po místech až do 4 876 m: odemykání, druhy papíru po čtvrtích, kapsy 600 / 3 500, speciály po čtvrtích, strategie `balanced` / `realistic` / `paper-first` / `atlas-first` / `cheapest` / `random` / `no-models` / `models-first`, volba kapes, modely za mince (nabídka `kind:'model'`), volba modelu (`better`, `preview`), odměna `reward(x)`, učení úhlu, měření času, ekonomika (`R.econ`, `R.byModel`).
 - `run.mjs`: CLI, paralelní workery, souhrny, křivka, sondy, citlivost, OK/FAIL proti cílům.
-- Testy: `tests/progression.test.js`, `tests/progression-campaign.test.js` (běží v `npm test`).
+- Testy: `tests/progression.test.js`, `tests/progression-campaign.test.js`, `tests/progression-mechanics.test.js`, `tests/progression-models.test.js` (běží v `npm test`).
 
 ## Spuštění
 ```
@@ -19,7 +19,8 @@ node simulation/progression/run.mjs --params tuning.json --set warp.factor=1 --s
 node simulation/progression/run.mjs --profileset x2 --strategies realistic,paper-first,atlas-first --n 200 --out base-x2   # sada „šum ×2“
 ```
 `--profileset skills|x2|lapse` vybere sadu profilů (`PROFILE_SETS` v `params.mjs`): `skills` = SKILLS beze změny, `x2` = šum časování ×2 (povinně hlídaná sada), `lapse` = SKILLS + výpadek pozornosti (informativně).
-Přepínače: `--profiles`, `--strategies`, `--pockets` (čárkou varianty, `+` spojuje kapsy: `dive+sharp`; `auto` = podle profilu z `bots.pocketAuto`, `none` = bez kapes), `--models better|dart|glider`, `--n` kampaní na skupinu, `--seed`, `--params soubor.json` (hluboké sloučení, pole se nahrazují), `--set cesta=hodnota` (opakovatelné), `--sensitivity` (varianty 08 §10.3), `--no-probes`, `--probe-n` letů na buňku sond, `--workers`, `--raw` (do JSON i surové kampaně), `--out` jméno výstupu. Výstup: `out/<jméno>.md` a `.json`.
+`--modelset obsah01` přidá modely za mince z `research/obsah/01-game-design.md` §2 (`MODEL_SETS` v `params.mjs`, zástupná čísla). Výchozí katalog nemá žádný model za mince, takže výsledky jsou stejné jako před rozšířením (důkaz `out/k-sim-before*` / `k-sim-after*`, test `progression-models`).
+Přepínače: `--profiles`, `--strategies`, `--pockets` (čárkou varianty, `+` spojuje kapsy: `dive+sharp`; `auto` = podle profilu z `bots.pocketAuto`, `none` = bez kapes), `--models better|preview|dart|glider|<id>`, `--n` kampaní na skupinu, `--seed`, `--params soubor.json` (hluboké sloučení, pole se nahrazují), `--set cesta=hodnota` (opakovatelné), `--sensitivity` (varianty 08 §10.3), `--no-probes`, `--probe-n` letů na buňku sond, `--workers`, `--raw` (do JSON i surové kampaně), `--out` jméno výstupu. Výstup: `out/<jméno>.md` a `.json`.
 
 Determinismus: klíč kampaně = `seed|profil|id`, takže strategie i kapsy se srovnávají na stejné náhodě (CRN). Streamy jsou oddělené a pojmenované: `launch` (síla, úhel), `wind`, `events` (rozvrh), `plan` (šum hráče pro každou událost zvlášť), `dive`/`cushion`/`rocket` (chyba schopnosti), `campaign` (náhodná strategie, zkoušení modelu), `bias`. Náhled koupě (U1) proto přehrává stejný hod se stejným šumem.
 
@@ -30,6 +31,14 @@ Determinismus: klíč kampaně = `seed|profil|id`, takže strategie i kapsy se s
 - **Kapsy:** 2 sloty, max 1 aktivní, Sharp Edge × Calm Sky, výměna zdarma (bot nasadí podle plánu kapes, jinak záloha `cushion`, `sharp`).
 - **Čas:** simulovaný let, skutečný (klidné klouzání 1,4× s náběhem 0,3 s, ne při držení Dive), +8 s UI na hod, +4 s za kartu čtvrti (3 karty: D2, D3, D4). Asistence DQ-13 počítá zpomalení 0,6× ve varování a interakci.
 - **Profily:** dnešní `SKILLS` (`weak`, `average`, `good`, `expert`) + `weakAssist` (DQ-13: okna ×1,4, šum ×0,6, zpomalení) a `auto` (DQ-14: každá událost úspěch ve středu, nikdy perfekt).
+
+## Modely za mince a ekonomika (14. 10. 2026, `runs/2026-10-14-sim-modely.md`)
+- **Odměna** za hod `economy.reward = {base:10, perMeter:.1}`: `base + floor(max(0, dolet)·perMeter)` (1 300 m → 140 ◈).
+- **Katalog** = `models`. Model s `price` je za mince a je v nabídce (`kind:'model'`, id `model:<id>`) od rekordu na začátek místa `unlockPlace`. Dart od začátku, Glider zdarma na `atlas.gliderAt`. Náhled koupě U1 přehraje poslední hody s novým modelem a jeho úhlem záměru.
+- **Strategie:** `no-models` modely nekupuje, `models-first` šetří na nejlevnější odemčený model; mimo to obě jako `campaign.fallback` (`realistic`). Ostatní strategie mají modely v běžné nabídce.
+- **Volba modelu před hodem:** `better` = vlastněný model s nejdelším posledním doletem, dosud nehozený zkusí hned, 15 % zkouška jiného (se dvěma modely přesně dnešní pravidlo). `preview` = náhled v Dílně: pasivní let bez událostí každého vlastněného modelu se známým větrem (vč. Pinwheel), úhlem záměru modelu a silou `mu` profilu (`previewModel`, `bots.modelPick.noise`). Pasivní náhled nevidí události, takže podceňuje modely, které těží z událostí (Glider, Hawk, Kite).
+- **Pole chování modelu** (01 §2.9), chybějící = neutrální: `perfectK` (vodorovný push při perfektu místo `push.perfect`, svislá část beze změny), `missK` (minutí běžné události ubere podíl `vx`, ne hvězda), `liftK` (svislá část poryvu, páry a termiky), `pushK` (vodorovný push), `ground {below, glide}` (pod `below` m klouzavost ×`glide` v běžném klesání, ne ve střemhlavu), `skip` (odrazy navíc jen s bonusem Stone Skip), `windK` (násobí vítr), `droneBurst` (dron bez svislé části, push dronu ×`droneBurst`). Push z `perfectK`/`pushK`/`droneBurst` je mimo strop E (násobí, nesčítá se do E).
+- **Výstup:** sekce „Ekonomika“ (příjem po čtvrtích rekordu před hodem, útrata po čtvrtích při nákupu a po druzích, zůstatek) a tabulka modelů (podíl hodů, ◈ a m na hod, ◈ za skutečnou minutu, podíl kampaní s koupí a medián hodu koupě); v JSON `groups.*.econ`.
 
 ## Zjednodušení
 - Hráč neřeší U3 (zpomalení a širší okno při prvním setkání s událostí), kalibraci (DQ-15) ani „Undo“.
