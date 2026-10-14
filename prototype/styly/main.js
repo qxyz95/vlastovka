@@ -289,9 +289,12 @@ const T={en:{tagline:'Fly to the horizon · by paper',throw:'Throw',workshop:'Wo
  cs:{tagline:'Leť za obzor · po papíře',throw:'Házet',workshop:'Dílna',atlas:'Atlas',settings:'Nastavení',paused:'Pauza',resume:'Pokračovat',menu:'Menu',language:'Jazyk',music:'Hudba',sound:'Zvuky',motion:'Omezit pohyb',back:'Zpět',delivered:'Doručeno',best:'Nový rekord',again:'Házet znovu',distance:'Vzdálenost',coins:'Mince',pause:'Pauza',paper:'Papír',power:'Síla',folds:'Přehyby'}};
 function lang(id){state.lang=id;const d=T[id]??T.en;document.querySelectorAll('#stage [data-t]').forEach(e=>{e.textContent=d[e.dataset.t]??e.textContent;});
  document.querySelectorAll('#stage [data-t-aria]').forEach(e=>e.setAttribute('aria-label',d[e.dataset.tAria]));document.querySelectorAll('#stage [data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===id)));}
-const OVER=['pause','settings','atlas','workshop'];let backTo='menu';
-function go(to){if(to==='back')to=backTo;if(OVER.includes(to)&&!OVER.includes(state.mode))backTo=state.mode;
- if(to==='atlas')fillAtlas();set({mode:to});if(to==='flight'&&!OVER.includes(backTo)){state.t=3.2;state.auto=3.2;}else if(to==='flight')state.auto=state.t;backTo=OVER.includes(to)?backTo:to;}
+const OVER=['pause','settings','atlas','workshop'],stack=[];
+// Překryvy (pauza, nastavení, Atlas, Dílna) se vrací tam, odkud přišly; návrat do letu let nepřeruší, jinak „Házet“ = nový hod.
+function go(to){const from=state.mode,auto=state.auto??state.keep;let resume=from==='pause'&&to==='flight';
+ if(to==='back'){to=stack.pop()??'menu';resume=to==='flight'||to==='event';}else if(OVER.includes(to)){if(!OVER.includes(from)||from==='pause')stack.push(from);}else stack.length=0;
+ if(to==='atlas')fillAtlas();set({mode:to});
+ if(to==='flight'){if(resume)state.auto=auto;else{state.t=3.2;state.auto=3.2;}}else state.keep=auto;}
 function fillAtlas(){const box=document.querySelector('#atlas-cards');if(!box)return;box.innerHTML='';box.dataset.style=state.style;document.querySelectorAll('#cards .card').forEach(c=>box.append(c.cloneNode(true)));}
 stage.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}const l=e.target.closest('[data-lang]');if(l)lang(l.dataset.lang);});
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(state.mode==='flight'||state.mode==='event')go('pause');else if(OVER.includes(state.mode))go('back');}});

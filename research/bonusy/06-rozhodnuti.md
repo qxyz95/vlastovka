@@ -121,3 +121,7 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   2. Hlavní menu z pauzy za letu: hráč zvolí buď **zrušit hod** (hod se nezapočítá a může jít do menu, Dílny nebo Atlasu, je-li odemčený), nebo **vrátit se do hry** a doletět. Hod se nedopočítává automaticky.
   3. HUD jen dolet a mince, bez řádku s nejbližším cílem.
   4. Nastavení nabízí zdarma „Širší okna časování“ (×1,5, mince ani místa se nemění). Automatika QTE zůstává kupovaným uzlem v Atlasu.
+- **Stíny, přechody a modely (14. 10.):**
+  1. Stíny Papírového města „na zem“ podle `research/design/08-stiny.md` (čisté stěny, kontaktní pata domů, studený tint, světlo zezadu): ráno jemné, ve Zlatých polích výraznější a delší. Dnešní stíny ze siluet se ruší.
+  2. Přechody mezi čtvrtěmi (`09-prechody-ctvrti.md`): dálka jde napřed (míchání stavebnic v pásu ~150 m) a ručně navržené brány na hranicích (most, maják, sedlo s tunelem, poslední věž). Papírový mrak přes obraz ne.
+  3. Katalog modelů (`10-katalog-modelu.md`): modely psané v kódu, **hodně detailu všude** (ne jen u dominant), katalog před dávkou P2. Rozpočty na místo (`.claude/rules/render3d.md`) dál platí, detail se musí vejít přes LOD a sloučenou geometrii.

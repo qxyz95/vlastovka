@@ -129,3 +129,68 @@ body.bare .bar,body.bare .h2,body.bare #cards,body.bare .note{display:none}
 body.bare main{padding:4px}
 body.bare.cards #cards,body.bare.cards .h2{display:grid}
 body.bare.cards .frame{display:none}
+
+/* ---------- obrazovky jako ve hře (maketa průchodu): menu, pauza, nastavení, výsledek (a), Atlas, Dílna ---------- */
+#stage{--ui-bg:#251c57;--ui-fg:#f5f1ff;--ui-dim:#c9c0f0;--ui-line:#15101f;--ui-cta:#5cf2ff;--ui-cta-fg:#15101f;--ui-r:6px;--ui-font:"Bahnschrift Condensed","Arial Narrow",sans-serif;--ui-scrim:rgba(14,10,30,.55)}
+#stage[data-style=b]{--ui-bg:#fbf4e4;--ui-fg:#2b2725;--ui-dim:#6b5f55;--ui-line:#d9ccb4;--ui-cta:#c4432c;--ui-cta-fg:#fffaf0;--ui-r:4px;--ui-font:"Trebuchet MS",sans-serif;--ui-scrim:rgba(40,30,20,.35)}
+#stage[data-style=c]{--ui-bg:#f3ead2;--ui-fg:#161616;--ui-dim:#5a5244;--ui-line:#161616;--ui-cta:#161616;--ui-cta-fg:#f3ead2;--ui-r:0;--ui-font:"Futura","Century Gothic","Bahnschrift",sans-serif;--ui-scrim:rgba(22,22,22,.55)}
+#stage[data-style=d]{--ui-bg:#f4efe4;--ui-fg:#3d5588;--ui-dim:#3d5588;--ui-line:#ff48b0;--ui-cta:#ffe800;--ui-cta-fg:#3d5588;--ui-r:999px;--ui-font:"Arial Black",Impact,sans-serif;--ui-scrim:rgba(61,85,136,.35)}
+#stage[data-style=e]{--ui-bg:rgba(22,14,34,.66);--ui-fg:#ffffff;--ui-dim:#e6dcf0;--ui-line:rgba(255,255,255,.7);--ui-cta:transparent;--ui-cta-fg:#ffffff;--ui-r:18px;--ui-font:"Segoe UI Light","Segoe UI",sans-serif;--ui-scrim:rgba(10,6,20,.4)}
+.screen{position:absolute;inset:0;display:none}
+#stage[data-mode=menu] .menu,#stage[data-mode=pause] .pause,#stage[data-mode=settings] .settings,#stage[data-mode=atlas] .atlas,#stage[data-mode=workshop] .workshop{display:flex}
+#stage:is([data-mode=menu],[data-mode=settings],[data-mode=atlas],[data-mode=workshop],[data-mode=still]) .hud{display:none}
+#stage[data-mode=settings]:has(~ *) .hud{display:none}
+.pause-btn{display:none}#stage:is([data-mode=flight],[data-mode=event]) .pause-btn{display:inline-flex}
+#stage[data-mode=pause] .hud{opacity:.35}
+.icon{pointer-events:auto;width:48px;height:48px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:var(--ui-bg);color:var(--ui-fg);border:2px solid var(--ui-line);border-radius:var(--ui-r)}
+#stage[data-style=d] .icon,#stage[data-style=c] .icon{border-radius:0}
+.icon svg{width:22px;height:22px;fill:currentColor}
+.hud .pause-btn{align-self:flex-start}
+#stage .btn{font:inherit;font-family:var(--ui-font);font-weight:700;min-height:48px;padding:10px 20px;cursor:pointer;background:var(--ui-bg);color:var(--ui-fg);border:2px solid var(--ui-line);border-radius:var(--ui-r);font-size:17px}
+#stage .btn.small{min-height:44px;padding:6px 12px;font-size:15px}
+#stage .screen .cta,#stage .result .cta{font-family:var(--ui-font)}
+/* menu */
+.menu{flex-direction:column;justify-content:space-between;padding:6% 6% 7%}
+.menu .title{margin-top:4%}
+.menu h1{margin:0;font:700 clamp(40px,9cqw,104px)/.92 var(--ui-font);color:var(--ui-fg);text-transform:uppercase;letter-spacing:.02em}
+.menu .title small{display:block;font:700 clamp(12px,1.6cqw,18px)/1 var(--ui-font);letter-spacing:.3em;text-transform:uppercase;color:var(--ui-fg);margin-bottom:10px}
+.menu-actions{display:flex;flex-direction:column;align-items:flex-start;gap:12px;width:min(340px,80%)}
+.menu-actions>*{width:100%}
+.menu-actions .cta{min-height:64px;font-size:26px}
+.menu-coins{position:absolute;right:5%;top:5%;font:700 20px var(--ui-font);color:var(--ui-fg);background:var(--ui-bg);padding:6px 12px;border:2px solid var(--ui-line);border-radius:var(--ui-r)}
+.settings-btn{position:absolute;right:5%;bottom:7%}
+/* panely */
+.panel-screen{align-items:center;justify-content:center;background:var(--ui-scrim)}
+.panel{position:relative;background:var(--ui-bg);color:var(--ui-fg);border:3px solid var(--ui-line);border-radius:var(--ui-r);padding:22px 24px;width:min(380px,88%);display:flex;flex-direction:column;gap:12px;font-family:var(--ui-font)}
+.panel.wide{width:min(900px,92%)}
+.panel h2{margin:0 0 4px;font:700 28px/1 var(--ui-font);text-transform:uppercase;letter-spacing:.06em}
+.panel .row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;font-weight:700}
+.panel input[type=range]{width:50%;accent-color:currentColor}.panel input[type=checkbox]{width:24px;height:24px;accent-color:currentColor}
+.seg{display:flex;border:2px solid var(--ui-line)}.seg button{font:inherit;font-weight:700;min-height:44px;padding:4px 10px;background:transparent;color:var(--ui-fg);border:0;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ui-fg);color:var(--ui-bg)}
+.close-btn{position:absolute;right:10px;top:10px}
+.shop{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.shop li{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;border-bottom:1px solid var(--ui-line);padding-bottom:8px}
+.shop span{color:var(--ui-dim);font-weight:700;text-transform:uppercase;font-size:13px;letter-spacing:.12em}
+#atlas-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+#atlas-cards .card figcaption{font-size:11px}
+@container (max-width:500px){#atlas-cards{grid-template-columns:repeat(2,1fr)}.menu-actions{width:100%}}
+@container (max-height:460px){#atlas-cards{grid-template-columns:repeat(4,1fr)}#atlas-cards .card figcaption{display:none}.panel{padding:12px 16px;gap:6px}.menu h1{font-size:44px}.menu-actions{gap:6px}.menu-actions .cta{min-height:52px;font-size:20px}}
+/* výsledek (a): Házet znovu velké, Dílna + Atlas pod ním, Menu ikonka v rohu karty */
+.result .row2{display:flex;gap:10px;margin-top:10px}.result .row2 .btn{flex:1}
+.result .menu-btn{position:absolute;right:-14px;top:-14px;width:44px;height:44px}
+.result .cta{width:100%}
+/* C: plakátové menu */
+#stage[data-style=c] .menu h1{color:#f3ead2;text-shadow:4px 4px 0 #161616;-webkit-text-stroke:2px #161616;letter-spacing:.04em}
+#stage[data-style=c] .menu .title small{display:inline-block;background:#161616;color:#f3ead2;padding:7px 10px}
+#stage[data-style=c] .menu-actions .cta{box-shadow:inset 0 -6px 0 #c94a35;text-transform:uppercase;letter-spacing:.2em}
+#stage[data-style=c] .btn{text-transform:uppercase;letter-spacing:.16em;border-width:3px}
+#stage[data-style=c] .panel{border-width:3px;box-shadow:8px 8px 0 #161616}
+#stage[data-style=c] .panel h2{border-bottom:3px solid #161616;padding-bottom:10px}
+#stage[data-style=c] .menu-coins{background:#161616;color:#f3ead2}
+#stage[data-style=c] .result .menu-btn{background:#161616;color:#f3ead2}
+#stage[data-style=a0] .menu h1{text-shadow:4px 4px 0 #ff4f9e}
+#stage[data-style=d] .menu h1{text-shadow:5px 3px 0 #ff48b0;color:#3d5588}
+#stage[data-style=b] .menu h1{color:#fbf4e4;text-shadow:0 4px 0 #2b2725}
+#stage[data-style=e] .menu h1{font-weight:200;letter-spacing:.12em;text-shadow:0 2px 20px rgba(0,0,0,.35)}
+#stage[data-style=e] .cta{border:1.5px solid #fff}

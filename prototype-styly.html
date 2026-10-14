@@ -116,7 +116,7 @@
  <div id="cards"></div>
  <p class="note">Klávesy: ←/→ styl, 1–4 čtvrť. URL: <code>?style=a0|b|c|d|e&amp;d=0–3&amp;mode=still|flight|event&amp;view=desktop|phone|landscape</code>. Ladění: <code>__styly.measure()</code> (změřený kontrast vlaštovky), <code>__styly.info()</code>.</p>
 </main>
-<!-- Výchozí: finální návrh B „Papírové město“ pro čtvrť 1 (papir.js). Srovnání 5 směrů z 04-nove-smery.md: ?srovnani=1 -->
-<script type="module">import(new URLSearchParams(location.search).has('srovnani')?'./prototype/styly/main.js':'./prototype/styly/papir.js');</script>
+<!-- Výchozí: finální návrh B „Papírové město“ pro čtvrť 1 (papir.js). Srovnání 5 směrů z 04-nove-smery.md: ?srovnani=1, návrh stínů 08: ?stiny -->
+<script type="module">{const q=new URLSearchParams(location.search);import(q.has('srovnani')?'./prototype/styly/main.js':q.has('stiny')?'./prototype/styly/stiny.js':'./prototype/styly/papir.js');}</script>
 </body>
 </html>
