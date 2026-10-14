@@ -82,7 +82,7 @@ test('guard: every data-i18n key and every literal t(\'…\') key exists in both
  for(const [,k] of read('src/ui.js').matchAll(/'((?:help|flight|aim|result|banner|node|detail)\.[A-Za-z.]+)'/g))used.add(k);
  assert.ok(used.size>60,`found ${used.size} keys`);
  for(const k of used)for(const id of LANG_IDS)assert.ok(has(k,id),`${id}: missing "${k}"`);
- assert.ok(read('index.html').startsWith('<!doctype html>\n<html lang="en">'),'default language in the HTML is English');
+ assert.match(read('index.html'),/^<!doctype html>\r?\n<html lang="en">/,'default language in the HTML is English');
 });
 test('i18n: every save warning from storage.js is shown in the chosen language',async()=>{
  const src=read('src/storage.js'),msgs=[...src.matchAll(/'([^'\n]{20,}\.)'/g)].map(x=>x[1]).filter(s=>/ /.test(s));
