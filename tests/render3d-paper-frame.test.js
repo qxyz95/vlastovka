@@ -11,9 +11,10 @@ import {createFlight,step} from '../src/core.js';
 
 test('quality: tři úrovně podle bible, výchozí podle zařízení, čitelnost na všech stejná',()=>{
  assert.deepEqual(QUALITY.map(q=>q.level),[0,1,2]);
- assert.deepEqual(QUALITY.map(q=>q.shadows.length),[0,1,3]);assert.deepEqual(QUALITY.map(q=>q.msaa),[0,2,4]);
- assert.ok(QUALITY.every(q=>q.planeShadow&&q.haze&&q.maxDpr<=2));assert.equal(QUALITY[1].maxDpr,1.5);assert.equal(QUALITY[0].maxDpr,1);
- assert.ok(!QUALITY[0].fiber&&!QUALITY[0].grain&&QUALITY[1].fiber&&QUALITY[1].grain&&QUALITY[2].cloudShadows&&!QUALITY[1].cloudShadows);
+ // stíny na zem (08-stiny.md S5): 0 jen pata karet, 1 maska 1/4 a 1 rozmazání, 2 maska 1/3 a 2 rozmazání
+ assert.deepEqual(QUALITY.map(q=>q.mask),[0,1/4,1/3]);assert.deepEqual(QUALITY.map(q=>q.blur),[0,1,2]);assert.deepEqual(QUALITY.map(q=>q.msaa),[0,2,4]);
+ assert.ok(QUALITY.every(q=>q.ao&&q.haze&&q.maxDpr<=2));assert.equal(QUALITY[1].maxDpr,1.5);assert.equal(QUALITY[0].maxDpr,1);
+ assert.ok(!QUALITY[0].fiber&&!QUALITY[0].grain&&QUALITY[1].fiber&&QUALITY[1].grain);
  assert.equal(initialQuality({touch:true,cssWidth:390}),1);assert.equal(initialQuality({touch:true,cssWidth:1280}),2);
  assert.equal(initialQuality({touch:false,cssWidth:390}),2);assert.equal(initialQuality(),2);
  assert.equal(qualityPreset(5),QUALITY[2]);assert.equal(qualityPreset(-1),QUALITY[0]);assert.equal(qualityPreset('x'),QUALITY[2]);
