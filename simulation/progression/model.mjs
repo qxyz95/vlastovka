@@ -72,7 +72,7 @@ export function createFlight(kit,ctx){
  return {kit,d,sk,ctx,key,n,x:0,y:d.y0,vx:speed*Math.cos(L.angle)*d.pi,vy:speed*Math.sin(L.angle),t:0,real:0,warp:1,carry:0,hoverT:0,glideT:0,
   w,rerolls,charge,angle:L.angle*180/Math.PI,swing,beta:0,cruise:m.cruise*d.pi,glide:m.glide*d.pi,burst:null,echoes:[],combo:0,lastResolved:-9,
   events:ev.list,ramp:ev.ramp,landed:false,timeout:false,dive:null,abil:{},bias:ctx.bias??0,auto:!!sk.auto,assist:sk.assist??null,
-  comboSpec:ch?A.chain[ch-1]:{step:P.combo.step,max:P.combo.max},skips:sp?A.skip.bounces[sp-1]:0,skipKeep:sp?A.skip.keep[sp-1]:0,
+  comboSpec:ch?A.chain[ch-1]:{step:P.combo.step,max:P.combo.max},skips:sp?A.skip.bounces[sp-1]+(m.skip??0):0,skipKeep:sp?A.skip.keep[sp-1]:0,
   mom:mo?{step:A.momentum.step[mo-1],cap:A.momentum.cap[mo-1]}:null,onAirB:oa?A.onAir.beta[oa-1]:0,tape:lv(kit,'tape')?A.tape[lv(kit,'tape')-1]:0,
   echo:lv(kit,'echo')?A.echo.share[lv(kit,'echo')-1]:0,reach:pc?A.paperCrane.reach[pc-1]*P.route.place:0,craneUsed:false,
   gull:lv(kit,'gull')?{carry:A.gull.carry[lv(kit,'gull')-1],push:A.gull.push[lv(kit,'gull')-1]}:null,
@@ -100,21 +100,24 @@ function gradeTap(t,c,s,p){const dd=Math.abs(t-c);return dd<=p+1e-9?'perfect':dd
 
 function comboBonus(f){return Math.min(f.combo,f.comboSpec.max)*f.comboSpec.step;}
 // Účinek zásahu: svislá část pevně (× model.qte), vodorovný push 1,5·π·(1+E)·perfekt·S·typ.
+// Pole modelu (01 §2.9): liftK násobí svislou část poryvu, páry a termiky, pushK vodorovný push, perfectK nahrazuje push.perfect
+// jen ve vodorovném pushi, droneBurst = dron bez svislé části a push dronu ×droneBurst. Chybějící pole = beze změny.
 // Perfekt termiky (14. 10.) násobí jen push (perf v dvx) a dá kombo +2 a Echo; zdvih sloupu (dvy) je stejný jako u úspěchu
 // (výklad: sloup zvedá stejně, střed jádra odměňuje rychlostí; obdobně pára, kde perf zdvih nemění).
 export function effect(f,e,grade,share,withCombo){
- const E=P.events,q=f.d.m.qte,perf=grade==='perfect'?P.push.perfect:1,t=e.type;
+ const E=P.events,m=f.d.m,q=m.qte,perf=grade==='perfect'?P.push.perfect:1,t=e.type,lift=m.liftK??1;
  let typeMul=E[t].push??1;
- if(t==='gust')f.vy+=E.gust.dvy*q*perf*share;
+ if(t==='gust')f.vy+=E.gust.dvy*q*perf*share*lift;
  if(t==='bird'){f.carry=(grade==='perfect'?E.bird.carryPerfect:E.bird.carry)*q*(1+(f.gull?.carry??0))*share;f.vx=Math.max(E.bird.minVx,f.vx);f.vy=Math.max(E.bird.minVy,f.vy);}
- if(t==='steam'){f.vy+=E.steam.lift*q*(grade==='partial'?1:2)*share;typeMul=grade==='partial'?E.steam.pushPartial:E.steam.pushFull;}
- if(t==='thermal'){const h=grade==='half'?E.thermal.half:1;f.vy+=E.thermal.dvy*q*h*share;typeMul=E.thermal.push*h;}
- if(t==='drone')f.vy+=E.drone.dvy*q*perf*share;
+ if(t==='steam'){f.vy+=E.steam.lift*q*(grade==='partial'?1:2)*share*lift;typeMul=grade==='partial'?E.steam.pushPartial:E.steam.pushFull;}
+ if(t==='thermal'){const h=grade==='half'?E.thermal.half:1;f.vy+=E.thermal.dvy*q*h*share*lift;typeMul=E.thermal.push*h;}
+ if(t==='drone'){if(m.droneBurst)typeMul*=m.droneBurst;else f.vy+=E.drone.dvy*q*perf*share;}
  const own=(t==='steam'||t==='thermal')&&lv(f.kit,t)>=2?E[t].levelPush:0;
  const raw=f.d.foldsE+(withCombo?comboBonus(f):0)+(t==='bird'?(f.gull?.push??0):0)+own;
  if(raw>P.caps.E+1e-9)f.stats.eCap=true;f.stats.eMax=Math.max(f.stats.eMax,raw);
  // scaleWithPace=false = varianta sond 08 (sim3/camp2): základ 1,5 bez π, přírůstek z E se násobí π (AUDIT F2).
- const dvx=P.push.base*((P.push.scaleWithPace?f.d.pi:1)+f.d.pi*Math.min(P.caps.E,raw))*perf*f.d.S*typeMul*share;
+ const perfH=grade==='perfect'?m.perfectK??P.push.perfect:1;
+ const dvx=P.push.base*((P.push.scaleWithPace?f.d.pi:1)+f.d.pi*Math.min(P.caps.E,raw))*perfH*f.d.S*typeMul*share*(m.pushK??1);
  f.vx+=dvx;return dvx;
 }
 function resolve(f,e,grade){
@@ -122,7 +125,7 @@ function resolve(f,e,grade){
  e.result=grade;e.phase='effect';f.lastResolved=f.t;const st=f.stats,ok=grade!=='miss';
  st.done++;st.types[e.type]??={n:0,hit:0};st.types[e.type].n++;
  if(e.type==='star'){st.star.seen++;if(ok){st.star.hit++;st.hits++;st.types.star.hit++;setBurst(f,P.events.star.burst,'star');f.combo+=P.combo.star;}else f.combo=0;}
- else if(!ok){st.miss++;f.combo=0;if(f.tape)effect(f,e,'success',f.tape,false);}
+ else if(!ok){st.miss++;f.combo=0;if(f.d.m.missK)f.vx*=1-f.d.m.missK;if(f.tape)effect(f,e,'success',f.tape,false);}
  else {
   st.hits++;st.types[e.type].hit++;if(grade==='perfect')st.perfect++;
   const dvx=effect(f,e,grade,1,true);
@@ -220,7 +223,7 @@ export function step(f){
  const places=Math.floor(f.x/P.route.place),raw=(f.mom?Math.min(f.mom.cap,f.mom.step*places):0)+(f.onAirB&&f.combo>=P.atlas.onAir.combo?f.onAirB:0);
  if(raw>P.caps.beta+1e-9)st.betaCap=true;st.betaMax=Math.max(st.betaMax,raw);f.beta=Math.min(P.caps.beta,raw);
  const cruise=m.cruise*d.pi*(1+f.beta),glide=m.glide*d.pi*(1+f.beta)*(f.glideT>0?P.specials.cushion.glide:1);f.cruise=cruise;f.glide=glide;
- const wx=f.w*m.cruise*d.pi*Math.min(1,Math.max(0,f.y)/P.wind.shear);
+ const wx=f.w*(m.windK??1)*m.cruise*d.pi*Math.min(1,Math.max(0,f.y)/P.wind.shear); // windK (01 §2.9) násobí vítr, ne rychlost
  const ox=f.x,oy=f.y,ovx=f.vx,ovy=f.vy;let h=dt;
  if(f.carry>0){const c=Math.min(dt,f.carry);f.x+=f.vx*c;f.y+=f.vy*c;f.carry-=c;h=dt-c;}
  if(h>1e-10){
@@ -228,7 +231,7 @@ export function step(f){
   if(f.dive){const D=P.specials.dive;f.dive.gain=f.dive.gain*Math.exp(-m.drag*h)+D.accel*d.pi*h;f.vx+=D.accel*d.pi*h;f.vy-=g*D.gravity*h;
    if(D.maxSink!=null){const sink=-D.maxSink*Math.max(0,f.vx-wx)/glide;if(f.vy<sink)f.vy=sink;}} // strop střemhlavu = maxSink × běžné klesání (14. 10.), null = bez stropu
   else if(f.hoverT>0)f.vy=Math.max(0,f.vy-g*h);
-  else{f.vy-=g*h;const sink=-Math.max(0,f.vx-wx)/glide;if(f.vy<sink)f.vy=sink;}
+  else{f.vy-=g*h;const gl=m.ground&&f.y<m.ground.below?glide*m.ground.glide:glide,sink=-Math.max(0,f.vx-wx)/gl;if(f.vy<sink)f.vy=sink;} // ground (01 §2.4): pod below m klesá pomaleji
   f.x+=f.vx*h;f.y+=f.vy*h;
  }
  if(f.burst)f.x+=burstAt(f.burst,f.t-f.burst.t0)*cruise*dt;

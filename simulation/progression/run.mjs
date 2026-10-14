@@ -1,12 +1,12 @@
 // CLI simulátoru progrese. Zapisuje jen do simulation/progression/out/.
 // node simulation/progression/run.mjs [--profiles weak,average,good,expert] [--strategies balanced,paper-first] [--pockets auto,dive+sharp]
-//   [--models better] [--n 20] [--seed 1] [--params over.json] [--set warp.factor=1] [--sensitivity] [--no-probes] [--probe-n 60] [--out smoke] [--workers 8]
+//   [--models better|preview|dart|<id>] [--modelset obsah01] [--n 20] [--seed 1] [--params over.json] [--set warp.factor=1] [--sensitivity] [--no-probes] [--probe-n 60] [--out smoke] [--workers 8]
 import {Worker,isMainThread,parentPort,workerData} from 'node:worker_threads';
 import {availableParallelism} from 'node:os';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {dirname,join} from 'node:path';
-import {P,setParams,merge,parseSet,PROFILE_SETS} from './params.mjs';
+import {P,setParams,merge,parseSet,PROFILE_SETS,MODEL_SETS} from './params.mjs';
 import {campaign} from './campaign.mjs';
 import {bestAngle,lv,createEvents,derive} from './model.mjs';
 import {throwOnce} from './abilities.mjs';
@@ -24,6 +24,17 @@ export async function runCampaigns(specs,over={},workers=Math.max(1,availablePar
  const parts=await Promise.all(chunks.map(c=>new Promise((res,rej)=>{const w=new Worker(fileURLToPath(import.meta.url),{workerData:{tasks:c,over}});w.on('message',res);w.on('error',rej);})));
  return parts.flat();
 }
+// Ekonomika skupiny: průměr ◈ na kampaň (příjem podle čtvrti rekordu před hodem, útrata podle čtvrti při nákupu), útrata po druzích,
+// medián zůstatku. Modely: podíl hodů, ◈ a metry na hod, ◈ za skutečnou minutu (let + UI), podíl kampaní s koupí a medián hodu koupě.
+export function economy(rs){
+ const D=[0,1,2,3],kinds=[...new Set(rs.flatMap(r=>Object.keys(r.econ?.kind??{})))],ms=[...new Set(rs.flatMap(r=>Object.keys(r.byModel??{})))];
+ const all=rs.reduce((a,r)=>a+r.throws,0),sum=(m,k)=>rs.reduce((a,r)=>a+(r.byModel?.[m]?.[k]??0),0);
+ return {income:D.map(d=>mean(rs.map(r=>r.econ?.income[d]??0))),spend:D.map(d=>mean(rs.map(r=>r.econ?.spend[d]??0))),
+  kind:Object.fromEntries(kinds.map(k=>[k,mean(rs.map(r=>r.econ?.kind[k]??0))])),left:med(rs.map(r=>r.coins??0)),
+  models:Object.fromEntries(ms.map(m=>{const t=sum(m,'throws'),buys=rs.map(r=>(r.buys??[]).find(b=>b.id==='model:'+m)).filter(Boolean);
+   return [m,{share:all?t/all:null,coins:t?sum(m,'coins')/t:null,x:t?sum(m,'x')/t:null,coinsPerMin:t?sum(m,'coins')/(sum(m,'real')/60):null,
+    bought:buys.length/rs.length,buyThrow:med(buys.map(b=>b.throw))}];}))};
+}
 // Souhrn skupiny kampaní (metriky 08 §10.2).
 export function summarize(rs){
  const done=rs.filter(r=>r.done),dist=[0,1,2,3].map(d=>rs.map(r=>r.districts[d]?{throws:r.districts[d].throws-(d?r.districts[d-1].throws:0),minutes:r.districts[d].minutes-(d?r.districts[d-1].minutes:0)}:null).filter(Boolean));
@@ -39,7 +50,7 @@ export function summarize(rs){
   // Paper Crane v kampani (rozhodnutí 14. 10.): podíl letů s tahem a podíl tahů, které přenesly rekord na dosud neobjevené místo
   craneTugRate:rs.reduce((a,r)=>a+(r.crane?.tugs??0),0)/flights,craneNewPlace:(()=>{const t=rs.reduce((a,r)=>a+(r.crane?.tugs??0),0);return t?rs.reduce((a,r)=>a+r.crane.newPlace,0)/t:null;})(),
   qteHit:rs.reduce((a,r)=>a+r.qte.hits,0)/Math.max(1,rs.reduce((a,r)=>a+r.qte.done,0)),
-  diveCrash:(()=>{const u=rs.reduce((a,r)=>a+r.dive.uses,0);return u?rs.reduce((a,r)=>a+r.dive.crash,0)/u:null;})()};
+  diveCrash:(()=>{const u=rs.reduce((a,r)=>a+r.dive.uses,0);return u?rs.reduce((a,r)=>a+r.dive.crash,0)/u:null;})(),econ:economy(rs)};
 }
 
 // Křivka 08 §2.4: pevné výbavy, úhel = nejlepší pasivní + chyba profilu, n letů na buňku (hod č. 20: plující střed i švih zapnuté).
@@ -130,6 +141,11 @@ function markdown(rep){
  for(const [k,s] of Object.entries(rep.groups))L.push(`| ${k} | ${pc(s.doneRate)} | ${s.district.map(d=>`${r0(d.throws)} / ${r1(d.minutes)}`).join(' | ')} | ${r0(s.throws)} / ${r1(s.minutes)} | ${s.flight.map(f=>r1(f.median)).join(' · ')} | ${r1(s.flightP90)} / ${r1(s.flightMax)} | ${pc(s.qteHit)} |`);
  L.push('','| Skupina | sucho med / max / P90 max | mezi místy med/P90 | 1. kapsa | úrovně v cíli | kluzák | strop E | strop β | Dive pády |','|---|---|---|---:|---:|---:|---:|---:|---:|');
  for(const [k,s] of Object.entries(rep.groups))L.push(`| ${k} | ${r0(s.droughtMedian)} / ${s.droughtMax} / ${r0(s.droughtMaxP90)} | ${r0(s.placeGapMedian)} / ${r0(s.placeGapP90)} | ${r0(s.firstPocket)} | ${pc(s.levelsBought)} | ${pc(s.gliderShare)} | ${pc(s.eCap)} | ${pc(s.betaCap)} | ${pc(s.diveCrash)} |`);
+ {const E=Object.entries(rep.groups).filter(([,s])=>s.econ);
+  if(E.length){L.push('','## Ekonomika (průměr ◈ na kampaň)','','| Skupina | příjem D1 / D2 / D3 / D4 | útrata D1 / D2 / D3 / D4 | útrata po druzích | zůstatek v cíli (med) |','|---|---|---|---|---:|');
+   for(const [k,s] of E)L.push(`| ${k} | ${s.econ.income.map(r0).join(' / ')} | ${s.econ.spend.map(r0).join(' / ')} | ${Object.entries(s.econ.kind).map(([a,v])=>`${a} ${r0(v)}`).join(', ')||'–'} | ${r0(s.econ.left)} |`);
+   L.push('','| Skupina | model: podíl hodů · ◈/hod · m/hod · ◈/min · koupilo (med. hod koupě) |','|---|---|');
+   for(const [k,s] of E)L.push(`| ${k} | ${Object.entries(s.econ.models).map(([m,v])=>`${m}: ${pc(v.share)} · ${r0(v.coins)} · ${r0(v.x)} · ${r0(v.coinsPerMin)}${P.models[m]?.price!=null?` · ${pc(v.bought)} (${r0(v.buyThrow)})`:''}`).join('; ')} |`);}}
  if(rep.probes?.abilities){L.push('','## Speciály na výbavě „konec D3“ (zisk doletu)','','| Profil | dolet bez | cushion | sharp | calm | dive (pády) | whistle | rocket | dive vysoko |','|---|---:|---:|---:|---:|---:|---:|---:|---:|');
   for(const r of rep.probes.abilities)L.push(`| ${r.profile} | ${r0(r.base)} | ${pc1(r.cushion.gain)} | ${pc1(r.sharp.gain)} | ${pc1(r.calm.gain)} | ${pc1(r.dive.gain)} (${pc(r.dive.crash)}) | ${pc1(r.whistle.gain)} | ${pc1(r.rocket.gain)} | ${pc1(r.diveHigh.gain)} |`);}
  if(rep.probes?.atlas){L.push('','## Atlas na úr. 3 (plná výbava s bonusem / bez něj, průměrný)','',rep.probes.atlas.map(a=>`${a.bonus} ${pc1(a.gain)}${a.rate!=null?` (${pc(a.rate)} letů)`:''}`).join(' · '));}
@@ -164,6 +180,7 @@ function args(argv){const o={set:[]};for(let i=0;i<argv.length;i++){const a=argv
 async function main(){
  const a=args(process.argv.slice(2)),list=(v,d)=>(v&&v!==true?String(v):d).split(',').filter(Boolean);
  let over={};if(a.profileset&&a.profileset!==true){if(!PROFILE_SETS[a.profileset])throw new Error('profileset '+a.profileset);over=merge(over,JSON.parse(JSON.stringify(PROFILE_SETS[a.profileset])));}
+ if(a.modelset&&a.modelset!==true){if(!MODEL_SETS[a.modelset])throw new Error('modelset '+a.modelset);over=merge(over,JSON.parse(JSON.stringify(MODEL_SETS[a.modelset])));}
  if(a.params)over=merge(over,JSON.parse(await readFile(a.params,'utf8')));for(const s of a.set)over=merge(over,parseSet(s));
  setParams(over);
  const profiles=list(a.profiles,'weak,average,good,expert'),strategies=list(a.strategies,'balanced'),pockets=list(a.pockets,'auto'),models=list(a.models,'better');
