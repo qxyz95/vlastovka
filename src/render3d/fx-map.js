@@ -35,9 +35,21 @@ export function particles(fx,view){
  for(let o=0;o<fx.parts.length;o+=STRIDE){
   const age=fx.parts[o+4],life=fx.parts[o+5];if(age>=life)continue;
   const kind=fx.parts[o+7],s=fx.parts[o+6],left=1-age/life,[x,y]=particleScreen(view,fx.parts[o],fx.parts[o+1]);
-  out.push({kind,x,y,size:(kind===3?s:kind===0?s*(1+age*1.5):s*left+1)*Math.min(1,k),alpha:kind===0?left*.8:left});
+  out.push({kind,x,y,size:(kind===3?s:kind===0?s*(1+age*1.5):s*left+1)*Math.min(1,k),alpha:kind===0?left*.8:left,i:o/STRIDE,age});
  }
  return out;
+}
+// Papír (bible 05 kap. 7): jiskry (druh 1, 2, 4) jsou útržky papíru, obdélník size × size·ratio natočený o scrapAngle (stálý náklon podle slotu
+// + točení spin rad/s na obě strany); reduced motion = bez točení. Úspěch střídá barvu role a krém podle slotu (scrapTone 0/1).
+export const SCRAP=Object.freeze({spin:7,ratio:.55,grow:1.6});
+export const scrapAngle=(q,reduced=false)=>noise((q.i??0)*3.1+1)*Math.PI*2+(reduced?0:(q.age??0)*SCRAP.spin*(noise((q.i??0)+.5)>.5?1:-1));
+export const scrapTone=q=>(q.i??0)%2;
+// Poryv v papíru (bible 05 kap. 7, 11): tři zvlněné proužky vlevo od vlaštovky (pás cyber čárek px − 70 … px − 12), body [x,y] v logických px;
+// unášené větrem (drift px za 1/3 s) a vlnité; reduced motion = statické.
+export const GUST={n:3,points:8,len:30,drift:28,amp:1.8};
+export function gustStrips(px,py,time=0,reduced=false){
+ return Array.from({length:GUST.n},(_,i)=>{const d=reduced?0:(time*3+i/GUST.n)%1,x0=px-70+d*GUST.drift,y0=py-14+i*12,ph=reduced?0:time*2;
+  return Array.from({length:GUST.points},(_,j)=>{const u=j/(GUST.points-1);return [x0+u*GUST.len,y0+Math.sin(u*6.3+i*1.7+ph)*GUST.amp+u*2];});});
 }
 // Popupy pro kreslení: náběh outBack, stoupání outCubic, doznění; reduced motion = bez škálování a stoupání.
 export const popups=(fx,reduced=false)=>(fx?.popups??[]).map((p,i)=>{const k=p.age/FX.popupLife;
