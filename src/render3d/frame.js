@@ -9,7 +9,7 @@ import {createDirector,direct,nextDirector,cameraView,project as projectCam,qteL
 import {follow,sideCamera,PLANE_OFFSET,LAYERS,chunkOffset,placeIndex} from './geometry.js';
 import {companion} from './life.js';
 import {moodAt} from './mood.js';
-import {planePose,kidPose,HAND,REST as AIM,aimWidth,handOf,restPitch} from './pose.js';
+import {planePose,kidPose,HAND,REST as AIM,aimWidth} from './pose.js';
 import {comicLook} from './comic.js';
 import {fxMap} from './fx-map.js';
 import {eventView} from './events-view.js';
@@ -17,16 +17,16 @@ import {uiScale} from './ui-layer.js';
 import {initialQuality} from './quality.js';
 
 export const LOGICAL={w:640,h:360},ASPECT=16/9,REST={px:148,py:258};
-// Papírové město: vlaštovka na scéně užší než `width` CSS px o 15 % větší (rozhodnutí 14. 10., spec 06 kap. 6), jen vzhled, fyzika ani kamera beze změny.
+// Vlaštovka na scéně užší než `width` CSS px o 15 % větší (rozhodnutí 14. 10., spec 06 kap. 6), jen vzhled, fyzika ani kamera beze změny.
+// Jediný styl je Papírové město (R0): visual.style se ignoruje.
 export const PLANE_NARROW=Object.freeze({width:500,scale:1.15});
-export const styleOf=visual=>visual?.style==='papir'?'papir':'cyber';
-export const planeScale=(style,cssWidth=640)=>style==='papir'&&cssWidth<PLANE_NARROW.width?PLANE_NARROW.scale:1;
+export const planeScale=(cssWidth=640)=>cssWidth<PLANE_NARROW.width?PLANE_NARROW.scale:1;
 // Délka vlaštovky podle šířky záběru W (research/start/02 M-2, 01 §3.7): v ruce 0,5 m při 16 m, L(W) = 0,5·(W/16)^1,36 až do 7,75 m
 // (plane.PLANE_SCALE, W 120 m), dál stálá; nikdy pod 0,5 m (telefon míří na 7 m, vlaštovka v ruce zůstane 0,5 m). Na úzké scéně (< PLANE_NARROW.width CSS px) aspoň minPx CSS px. Jen vzhled, fyzika je bod.
 export const PLANE_SIZE=Object.freeze({hand:AIM.hand,ref:16,exp:1.36,max:7.75,minPx:24});
 export const planeLength=(W,cssWidth=640)=>Math.max(PLANE_SIZE.hand,Math.min(PLANE_SIZE.max,PLANE_SIZE.hand*(W/PLANE_SIZE.ref)**PLANE_SIZE.exp),cssWidth<PLANE_NARROW.width?PLANE_SIZE.minPx*W/cssWidth:0);
-// Násobek PLANE_SCALE pro plan.plane.scale a plan.hand.scale: délka podle záběru × +15 % papíru na úzké scéně.
-export const planeSizeScale=(W,style,cssWidth=640)=>planeLength(W,cssWidth)/PLANE_SIZE.max*planeScale(style,cssWidth);
+// Násobek PLANE_SCALE pro plan.plane.scale a plan.hand.scale: délka podle záběru × +15 % na úzké scéně.
+export const planeSizeScale=(W,cssWidth=640)=>planeLength(W,cssWidth)/PLANE_SIZE.max*planeScale(cssWidth);
 // Záběr Follow: šířka 120 m ve hloubce letu (k ≈ 2,5), úzký FOV a mírný pohled shora jako v prototypu. V klidu polodetail míření z pose.js (16 m, k ≈ 19).
 export const CAMERA={width:120,fov:20,pitch:6};
 // ── Projekce (stejná jako THREE.PerspectiveCamera.lookAt, up = +y, bez zoomu a posunu pohledu; náklon camera.roll ve ° jako camera.js).
@@ -48,20 +48,17 @@ export function cameraFor(X,Y,{width=CAMERA.width,zoom=1,fov=CAMERA.fov,pitch=CA
  const [sx,,z]=project([X,Y,0],cam),dx=(sx-px)/pxPerMeter(z,cam);
  return {...cam,cx:cam.cx+dx,position:[cam.position[0]+dx,...cam.position.slice(1)],target:[cam.target[0]+dx,...cam.target.slice(1)]};
 }
-// Výhoz: ruka je v hand.y (pose.handOf(style)), fyzika startuje z y0 (core.createFlight 12 m, nový systém f.d.y0). Zobrazená vlaštovka vyletí
-// z ruky a rozdíl se za LAUNCH.dur rozplyne (stejná křivka jako oddálení výhozu). Jen vzhled: fyzika se nemění. Papír (S4): ruka = y0 = 12 m,
-// převod je 0; zůstává jen pro cyber Dílnu (ruka 16 m) a pro vyšší výhoz nového systému (Crane Lift, f.d.y0), dokud ho místo neukáže.
+// Výhoz: ruka je v HAND.y (12 m), fyzika startuje z y0 (core.createFlight 12 m, nový systém f.d.y0). Zobrazená vlaštovka vyletí z ruky a rozdíl
+// se za LAUNCH.dur rozplyne (stejná křivka jako oddálení výhozu). Jen vzhled: fyzika se nemění. Dnes je převod 0; zůstává pro vyšší výhoz
+// nového systému (Crane Lift, f.d.y0), dokud ho místo neukáže.
 export const launchLift=(f,hand=HAND)=>f?(hand.y-(f.d?.y0??12))*(1-launchEase(f.t/LAUNCH.dur)):0;
-export const planeWorld=(f,style)=>{const h=handOf(style);return f?[f.x+PLANE_OFFSET,f.y+launchLift(f,h)]:[h.x,h.y];};
-// Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr míření z pose.js (ruka stylu na (148, 258), 16 m, telefon 7 m; papír sklon −8°).
+export const planeWorld=f=>f?[f.x+PLANE_OFFSET,f.y+launchLift(f)]:[HAND.x,HAND.y];
+// Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr míření z pose.js (ruka na (148, 258), 16 m, telefon 7 m, sklon −8°).
 export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
-// Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka a sklon podle stylu; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
-const rests=new Map(),restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0)),style=styleOf(visual),h=handOf(style);
- return {x:h.x,y:h.y,v:0,t,dt,flying:false,calm,aimW:restWidth(visual,style,c),pitch:restPitch(style)};};
-// Hra ve stylu cyber (visual.style==='cyber', stará Dílna s obřím dítětem) drží původní vzdálený klidový záběr; zblízka 16 m papír (místo odhodu S4).
-export const CYBER_REST_W=640/PPM/1.25;
-const restWidth=(visual,style,c=0)=>visual?.style==='cyber'?CYBER_REST_W:aimWidth(visual?.cssWidth??640)*(1-AIM.push*c);
-const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm+'|'+i.y+'|'+i.pitch;if(i.aimW!==restWidth(visual,styleOf(visual)))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
+// Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka HAND, sklon REST.pitch; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
+const rests=new Map(),restWidth=(visual,c=0)=>aimWidth(visual?.cssWidth??640)*(1-AIM.push*c),
+ restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0));return {x:HAND.x,y:HAND.y,v:0,t,dt,flying:false,calm,aimW:restWidth(visual,c),pitch:AIM.pitch};};
+const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm;if(i.aimW!==restWidth(visual))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
  let r=rests.get(key);if(!r)rests.set(key,r=direct(createDirector(DIRECTOR),i));return r;};
 // Tempo π a cestovní rychlost výbavy (01 §3.3): nový systém nese π v f.d.pi a cestovní rychlost s β v f.cruise (simulation/progression/model.mjs),
 // dnešní hra jen f.p.cruise (π = 1). Calm camera i reduced motion = kamera bez dynamického zoomu (01 §3.8).
@@ -73,13 +70,13 @@ export const calmOf=visual=>!!(visual?.settings?.calm||visual?.reduced);
 export function directorFor({f=null,prev=null,time,visual={}}={}){
  if(!f){const base=prev?.director?.state==='rest'?prev.director:null,t=visual.clock??time??0;if(!base)return restDirector(visual);
   return nextDirector(base,restInput(visual,t,Math.max(0,Math.min(.1,t-(prev.dirT??t)))));}
- const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f,styleOf(visual)),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
+ const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
  const k=paceOf(f),input={x:X,y:Y,v:f.vx,vy:f.vy,t,dt,flying,landed:f.landed,f,k,c:cruiseOf(f,k),dive:!!f.dive,best:visual.best,calm:calmOf(visual)};
  return base?nextDirector(base,input):direct(createDirector(DIRECTOR),input);
 }
-export const cameraOf=(f,style)=>directorFor({f,visual:{style}}).camera;
-// Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px. style = styl scény (ruka podle stylu).
-export function viewOf(f,camera,style){const [X,Y]=planeWorld(f,style);return cameraView(camera??cameraOf(f,style),X,Y);}
+export const cameraOf=f=>directorFor({f}).camera;
+// Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px.
+export function viewOf(f,camera){const [X,Y]=planeWorld(f);return cameraView(camera??cameraOf(f),X,Y);}
 // Místa, která kamera vidí (i panorama v hloubce LAYERS.far a zem za ní), seřazená od nejbližšího ke středu záběru.
 export function placesFor(cam,margin=80){
  const depth=cam.dist-LAYERS.far+60,reach=depth*tanV(cam)*ASPECT+margin,a=Math.max(0,Math.floor((cam.cx-reach)/SCREEN_METERS)),b=Math.floor((cam.cx+reach)/SCREEN_METERS),out=[];
@@ -92,16 +89,16 @@ const tilt=(t,anim,flying,reduced)=>({roll:.42+(flying&&!reduced?noise1(t*1.3,4)
 const cheerAge=f=>{let at=null;if(f)for(const e of f.events)if(e.result&&e.result!=='miss'&&e.result!=='interrupted'&&e.doneAt!=null)at=at==null?e.doneAt:Math.max(at,e.doneAt);return at==null?null:f.t-at;};
 
 export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}={}){
- const style=styleOf(visual),paper=style==='papir',cssWidth=visual.cssWidth??640;
- // Kvalita: ve výchozím stylu jako dřív (visual.quality ?? 2); v papíru výchozí z quality.js (pokles podle P95 drží volající přes nextQuality).
- const quality=visual.quality??(paper?initialQuality({touch:!!visual.touch,cssWidth}):2);
+ const cssWidth=visual.cssWidth??640;
+ // Kvalita: výchozí z quality.js (pokles podle P95 drží volající přes nextQuality).
+ const quality=visual.quality??initialQuality({touch:!!visual.touch,cssWidth});
  const flying=!!f&&!f.landed,t=flying?f.t:visual.clock??time,clock=visual.clock??time,reduced=!!visual.reduced,charge=f?0:visual.charge??0;
  state=state??visual.state??(f?(f.landed?'landed':'flight'):'aim');
  state=state==='result'?'landed':state;
- const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f,style);
+ const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f);
  // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
  const director=directorFor({f:rest?null:f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=calmOf(visual);
- const v=cameraView(director.camera,X,Y),scale=planeSizeScale(director.camera.width,style,cssWidth),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
+ const v=cameraView(director.camera,X,Y),scale=planeSizeScale(director.camera.width,cssWidth),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
  const fxv=fxMap(visual.fx,v,opts);
  // otřes: x,y logické px (UI vrstva), dx,dy m a roll rad (3D kamera); Calm camera bez otřesu
  const camera={...director.camera,shake:calm?{x:0,y:0,roll:0,dx:0,dy:0}:fxv.shake??{x:0,y:0,roll:0,dx:0,dy:0}};if(calm)fxv.shake=camera.shake;
@@ -112,8 +109,8 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  const e=rest?null:activeEvent(f),events=e?[eventView(e,f.t)]:[];
  // „Zadržení dechu“: od varování QTE do 0,3 s po výsledku (qteLock) se pozadí tlumí; náběh i doznění přes damp (stav v prev.mood.hold).
  const goal=!rest&&qteLock(f)?1:0,hold=prev&&!rest?damp(prev.mood?.hold??0,goal,.12,Math.max(0,Math.min(.1,dirT-(prev.dirT??dirT)))):goal;
- const m=moodAt(X,t,{hold:hold<1e-3?0:hold,style}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
- const comic=comicLook(mood,quality,style);
+ const m=moodAt(X,t,{hold:hold<1e-3?0:hold}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
+ const comic=comicLook(quality);
  return {t,state,view:v,hand:rest?{...own,model,scale}:null,X,Y,camera,director,dirT,vx:f?.vx??0,carry:f?.carry??0,ev:e?{at:e.at,phase:e.phase}:null,plane,kid,places:placesFor(camera),mood,comic,events,fx:fxv,comp:companion(e,f?.t??0),cheer:cheerAge(f),
-  ui:{qte:visual.qte??null,aim:visual.aim??null,labels:events,charge,reduced,uiScale:uiScale(cssWidth),palette:visual.palette},quality,style,reduced};
+  ui:{qte:visual.qte??null,aim:visual.aim??null,labels:events,charge,reduced,uiScale:uiScale(cssWidth)},quality,reduced};
 }

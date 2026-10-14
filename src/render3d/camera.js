@@ -23,8 +23,8 @@ export const EASE={out:{hl:.25,rate:.8},in:{hl:1.2,rate:.25}};
 export const DISTRICT={dur:1.5,out:.5,min:.4},VISTA={calm:2.5,ahead:1.5,leave:1.2,out:1.1,px:-20,minPx:110},LANDING={dur:.85,zoom:.85},LAUNCH={dur:1.2,roll:1.5};
 // Zámek QTE a meze: zoom (ln šířky) nejvýš ZOOM_RATE/s na složku, px nejvýš PX_RATE px/s, natočení nejvýš MAX_ROT °. MARGIN = rezerva před událostí.
 export const LOCK_AFTER=.3,MARGIN=.2,ZOOM_RATE=.8,PX_RATE=30,MAX_ROT=3,REST={px:148,py:258};
-// Ruka dítěte a záběr v klidu z pose.js (R3): ruka (vstup y v klidu, bez něj HAND 16 m) je v klidu na (148, 258); režisér v klidu drží šířku aimW
-// (pose.aimWidth, přisunutí při nabíjení) a sklon pitch (papír −8°, bez něj opts.pitch); výhoz sklon prolne na opts.pitch spolu s oddálením.
+// Ruka dítěte a záběr v klidu z pose.js (R3): ruka (vstup y v klidu, bez něj HAND 12 m) je v klidu na (148, 258); režisér v klidu drží šířku aimW
+// (pose.aimWidth, přisunutí při nabíjení) a sklon pitch (výchozí pose.REST.pitch −8°); výhoz sklon prolne na opts.pitch spolu s oddálením.
 export {HAND};
 export const titleAlpha=age=>age==null||age<0?0:age<TITLE.fadeIn?smooth(age/TITLE.fadeIn):age<TITLE.fadeIn+TITLE.hold?1:1-smooth((age-TITLE.fadeIn-TITLE.hold)/TITLE.fadeOut);
 // Přiblížení na hranici místa: šířka záběru × (1 − depth·sin), hladký nástup i návrat.
@@ -57,9 +57,9 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),rot=v=>clamp(v,-MAX_ROT,MAX_ROT);
 const toward=(x,goal,hl,dt,max,log)=>{const y=damp(x,goal,hl,dt);if(!log)return x+clamp(y-x,-max*dt,max*dt);const d=clamp(Math.log(y/x),-max*dt,max*dt);return x*Math.exp(d);};
 // Jeden krok: x,y zobrazená poloha vlaštovky (m, se zrychlením), v,vy rychlost (m/s), t hodiny scény, dt krok, k tempo π, c cestovní rychlost
 // výbavy (m/s, už × π), dive = střemhlav, f let (události, landed), best rekord v m (Place intro jen za ním), calm = Calm camera / reduced motion,
-// aimW = šířka klidového záběru (m), pitch = sklon klidového záběru (°, bez něj opts.pitch). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
+// aimW = šířka klidového záběru (m), pitch = sklon klidového záběru (°, výchozí pose.REST.pitch). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
 // Šířka = opts.width · zoom (stav: vista, district, intro, landing) · ex (přebytek, tlumený asymetricky) / tz (tempo); výhoz ji prolne z klidového záběru.
-export function direct(s,{x,y,v=0,vy=0,t,dt,flying,landed,f,k=1,c=CRUISE*k,dive=false,best,calm=false,flat=false,shake,aimW=POSE_REST.width,pitch=null}){
+export function direct(s,{x,y,v=0,vy=0,t,dt,flying,landed,f,k=1,c=CRUISE*k,dive=false,best,calm=false,flat=false,shake,aimW=POSE_REST.width,pitch=POSE_REST.pitch}){
  landed=landed??!!f?.landed;const rest=!flying&&!landed,place=placeAt(x),lock=qteLock(f),ahead=nextEventIn(f),low=y!=null&&y<EXCESS.low&&vy<0;
  const thrown=flying&&s.thrownAt==null;s.cut=false;
  // výhoz z klidu: kamera odjede z klidového záběru (v Calm střih, s.cut pro prolnutí v rendereru)

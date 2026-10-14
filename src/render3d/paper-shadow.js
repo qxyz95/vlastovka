@@ -15,7 +15,7 @@ export const SHADOW_STRENGTH=Object.freeze([.62,.62,.8,.3,.62]);
 export const SUN_REF_Y=.2,MIN_ELEVATION=.15;
 const norm=v=>{const l=Math.hypot(...v)||1;return v.map(c=>c/l);};
 const strengthAt=place=>{const p=Math.max(0,Math.min(16,place??0)),i=Math.min(15,Math.floor(p)),d=j=>SHADOW_STRENGTH[Math.min(4,Math.floor(j/4))],a=d(i),b=d(i+1);return a===b?a:a+(b-a)*smooth(p-i);};
-// Směr ke světlu [x,y,z] (jednotkový) a síla stínu z plan.mood (moodAt s style 'papir'). Slunce na obloze je vždy ZA městem → z < 0 (S-1),
+// Směr ke světlu [x,y,z] (jednotkový) a síla stínu z plan.mood (moodAt). Slunce na obloze je vždy ZA městem → z < 0 (S-1),
 // strana podle polohy slunce v obraze (vpravo = +x), elevace podle mood.light škálovaná výškou slunce. Bez slunce (večer) směr z mood.light, z < 0.
 export function shadowLight(mood={}){
  const l=mood.light??[.62,.5,.6],s=mood.sun,on=s&&s.alpha>0&&Number.isFinite(s.x)&&Number.isFinite(s.y);

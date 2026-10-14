@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {planFrame,viewOf,launchLift,planeWorld,PLANE_SIZE,CAMERA} from '../src/render3d/frame.js';
+import {planFrame,viewOf,launchLift,planeWorld,planeScale,PLANE_SIZE,CAMERA} from '../src/render3d/frame.js';
 import {LAUNCH} from '../src/render3d/camera.js';
 import {REST,HAND,aimWidth,planePose} from '../src/render3d/pose.js';
 import {createFlight,step} from '../src/core.js';
@@ -12,7 +12,7 @@ const restPlan=(o={})=>planFrame({state:'aim',...o,visual:{clock:0,...o.visual}}
 test('aim shot: 16 m on desktop, narrower down to 7 m so the 0,5 m plane in the hand keeps ≥ 27 px (≥ 25,7 at 360); the hand stays at (148, 258)',()=>{
  for(const [css,W] of [[1920,16],[1280,16],[864,16],[768,768/54],[500,500/54],[390,390/54],[375,7],[360,7]]){const p=restPlan({visual:{cssWidth:css}});
   near(p.camera.width,W,1e-9,`css ${css}`);near(aimWidth(css),W,1e-9,`aimWidth ${css}`);near(p.view.px,148,1e-6,'px');near(p.view.py,258,1e-6,'py');
-  const L=p.hand.scale*PLANE_SIZE.max;near(L,.5,1e-9,'0,5 m in the hand');assert.ok(L/W*css>=25.7,`css ${css}: ${L/W*css} px`);}
+  const L=p.hand.scale*PLANE_SIZE.max;near(L,.5*planeScale(css),1e-9,'0,5 m in the hand (+15 % on a narrow scene)');assert.ok(L/W*css>=25.7,`css ${css}: ${L/W*css} px`);}
  near(restPlan({visual:{cssWidth:1280}}).hand.scale*PLANE_SIZE.max/16*1280,40,1e-9,'40 px at 1280');
  const v=viewOf(null);near(v.px,148,1e-6,'view(null) px');near(v.py,258,1e-6,'view(null) py');near(v.k,640/2.1/aimWidth(640),.5,'k of the aim shot (logical 640 px wide)');
 });
@@ -42,16 +42,16 @@ test('throw: pull-out from the aim shot to the flight width only outwards and do
   const sz=o.slice(1).map(x=>x.len/x.w*css);assert.ok(sz.every(px=>px>=24-1e-9),'≥ 24 px');}
  const d=throwChain({css:1280}).slice(1).map(x=>x.len/x.w*1280);assert.ok(d.at(-1)>d[0]*1.4,`desktop: plane grows on screen ${d[0]} → ${d.at(-1)}`);
 });
-test('launchLift: display only, from the hand (16 m) to the physics height (12 m) within LAUNCH.dur; physics untouched',()=>{
- const f=createFlight('dart',undefined,3);assert.equal(launchLift(f),HAND.y-12);for(let i=0;i<72;i++)step(f);assert.equal(launchLift(f),0);
- assert.equal(planeWorld(f)[1],f.y);assert.equal(launchLift({t:0,d:{y0:16}}),0,'hand = y0 (S4): nothing to bridge');
+test('launchLift: display only, from the hand (12 m) to a higher physics start (f.d.y0) within LAUNCH.dur; physics untouched',()=>{
+ const f=createFlight('dart',undefined,3);assert.equal(HAND.y,12);assert.equal(launchLift(f),0,'hand = y0 (S4): nothing to bridge');for(let i=0;i<72;i++)step(f);assert.equal(launchLift(f),0);
+ assert.equal(planeWorld(f)[1],f.y);assert.equal(launchLift({t:0,d:{y0:16}}),HAND.y-16,'Crane Lift');assert.ok(Math.abs(launchLift({t:LAUNCH.dur,d:{y0:16}}))<1e-12);
  const a=createFlight('dart',undefined,4),b=createFlight('dart',undefined,4);for(let i=0;i<300;i++){step(a);step(b);planFrame({f:b,time:b.t});}assert.deepEqual(a,b);
 });
 test('Calm camera / reduced motion: throw cuts from the aim shot to W_let·T (camera.cut on that frame), no pull-out',()=>{
  const o=throwChain({visual:{reduced:true},frames:30});assert.equal(o[1].cut,true);assert.ok(o.slice(2).every(x=>!x.cut));
  near(o[1].w,CAMERA.width,1e-9,'flight width right away');assert.ok(o.slice(1).every(x=>Math.abs(x.w-CAMERA.width)<1e-9));
 });
-test('game in the cyber style (visual.style cyber) keeps the old far workshop shot, the 16 m close shot is for the paper launch site',()=>{
- const p=restPlan({visual:{cssWidth:1280,style:'cyber'}});near(p.camera.width,640/2.1/1.25,1e-6,'cyber far rest shot');near(p.view.px,148,1e-6,'px');near(p.view.py,258,1e-6,'py');
- near(restPlan({visual:{cssWidth:1280,style:'papir'}}).camera.width,16,1e-9,'paper 16 m');
+test('R0: one style, visual.style is ignored (same aim shot 16 m with cyber, papir or none)',()=>{
+ const a=restPlan({visual:{cssWidth:1280}});near(a.camera.width,16,1e-9,'16 m');assert.ok(!('style' in a));
+ for(const style of ['cyber','papir'])assert.deepEqual(restPlan({visual:{cssWidth:1280,style}}),a,style);
 });

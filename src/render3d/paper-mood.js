@@ -1,4 +1,4 @@
-// Nálady Papírového města (čisté, ?styl=papir). Zdroj pravdy: bible research/design/05-styl-papir.md kap. 2.3 a 4, prototyp papir-data.js D1.
+// Nálady Papírového města (čisté). Zdroj pravdy: bible research/design/05-styl-papir.md kap. 2.3 a 4, prototyp papir-data.js D1.
 // 17 klíčů ve tvaru mood.js (16 míst ROUTE + úsvit za cílem), jedna nálada na čtvrť: ráno, poledne u moře, zlaté odpoledne, večer s lampiony.
 // Čtvrť 1 navržená, čtvrti 2–4 a úsvit prozatímní (bible 2.3); polohy slunce a měsíce mimo čtvrť 1 jsou jen hrubé podle slov bible.
 // Navíc proti mood.js: skyAt (zastávky přechodu 0–1 shora), sun {x,y,r} (podíl šířky / výšky obrazu), haze {low,high,from,to,max,curve}

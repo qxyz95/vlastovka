@@ -44,7 +44,7 @@ export function particles(fx,view){
 export const SCRAP=Object.freeze({spin:7,ratio:.55,grow:1.6});
 export const scrapAngle=(q,reduced=false)=>noise((q.i??0)*3.1+1)*Math.PI*2+(reduced?0:(q.age??0)*SCRAP.spin*(noise((q.i??0)+.5)>.5?1:-1));
 export const scrapTone=q=>(q.i??0)%2;
-// Poryv v papíru (bible 05 kap. 7, 11): tři zvlněné proužky vlevo od vlaštovky (pás cyber čárek px − 70 … px − 12), body [x,y] v logických px;
+// Poryv v papíru (bible 05 kap. 7, 11): tři zvlněné proužky vlevo od vlaštovky (pás px − 70 … px − 12), body [x,y] v logických px;
 // unášené větrem (drift px za 1/3 s) a vlnité; reduced motion = statické.
 export const GUST={n:3,points:8,len:30,drift:28,amp:1.8};
 export function gustStrips(px,py,time=0,reduced=false){

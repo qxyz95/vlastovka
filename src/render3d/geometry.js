@@ -6,7 +6,6 @@ import {SUBURBS_LAYOUT} from './districts/suburbs-layout.js';
 import {DOCKS_LAYOUT} from './districts/docks-layout.js';
 import {HORIZON_LAYOUT} from './districts/horizon-layout.js';
 import {CORE_LAYOUT} from './districts/core-layout.js';
-import {CYBER} from './palette.js';
 // Ve 2D je vlaštovka vždy na px 148 a kamera = dolet, takže ve světě trasy leží 148 px (~70 m) před doletem.
 export const PLANE_OFFSET=148/PIXELS_PER_METER;
 export const WINDOW_TILE={w:24,h:28};// metry na jednu dlaždici textury oken (8 × 8 oken)
@@ -67,42 +66,32 @@ export function mergeBlocks(blocks,colorOf=()=>[1,1,1]){
  let o=0;parts.forEach((p,i)=>{const k=p.positions.length/3,c=colorOf(blocks[i]);m.position.set(p.positions,o*3);m.normal.set(p.normals,o*3);m.outline.set(p.outline,o*3);m.uv.set(p.uvs,o*2);for(let j=0;j<k;j++)m.color.set(c,(o+j)*3);o+=k;});
  return m;
 }
-// Vymyšlené neonové reklamy (anglicky jako ve hře, žádné skutečné značky).
-export const SIGNS=['PAPER LAB','NOODLES','OPEN 24H','FOLD & FLY','KARAOKE','HOTEL','RAMEN','ARCADE','GLIDE','SKY BAR','CAFE','TAXI'];
-// Neon cedulí a lamp jen CYAN, MAGENTA, GOLD (bible kap. 2.2), pořadí: 0 = PAPER LAB, 1 = cedule bloků; lampy podle čtvrti.
-export const NEON=CYBER.city.neon;
-// Vrstvy hloubky za vlaštovkou (z=0): ulice, střed a panorama. Popředí (z>0) jen nízké lampy, aby nezakrylo let.
+// Vrstvy hloubky za vlaštovkou (z=0): ulice, střed a panorama.
 export const LAYERS={near:-26,mid:-110,far:-380};
-// Parametry a zvláštnosti míst jsou v districts/<id>-layout.js (vlastní je agent čtvrti); tady jen obecné řady domů, reklamy a lampy.
+// Parametry a zvláštnosti míst jsou v districts/<id>-layout.js (vlastní je agent čtvrti); tady jen obecné řady domů.
 export const DISTRICT_LAYOUTS=[SUBURBS_LAYOUT,DOCKS_LAYOUT,HORIZON_LAYOUT,CORE_LAYOUT];
 export const KIND_PARAMS=Object.assign({},...DISTRICT_LAYOUTS.map(l=>l.kinds));
 export const placeIndex=screen=>((screen%ROUTE.length)+ROUTE.length)%ROUTE.length;
 // Posun skupiny místa ve světě (m): obrazovka `screen` (0, 1, … i za 16) leží na screen*SCREEN_METERS. Vlaštovka je na f.x+PLANE_OFFSET.
 export const chunkOffset=screen=>screen*SCREEN_METERS;
-// Jedno místo trasy (index 0–15, větší se zabalí) → bloky, reklamy, lampy a zem v LOKÁLNÍCH souřadnicích (x 0…SCREEN_METERS),
+// Jedno místo trasy (index 0–15, větší se zabalí) → bloky a zem v LOKÁLNÍCH souřadnicích (x 0…SCREEN_METERS),
 // takže výsledek jde kešovat podle indexu a skupinu jen posunout o chunkOffset(screen). Seed = index, místa se po 16 opakují.
-// Dílna (bloky a cedule s shop:true) je v indexu 0; volající ji za první obrazovkou (screen ≥ 16) vynechá.
+// Blok staré Dílny (shop:true) v indexu 0 zůstává jen kvůli pořadí náhody; město ho nekreslí (místo odhodu jsou modely, city.js).
 // tone: 0 ulice, 1 střed, 2 panorama, 3 akcent (kontejnery, vlak), 4 zeleň, 5 hory.
 // opts.view = pás výhledu S-1 (jen Papírové město, jen první obrazovka místa 0): domy ulice a středu kolem startu snížené (viewCap), až po
-// vygenerování, takže pořadí náhody, šířky i polohy zůstávají (cyber volá bez opts a dostane stejné místo jako dřív).
+// vygenerování, takže pořadí náhody, šířky i polohy zůstávají (bez opts stejné místo jako dřív).
 export function cityChunk(index,{view=false}={}){
  index=placeIndex(index);const kind=ROUTE[index].kind,biome=Math.floor(index/4),L=DISTRICT_LAYOUTS[biome],k=L.kinds[kind],rng=random(index*7919+13),W=SCREEN_METERS;
- const blocks=[],signs=[],lamps=[],between=(a,b)=>a+rng()*(b-a);
+ const blocks=[],between=(a,b)=>a+rng()*(b-a);
  const add=b=>{const block={type:'box',y:0,biome,tone:0,ou:Math.floor(rng()*8)/8,ov:Math.floor(rng()*8)/8,...b};blocks.push(block);return block;};
  const row=(z,d,[dens=0,hmin,hmax,wmin=12,wmax=26],tone,gap=2)=>{const out=[];for(let x=0;x<W-wmin;){const w=Math.min(between(wmin,wmax),W-x);if(rng()<dens)out.push(add({x,w:w-gap,z:z-rng()*6,d,h:between(hmin,hmax),tone}));x+=w;}return out;};
  // Panorama: v jádře metropole vyšší a hustší, na polích a horách řídké.
  const tall=L.tall;
  row(LAYERS.far,50,[k.open?.25:.85,30*tall,150*tall,18,40],2,6);
  const mid=row(LAYERS.mid,26,k.mid,1,3),near=row(LAYERS.near,14,k.near,0);
- if(index===0)add({x:20,w:24,z:-10,d:10,h:12,tone:3,shop:true});// dílna PAPER LAB u startu
+ if(index===0)add({x:20,w:24,z:-10,d:10,h:12,tone:3,shop:true});
  L.extras(kind,{add,rng,between,W,index});
- // Reklamy na čelech ulice a středu: vodorovné nad přízemím, svislé na vyšších domech.
- for(const b of [...near,...mid])if(b.h>9&&rng()<k.signs){const vertical=b.h>22&&rng()<.4,w=vertical?2.4:Math.min(b.w-2,between(6,11)),h=vertical?between(7,12):2.6;
-  signs.push({x:b.x+between(1,Math.max(1,b.w-w-1)),y:vertical?between(6,b.h-h-1):Math.min(b.h-h-1,between(4,b.h*.6)),z:b.z+b.d/2+.4,w,h,vertical,text:SIGNS[Math.floor(rng()*SIGNS.length)],color:NEON[Math.floor(rng()*NEON.length)]});}
- for(const b of blocks)if(b.sign)signs.push({x:b.x+b.w*.25,y:b.y+.8,z:b.z+b.d/2+.4,w:b.w*.5,h:3.4,text:b.sign,color:NEON[1]});
- if(index===0)signs.push({x:22,y:7.5,z:-4.6,w:20,h:3,text:'PAPER LAB',color:NEON[0],shop:true});
- if(k.lamps!==false)for(let x=15;x<W;x+=45)lamps.push({x,z:9,h:6,color:NEON[biome%NEON.length]});
- return {index,kind,biome,district:L.id,x0:0,x1:W,blocks:view&&index===0?blocks.map(viewCap):blocks,signs,lamps,ground:{x0:0,x1:W,biome,water:biome===1}};
+ return {index,kind,biome,district:L.id,x0:0,x1:W,blocks:view&&index===0?blocks.map(viewCap):blocks,ground:{x0:0,x1:W,biome,water:biome===1}};
 }
 // Pás výhledu S-1 (bible 05 kap. 9.3, rozhodnutí 06 bod 5): ruka 12 m (launch-site LAUNCH.hand, x = PLANE_OFFSET). Střed (tone 1) do reach m
 // od ruky (vodorovně, podle nejbližší hrany domu) nejvýš h = ruka + 1 m, ulice (tone 0) do 60 m nejvýš ruka − 1 m; za reach strop lineárně

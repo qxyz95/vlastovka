@@ -16,11 +16,11 @@ test('narrow scene (< 500 CSS px): plane ≥ 24 CSS px at any width; continuous 
  for(const css of [360,390,499])for(let W=5;W<=320;W+=1.5){assert.ok(planeLength(W,css)/W*css>=PLANE_SIZE.minPx-1e-9,`css ${css} W ${W}`);
   near(planeLength(W+.01,css),planeLength(W,css),.01,'continuous');}
  assert.equal(planeLength(200,PLANE_NARROW.width),PLANE_SIZE.max,'500 px and wider: no floor');
- assert.equal(planeSizeScale(120,'papir',390),planeLength(120,390)/PLANE_SIZE.max*1.15);assert.equal(planeSizeScale(120,'cyber',390),planeLength(120,390)/PLANE_SIZE.max);
+ assert.equal(planeSizeScale(120,390),planeLength(120,390)/PLANE_SIZE.max*1.15);assert.equal(planeSizeScale(120,1280),planeLength(120,1280)/PLANE_SIZE.max);
 });
-test('flight on a 360 px scene: plan.plane.scale keeps the plane ≥ 24 CSS px in every frame (both styles)',()=>{
- for(const style of ['cyber','papir']){const f=createFlight('dart',{power:5,paper:5,fold:5},3);let prev=planFrame({f:null,state:'aim',visual:{clock:0,cssWidth:360,style}}),n=0;
-  while(!f.landed&&f.t<120){const c=autoInput(f);if(c)eventInput(f,c,'auto');step(f);prev=planFrame({f,prev,time:f.t,visual:{cssWidth:360,style}});
-   const len=prev.plane.scale*PLANE_SIZE.max/(style==='papir'?1.15:1);assert.ok(len/prev.camera.width*360>=24-1e-9,`${style} t ${f.t}`);n++;}
-  assert.ok(n>300);}
+test('flight on a 360 px scene: plan.plane.scale keeps the plane ≥ 24 CSS px in every frame (before the +15 % narrow bonus)',()=>{
+ const f=createFlight('dart',{power:5,paper:5,fold:5},3);let prev=planFrame({f:null,state:'aim',visual:{clock:0,cssWidth:360}}),n=0;
+ while(!f.landed&&f.t<120){const c=autoInput(f);if(c)eventInput(f,c,'auto');step(f);prev=planFrame({f,prev,time:f.t,visual:{cssWidth:360}});
+  const len=prev.plane.scale*PLANE_SIZE.max/1.15;assert.ok(len/prev.camera.width*360>=24-1e-9,`t ${f.t}`);n++;}
+ assert.ok(n>300);
 });

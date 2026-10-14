@@ -1,4 +1,4 @@
-// Papírové karty (čisté, ?styl=papir): bloky cityChunk a život čtvrti → tenké karty dioramatu a jejich vrcholy (stíny na zem: paper-shadow.js).
+// Papírové karty (čisté): bloky cityChunk a život čtvrti → tenké karty dioramatu a jejich vrcholy (stíny na zem: paper-shadow.js).
 // Přeneseno z prototype/styly/papir-data.js (bible research/design/05-styl-papir.md kap. 3), barvy z palette(style).city / .life, ne napevno.
 // Karta: {shape:'box'|'panel'|'lista'|'gable'|'eave'|'pyr'|'disc'|'flag'|'poly'|'prism', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?, pts?}, metry.
 import {SCREEN_METERS} from '../scenes.js';

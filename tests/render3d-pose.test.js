@@ -25,7 +25,6 @@ test('kid: lean grows with charge, waves only after the throw, reduced motion ha
  assert.ok([.3,.9,1.5].some(t=>Math.abs(kidPose({t}).bob)>.1),'breathes normally');
  for(const t of [0,.3,.9,1.5,7])assert.equal(kidPose({t,reduced:true}).bob,0,'no breathing with reduced motion');
  assert.equal(kidPose({t:.3,thrown:true}).bob,0,'no breathing after throw (2D)');
- assert.equal(kidPose({t:5,reduced:true}).flicker,false);
 });
 
 test('plane pose parity with render.js: same angle (sign flipped for y-up), offset in m via 2.1 px/m, same squash',()=>{
@@ -38,15 +37,15 @@ test('plane pose parity with render.js: same angle (sign flipped for y-up), offs
  assert.ok(planePose({charge:.95,anim:1,clock:1.234}).dy!==planePose({charge:.95,anim:1,clock:1.234,reduced:true}).dy,'tremble above 90 %');
 });
 
-// Rest camera = follow + sideCamera (perspective, pitch 6°): project HAND by hand, it must land on view(null) = (148, 258) ±2 px.
+// Rest camera = follow + sideCamera (perspective, pitch REST.pitch −8°): project HAND by hand, it must land on view(null) = (148, 258) ±2 px.
 test('rest camera projects the plane in hand to (148, 258)',()=>{
- near(HAND.x,PLANE_OFFSET,'HAND.x');assert.ok(Math.abs(HAND.y-16)<1e-9&&HAND.z===0);
+ near(HAND.x,PLANE_OFFSET,'HAND.x');assert.ok(Math.abs(HAND.y-12)<1e-9&&HAND.z===0);
  const c=restCamera(),[ex,ey,ez]=c.position,[tx,ty,tz]=c.target,fw=[tx-ex,ty-ey,tz-ez],l=Math.hypot(...fw),F=fw.map(v=>v/l);
  const R=[-F[2],0,F[0]].map(v=>v/Math.hypot(F[0],F[2])),U=[R[1]*F[2]-R[2]*F[1],R[2]*F[0]-R[0]*F[2],R[0]*F[1]-R[1]*F[0]];
  const project=([x,y,z])=>{const d=[x-ex,y-ey,z-ez],dot=a=>a[0]*d[0]+a[1]*d[1]+a[2]*d[2],t=Math.tan(REST.fov*Math.PI/360),depth=dot(F);
   return [320+dot(R)/(depth*t*16/9)*320,180-dot(U)/(depth*t)*180];};
  const [sx,sy]=project([HAND.x,HAND.y,HAND.z]);assert.ok(Math.abs(sx-148)<=.05&&Math.abs(sy-258)<=.05,`HAND → ${sx.toFixed(2)}, ${sy.toFixed(2)}`);
- // Polodetail 16 m (S2): ruka 16 m nad zemí, záběr vysoký 9 m → zem je pod dolním okrajem (dřív 2D čára 300 px při 244 m).
+ // Polodetail 16 m (S2): ruka 12 m nad zemí, záběr vysoký 9 m → zem je pod dolním okrajem (dřív 2D čára 300 px při 244 m).
  const [,gy]=project([HAND.x,0,0]);assert.ok(gy>360,`ground below the frame ${gy}`);
  assert.equal(REST.width,16);assert.equal(REST.narrow,7);assert.equal(aimWidth(375),7);assert.equal(aimWidth(360),7);assert.equal(aimWidth(1280),16);assert.ok(Math.abs(aimWidth(640)-640/54)<1e-9);assert.ok(Math.abs(REST.k-640/2.1/16)<1e-12);
  for(const w of [7,16]){const r=restCamera(16/9,w);assert.ok(Math.abs(r.width-w)<1e-9);}

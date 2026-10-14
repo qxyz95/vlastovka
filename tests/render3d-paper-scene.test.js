@@ -5,11 +5,10 @@ import {registerHooks} from 'node:module';
 import {ID,PLACE_W} from '../src/render3d/paper-cards.js';
 import {qualityPreset} from '../src/render3d/quality.js';
 import {moodAt,PAPER_KEYS} from '../src/render3d/mood.js';
-import {palette} from '../src/render3d/palette.js';
 import {SCREEN_METERS} from '../src/scenes.js';
 
 // P1 Scéna Papírového města (spec research/design/06-papir-ctvrt1.md kap. 3–5, stíny 08-stiny.md S2–S3): three.js moduly se v Node jen importují
-// (vendor/three přes hook místo import map) a kontrolují bez GPU: materiály, maska stínů, místa, nebe, post, kvalita, měření a beze změny cyber.
+// (vendor/three přes hook místo import map) a kontrolují bez GPU: materiály, maska stínů, místa, nebe, post, kvalita a měření.
 const dir=new URL('../src/render3d/',import.meta.url),src=n=>readFileSync(new URL(n,dir),'utf8');
 registerHooks({resolve:(s,c,next)=>s==='three'?{url:new URL('../vendor/three/three.module.min.js',import.meta.url).href,shortCircuit:true}:next(s,c)});
 const THREE=await import('three'),paper=await import('../src/render3d/paper.js'),cityMod=await import('../src/render3d/city.js'),sceneMod=await import('../src/render3d/scene.js');
@@ -28,9 +27,9 @@ test('paperMaterial: sdílené uniformy (opar, světlo, maska), zem přijímá s
  // tint = #5d64a8 v lineárním RGB
  assert.equal(n.uniforms.tint.value.getHexString(),'5d64a8');
  // nálada: opar a světlo z plan.mood (čtvrť 1 ráno = světlo zezadu), síla stínu podle čtvrti
- kit.applyMood(moodAt(1.5*SCREEN_METERS,0,{style:'papir'}));assert.equal(n.uniforms.hazeLow.value.getHexString(),PAPER_KEYS[1].haze.low.slice(1));
+ kit.applyMood(moodAt(1.5*SCREEN_METERS,0));assert.equal(n.uniforms.hazeLow.value.getHexString(),PAPER_KEYS[1].haze.low.slice(1));
  assert.ok(n.uniforms.L.value.z<0&&n.uniforms.L.value.x>0);assert.equal(n.uniforms.k.value,.62);
- kit.applyMood(moodAt(9.5*SCREEN_METERS,0,{style:'papir'}));assert.equal(n.uniforms.k.value,.8);
+ kit.applyMood(moodAt(9.5*SCREEN_METERS,0));assert.equal(n.uniforms.k.value,.8);
  kit.dispose();
 });
 
@@ -81,33 +80,29 @@ test('paperLayers: místa jen v lokálních x, kopce navazují přes hranice mí
  assert.deepEqual(cityMod.paperLayers(5),cityMod.paperLayers(5),'deterministické');
 });
 
-test('createCity v papíru: keš míst, materiály z kitu, dispose uvolní geometrie; bez style dál cyber cesta (budovy, obrys, záře, zem)',()=>{
- const kit=paper.paperKit(),ctx={scene:new THREE.Scene(),materials:{paper:kit},mood:()=>({}),reduced:false,shop:()=>false,style:'papir'};
+test('createCity: keš míst, materiály z kitu, dispose uvolní geometrie (R0: jediná cesta, bez style)',()=>{
+ const kit=paper.paperKit(),ctx={scene:new THREE.Scene(),materials:{paper:kit},mood:()=>({}),reduced:false};
  const city=cityMod.createCity(ctx),e=city.buildChunk(2,2);assert.equal(city.buildChunk(2,2),e);
  for(const m of meshes(e.group))assert.ok(m.material===kit.shadows.materials.card||'recv' in m.material.uniforms,'materiál z kitu');
  assert.ok(meshes(e.group).every(m=>!m.material.stencilWrite));
  let disposed=0;for(const g of e.geos)g.addEventListener('dispose',()=>disposed++);city.dispose();assert.equal(disposed,e.geos.length);kit.dispose();
- // cyber: stejné meshe jako před P1 (bez paper kitu), žádný papírový materiál
- const P=palette('cyber').city,M={unit:new THREE.PlaneGeometry(1,1),colorOf:sceneMod.cityColors(P),rgb:h=>new THREE.Color(h).toArray(),city:P,building:new THREE.MeshBasicMaterial(),glow:new THREE.MeshBasicMaterial(),
-  ground:P.ground.map(()=>new THREE.MeshBasicMaterial()),sign:()=>new THREE.MeshBasicMaterial()};
- const cy=cityMod.createCity({scene:new THREE.Scene(),materials:M,hull:new THREE.MeshBasicMaterial(),mood:()=>({}),reduced:false,shop:()=>false}),ce=cy.buildChunk(2,2),ms=meshes(ce.group);
- assert.equal(ms[0].material,M.building);assert.equal(ms[1].geometry,ms[0].geometry,'obrys na stejné geometrii');assert.equal(ms[2].material,M.glow);assert.ok(M.ground.includes(ms.at(-1).material));
- assert.ok(ms.every(m=>!m.material.isShaderMaterial));cy.dispose();
+ // místo odhodu (0s) bez bloku staré Dílny (shop) a bez cedulí
+ const k2=paper.paperKit(),c2=cityMod.createCity({...ctx,materials:{paper:k2}}),e0=c2.buildChunk(0,0);assert.ok(meshes(e0.group).length>0);c2.dispose();k2.dispose();
 });
 
 test('nebe: přechod podle skyAt, slunce se září; překreslí se jen při změně nad práh nebo velikosti, staré textury uvolní',()=>{
  const calls=[];const ctx2d={fillRect(){calls.push('rect');},beginPath(){},arc(){},fill(){calls.push('fill');},set fillStyle(v){},set globalAlpha(v){},
   createLinearGradient(){return {stops:[],addColorStop(o,c){this.stops.push([o,c]);calls.push(['stop',o,c]);}};},createRadialGradient(){return {addColorStop(){}};}};
- const make=(w,h)=>({width:w,height:h,getContext:()=>ctx2d}),sky=paper.paperSky({make}),m=moodAt(1.5*SCREEN_METERS,0,{style:'papir'});
+ const make=(w,h)=>({width:w,height:h,getContext:()=>ctx2d}),sky=paper.paperSky({make}),m=moodAt(1.5*SCREEN_METERS,0);
  const t1=sky.paint(m,1280,720);assert.equal(sky.draws,1);assert.deepEqual(calls.filter(c=>c[0]==='stop').map(c=>c[1]),m.skyAt);
  assert.equal(t1.image.width,1024);assert.equal(t1.image.height,576);assert.equal(t1.colorSpace,THREE.SRGBColorSpace);
  assert.equal(sky.paint(m,1280,720),t1);assert.equal(sky.paint({...m},1280,720),t1);assert.equal(sky.draws,1,'stejná nálada nekreslí');
  assert.equal(paper.skyDelta(m,{...m,sky:[m.sky[0].replace(/..$/,v=>(parseInt(v,16)^1).toString(16).padStart(2,'0')),...m.sky.slice(1)]}),1);
- const far=moodAt(9.5*SCREEN_METERS,0,{style:'papir'});sky.paint(far,1280,720);assert.equal(sky.draws,2);
+ const far=moodAt(9.5*SCREEN_METERS,0);sky.paint(far,1280,720);assert.equal(sky.draws,2);
  let gone=0;t1.addEventListener('dispose',()=>gone++);const t2=sky.paint(far,640,360);assert.notEqual(t2,t1);assert.equal(gone,1);assert.equal(sky.draws,3);
  assert.ok(paper.skyDelta(null,m)===Infinity);sky.dispose();
  // večer bez slunce: jen přechod
- calls.length=0;paper.drawSky(ctx2d,moodAt(13.5*SCREEN_METERS,0,{style:'papir'}),100,50);assert.ok(!calls.includes('fill'));
+ calls.length=0;paper.drawSky(ctx2d,moodAt(13.5*SCREEN_METERS,0),100,50);assert.ok(!calls.includes('fill'));
 });
 
 test('post: tint a zrno podle bible (zrno vypíná kvalita 0), výstup neprůhledný, bez rozmazání',()=>{
@@ -123,7 +118,7 @@ test('planeContrast: změněné pixely = vlaštovka, výplň a obrys proti okol�
  assert.ok(r.edgeVsBg>=6&&r.fillVsBg<2&&r.pass);assert.equal(paper.planeContrast(B,B).pass,false);
 });
 
-test('index: kvalita jen dolů podle P95 v letu, pokles až mimo let; Dílna a výsledek (30 fps) se neměří; cyber bez visual.quality',()=>{
+test('index: kvalita jen dolů podle P95 v letu, pokles až mimo let; Dílna a výsledek (30 fps) se neměří',()=>{
  const q=index.qualityTracker(2);let now=1000;
  for(let i=0;i<60;i++)q.frame(now+=50,'flight');// 3 s po 50 ms
  assert.equal(q.level,2,'za letu se nesnižuje');assert.ok(q.over>=2);
@@ -133,18 +128,17 @@ test('index: kvalita jen dolů podle P95 v letu, pokles až mimo let; Dílna a v
  for(let i=0;i<60;i++)q.frame(now+=50,'aim');assert.equal(q.level,0,'při míření (mimo let) hned');
  for(let i=0;i<300;i++)q.frame(now+=60,'aim');assert.equal(q.level,0,'nikdy pod 0, nikdy nahoru');
  const q2=index.qualityTracker(2);for(let i=0;i<20;i++)q2.frame(now+=50,'flight');q2.frame(now+=33,'landed');assert.equal(q2.level,2,'1 s nad mezí nestačí');assert.equal(q2.over,0);
- assert.deepEqual(index.visualFor({state:'flight'},800,1),{state:'flight',cssWidth:800});
- assert.deepEqual(index.visualFor({state:'flight',style:'papir'},800,1),{state:'flight',style:'papir',cssWidth:800,quality:1});
+ assert.deepEqual(index.visualFor({state:'flight'},800,1),{state:'flight',cssWidth:800,quality:1});
 });
 
-test('výchozí styl beze změny: cyber renderer, render target, mlha, nebe a post jako před P1; papír jen za style',()=>{
- const s=src('scene.js');
- assert.ok(s.includes(":{canvas,antialias:true,powerPreference:'high-performance'});"),'cyber WebGLRenderer');
- assert.ok(s.includes(":new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:4})"),'cyber render target');
- assert.ok(s.includes("if(!paper){scene.fog=new THREE.Fog(FOG0,300,1100);scene.background=sky.texture;}"));
- assert.ok(/createScene\(canvas,\{dpr=1,shadows=true,style='cyber'\}=\{\}\)/.test(s),'výchozí cyber');
- assert.ok(s.includes('renderer.shadowMap.enabled=shadows&&!paper')&&s.includes('key.castShadow=shadows&&!paper'));
- assert.ok(src('index.js').includes('createScene(gl,{dpr:r.dpr(),style:r.style})'));
+test('R0 jediný styl: scéna jen papír (bez stínových map, mlhy, hvězd a cyber post-procesu), index bez přepínání stylu',()=>{
+ const s=src('scene.js'),ix=src('index.js');
+ assert.ok(s.includes("new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'})"),'papírový renderer (MSAA v render targetu)');
+ assert.ok(s.includes('new THREE.WebGLRenderTarget(4,4,{samples:4,depthBuffer:true})')&&s.includes('renderer.shadowMap.enabled=false'));
+ assert.ok(/createScene\(canvas,\{dpr=1\}=\{\}\)/.test(s));assert.ok(ix.includes('createScene(gl,{dpr:r.dpr()})'));
+ for(const old of ['THREE.Fog','postPass','skyPainter','buildingMaterial','signTexture','windowTexture','castShadow=','PointsMaterial','cityColors'])assert.ok(!s.includes(old),old);
+ for(const n of ['scene.js','index.js','frame.js','city.js','plane.js','workshop.js','life3d.js','ui-layer.js','mood.js','comic.js','palette.js','pose.js','toon.js'])
+  assert.ok(!/style\s*===?\s*'(cyber|papir)'|CYBER|styleOf/.test(src(n)),n+': větev stylu');
  // papír: žádné stínové mapy ani stencil, žádné hex barvy mimo palety (strážní test leftovers)
  assert.ok(!/stencil/i.test(src('paper.js')+src('city.js')+s));
 });

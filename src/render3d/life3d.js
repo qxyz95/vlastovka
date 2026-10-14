@@ -3,13 +3,13 @@
 // dronů, robota, reklamy a holuba (holuba kreslí companion3d.js); pás výhledu S-1 a auta schovaná v místě odhodu. Zbytek převede H4 na papírové modely.
 import * as THREE from 'three';
 import {mergeBlocks} from './geometry.js';
-import {CYBER,PAPER} from './palette.js';
+import {OLD_LIFE,PAPER_TOKENS} from './palette.js';
 import {sway} from '../motion.js';
 import {suburbLife,behindLaunch,carX,trainCars,birdAt,balloonAt,passTime,wake,windowLight,noticeAge,pose,crowdPose,onTwos,wrap,TRACK} from './life.js';
 
 const C=h=>new THREE.Color(h),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),eu=new THREE.Euler(0,0,0,'YXZ'),P=new THREE.Vector3(),S=new THREE.Vector3(),tmp=new THREE.Color();
 function bufferOf(m){const g=new THREE.BufferGeometry();for(const [k,n] of [['position',3],['normal',3],['uv',2],['color',3],['outline',3]])g.setAttribute(k,new THREE.BufferAttribute(m[k],n));g.computeBoundingSphere();return g;}
-const boxes=list=>bufferOf(mergeBlocks(list,b=>C(b.color??PAPER).toArray()));
+const boxes=list=>bufferOf(mergeBlocks(list,b=>C(b.color??PAPER_TOKENS.paper).toArray()));
 // Obrys pro obecnou geometrii: směr od středu (u kvádrů a koulí stačí).
 function outlined(g){g.computeBoundingBox();const c=g.boundingBox.getCenter(new THREE.Vector3()),p=g.attributes.position,o=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){P.fromBufferAttribute(p,i).sub(c).normalize();o.set([P.x,P.y,P.z],i*3);}g.setAttribute('outline',new THREE.BufferAttribute(o,3));return g;}
@@ -18,7 +18,7 @@ function put(m,i,x,y,z,ry=0,rx=0,rz=0,sx=1,sy=sx,sz=sx){eu.set(rx,ry,rz);q.setFr
 const hide=(m,i)=>{m4.makeScale(0,0,0);m.setMatrixAt(i,m4);};
 
 export function createLife({ramp,hull,thinHull}){
- const L=suburbLife({view:true}),K=CYBER.life,group=new THREE.Group(),meshes=[];
+ const L=suburbLife({view:true}),K=OLD_LIFE,group=new THREE.Group(),meshes=[];
  const toonV=new THREE.MeshToonMaterial({vertexColors:true,gradientMap:ramp});
  const glow=new THREE.MeshBasicMaterial({toneMapped:false}),glowV=new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:false});
  // Instancovaná síť (+ volitelný obrys sdílející instanceMatrix). Dynamické, proto bez frustum cullingu.
@@ -86,5 +86,8 @@ export function createLife({ramp,hull,thinHull}){
   L.balloons.forEach((bl,i)=>{const p=balloonAt(bl,t);put(balloons,i,p.x,p.y,p.z,t*.05,0,0,bl.r,bl.r*1.18,bl.r);put(baskets,i,p.x,p.y-bl.r*1.18-2.6,p.z);});
   for(const m of meshes)m.instanceMatrix.needsUpdate=true;
  }
- return {group,update,instances,meshes:meshes.length};
+ // Uvolní vlastní geometrie a materiály (obrysy hull a thinHull jsou sdílené ze scene.js).
+ function dispose(){const seen=new Set();group.traverse(o=>{if(o.geometry&&!seen.has(o.geometry)){seen.add(o.geometry);o.geometry.dispose();}
+  if(o.material&&o.material!==hull&&o.material!==thinHull&&!seen.has(o.material)){seen.add(o.material);o.material.dispose();}});group.removeFromParent();}
+ return {group,update,dispose,instances,meshes:meshes.length};
 }

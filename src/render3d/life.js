@@ -7,20 +7,18 @@ import {random} from '../random.js';
 import {TIMING} from '../events.js';
 import {LAUNCH} from './models/launch-site.js';
 import {cityChunk,chunkOffset,WINDOW_TILE} from './geometry.js';
-import {CYBER} from './palette.js';
+import {OLD_LIFE} from './palette.js';
 
 export const SUBURBS={x0:0,x1:4*SCREEN_METERS,screens:[0,1,2,3]};
 // Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.2), zdroj je slovník src/locales/en.js.
 export const PLACE_EN=ROUTE.map(r=>EN['place.'+r.kind]),DISTRICT_EN=DISTRICTS.map(d=>EN['district.'+d.id]);
-// Hlášky z 08 §7.2 (Cyber Pigeon, Market Vent), čte je jen prototype/3d.
-export const EVENT_TEXT={bird:{name:'CYBER PIGEON',hit:'Coo. Carbs delivered.',miss:'The pigeon kept the baguette.'},gust:{name:'MARKET VENT',hit:'Smells like dumplings. Feels like lift.',miss:'Just steam and regret.'}};
 // Postavičky animované „on twos“ (12 snímků/s), kamera, auta a vlaštovka plynule.
 export const TWOS=12;
 export const onTwos=t=>Math.floor(t*TWOS+1e-9)/TWOS;
 export const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 export const hash=(i,s=0)=>{const x=Math.sin(i*127.1+s*311.7)*43758.5453;return x-Math.floor(x);};
 export const wrap=(x,a,b)=>a+(((x-a)%(b-a))+(b-a))%(b-a);
-// Vzor oken v textuře (stejný generátor jako toon.js windowTexture): 8 × 8 buněk, část svítí.
+// Vzor oken (dřív i textura oken budov): 8 × 8 buněk, část svítí; okna za vlaštovkou (facadeWindows) leží v tmavých buňkách.
 export function windowPattern(seed=7,lit=.38){let a=seed;const rnd=()=>{a=(a*16807)%2147483647;return a/2147483647;},out=[];
  for(let row=0;row<8;row++)for(let col=0;col<8;col++){const on=rnd()<lit;out.push(on?{row,col,lit:true,color:Math.floor(rnd()*4),alpha:.55+rnd()*.45}:{row,col,lit:false});}return out;}
 // Tmavá okna na čelní stěně kvádru přesně tam, kde je v textuře tmavá buňka (uv jako boxVertices, CanvasTexture flipY).
@@ -31,7 +29,7 @@ export function facadeWindows(b,pattern=windowPattern()){
    if(xa>=b.x+.2&&xb<=b.x+b.w-.2&&ya>=y0+1&&yb<=y0+b.h-.3)out.push({x:(xa+xb)/2,y:(ya+yb)/2,z:b.z+b.d/2+.05,w:xb-xa,h:yb-ya,row:p.row,col:p.col});}}
  return out;
 }
-const K=CYBER.life,CLOTHES=K.people.cloth,SKIN=K.people.skin,PASTEL=K.pastel;
+const K=OLD_LIFE,CLOTHES=K.people.cloth,SKIN=K.people.skin,PASTEL=K.pastel;
 export const LANES=[{z:-4.6,dir:1},{z:-7.2,dir:-1}],TRACK={z:-15,portal:656,end:1560,cars:6,len:12,gap:1,speed:17,pause:5},CAR_RANGE=[-140,1360];
 // Auto v pruhu přes místo odhodu (Papírové město, S4): pruhy LANES vedou skrz opěrnou zeď H6 a pod domem H2, auto (střed x, půl délky half)
 // se proto v rozsahu zdi nekreslí, jinak by trčelo nad zeď.

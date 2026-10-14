@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {drawUi,drawQte,drawAim,drawLabel,drawPopups,uiScale,uiFrame,withShake,QTE_BASE} from '../src/render3d/ui-layer.js';
 import {shakeCamera,flashAlpha,speedLineCount,speedLines,speedLineY,particleScreen,toScreen,fxMap,MAX_ROLL,SPEED_GAP,SPEED_Y} from '../src/render3d/fx-map.js';
 import {EVENT_VIEWS,eventView,GENERIC} from '../src/render3d/events-view.js';
-import {palette,CYBER,INK,DISPLAY} from '../src/render3d/palette.js';
+import {palette,PAPIR as P,PAPER_TOKENS} from '../src/render3d/palette.js';
 import {readFileSync} from 'node:fs';
 import {createFx,fxEvent,stepFx,STRIDE} from '../src/juice.js';
 import {createEvents} from '../src/events.js';
@@ -33,28 +33,29 @@ const strokes=c=>{const out=[];let last=null;for(const o of c.ops){if(o.name==='
 const near=(a,b,e=1e-9)=>Math.abs(a-b)<e;
 const view={cam:0,px:148,py:200,ground:300,k:1},zones={success:[.4,.7],perfect:[.5,.6]};
 
-test('drawQte: track, success and perfect arcs at zone angles, white progress dot at view.px/py',()=>{
- const c=fakeCtx();drawQte(c,{type:'gust',phase:'interaction',result:null,held:false,progress:.25,zones},view,0,true);
+test('drawQte: track, success and perfect arcs at zone angles (6 / 9 / 11 px), graphite progress dot at view.px/py',()=>{
+ const c=fakeCtx();drawQte(c,{type:'bird',phase:'interaction',result:null,held:true,progress:.25,zones},view,0,true);
  const arcs=strokes(c),at=k=>-Math.PI/2+k*Math.PI*2,by=color=>arcs.find(a=>a.style.strokeStyle===color);
  assert.equal(arcs.length,3);
- for(const a of arcs){assert.equal(a.args[0],148);assert.equal(a.args[1],200);assert.equal(a.args[2],30);assert.equal(a.style.lineWidth,7);}
- assert.ok(near(by(CYBER.qte.track).args[3],at(0))&&near(by(CYBER.qte.track).args[4],at(1)),'grey full track');
- assert.ok(near(by(CYBER.qte.success).args[3],at(.4))&&near(by(CYBER.qte.success).args[4],at(.7)),'cyan success arc');
- assert.ok(near(by(CYBER.qte.perfect).args[3],at(.5))&&near(by(CYBER.qte.perfect).args[4],at(.6)),'magenta perfect arc');
- const dot=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#ffffff');
+ for(const a of arcs){assert.equal(a.args[0],148);assert.equal(a.args[1],200);assert.equal(a.args[2],30);}
+ assert.deepEqual(['track','success','perfect'].map(k=>by(P.qte[k]).style.lineWidth),[6,9,11]);
+ assert.ok(near(by(P.qte.track).args[3],at(0))&&near(by(P.qte.track).args[4],at(1)),'full track');
+ assert.ok(near(by(P.qte.success).args[3],at(.4))&&near(by(P.qte.success).args[4],at(.7)),'success arc');
+ assert.ok(near(by(P.qte.perfect).args[3],at(.5))&&near(by(P.qte.perfect).args[4],at(.6)),'perfect arc');
+ const dot=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===P.qte.dot);
  assert.deepEqual(dot.args,[Math.round(148+30-4),Math.round(200-4),8,8],'dot at 3 o\'clock for progress .25');
  assert.equal(c.depth(),0,'save/restore balanced');
 });
 
 test('drawQte: warning is dashed, result is one arc in one colour, bird cue only before holding',()=>{
- const w=fakeCtx();drawQte(w,{type:'gust',phase:'warning',result:null,progress:0,zones},view,0,false);
- const wa=strokes(w);assert.equal(wa.length,1);assert.deepEqual(wa[0].style.dash,[6,6]);assert.equal(wa[0].style.strokeStyle,CYBER.qte.warning);
+ const w=fakeCtx();drawQte(w,{type:'bird',phase:'warning',held:true,result:null,progress:0,zones},view,0,false);
+ const wa=strokes(w);assert.equal(wa.length,1);assert.deepEqual(wa[0].style.dash,[6,6]);assert.equal(wa[0].style.strokeStyle,P.qte.warning);
  assert.ok(wa[0].style.globalAlpha<1);
- for(const [result,color] of [['perfect',CYBER.qte.result.perfect],['success',CYBER.qte.result.success],['miss',CYBER.qte.result.other]]){
+ for(const [result,color] of [['perfect',P.qte.result.perfect],['success',P.qte.result.success],['miss',P.qte.result.other]]){
   const c=fakeCtx();drawQte(c,{type:'bird',phase:'effect',result,progress:1,zones},view,0,false);
   const a=strokes(c);assert.equal(a.length,1,result);assert.equal(a[0].style.strokeStyle,color);assert.equal(a[0].style.lineWidth,5);assert.deepEqual(a[0].style.dash,[]);
  }
- const cue=held=>{const c=fakeCtx();drawQte(c,{type:'bird',phase:'interaction',held,progress:.1,zones},view,0,true);return c.ops.some(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.qte.bird.body);};
+ const cue=held=>{const c=fakeCtx();drawQte(c,{type:'bird',phase:'interaction',held,progress:.1,zones},view,0,true);return c.ops.some(o=>o.name==='fillRect'&&o.style.fillStyle===P.qte.bird.body);};
  assert.ok(cue(false));assert.ok(!cue(true));
 });
 
@@ -96,8 +97,8 @@ test('particles follow the view contract sx = px + (wx − cam − px)·k',()=>{
  assert.deepEqual(particleScreen({cam:0,px:148,py:258},300,100),[300,100],'k defaults to 1 (2D framing)');
  const fx=createFx();fx.parts.set([748,240,0,0,0,1,4,1],0);
  const m=fxMap(fx,v),p=m.particles;assert.equal(p.length,1);assert.equal(p[0].x,198);assert.equal(p[0].y,220);assert.equal(p[0].size,(4+1)*.5);
- const c=fakeCtx(640);drawUi(c,{view:v,fx:m,ui:{}});const r=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.particles[1]);
- assert.deepEqual(r.args,[198-1.25,220-1.25,2.5,2.5]);assert.equal(STRIDE,8);
+ const c=fakeCtx(640);drawUi(c,{view:v,fx:m,ui:{}});const i=c.ops.findIndex(o=>o.name==='fillRect'&&o.style.fillStyle===P.particles[1]);
+ assert.ok(i>0&&c.ops.slice(0,i).some(o=>o.name==='translate'&&o.args[0]===198&&o.args[1]===220),'paper scrap at the particle');assert.equal(STRIDE,8);
 });
 
 test('reduced motion and settings: no shake, flash, speed lines or popup motion',()=>{
@@ -111,7 +112,7 @@ test('reduced motion and settings: no shake, flash, speed lines or popup motion'
  assert.equal(m.flash,0);assert.equal(m.speedLines.length,0);assert.deepEqual(m.shake,{x:0,y:0,roll:0,dx:0,dy:0});
  fx.popups[0].age=.5;assert.equal(fxMap(fx,view,{reduced:true}).popups[0].rise,0);assert.equal(fxMap(fx,view,{reduced:true}).popups[0].scale,1);assert.ok(fxMap(fx,view).popups[0].rise>0);
  const c=fakeCtx();drawUi(c,{view,fx:{...fxMap(fx,view,{vx:150,flying:true}),flash:.5},ui:{reduced:true}});
- assert.ok(!c.ops.some(o=>o.name==='fillRect'&&o.args[2]===680),'no flash when reduced');assert.ok(!c.ops.some(o=>o.style.strokeStyle===CYBER.speed.line&&o.name==='stroke'),'no speed lines when reduced');
+ assert.ok(!c.ops.some(o=>o.name==='fillRect'&&o.args[2]===680),'no flash when reduced');assert.ok(!c.ops.some(o=>o.style.strokeStyle===P.speed.line&&o.name==='stroke'),'no speed lines when reduced');
 });
 
 test('speedLineCount: none below 40 m/s, 6–24 with speed, off by setting',()=>{
@@ -127,11 +128,11 @@ test('drawAim: arrow from the projected plane, panel and power bar; uiScale and 
  const c=fakeCtx();drawAim(c,{angle:30,held:true,charge:.5},{px:148,py:258});
  assert.deepEqual(c.ops.find(o=>o.name==='translate').args,[148,258]);assert.ok(near(c.ops.find(o=>o.name==='rotate').args[0],-Math.PI/6));
  const line=c.ops.filter(o=>o.name==='lineTo')[0];assert.equal(line.args[0],65+.5*45);assert.deepEqual(c.ops.find(o=>o.name==='stroke').style.dash,[7,5]);
- assert.deepEqual(c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.aim.bar).args,[207,213,261*.5,10]);
+ assert.deepEqual(c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===P.aim.bar).args,[207,213,261*.5,10]);
  assert.ok(c.ops.some(o=>o.name==='fillText'&&o.args[0]==='RELEASE AT PEAK POWER'));assert.equal(c.depth(),0);
- const idle=fakeCtx();drawAim(idle,{angle:15,held:false,charge:.9},{px:148,py:258});assert.equal(idle.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.aim.bar).args[2],0);
+ const idle=fakeCtx();drawAim(idle,{angle:15,held:false,charge:.9},{px:148,py:258});assert.equal(idle.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===P.aim.bar).args[2],0);
  assert.equal(uiScale(1280),1);assert.equal(uiScale(640),1);assert.ok(uiScale(360)>1.5&&uiScale(360)<=2);assert.equal(uiScale(100),2);assert.equal(uiScale(0),1);
- assert.equal(palette('nope'),CYBER);assert.equal(CYBER.plane.fill,'#ffffff');assert.deepEqual(CYBER.trail,['#3c91ab','#913a90']);
+ assert.equal(palette('nope'),P);assert.equal(P.plane.fill,'#ffffff');assert.deepEqual(P.trail,[PAPER_TOKENS.graphite,PAPER_TOKENS.graphite]);
 });
 
 test('U5: speed lines skip a ±24 px band around the plane (ink shadow and stroke width included), count unchanged',()=>{
@@ -146,12 +147,12 @@ test('U5: speed lines skip a ±24 px band around the plane (ink shadow and strok
  for(const [,y] of m.speedLines)assert.ok(y<180-SPEED_GAP-1||y>180+SPEED_GAP,'fxMap passes view.py');
 });
 
-test('U6: dark ink base (60 % alpha) under the QTE ring, as an annulus so the plane in the middle stays bright',()=>{
- for(const q of [{type:'gust',phase:'interaction',progress:.3,zones},{type:'gust',phase:'warning',progress:0,zones},{type:'bird',phase:'effect',result:'perfect',progress:1,zones}]){
+test('U6: cream paper base (95 % alpha) under the QTE ring, as an annulus so the plane in the middle stays free',()=>{
+ for(const q of [{type:'bird',phase:'interaction',held:true,progress:.3,zones},{type:'bird',phase:'warning',held:true,progress:0,zones},{type:'bird',phase:'effect',result:'perfect',progress:1,zones}]){
   const c=fakeCtx();drawQte(c,q,view,0,false);const i=c.ops.findIndex(o=>o.name==='fill'),f=c.ops[i];
-  assert.ok(f,'base drawn '+q.phase);assert.equal(f.style.fillStyle,INK);assert.equal(CYBER.qte.disc,INK);assert.ok(near(f.style.globalAlpha,.6));
+  assert.ok(f,'base drawn '+q.phase);assert.equal(f.style.fillStyle,P.qte.disc);assert.equal(P.qte.disc,PAPER_TOKENS.cream);assert.ok(near(f.style.globalAlpha,.95));
   const arcs=c.ops.slice(0,i).filter(o=>o.name==='arc').slice(-2);assert.deepEqual(arcs.map(o=>o.args[2]),[30+QTE_BASE,30-QTE_BASE]);assert.equal(arcs[1].args[5],true,'hole = reverse arc');
-  assert.ok(c.ops.findIndex(o=>o.name==='stroke')>i,'base under the ring');assert.ok(QTE_BASE>=7/2+3,'covers the 7 px track with a margin');
+  assert.ok(c.ops.findIndex(o=>o.name==='stroke')>i,'base under the ring');assert.ok(QTE_BASE>=P.qte.width.perfect/2+3,'covers the 11 px perfect arc with a margin');
   assert.equal(c.ops.find(o=>o.name==='stroke').style.globalAlpha<1,q.phase==='warning','alpha restored after the base');}
  const none=fakeCtx();drawQte(none,{type:'gust',phase:'interaction'},view);assert.ok(!none.ops.some(o=>o.name==='fill'),'no ring, no base');
 });
@@ -159,6 +160,6 @@ test('U6: dark ink base (60 % alpha) under the QTE ring, as an annulus so the pl
 test('U18: canvas UI text without monospace (labels, aim panel, popups use the display stack)',()=>{
  const fonts=[];for(const draw of [c=>drawLabel(c,{label:'↓ TAP',age:0},view),c=>drawAim(c,{angle:15},view),c=>drawPopups(c,[{text:'★',style:'perfect',i:0,alpha:1,scale:1,rise:0}],view)]){
   const c=fakeCtx();draw(c);for(const o of c.ops)if(o.name==='fillText')fonts.push(o.style.font);}
- assert.equal(fonts.length,3);for(const f of fonts){assert.ok(!/monospace/.test(f),f);assert.ok(f.endsWith(DISPLAY),f);}
+ assert.equal(fonts.length,3);for(const f of fonts){assert.ok(!/monospace/.test(f),f);assert.ok(f.endsWith(P.popup.font),f);}
  assert.ok(!/monospace/.test(readFileSync(new URL('../src/render3d/ui-layer.js',import.meta.url),'utf8')));
 });
