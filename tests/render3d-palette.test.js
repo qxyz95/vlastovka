@@ -37,8 +37,8 @@ test('perfekt magenta, úspěch azurová, zlatá jen hodnota',()=>{
  const p=CYBER.popup;assert.equal(p.perfect,MAGENTA);assert.equal(p.success,CYAN);assert.equal(p.milestone,GOLD);assert.equal(p.miss,MISS);
  const q=CYBER.qte;assert.deepEqual([q.perfect,q.result.perfect,q.success,q.result.success,q.warning],[MAGENTA,MAGENTA,CYAN,CYAN,FOCUS]);
  assert.equal(CYBER.particles[1],MAGENTA,'jiskra perfektu');assert.equal(CYBER.particles[2],CYAN,'jiskra úspěchu');assert.equal(CYBER.particles[4],GOLD,'jiskra hodnoty');
- // Zlatá jen hodnota: milník, jiskra hodnoty a neonové cedule (kap. 2.2), nikde jinde.
- assert.deepEqual(colors.filter(([,v])=>v===GOLD).map(([p])=>p),['.particles.4','.popup.milestone','.life.ads.1','.life.ads.3']);
+ // Zlatá jen hodnota: milník, jiskra hodnoty a neon v cedulích, lampách a oknech (kap. 2.2), nikde jinde.
+ assert.deepEqual(colors.filter(([,v])=>v===GOLD).map(([p])=>p),['.particles.4','.popup.milestone','.city.neon.2','.city.windows.2','.life.ads.1','.life.ads.3']);
  assert.notEqual(CYBER.flash,GOLD);assert.notEqual(CYBER.qte.bird.beak,GOLD);
 });
 

@@ -2,7 +2,7 @@
 // createPlane(ctx) → {group,apply(planePlan,{t,flying}),setModel(model),trail,dispose()}; ctx = {ramp,planeHull,palette,scale}.
 // makePlane(model,…) → skupiny root → pitch → yaw → roll; applyPose(p,pose) zapíše plan.plane (úhel z juice.flightAngle jako ve 2D).
 import * as THREE from 'three';
-import {planeShape} from './geometry.js';
+import {planeShape,outlineStamp} from './geometry.js';
 
 // Stopa: width = poloviční šířka v m u vlaštovky; minHalf a edge v CSS px (bible kap. 5.2: celá šířka ≥ 2 CSS px, lem ≥ 1 CSS px), edgeFrac = lem jako podíl poloviční šířky.
 export const PLANE_SCALE=7.75,TRAIL={points:56,step:.6,width:.45,minHalf:2,edge:1,edgeFrac:.25},PAPER_REF=.5;
@@ -22,12 +22,14 @@ export function makePlane(model,{ramp,planeHull,palette,scale=PLANE_SCALE}){
  const s=planeShape(model),geo=new THREE.BufferGeometry(),P=palette.plane;
  geo.setAttribute('position',new THREE.Float32BufferAttribute(s.positions,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(s.normals,3));geo.setAttribute('outline',new THREE.Float32BufferAttribute(s.outline,3));
  const mesh=new THREE.Mesh(geo,paperMaterial(P.fill,ramp,P.maxTint??.2));mesh.castShadow=true;mesh.renderOrder=2;
- const hull=new THREE.Mesh(geo,planeHull);hull.renderOrder=1;
+ // Obrys razítkem (geometry.outlineStamp + toon.stampOutlineMaterial), renderOrder 2 = až po stopě (transparentní, renderOrder 1).
+ const st=outlineStamp(s.positions),hg=new THREE.BufferGeometry();hg.setAttribute('position',new THREE.Float32BufferAttribute(st.positions,3));hg.setAttribute('shift',new THREE.Float32BufferAttribute(st.shift,2));
+ const hull=new THREE.Mesh(hg,planeHull);hull.renderOrder=2;
  const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(s.creases,3));
  const crease=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:P.crease[model==='glider'?1:0]}));crease.renderOrder=3;
  const root=new THREE.Group(),pitch=new THREE.Group(),yaw=new THREE.Group(),roll=new THREE.Group();
  roll.add(mesh,hull,crease);yaw.add(roll);pitch.add(yaw);root.add(pitch);root.scale.setScalar(scale);
- return {model,root,pitch,yaw,roll,mesh,dispose(){geo.dispose();lg.dispose();mesh.material.dispose();crease.material.dispose();}};
+ return {model,root,pitch,yaw,roll,mesh,hull,dispose(){geo.dispose();hg.dispose();lg.dispose();mesh.material.dispose();crease.material.dispose();}};
 }
 // Póza: pitch = −angle (2D rotate kladně = nos dolů), roll náklon křídel k divákovi, squash [podél nosu, napříč].
 export function applyPose(p,o){

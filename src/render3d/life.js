@@ -6,6 +6,7 @@ import EN from '../locales/en.js';
 import {random} from '../random.js';
 import {TIMING} from '../events.js';
 import {cityChunk,chunkOffset,WINDOW_TILE} from './geometry.js';
+import {CYBER} from './palette.js';
 
 export const SUBURBS={x0:0,x1:4*SCREEN_METERS,screens:[0,1,2,3]};
 // Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.2), zdroj je slovník src/locales/en.js.
@@ -30,8 +31,7 @@ export function facadeWindows(b,pattern=windowPattern()){
    if(xa>=b.x+.2&&xb<=b.x+b.w-.2&&ya>=y0+1&&yb<=y0+b.h-.3)out.push({x:(xa+xb)/2,y:(ya+yb)/2,z:b.z+b.d/2+.05,w:xb-xa,h:yb-ya,row:p.row,col:p.col});}}
  return out;
 }
-const CLOTHES=['#ff6fae','#ffd166','#5ee0c8','#9d7dff','#ff8f5a','#7fd0ff','#ffffff','#b4f06a'],SKIN=['#ffd9b8','#e8b48f','#c98b62','#8d5a3b','#ffe6d0'];
-const PASTEL=['#ff6fae','#ffd166','#5ee0c8','#a48bff','#ff9a6a','#7fd0ff'];
+const K=CYBER.life,CLOTHES=K.people.cloth,SKIN=K.people.skin,PASTEL=K.pastel;
 export const LANES=[{z:-4.6,dir:1},{z:-7.2,dir:-1}],TRACK={z:-15,portal:656,end:1560,cars:6,len:12,gap:1,speed:17,pause:5},CAR_RANGE=[-140,1360];
 // Celé rozmístění čtvrti. Deterministické (vlastní seed), vychází z cityChunk(0–3), takže lidé a komíny sedí na střechách.
 export function suburbLife(){
@@ -77,18 +77,18 @@ export function suburbLife(){
  const bb=near.filter(b=>b.kind==='market'&&b!==roof&&b.w>=10)[0];if(bb)L.billboard={x:bb.x+bb.w/2,y:bb.h+3.6,z:front(bb)-1.5,w:Math.min(12,bb.w-1),h:3,roof:bb.h};
  // Statické doplňky (kvádry pro mergeBlocks): komíny, nádrže, antény, stánky, koleje, tunel, nástupiště, sloupky větrníků.
  const S=(b,color)=>L.static.push({type:'box',y:0,...b,color});
- for(const c of L.chimneys)S({x:c.x-.5,w:c.big?1.6:1,z:c.z,d:c.big?1.6:1,h:c.h,y:c.y},'#7a4f86');
- for(const t of L.tanks){S({x:t.x,w:2.6,z:t.z,d:2.6,h:2.6,y:t.y+.9},'#5aa7b8');S({x:t.x+.3,w:.3,z:t.z,d:.3,h:.9,y:t.y},'#3a2a5a');S({x:t.x+2,w:.3,z:t.z,d:.3,h:.9,y:t.y},'#3a2a5a');L.static.push({type:'pyramid',x:t.x,w:2.6,z:t.z,d:2.6,h:1.2,y:t.y+3.5,color:'#ff8fb8'});}
- for(const a of L.antennas){S({x:a.x-.12,w:.24,z:a.z,d:.24,h:a.h,y:a.y},'#d8c8ff');S({x:a.x-1.2,w:2.4,z:a.z,d:.16,h:.16,y:a.y+a.h*.7},'#d8c8ff');S({x:a.x-.8,w:1.6,z:a.z,d:.16,h:.16,y:a.y+a.h*.85},'#d8c8ff');}
- for(const s of L.stalls){S({x:s.x,w:s.w,z:s.z,d:s.d,h:1.1},'#a0627a');for(const dx of [.1,s.w-.3])S({x:s.x+dx,w:.2,z:s.z+1.3,d:.2,h:2.5},'#f0e0ff');
-  for(let j=0;j<4;j++)S({x:s.x-.3+j*1.9,w:1.9,z:s.z+.3,d:3.8,h:.35,y:2.5},j%2?'#fff4e8':s.color);}
- for(const l of [...L.laundry,...L.bunting])S({x:l.x0,w:l.x1-l.x0,z:l.z,d:.06,h:.06,y:l.y},'#efe6ff');
- for(const p of L.pinwheels)S({x:p.x-.06,w:.12,z:p.z,d:.12,h:p.y},'#f0e0ff');
- S({x:TRACK.portal-12,w:22,z:TRACK.z,d:9,h:9},'#5b4a92');S({x:TRACK.portal-4,w:6,z:TRACK.z+4.3,d:.6,h:5.4},'#1a1030');
- L.static.push({type:'pyramid',x:TRACK.portal-20,w:36,z:TRACK.z-6,d:20,h:16,color:'#3d8a6a'});
- S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z,d:3.2,h:.18},'#3a2a4a');for(const dz of [-.75,.75])S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z+dz,d:.14,h:.32},'#d0c0f0');
- S({x:1094,w:78,z:-11.9,d:2.6,h:.8},'#8a6aa8');
- if(L.billboard){const B=L.billboard;for(const dx of [-B.w/2+.6,B.w/2-.6])S({x:B.x+dx-.15,w:.3,z:B.z-.2,d:.3,h:B.y-B.h/2-B.roof,y:B.roof},'#3a2a5a');}
+ for(const c of L.chimneys)S({x:c.x-.5,w:c.big?1.6:1,z:c.z,d:c.big?1.6:1,h:c.h,y:c.y},K.chimney);
+ for(const t of L.tanks){S({x:t.x,w:2.6,z:t.z,d:2.6,h:2.6,y:t.y+.9},K.tanks.body);S({x:t.x+.3,w:.3,z:t.z,d:.3,h:.9,y:t.y},K.tanks.leg);S({x:t.x+2,w:.3,z:t.z,d:.3,h:.9,y:t.y},K.tanks.leg);L.static.push({type:'pyramid',x:t.x,w:2.6,z:t.z,d:2.6,h:1.2,y:t.y+3.5,color:K.tanks.roof});}
+ for(const a of L.antennas){S({x:a.x-.12,w:.24,z:a.z,d:.24,h:a.h,y:a.y},K.mast);S({x:a.x-1.2,w:2.4,z:a.z,d:.16,h:.16,y:a.y+a.h*.7},K.mast);S({x:a.x-.8,w:1.6,z:a.z,d:.16,h:.16,y:a.y+a.h*.85},K.mast);}
+ for(const s of L.stalls){S({x:s.x,w:s.w,z:s.z,d:s.d,h:1.1},K.stall.base);for(const dx of [.1,s.w-.3])S({x:s.x+dx,w:.2,z:s.z+1.3,d:.2,h:2.5},K.stall.post);
+  for(let j=0;j<4;j++)S({x:s.x-.3+j*1.9,w:1.9,z:s.z+.3,d:3.8,h:.35,y:2.5},j%2?K.stall.stripe:s.color);}
+ for(const l of [...L.laundry,...L.bunting])S({x:l.x0,w:l.x1-l.x0,z:l.z,d:.06,h:.06,y:l.y},K.line);
+ for(const p of L.pinwheels)S({x:p.x-.06,w:.12,z:p.z,d:.12,h:p.y},K.stall.post);
+ S({x:TRACK.portal-12,w:22,z:TRACK.z,d:9,h:9},K.tunnel.wall);S({x:TRACK.portal-4,w:6,z:TRACK.z+4.3,d:.6,h:5.4},K.tunnel.mouth);
+ L.static.push({type:'pyramid',x:TRACK.portal-20,w:36,z:TRACK.z-6,d:20,h:16,color:K.pyramid});
+ S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z,d:3.2,h:.18},K.rail.bed);for(const dz of [-.75,.75])S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z+dz,d:.14,h:.32},K.rail.track);
+ S({x:1094,w:78,z:-11.9,d:2.6,h:.8},K.platform);
+ if(L.billboard){const B=L.billboard;for(const dx of [-B.w/2+.6,B.w/2-.6])S({x:B.x+dx-.15,w:.3,z:B.z-.2,d:.3,h:B.y-B.h/2-B.roof,y:B.roof},K.pole);}
  return L;
 }
 // ── Pohyb (čisté funkce času t v sekundách).

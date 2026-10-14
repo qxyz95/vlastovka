@@ -38,7 +38,7 @@ test('drawQte: track, success and perfect arcs at zone angles, white progress do
  const arcs=strokes(c),at=k=>-Math.PI/2+k*Math.PI*2,by=color=>arcs.find(a=>a.style.strokeStyle===color);
  assert.equal(arcs.length,3);
  for(const a of arcs){assert.equal(a.args[0],148);assert.equal(a.args[1],200);assert.equal(a.args[2],30);assert.equal(a.style.lineWidth,7);}
- assert.ok(near(by('#3b4170').args[3],at(0))&&near(by('#3b4170').args[4],at(1)),'grey full track');
+ assert.ok(near(by(CYBER.qte.track).args[3],at(0))&&near(by(CYBER.qte.track).args[4],at(1)),'grey full track');
  assert.ok(near(by(CYBER.qte.success).args[3],at(.4))&&near(by(CYBER.qte.success).args[4],at(.7)),'cyan success arc');
  assert.ok(near(by(CYBER.qte.perfect).args[3],at(.5))&&near(by(CYBER.qte.perfect).args[4],at(.6)),'magenta perfect arc');
  const dot=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#ffffff');

@@ -57,6 +57,7 @@ import {cameraView} from './camera.js';
 import {createScene} from './scene.js';
 import {drawUi} from './ui-layer.js';
 import {INK,PAPER,NIGHT,CYAN,BODY} from './palette.js';
+import {MOOD_KEYS} from './mood.js';
 import {frameStats,ring} from '../perf.js';
 import {createFlight,step,eventInput} from '../core.js';
 const MAX_DPR=2,SLOW=1000/30-2,WARM=[2,3,4,5];
@@ -86,8 +87,8 @@ function drawLayer(canvas,plan,visual,lost){
 }
 // Nouzové pozadí: pásy oblohy (mood.sky shora k obzoru) přechodem, obzor na 300/360 jako ve 2D, pod ním zem ztmaveným tónem mlhy.
 export function backdrop(c,mood,s=1,plan=null){
- c.setTransform(s,0,0,s,0,0);const g=c.createLinearGradient(0,0,0,300),sky=mood?.sky??['#3a2a7a','#ff9ec4'];sky.forEach((col,i)=>g.addColorStop(i/(sky.length-1),col));
- c.fillStyle=g;c.fillRect(0,0,640,300);c.fillStyle=mood?.fog?.color??'#2a1d44';c.fillRect(0,300,640,60);c.fillStyle='#00000088';c.fillRect(0,300,640,60);
+ c.setTransform(s,0,0,s,0,0);const g=c.createLinearGradient(0,0,0,300),sky=mood?.sky??MOOD_KEYS[0].sky;sky.forEach((col,i)=>g.addColorStop(i/(sky.length-1),col));
+ c.fillStyle=g;c.fillRect(0,0,640,300);c.fillStyle=mood?.fog?.color??MOOD_KEYS[0].fog.color;c.fillRect(0,300,640,60);c.fillStyle=INK;c.globalAlpha=.53;c.fillRect(0,300,640,60);c.globalAlpha=1;
  // vlaštovka jako bílá silueta (úhel jako ve 2D: kladný = nos dolů), aby let šel sledovat i bez 3D
  const v=plan?.view,a=plan?.plane;if(v&&(a?.visible||plan.hand)){c.translate(v.px,v.py);c.rotate(a?.visible?a.angle:-.15);c.fillStyle=PAPER;c.strokeStyle=INK;c.lineWidth=2;c.beginPath();c.moveTo(16,0);c.lineTo(-14,-7);c.lineTo(-8,0);c.lineTo(-14,6);c.closePath();c.fill();c.stroke();}
  c.setTransform(1,0,0,1,0,0);
