@@ -53,7 +53,7 @@ export function cameraFor(X,Y,{width=CAMERA.width,zoom=1,fov=CAMERA.fov,pitch=CA
 // převod je 0; zůstává jen pro cyber Dílnu (ruka 16 m) a pro vyšší výhoz nového systému (Crane Lift, f.d.y0), dokud ho místo neukáže.
 export const launchLift=(f,hand=HAND)=>f?(hand.y-(f.d?.y0??12))*(1-launchEase(f.t/LAUNCH.dur)):0;
 export const planeWorld=(f,style)=>{const h=handOf(style);return f?[f.x+PLANE_OFFSET,f.y+launchLift(f,h)]:[h.x,h.y];};
-// Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr míření z pose.js (HAND na (148, 258), 16 m, telefon 7 m).
+// Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr míření z pose.js (ruka stylu na (148, 258), 16 m, telefon 7 m; papír sklon −8°).
 export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
 // Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka a sklon podle stylu; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
 const rests=new Map(),restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0)),style=styleOf(visual),h=handOf(style);
