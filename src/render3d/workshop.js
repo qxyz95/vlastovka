@@ -129,8 +129,8 @@ export function createWorkshop(scene,ctx={}){
   if(k){kid.position.x=KID.x-k.back;body.rotation.z=k.lean;upper.position.y=k.bob;
    if(lit){lit.material.color.setScalar(k.glow);signMat.color.setScalar(k.flicker?.35:1);}}
   plane.visible=!!p;
-  // papír: plan.hand.scale (+15 % na úzké scéně, P0); cyber měřítko beze změny
-  if(p){if(p.model)setModel(p.model);const sc=scale*(paper?p.scale??1:1);plane.position.set(HAND.x+p.dx,HAND.y+p.dy,HAND.z);tilt.rotation.z=p.angle;squash.scale.set(p.squash[0]*sc,p.squash[1]*sc,sc);}
+  // plan.hand.scale: velikost vlaštovky v ruce podle záběru (S3), v papíru i +15 % na úzké scéně (P0)
+  if(p){if(p.model)setModel(p.model);const sc=scale*(p.scale??1);plane.position.set(HAND.x+p.dx,HAND.y+p.dy,HAND.z);tilt.rotation.z=p.angle;squash.scale.set(p.squash[0]*sc,p.squash[1]*sc,sc);}
   // Ruka: mávání (kidPose.arm) nebo míří k vlaštovce a natáhne se k ní.
   if(k?.arm!=null){arm.rotation.z=k.arm;arm.scale.x=1;}
   else{arm.updateWorldMatrix(true,false);v.setFromMatrixPosition(arm.matrixWorld);group.worldToLocal(v);const tx=plane.position.x-v.x,ty=plane.position.y-v.y;

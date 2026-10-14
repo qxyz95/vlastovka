@@ -131,10 +131,10 @@ test('P3 workshop: paper build uses the shared paper kit (ID.near), casts ground
  const solo=createWorkshop(null,{style:'papir'});let n=0;solo.traverse(o=>{if(o.userData.shadow)n++;});assert.equal(n,0);solo.dispose();
 });
 
-test('P3 workshop: cyber Dílna unchanged (toon + ink outlines, neon sign, glowing windows, hand scale ignored)',()=>{
+test('P3 workshop: cyber Dílna unchanged (toon + ink outlines, neon sign, glowing windows, hand scale from the shot (S3))',()=>{
  const g=createWorkshop(null,{planeScale:PLANE_SCALE});let toon=0,meshes=0;g.traverse(o=>{if(o.isMesh){meshes++;if(o.material.isMeshToonMaterial)toon++;}});
  assert.equal(g.userData.style,'cyber');assert.equal(meshes,14);assert.ok(toon>=5);assert.equal(g.userData.outlines.length,3);
- const sq=g.userData.plane.children[0].children[0];g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],scale:1.15});assert.equal(sq.scale.z,PLANE_SCALE);g.dispose();
+ const sq=g.userData.plane.children[0].children[0];g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],scale:1.15});assert.ok(Math.abs(sq.scale.z-PLANE_SCALE*1.15)<1e-9,'S3: vlaštovka v ruce i v cyber stylu podle záběru');g.dispose();
 });
 
 // ── UI vrstva (ui-layer.js, fx-map.js)
