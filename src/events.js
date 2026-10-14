@@ -1,4 +1,5 @@
 import {random} from './random.js';
+import {EVENT_MIN_Y} from './config.js';
 // Effect sizes before the model's `qte` multiplier.
 export const HELP={gustX:1.5,gustY:2,perfect:1.25,birdTime:.8,birdPerfect:1.1};
 // Timing in seconds. Gust: tap relative to event start (warning .8 s, then 1.2 s bar).
@@ -37,7 +38,8 @@ export function updateEvents(f){
  if(f.landed){for(const e of f.events)if(e.phase!=='done'){if(!e.result)e.result='interrupted';e.phase='done';e.owner=null;}f.carry=0;return;}
  for(let i=0;i<f.events.length;i++){
   const e=f.events[i];
-  if(e.phase==='waiting'&&f.t>=e.at)e.phase='warning';
+  // Below EVENT_MIN_Y a due event keeps waiting with at=Infinity (no warning, marker or camera lock); if the plane climbs back, it starts then with a full warning.
+  if(e.phase==='waiting'&&(f.t>=e.at||e.floorWait)){if(f.y<EVENT_MIN_Y){e.floorWait=true;e.at=Infinity;}else{if(e.floorWait){e.at=f.t;e.floorWait=false;}e.phase='warning';}}
   if(e.phase==='warning'&&f.t>=e.at+TIMING.warning)e.phase='interaction';
   if(e.phase==='interaction'&&!e.result&&f.t>(e.heldAt===null?e.at+TIMING.warning+TIMING.bar:e.heldAt+TIMING.bar)+1e-9)resolve(f,e,'miss');
   if(e.phase==='effect'&&f.t>=e.doneAt){e.phase='done';const next=f.events[i+1];if(next)next.at=e.doneAt+next.gap;}

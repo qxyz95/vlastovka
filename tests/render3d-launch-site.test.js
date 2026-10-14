@@ -21,8 +21,9 @@ registerHooks({resolve:(spec,ctx,next)=>spec==='three'?{url:THREE_URL,shortCircu
 globalThis.document??={createElement:()=>({width:0,height:0,getContext:()=>new Proxy({},{get:()=>()=>{},set:()=>true})})};
 
 // Lety z HEAD 4df47a7 (před S4), autopilot QTE, 60 Hz: [model, seed, x, t, kroky]. Fyzika (core.js, throw.js) se v S4 nemění.
+// QS2 (15. 10.): glider 1 a 7 přepočteny, poslední událost by začala pod EVENT_MIN_Y = 8 m, a proto se nespustí.
 const GOLDEN=[['dart',1,260.769395,16.978006,1019],['dart',2,181.505597,11.272374,677],['dart',3,181.505597,11.272374,677],['dart',7,197.433978,11.899052,714],
- ['glider',1,265.459098,26.043989,1563],['glider',2,210.111989,19.878887,1193],['glider',3,210.111989,19.878887,1193],['glider',7,265.130343,25.035607,1503]];
+ ['glider',1,250.043541,24.736751,1485],['glider',2,210.111989,19.878887,1193],['glider',3,210.111989,19.878887,1193],['glider',7,242.417458,22.795524,1368]];
 test('physics unchanged by S4: same flights as before (golden from HEAD 4df47a7), the paper renderer does not touch the flight',()=>{
  for(const [model,seed,x,t,n] of GOLDEN){const f=createFlight(model,undefined,seed);let k=0,p=null;
   while(!f.landed&&k<60*120){const c=autoInput(f);if(c)eventInput(f,c,'auto');step(f);k++;if(seed===1)p=planFrame({f,prev:p,time:f.t,visual:{style:'papir',cssWidth:1280}});}
