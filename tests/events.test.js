@@ -84,3 +84,41 @@ test('fold upgrade widens QTE windows and the glider gains more from hits',()=>{
  const gain=model=>{const f=createFlight(model);f.events[0].type='gust';f.t=2.9;updateEvents(f);const vy=f.vy;eventInput(f,'down');return f.vy-vy;};
  assert.ok(gain('glider')>gain('dart'));
 });
+// QS2: výškový práh QTE 8 m ve hře (research/plan-hratelnost/01 karta QS2, rozhodnutí 06 bod 10).
+import {EVENT_MIN_Y} from '../src/config.js';
+import {defaults as simDefaults} from '../simulation/progression/params.mjs';
+import {throwSettings} from '../src/throw.js';
+import {qteLock,nextEventIn} from '../src/render3d/camera.js';
+test('QS2: a due event below 8 m keeps waiting with no warning or marker and never counts',()=>{
+ assert.equal(EVENT_MIN_Y,8);assert.equal(EVENT_MIN_Y,simDefaults().physics.eventMinY,'same floor as the progression simulator');
+ const f=createFlight();f.y=EVENT_MIN_Y-.01;f.t=2.5;updateEvents(f);
+ assert.equal(f.events[0].phase,'waiting');assert.equal(activeEvent(f),null);assert.equal(eventInput(f,'down'),null);assert.equal(f.events[0].result,null);
+ assert.equal(qteLock(f),false,'no QTE camera lock for a held event');assert.equal(nextEventIn(f),Infinity);
+ f.y=.00001;f.vy=-5;step(f);assert.ok(f.landed);assert.equal(eventStats(f).completed,0);assert.equal(f.feedback,'');
+ const at=createFlight();at.y=EVENT_MIN_Y;at.t=1.5;updateEvents(at);assert.equal(at.events[0].phase,'warning','exactly 8 m still starts');
+});
+test('QS2: climbing back above the floor starts the held event with a full warning',()=>{
+ const f=createFlight();f.y=5;f.t=2;updateEvents(f);assert.equal(f.events[0].phase,'waiting');
+ f.y=9;f.t=4;updateEvents(f);assert.equal(f.events[0].phase,'warning');assert.equal(f.events[0].at,4);
+ f.t=4+TIMING.warning-.01;updateEvents(f);assert.equal(f.events[0].phase,'warning');
+ f.t=4+TIMING.warning;updateEvents(f);assert.equal(f.events[0].phase,'interaction');
+ const on=createFlight();on.t=1.52;updateEvents(on);assert.equal(on.events[0].at,1.5,'on-time starts keep the schedule');
+});
+test('QS2: the floor uses no randomness, flights stay deterministic and the tutorial gust always starts',()=>{
+ for(const seed of [1,2,7,43]){const plain=createEvents(seed,seed===1).map(e=>[e.type,e.gap]);
+  const a=simulate('glider',{power:0,paper:0,fold:0},seed,.7),b=simulate('glider',{power:0,paper:0,fold:0},seed,.7);
+  assert.deepEqual(a.events.map(e=>[e.type,e.gap]),plain);assert.equal(a.x,b.x);assert.equal(a.t,b.t);
+ }
+ for(const model of ['dart','glider'])for(let angle=5;angle<=40;angle+=5)for(const power of [0,.5,1]){
+  const f=createFlight(model,{power:0,paper:0,fold:0},1,{x:0,y:0},throwSettings(angle,power));
+  while(f.t<1.6)step(f);assert.equal(f.events[0].type,'gust');assert.notEqual(f.events[0].phase,'waiting',`${model} ${angle}° ${power}`);
+ }
+});
+test('QS2: every event in real flights starts at or above the floor',()=>{
+ for(const model of ['dart','glider'])for(let seed=1;seed<=30;seed++){
+  const f=simulate(model,{power:2,paper:2,fold:2},seed,0),g=createFlight(model,{power:2,paper:2,fold:2},seed);
+  while(!g.landed&&g.t<180){const before=g.events.map(e=>e.phase);step(g);
+   g.events.forEach((e,i)=>{if(before[i]==='waiting'&&e.phase==='warning')assert.ok(g.y>=EVENT_MIN_Y,`${model} ${seed} event ${i} at ${g.y}`);});}
+  assert.equal(g.x,f.x);
+ }
+});

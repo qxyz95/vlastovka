@@ -18,6 +18,8 @@ export const MODELS = {
   glider:{speed:13, glide:5.4, drag:0.12, cruise:8, ideal:28, qte:1.15},
 };
 export const STEEP_PENALTY = 0.0015;
+// QTE events never start below this height (m), same as P.physics.eventMinY in the progression simulator.
+export const EVENT_MIN_Y = 8;
 export function parameters(model, levels) {
   const m = MODELS[model];
   return {...m, speed:m.speed*(1+UPGRADE.power*levels.power), glide:m.glide*(1+UPGRADE.paper*levels.paper),
