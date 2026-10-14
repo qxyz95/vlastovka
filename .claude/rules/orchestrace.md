@@ -19,6 +19,22 @@ Platí pro hlavní konverzaci i všechny subagenty (zavedeno 14. 10. 2026).
 - Programující agenti v nových dávkách běží v **git worktree** (`isolation: worktree`, `worktree.baseRef: head`). Orchestrátor jejich větve slučuje.
 - Před úpravou souboru, se kterým může pracovat i někdo jiný, ho vždy znovu načti.
 
+## Modely a dohled (zavedeno 15. 10. 2026)
+Šetří týdenní limit. Model se volí podle úkolu, ne podle role (parametr `model` u Agent).
+- **Opus:** návrhy, kreativní a herní design, složitá logika (fyzika, QTE, progrese), architektura, volba mezi variantami. Orchestrátor vždy.
+- **Sonnet:** dávky s hotovou specifikací (UI dávky, texty EN/CS, mazání větví), testy, úklid dokumentů, QA podle kontrolního seznamu.
+- **Haiku:** jen hledání v kódu (Explore), přesuny souborů, jednoduché statické kontroly.
+- Nejvýš **2 souběžní agenti**. Malé úpravy dělá orchestrátor sám bez agenta. Snímky v prohlížeči jen na konci dávky nebo u vizuální změny.
+
+Dohled orchestrátora nad každým agentem (hlavně Sonnet/Haiku):
+1. Zadání obsahuje **kritéria přijetí** a test, který je ověří, a seznam povolených souborů.
+2. Orchestrátor čte **skutečný rozdíl** (`git diff`), ne jen report: nic navíc, nic chybějícího, žádné cizí soubory.
+3. Orchestrátor sám spustí `npm test`, u vizuální změny udělá jeden snímek. „Ověřeno“ bez důkazu neplatí.
+4. **Eskalace:** při neúspěchu jedna oprava se zpětnou vazbou, pak převezme Opus. Typ práce, u kterého levnější model selhal, se zapíše sem do seznamu níže.
+5. Nic se nesloučí bez kontroly orchestrátora.
+
+Selhání levnějších modelů (typ práce → přidělit Opusu): zatím žádné. Zkušební dávky: úklid dokumentů a U1 na Sonnetu.
+
 ## Git
 - Commit po každé dokončené a ověřené fázi (prošlé `npm test`), malý a tematický. Formát: `<oblast>: <co>`, autor viz `CLAUDE.md`.
 - Push a merge do `main` jen na pokyn uživatele (skill `/release`).
