@@ -1,35 +1,14 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
-import {placeCards,lifeCards,hills,groundCards,cardVertices,cardTriangles,skyline,skylineStrip,shadowOffset,shadowCasters,shadowZ,ID,SHADOW,CARD_D,FAR_H,PLACE_W} from '../src/render3d/paper-cards.js';
+import {placeCards,lifeCards,hills,groundCards,cardVertices,cardTriangles,ID,CARD_D,FAR_H,PLACE_W} from '../src/render3d/paper-cards.js';
 import {cityChunk,chunkOffset} from '../src/render3d/geometry.js';
 import {palette} from '../src/render3d/palette.js';
 
-// Papírové město P0 (spec research/design/06-papir-ctvrt1.md kap. 4): karty, siluety stínů, rozpočet na místo.
+// Papírové město P0 (spec research/design/06-papir-ctvrt1.md kap. 4): karty a rozpočet na místo (stíny na zem: render3d-paper-shadow.test.js).
 const HEX=/^#[0-9a-f]{6}$/;
-const rand=s=>()=>(s=(s*16807)%2147483647)/2147483647;
-const randomCards=seed=>{const r=rand(seed),S=['box','gable','pyr','disc','flag'];return Array.from({length:40},()=>{const shape=S[Math.floor(r()*5)],x=r()*200,w=2+r()*20;
- return shape==='disc'?{shape,x,y:r()*20,r:1+r()*6,z:0,d:1}:{shape,x,w,y:r()*10,h:.5+r()*30,z:0,d:1};});};
-// Výška karty v bodě x (bez rozmazání), jak ji má skyline.
-// Vzorkuje se po 1 m: karta pokrývá vzorky od round(x) do round(x+w), jako skyline.
-const topAt=(b,x)=>{if(b.shape==='flag')return 0;if(b.shape==='disc'){const t=b.r*b.r-(x-b.x)**2;return t>0?b.y+Math.sqrt(t):0;}
- if(x<Math.round(b.x)||x>Math.round(b.x+b.w))return 0;if(b.shape==='gable'||b.shape==='pyr')return b.y+b.h*Math.max(0,1-Math.abs((x-(b.x+b.w/2))/(b.w/2)));return b.y+b.h;};
-
-test('skyline bez rozmazání = sjednocení (max) karet, rozmazání nezvýší maximum ani nevytvoří stín mimo karty',()=>{
- for(const seed of [3,17,99]){const list=randomCards(seed),raw=skyline(list,-10,230,{step:1,blur:0});
-  for(let i=0;i<raw.h.length;i++){const x=raw.x0+i;assert.ok(Math.abs(raw.h[i]-Math.max(0,...list.map(b=>topAt(b,x))))<1e-3,`seed ${seed} x ${x}`);}
-  for(const blur of [2,4,8]){const s=skyline(list,-10,230,{step:1,blur});assert.ok(Math.max(...s.h)<=Math.max(...raw.h)+1e-4,`blur ${blur}`);
-   const r=Math.round(blur/2);for(let i=0;i<s.h.length;i++){const near=raw.h.slice(Math.max(0,i-r),i+r+1);if(Math.max(...near)===0)assert.equal(s.h[i],0);}}}
- assert.equal(skyline([],0,10).h.every(v=>v===0),true);
- const strip=skylineStrip(skyline([{shape:'box',x:0,w:10,y:0,h:5,z:0,d:1}],-5,15,{blur:0}),{pen:1,z:-3});
- assert.equal(strip.position.length,strip.triangles*9);assert.equal(strip.h.length,strip.triangles*3);assert.ok(strip.position.every((v,i)=>i%3!==2||v===-3));
-});
-
-test('shadowOffset: posun ke světlu doleva dolů, měkkost s hloubkou, strop dzCap',()=>{
- const a=shadowOffset(40),b=shadowOffset(SHADOW.dzCap),c=shadowOffset(1000);
- assert.ok(a.dx<0&&a.dy<0&&b.pen>a.pen);assert.deepEqual(c,b);assert.equal(shadowOffset(0).pen,SHADOW.penMin);
+test('ID vrstev: dálka, střed, ulice, zem, mraky, balóny (zem přijímá stín, vrstvy mají ztmavenou patu)',()=>{
  assert.deepEqual(ID,{sky:0,far:1,mid:2,near:4,ground:8,cloud:16,balloon:32});
- assert.equal(SHADOW.casters.near.mask,0xFC);assert.equal(SHADOW.casters.mid.mask,0xFE);assert.equal(SHADOW.casters.far.mask,0xFF);assert.equal(SHADOW.plane.mask,0xF8);
 });
 
 test('placeCards: deterministické, nemutuje chunk, lokální x, tloušťka karet podle vrstvy, panorama × FAR_H, barvy z palety čtvrti',()=>{
@@ -63,15 +42,14 @@ test('cardVertices: počet vrcholů odpovídá cardTriangles, normály jednotkov
  for(let i=0;i<v.n.length;i+=3)assert.ok(Math.abs(Math.hypot(v.n[i],v.n[i+1],v.n[i+2])-1)<1e-6);
 });
 
-// Rozpočet místa podle bible kap. 5: země + 3 vrstvy karet + 3 pásy stínů (siluety); život čtvrti 1 a kopce patří místu podle středu karty.
+// Rozpočet místa: hlavní průchod = země + 3 vrstvy karet; stíny na zem jsou zvláštní průchod do masky (3 vrhače, stejné trojúhelníky vrstev,
+// 08-stiny.md kap. 6). Život čtvrti 1 a kopce patří místu podle středu karty.
 // Dílna (workshop.js, P3), mraky a balóny (sdílené za čtvrť) se počítají zvlášť.
 function placeBudget(i,life=lifeCards(),hl=hills(-400,4*PLACE_W+400)){
  const dx=chunkOffset(i),own=c=>Math.floor((c.x+(c.w??0)/2)/PLACE_W)===i,loc=c=>({...c,x:c.x-dx}),d=Math.floor(i/4);
  const cards=[...placeCards(cityChunk(i)),...(d===0?[...life.cards.filter(c=>['near','mid','far'].includes(c.layer)),...hl].filter(own).map(loc):[])];
- let triangles=cardTriangles(cards)+cardTriangles(groundCards('papir',d)),calls=1;
- for(const L of ['far','mid','near']){const list=cards.filter(c=>c.layer===L);if(!list.length)continue;const o=shadowOffset(SHADOW.casters[L].dz);calls+=2;
-  triangles+=skylineStrip(skyline(shadowCasters(list),-20,PLACE_W+20,{step:1,blur:o.pen}),{pen:o.pen,z:shadowZ(list,L)}).triangles;}
- return {cards:cards.length,triangles,calls};
+ const triangles=cardTriangles(cards)+cardTriangles(groundCards('papir',d)),layers=['far','mid','near'].filter(L=>cards.some(c=>c.layer===L)).length;
+ return {cards:cards.length,triangles,calls:1+layers,maskCalls:layers};
 }
 test('rozpočet: každé z 16 míst ≤ 15 tis. trojúhelníků a ≤ 14 draw calls (počítáno z karet)',t=>{
  const life=lifeCards(),hl=hills(-400,4*PLACE_W+400);

@@ -1,5 +1,5 @@
-// Papírové karty (čisté, ?styl=papir): bloky cityChunk a život čtvrti → tenké karty dioramatu, vrcholy karet a profil siluety vrstvy pro měkké stíny.
-// Přeneseno z prototype/styly/papir-data.js (bible research/design/05-styl-papir.md kap. 3 a 5), barvy z palette(style).city / .life, ne napevno.
+// Papírové karty (čisté, ?styl=papir): bloky cityChunk a život čtvrti → tenké karty dioramatu a jejich vrcholy (stíny na zem: paper-shadow.js).
+// Přeneseno z prototype/styly/papir-data.js (bible research/design/05-styl-papir.md kap. 3), barvy z palette(style).city / .life, ne napevno.
 // Karta: {shape:'box'|'gable'|'pyr'|'disc'|'flag', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?}, metry.
 import {SCREEN_METERS} from '../scenes.js';
 import {chunkOffset} from './geometry.js';
@@ -8,12 +8,8 @@ import {palette,mix} from './palette.js';
 
 const hash=(i,s=0)=>{const x=Math.sin(i*127.1+s*311.7)*43758.5453;return x-Math.floor(x);};
 export const PLACE_W=SCREEN_METERS;
-// Stencil: id vrstvy (zapisuje vrstva) a maska příjemců stínu; stín vrstvy padá jen na vrstvy za ní a na nebe (bible kap. 5).
+// Id vrstvy: materiál papíru podle něj volí ztmavení paty (dálka, střed, ulice) a příjem stínu na zem (zem). Stíny: paper-shadow.js (08-stiny.md).
 export const ID=Object.freeze({sky:0,far:1,mid:2,near:4,ground:8,cloud:16,balloon:32});
-// Stylizované světlo dioramatu: posun a měkkost stínu rostou s hloubkou mezi vrstvami (dz, strop 140 m), ne se skutečnou vzdáleností (kap. 4).
-export const SHADOW=Object.freeze({k:[-.07,-.045],pen:.022,penMin:.4,dzCap:140,alpha:.2,
- casters:{near:{dz:84,mask:0xFC},mid:{dz:140,mask:0xFE},far:{dz:140,mask:0xFF}},plane:{dz:40,z:-1.5,mask:0xF8,alpha:.3},cloud:{dz:120,mask:0xFF,alpha:.12}});
-export const shadowOffset=dz=>{const d=Math.min(dz,SHADOW.dzCap);return {dx:SHADOW.k[0]*d,dy:SHADOW.k[1]*d,pen:Math.max(SHADOW.penMin,SHADOW.pen*d)};};
 // Tloušťka karty podle vrstvy (přední hrana zůstává tam, kde ji má cityChunk), výška panoramy × FAR_H, podíl sedlových střech podle vrstvy.
 export const CARD_D=Object.freeze({near:4,mid:6,far:12}),FAR_H=.42,ROOFS=Object.freeze({near:.7,nearWide:.25,mid:.35,far:.4});
 // Stopa vlaštovky (kap. 2.2, P3): čárka 1,5 m s mezerou 0,9 m, alfa 0,85, poloviční šířka max(0,22 m, 1,1 CSS px), bez lemu.
@@ -104,28 +100,3 @@ export function cardVertices(list){
 }
 // Trojúhelníky karet bez sestavení vrcholů (rozpočet): box 8, gable 1 + 4 + 4, pyr 1 + 4, flag 1, disc 3 × n.
 export const cardTriangles=list=>list.reduce((s,b)=>s+(b.shape==='box'?8:b.shape==='gable'?9:b.shape==='pyr'?5:b.shape==='flag'?1:3*(b.n??18)),0);
-
-// ── Profil siluety vrstvy: výška h(x) sjednocení (max) karet, vzorek po `step` m, rozmazaný klouzavým průměrem přes `blur` m.
-// Stín vrstvy = oblast pod profilem posunutá podle shadowOffset, měkká i svisle. Vlaječky stín nevrhají.
-export function skyline(list,x0,x1,{step=1,blur=4}={}){
- const n=Math.max(2,Math.ceil((x1-x0)/step)+1),h=new Float32Array(n),at=x=>Math.round((x-x0)/step);
- for(const b of list){
-  if(b.shape==='disc'){for(let i=Math.max(0,at(b.x-b.r));i<=Math.min(n-1,at(b.x+b.r));i++){const dx=x0+i*step-b.x,t=b.r*b.r-dx*dx;if(t>0)h[i]=Math.max(h[i],b.y+Math.sqrt(t));}continue;}
-  if(b.shape==='flag')continue;
-  const i0=Math.max(0,at(b.x)),i1=Math.min(n-1,at(b.x+b.w));
-  for(let i=i0;i<=i1;i++){const x=x0+i*step;let top=b.y+b.h;
-   if(b.shape==='gable'||b.shape==='pyr'){const u=1-Math.abs((x-(b.x+b.w/2))/(b.w/2));top=b.y+b.h*Math.max(0,u);}
-   h[i]=Math.max(h[i],top);}}
- const r=Math.max(0,Math.round(blur/step/2)),out=new Float32Array(n);
- for(let i=0;i<n;i++){let s=0,c=0;for(let j=i-r;j<=i+r;j++)if(j>=0&&j<n){s+=h[j];c++;}out[i]=s/c;}
- return {x0,step,h:out};
-}
-// Pás stínu z profilu: sloupce (x_i … x_{i+1}) od spodku po vrchol + penumbru; h = výška profilu ve vrcholu (atribut aH shaderu).
-export function skylineStrip(sk,{pen,z,bottom=-2}){
- const p=[],H=[];for(let i=0;i<sk.h.length-1;i++){const xa=sk.x0+i*sk.step,xb=xa+sk.step,ha=sk.h[i],hb=sk.h[i+1];if(ha<.05&&hb<.05)continue;const top=Math.max(ha,hb)+pen;
-  for(const [x,y,hh] of [[xa,bottom,ha],[xb,bottom,hb],[xb,top,hb],[xa,bottom,ha],[xb,top,hb],[xa,top,ha]]){p.push(x,y,z);H.push(hh);}}
- return {position:p,h:H,triangles:p.length/9};
-}
-// Karty, které vrhají stín vrstvy (bez vlaječek a nízkých pásů), a z-pozice pásu stínu: přední hrana vrstvy − dz (kap. 5).
-export const shadowCasters=list=>list.filter(b=>b.shape!=='flag'&&!(b.shape==='box'&&b.h<.5));
-export const shadowZ=(list,layer)=>Math.max(...list.map(b=>b.z+b.d/2))-SHADOW.casters[layer].dz;

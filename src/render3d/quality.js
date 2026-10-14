@@ -1,11 +1,12 @@
 // Kvalitativní úrovně Papírového města (čisté). Zdroj: bible research/design/05-styl-papir.md kap. 5.
 // 0 nízká (slabý telefon), 1 střední (výchozí na telefonu: dotyk a šířka < 900 CSS px), 2 vysoká (výchozí na desktopu).
-// Čitelnost (obrys vlaštovky, QTE, stín vlaštovky, opar) je na všech úrovních stejná. maxDpr nikdy nad MAX_DPR v index.js.
-//  shadows  vrstvy, které vrhají siluetový stín · cloudShadows stíny mraků · planeShadow stín vlaštovky · fiber vlákna papíru · grain zrno postu · msaa vzorky
+// Čitelnost (obrys vlaštovky, QTE, opar) je na všech úrovních stejná. maxDpr nikdy nad MAX_DPR v index.js.
+// Stíny na zem (research/design/08-stiny.md S5): mask = podíl rozlišení masky stínů (0 = bez masky, jen ztmavení paty karet ao),
+// blur = průchody rozmazání masky (1 = jeden 2D průchod, 2 = vodorovný + svislý) · fiber vlákna papíru · grain zrno postu · msaa vzorky
 export const QUALITY=Object.freeze([
- Object.freeze({level:0,maxDpr:1,msaa:0,shadows:Object.freeze([]),cloudShadows:false,planeShadow:true,fiber:false,grain:false,haze:true}),
- Object.freeze({level:1,maxDpr:1.5,msaa:2,shadows:Object.freeze(['near']),cloudShadows:false,planeShadow:true,fiber:true,grain:true,haze:true}),
- Object.freeze({level:2,maxDpr:2,msaa:4,shadows:Object.freeze(['near','mid','far']),cloudShadows:true,planeShadow:true,fiber:true,grain:true,haze:true})]);
+ Object.freeze({level:0,maxDpr:1,msaa:0,mask:0,blur:0,ao:true,fiber:false,grain:false,haze:true}),
+ Object.freeze({level:1,maxDpr:1.5,msaa:2,mask:1/4,blur:1,ao:true,fiber:true,grain:true,haze:true}),
+ Object.freeze({level:2,maxDpr:2,msaa:4,mask:1/3,blur:2,ao:true,fiber:true,grain:true,haze:true})]);
 // Pokles: P95 snímku nad `p95` ms souvisle `hold` s (bible: 33 ms, 2 s). Jen dolů, nikdy nahoru, nikdy během letu.
 export const DROP=Object.freeze({p95:33,hold:2}),PHONE_WIDTH=900;
 const clampLevel=v=>Math.max(0,Math.min(2,Math.round(Number.isFinite(+v)?+v:2)));

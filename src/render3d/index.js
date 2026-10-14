@@ -34,7 +34,8 @@
 //   plan.events   [eventView(e,t)] pohled na aktivní události                     (events-view.js R2)
 //   plan.fx       {shake,flash,speedLines,particles,popups,trail}                 (fx-map.js R2; reduced → nulové)
 //   plan.ui       {qte,aim,labels,charge,uiScale}                                 (ui-layer.js R2 kreslí do #game)
-//   plan.quality  stupeň kvality (quality.js, P)
+//   plan.quality  stupeň kvality (quality.js, P); v papíru ho drží index.js (qualityTracker → visual.quality), cyber beze změny (2)
+//   plan.style    'cyber' | 'papir' (visual.style z ui.js ?styl=papir); scéna se staví pro styl prvního snímku, změna stylu = nová scéna
 //
 // ── ctx čtvrti: districts[i].build(chunk,ctx) ──────────────────────────────────────────────────────────────
 //   ctx = {scene, materials, ramp, hull, mood, reduced}
@@ -50,15 +51,19 @@
 //   X,Y        světová poloha vlaštovky v m (jako plan.X/Y); lokálně odečti group.position.x
 //   trail      historie letu life.createTrail() ({t,x,y} ve světových m) pro passTime/noticeAge/wake
 //   events     plan.events; comp = life.companion(activeEvent(f),f.t) (holub, pára) nebo null
-//   quality    plan.quality (LOD: čtvrť smí vynechat drobnosti)
+//   quality    plan.quality (LOD: čtvrť smí vynechat drobnosti); style 'papir' jen v Papírovém městě (jinak chybí)
+// Papírové město (P1): build ctx navíc style 'papir'; materials.paper = paper.paperKit() (material(id,opts), shadows, uniforms), sdílené,
+// čtvrť je nedisponuje. Stín na zem: mesh karet → group.add(materials.paper.shadows.cast(mesh)) (sdílí geometrii, vrstva masky).
 // update volá city.js jen pro viditelná místa; nesmí alokovat geometrii každým snímkem.
-import {planFrame,viewOf,directorFor,planeWorld} from './frame.js';
+import {planFrame,viewOf,directorFor,planeWorld,styleOf} from './frame.js';
 import {cameraView} from './camera.js';
 import {createScene} from './scene.js';
 import {drawUi} from './ui-layer.js';
 import {INK,PAPER,NIGHT,CYAN,BODY} from './palette.js';
 import {MOOD_KEYS} from './mood.js';
 import {frameStats,ring} from '../perf.js';
+import {initialQuality,nextQuality,qualityPreset} from './quality.js';
+import {planeContrast} from './paper.js';
 import {createFlight,step,eventInput} from '../core.js';
 const MAX_DPR=2,SLOW=1000/30-2,WARM=[2,3,4,5];
 let R=null;
@@ -67,17 +72,35 @@ export function view(f){const p=R?.plan;if(!f||!p||p.state==='aim'||p.state==='w
  const [X,Y]=planeWorld(f);return cameraView(f.landed?p.camera:directorFor({f,prev:p,time:f.t,visual:R.last?.visual}).camera,X,Y);}
 const dprNow=()=>Math.min(MAX_DPR,globalThis.devicePixelRatio||1);
 const query=k=>new URLSearchParams(globalThis.location?.search).get(k);
-function init(canvas){
+// Kvalita Papírového města (quality.js): úroveň jen dolů podle P95 intervalu snímků v letu a míření (Dílna a výsledek běží na 30 fps, neměří se),
+// vyhodnocení po QUALITY_WINDOW ms; za letu se čas nad mezí jen sčítá, pokles proběhne v Dílně / výsledku (nextQuality). frameStats jen jednou za okno.
+export const QUALITY_WINDOW=500;
+export function qualityTracker(level=2){
+ let q={level,over:0},prev=0,acc=0,p95=0;const iv=ring(120);
+ return {get level(){return q.level;},get over(){return q.over;},
+  frame(now,state){const active=state==='flight'||state==='aim';
+   if(!active){if(prev||q.over>0){const was=q.level;q=nextQuality(q,{p95,dt:0,flying:false});if(q.level===was)q={level:was,over:0};iv.clear();acc=0;p95=0;}prev=0;return q.level;}
+   if(prev&&now-prev<250){iv.push(now-prev);acc+=now-prev;}prev=now;
+   if(acc>=QUALITY_WINDOW){p95=frameStats(iv.values).p95;q=nextQuality(q,{p95,dt:acc/1000,flying:state==='flight'});acc=0;}
+   return q.level;}};
+}
+// Vstup planFrame: cssWidth vždy, v papíru navíc quality z trackeru (cyber dál bez visual.quality → plan.quality 2 jako dřív).
+export const visualFor=(visual,cssWidth,level)=>styleOf(visual)==='papir'?{...visual,cssWidth,quality:level}:{...visual,cssWidth};
+const trackerFor=(style,visual,cssWidth)=>style==='papir'?qualityTracker(initialQuality({touch:!!visual.touch,cssWidth})):null;
+function init(canvas,visual={}){
  let gl=canvas.parentElement?.querySelector('#scene3d');if(!gl){gl=document.createElement('canvas');gl.id='scene3d';canvas.before(gl);}
- const r={gl,s:null,plan:null,last:null,debug:null,lost:false,warm:0,drawn:0,ext:null,timer:query('timer')!=null};
+ const style=styleOf(visual),r={gl,s:null,plan:null,last:null,debug:null,lost:false,warm:0,drawn:0,ext:null,timer:query('timer')!=null,style,quality:trackerFor(style,visual,canvas.clientWidth||640)};
  const size=()=>[gl.clientWidth||640,gl.clientHeight||360];
- const build=()=>{r.s=createScene(gl,{dpr:dprNow()});r.s.resize(...size(),dprNow());r.s.city.prewarm([0,1]);r.warm=0;r.ext=r.s.renderer.getContext().getExtension('WEBGL_lose_context');};
+ // DPR: v papíru navíc strop úrovně kvality (qualityPreset.maxDpr), nikdy nad MAX_DPR.
+ r.dpr=()=>r.quality?Math.min(dprNow(),qualityPreset(r.quality.level).maxDpr):dprNow();
+ r.resize=()=>r.s.resize(...size(),r.dpr());
+ const build=r.build=()=>{r.s=createScene(gl,{dpr:r.dpr(),style:r.style});r.resize();r.s.city.prewarm([0,1]);r.warm=0;r.ext=r.s.renderer.getContext().getExtension('WEBGL_lose_context');};
  build();r.perf=query('perf')==='1'?perfPanel(canvas):null;
- r.ro=new ResizeObserver(()=>{if(r.lost)return;r.s.resize(...size(),dprNow());if(r.plan){r.s.apply(r.plan);r.s.draw();}});r.ro.observe(gl);
+ r.ro=new ResizeObserver(()=>{if(r.lost)return;r.resize();if(r.plan){r.s.apply(r.plan);r.s.draw();}});r.ro.observe(gl);
  // Ztráta kontextu: three.js přestane kreslit, hra jede dál s gradientem pod UI. Obnova: stará scéna pryč, nová na stejném plátně.
  gl.addEventListener('webglcontextlost',e=>{e.preventDefault();r.lost=true;});
  gl.addEventListener('webglcontextrestored',()=>{try{r.s.dispose();}catch{}build();r.lost=false;if(r.plan){r.s.apply(r.plan);r.s.draw();}});
- window.__r3d={advance,bench,snapshot,reset,lose:()=>r.ext?.loseContext(),restore:()=>r.ext?.restoreContext(),get plan(){return R?.plan;},get stats(){return R?.s.stats();},get scene(){return R?.s;},get lost(){return R?.lost;}};
+ window.__r3d={advance,bench,snapshot,reset,measurePlane,lose:()=>r.ext?.loseContext(),restore:()=>r.ext?.restoreContext(),get plan(){return R?.plan;},get stats(){return R?.s.stats();},get quality(){return R?.quality?.level??null;},get scene(){return R?.s;},get lost(){return R?.lost;}};
  return r;
 }
 // UI vrstva (ui-layer.js R2) v rozlišení podle CSS šířky × DPR (1–2× logického 640×360). Bez kontextu WebGL pod ní gradient z nálady.
@@ -97,10 +120,13 @@ const idle=state=>state==='workshop'||state==='result';
 // Předehřátí v klidu: nejvýš 1 další místo za snímek (WARM), nakonec jednou kompilace shaderů (i skrytých objektů).
 function warmStep(r){if(r.warm>WARM.length||r.lost)return;if(r.warm<WARM.length)r.s.city.prewarm([WARM[r.warm]]);else r.s.warm();r.warm++;}
 export function render(canvas,f,model,time=0,visual={},force=false){
- const r=R??=init(canvas),now=performance.now();r.last={canvas,f,model,time,visual};
+ const r=R??=init(canvas,visual),now=performance.now();r.last={canvas,f,model,time,visual};
  if(!force&&globalThis.document?.hidden&&!r.timer)return r.plan;// skrytá záložka nekreslí (kromě ?timer pro ověření ve skrytém okně)
  if(!force&&idle(visual.state)&&r.plan&&now-r.drawn<SLOW)return r.plan;// Dílna a výsledek 30 fps
- const plan=planFrame({f,model,time,visual:{...visual,cssWidth:canvas.clientWidth||640},prev:r.plan});
+ const css=canvas.clientWidth||640;
+ if(styleOf(visual)!==r.style&&!r.lost){r.s.dispose();r.style=styleOf(visual);r.quality=trackerFor(r.style,visual,css);r.build();r.plan=null;}
+ if(r.quality&&!force){const was=r.quality.level;if(r.quality.frame(now,visual.state==='result'?'landed':visual.state??(f&&!f.landed?'flight':'aim'))!==was&&!r.lost)r.resize();}
+ const plan=planFrame({f,model,time,visual:visualFor(visual,css,r.quality?.level),prev:r.plan});
  if(!r.lost){const t0=performance.now();r.s.apply(plan);r.s.draw();r.perf?.cpu.push(performance.now()-t0);if(plan.state==='aim'||plan.state==='workshop')warmStep(r);}
  drawLayer(canvas,plan,visual,r.lost);r.perf?.frame(now,r);r.drawn=now;r.plan=plan;return plan;
 }
@@ -126,10 +152,19 @@ function snapshot(type='image/png'){
 }
 // bench(n): n snímků synchronně na kopii letu (seed 1, nebo kopie posledního letu), readPixels čeká na GPU. ms celkem a CPU zvlášť.
 function bench(n=240,{seed=1,fromLast=false}={}){
- const L=R.last??{},f=fromLast&&L.f&&!L.f.landed?structuredClone(L.f):createFlight(L.model??'dart',undefined,seed),ctx=R.s.renderer.getContext(),px=new Uint8Array(4),all=[],cpu=[];let calls=0,tris=0;
- let prev=null;for(let i=0;i<n;i++){const t0=performance.now();if(!f.landed)step(f);const plan=prev=planFrame({f,model:f.model,time:f.t,visual:{clock:f.t,state:'flight'},prev});R.s.apply(plan);R.s.draw();const t1=performance.now();
+ const L=R.last??{},bv=visualFor({state:'flight',style:R.style,touch:L.visual?.touch},L.canvas?.clientWidth||640,R.quality?.level),f=fromLast&&L.f&&!L.f.landed?structuredClone(L.f):createFlight(L.model??'dart',undefined,seed),ctx=R.s.renderer.getContext(),px=new Uint8Array(4),all=[],cpu=[];let calls=0,tris=0;
+ let prev=null;for(let i=0;i<n;i++){const t0=performance.now();if(!f.landed)step(f);const plan=prev=planFrame({f,model:f.model,time:f.t,visual:{...bv,clock:f.t},prev});R.s.apply(plan);R.s.draw();const t1=performance.now();
   ctx.readPixels(0,0,1,1,ctx.RGBA,ctx.UNSIGNED_BYTE,px);const t2=performance.now();if(i>=10){all.push(t2-t0);cpu.push(t1-t0);}const st=R.s.stats();calls=Math.max(calls,st.calls);tris=Math.max(tris,st.triangles);}
  if(R.plan){R.s.apply(R.plan);R.s.draw();}
  const a=frameStats(all),c=frameStats(cpu),r2=v=>+v.toFixed(2),st=R.s.stats();
- return {frames:a.n,avg:r2(a.avg),p95:r2(a.p95),cpu:r2(c.avg),cpuP95:r2(c.p95),calls,tris,size:st.size,dpr:st.dpr,post:st.post,distance:Math.round(f.x)};
+ return {frames:a.n,avg:r2(a.avg),p95:r2(a.p95),cpu:r2(c.avg),cpuP95:r2(c.p95),calls,tris,size:st.size,dpr:st.dpr,post:st.post,style:st.style,quality:st.quality,distance:Math.round(f.x)};
+}
+// measurePlane({size}): kontrast vlaštovky z pixelů (spec 06 kap. 5, krit. 1, jako prototype/styly/papir.js measure). Překreslí poslední plán
+// dvakrát se skrytou stopou (s vlaštovkou a bez ní), okno ±size CSS px kolem plan.view (px,py), pak vrátí viditelnost a snímek obnoví.
+function measurePlane({size=24}={}){
+ const {s,plan,gl}=R??{};if(!s||!plan||R.lost)return null;
+ const ctx=s.renderer.getContext(),W=ctx.drawingBufferWidth,H=ctx.drawingBufferHeight,k=W/(gl.clientWidth||W),S=Math.round(size*k),n=2*S+1;
+ const cx=Math.round(plan.view.px/640*W),cy=Math.round(plan.view.py/360*H),grab=()=>{const b=new Uint8Array(n*n*4);ctx.readPixels(cx-S,H-cy-S,n,n,ctx.RGBA,ctx.UNSIGNED_BYTE,b);return b;};
+ let A,B;try{s.hide('trail');s.draw();A=grab();s.hide('plane');s.draw();B=grab();}finally{s.hide(null);s.draw();}
+ return {style:plan.style,quality:plan.quality,state:plan.state,size:`${W}×${H}`,dpr:+k.toFixed(2),at:[cx,cy],...planeContrast(A,B)};
 }
