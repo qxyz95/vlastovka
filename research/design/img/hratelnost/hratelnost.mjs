@@ -1,5 +1,6 @@
 // Náčrty plánu hratelnosti, art (art-director, 15. 10. 2026, research/plan-hratelnost/03-art.md). Bez závislostí:
-//   node research/design/img/hratelnost/hratelnost.mjs → postavicka-varianty.png, postavicka-pozy.png, uvod-zaber.png, uvod-prechod.png, zbytky-stareho-stylu.png
+//   node research/design/img/hratelnost/hratelnost.mjs → postavicka-varianty.png, postavicka-pozy.png, uvod-zaber.png, uvod-prechod.png, zbytky-stareho-stylu.png;
+//   15. 10. navíc postavicka-c.png, postavicka-c-pozy.png, uvod-c.png, kour-papir.png (varianta C pro hru a papírový kouř, konec souboru)
 // NÁČRT tvaru, kompozice a měřítka (ne finální vzhled): kamera a město jako ve hře (fov 20°, cityChunk, koncept 2 místa odhodu), papír bible 05.
 // ZÁKLAD převzatý beze změny ze start/start.mjs (art-director 14. 10.): obrázek, písmo, kamera hry, karty, město místa 0–1, koncept 2 (podkrovní dílna), list.
 // Mění se jen: OUT (tahle složka) a volání dítěte v conceptB (drawKid místo kid, aby šlo kreslit plastické dítě).
@@ -382,3 +383,80 @@ const RES={};
  L.forEach((s,i)=>text(leg,s,20,16+i*26,3,T.graphite));
  const out=new Img(src.w,src.h+leg.h);out.blit(src,0,0);out.blit(leg,0,src.h);out.png(OUT+'zbytky-stareho-stylu.png');console.log('ok zbytky-stareho-stylu.png',out.w,out.h);}
 console.log(JSON.stringify(RES));
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// VARIANTA C PRO HRU (art-director, 15. 10. 2026, rozhodnutí 06 body 13–14; 03-art.md kap. 1.3–1.8 a 3.3):
+// C-H = oblá figurka z náčrtu C pro hru (póly jako vějíře, bez skrytých víček, hlava ⌀ 0,34, čepice nad očima), C-1 = LOD 1; papírový kouř.
+//   → postavicka-c.png, postavicka-c-pozy.png, uvod-c.png, kour-papir.png
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// lathe s póly: prstenec s poloměrem 0 je bod (vějíř trojúhelníků místo čtyřúhelníků), víčka jen kde jsou vidět
+function latheP(rings,n,col,{rot=Math.PI/n,top=false,bot=false}={}){
+ const R=rings.map(([y,a,b,dx=0])=>Array.from({length:n},(_,k)=>{const t=rot+k/n*Math.PI*2;return [dx+a*Math.cos(t),y,b*Math.sin(t)];})),F=[],pole=i=>rings[i][1]===0&&rings[i][2]===0;
+ const face=(pts,ref)=>{if(dot3(newell(pts),ref)<0)pts=pts.slice().reverse();F.push({pts,col,tris:pts.length-2});};
+ for(let i=0;i+1<R.length;i++)for(let k=0;k<n;k++){const a=R[i][k],b=R[i][(k+1)%n],c=R[i+1][(k+1)%n],d=R[i+1][k],q=pole(i)?[a,c,d]:pole(i+1)?[a,b,c]:[a,b,c,d],ce=cen(q),ax=[((rings[i][3]??0)+(rings[i+1][3]??0))/2,ce[1],0];face(q,[ce[0]-ax[0],0,ce[2]]);}
+ if(bot&&!pole(0))face(R[0],[0,-1,0]);if(top&&!pole(R.length-1))face(R[R.length-1],[0,1,0]);return F;}
+// díly C-H (rozměry v m od kloubu dílu, osa y podél dílu; 03-art.md tab. 1.3)
+VAR.CH={name:'C OBLA FIGURKA (HRA)',short:'C HRA',lod:0,
+ leg:()=>latheP([[-.41,.055,.055],[-.2,.062,.062],[0,.065,.065]],8,KC.legs),
+ shoe:()=>latheP([[-.06,.1,.06,.04],[-.02,.1,.065,.04],[.02,.07,.05,.02]],6,KC.shoe,{top:true,bot:true}),
+ coat:()=>latheP([[-.06,.15,.26],[.1,.15,.25],[.3,.13,.21],[.46,.11,.16],[.53,0,0]],16,KC.coat,{bot:true}),
+ head:()=>latheP([[0,0,0],[.035,.12,.11],[.09,.16,.15],[.155,.17,.16],[.22,.16,.15],[.275,.12,.11],[.31,0,0]],16,KC.skin),
+ hair:()=>latheP([[.1,.11,.15,-.07],[.22,.12,.15,-.06],[.31,.07,.09,-.04]],10,KC.hair),
+ eyes:()=>[...plate(.165,.15,.055,.02,KC.eye),...plate(.165,.15,-.055,.02,KC.eye)],
+ cap:()=>[...latheP([[-.045,.175,.165],[.025,.16,.15],[.115,.1,.09],[.195,0,0]],12,KC.cap),...latheP([[-.06,.18,.17],[-.015,.18,.17]],12,KC.band)],
+ arm:()=>latheP([[-.5,.045,.045],[-.25,.05,.05],[0,.055,.055]],8,KC.coat),
+ hand:()=>latheP([[-.06,0,0],[-.01,.055,.05],[.06,0,0]],6,KC.skin)};
+VAR.C1={name:'C LOD 1',short:'C LOD 1',lod:1,
+ leg:()=>latheP([[-.47,.06,.06],[0,.07,.07]],4,KC.legs),shoe:()=>[],
+ coat:()=>latheP([[-.06,.15,.26],[.46,.11,.16],[.53,0,0]],8,KC.coat,{bot:true}),
+ head:()=>latheP([[0,0,0],[.06,.15,.14],[.2,.165,.155],[.31,0,0]],8,KC.skin),
+ hair:()=>latheP([[.12,.11,.15,-.07],[.3,.08,.1,-.05]],6,KC.hair),eyes:()=>[],
+ cap:()=>[...latheP([[-.045,.175,.165],[.195,0,0]],8,KC.cap),...latheP([[-.06,.18,.17],[-.015,.18,.17]],8,KC.band)],
+ arm:()=>latheP([[-.55,.05,.05],[0,.055,.055]],4,KC.coat),hand:()=>[]};
+// rozpis △ po dílech (jedna instance dílu; ruce, dlaně, nohy a boty jsou 2×)
+const partTris=v=>Object.fromEntries(['head','hair','eyes','cap','coat','arm','hand','leg','shoe'].map(p=>[p,VAR[v][p]().reduce((s,f)=>s+f.tris,0)]));
+RES.C={sketch:buildKid('C','mireni').tris,H:buildKid('CH','mireni').tris,L1:buildKid('C1','mireni').tris,partsH:partTris('CH'),parts1:partTris('C1')};
+// 1 C náčrt × C hra × LOD 1 na velikostech ze hry (96 px míření desktop, 64 px míření telefon, 51 / 37 / 25 px úvod)
+{const big=v=>figure(v,'mireni',{rail:false});
+ const row1=[{label:`C NACRT ${RES.C.sketch} TRI`,img:big('C').img},{label:`C HRA ${RES.C.H} TRI`,img:big('CH').img},{label:'96 PX',img:blowUp(figure('CH','mireni',{W:105,H:140}).img,2)},
+  {label:'64 PX',img:atPx('CH','mireni',64,{box:3})},{label:'64 PX SEDA',img:atPx('CH','mireni',64,{gray:true,box:3})}];
+ const row2=[{label:`LOD 1 ${RES.C.L1} TRI`,img:big('C1').img},{label:'UVOD 51',img:blowUp(figure('CH','klid',{W:56,H:75}).img,3)},{label:'LOD1 37',img:blowUp(figure('C1','klid',{W:40,H:54}).img,4)},
+  {label:'LOD1 25',img:blowUp(figure('C1','klid',{W:27,H:36}).img,6)},{label:'25 SEDA',img:blowUp(figure('C1','klid',{W:27,H:36,gray:true}).img,6)}];
+ sheet('N5 VARIANTA C PRO HRU: OBLA FIGURKA','C NACRT -> C HRA: HLAVA 0,34 M, CEPICE NAD OCIMA. LOD 1 PRO UVOD NA TELEFONU (PX = VYSKA DITETE).',[row1,row2],'postavicka-c.png');}
+// 2 Pózy C-H
+{const ps=['klid','mireni','nabijeni','vyhoz','mavani','sed','stul'];
+ const row1=ps.slice(0,4).map(p=>({label:p.toUpperCase(),img:figure('CH',p,{W:200,H:280}).img})),row2=ps.slice(4).map(p=>({label:p.toUpperCase(),img:figure('CH',p,{W:200,H:280,rail:p!=='stul'}).img}));
+ row2.push({label:'MIRENI SEDA',img:figure('CH','mireni',{W:200,H:280,gray:true}).img});
+ sheet('N5 POZY VARIANTY C (HRA)','KLID, MIRENI, NABIJENI, VYHOZ, MAVANI, SED NA PAVLACI, U STOLU. TUHE DILY S KLOUBY, STENY STINOVANE PO JEDNE, BEZ OBRYSU.',[row1,row2],'postavicka-c-pozy.png');}
+// 3 Úvod s postavičkou C (nápis nahoře v nebi nad hřebenem, rozhodnutí 06 bod 15) a míření 16 m
+{const INTRO={width:30,at:[.64,.66],portraitWidth:18,portraitAt:[.8,.62],pitch:2},introCam=(a,W,at)=>anchored({aspect:a,height:W/a,P:HAND,fx:at[0],fy:at[1],pitch:INTRO.pitch});
+ KID_MODE='CH';KID_POSE='klid';const KH=buildKid('CH','klid',[HX-.32,FL,.1]).hand;
+ const intro=shot(S=>{sky(S);conceptB(S);},{...L16,cam:introCam(16/9,INTRO.width,INTRO.at),planeAt:KH,planeLen:HANDLEN,ui:introUI});
+ KID_POSE='mireni';const aim=shot(S=>{sky(S);conceptB(S);},{...L16,cam:anchored({aspect:16/9,height:16*9/16,P:HAND,fx:.38,fy:.6,pitch:-8}),planeAt:HAND,planeLen:HANDLEN,ui:aimUI,aim:{from:HAND,dx:5.2,dy:3,drop:.7}});
+ KID_MODE='C1';KID_POSE='klid';const LPh={W:202,H:360},KH1=buildKid('C1','klid',[HX-.32,FL,.1]).hand;
+ const introP=shot(S=>{sky(S);conceptB(S);},{...LPh,cam:introCam(LPh.W/LPh.H,INTRO.portraitWidth,INTRO.portraitAt),planeAt:KH1,planeLen:HANDLEN,ui:introUI,sun:[.78,.16]});
+ KID_MODE='flat';
+ sheet('N6 UVOD S POSTAVICKOU C','UVOD 30 M (LOD H, 51 PX), NAPIS NAHORE V NEBI NAD HREBENEM. MIRENI 16 M (LOD H, 96 PX). TELEFON NA VYSKU 18 M (LOD 1, 25 PX).',
+  [[{label:'UVOD 30 M',img:intro},{label:'MIRENI 16 M',img:aim},{label:'TELEFON UVOD 18 M',img:introP}]],'uvod-c.png');}
+// 4 Papírový kouř (rozhodnutí 06 bod 14): kotouč 8 stěn, krém, alfa 0,5, 5 obláčků na kouřící komín, jen ¼ komínů a jen ≥ 200 m od ruky
+const SMOKE={from:HX+200,share:.25,puffs:5,life:3.2,rise:1.3,wind:.9,r0:.4,r1:1.1,alpha:.5,n:8};
+const hash01=(x,s=0)=>{const v=Math.sin(x*127.1+s*311.7)*43758.5453;return v-Math.floor(v);};
+function chimneyTops(){const out=[];for(const ci of [0,1]){const c=cityChunk(ci),off=ci*304.762;let k=0;
+ for(const b of c.blocks){if(b.shop)continue;const x=b.x+off,front=b.z+b.d/2,lay=b.z>-60?'near':b.z>-200?'mid':'far';k++;if(lay!=='near')continue;
+  const gab=k%10<7;if(k%3===0)out.push({x:x+b.w*.7+.4,y:b.h+(gab?1:0)+2.2,z:front-1+.4,seed:x});}}return out;}
+const smokeSources=list=>list.filter(c=>c.x>=SMOKE.from&&hash01(c.seed,1)<SMOKE.share);
+const sm=u=>{u=Math.max(0,Math.min(1,u));return u*u*(3-2*u);};
+function paperSmoke(S,t=1.3,all=false){for(const c of all?chimneyTops():smokeSources(chimneyTops()))for(let j=0;j<SMOKE.puffs;j++){const ph=hash01(c.seed,2),a=((t/SMOKE.life+j/SMOKE.puffs+ph)%1)*SMOKE.life,u=a/SMOKE.life;
+ const r=(SMOKE.r0+(SMOKE.r1-SMOKE.r0)*u)*sm(a/.25)*sm((SMOKE.life-a)/.5);if(r<.05)continue;const cx=c.x+a*SMOKE.wind+Math.sin(a*1.7+j)*.15,cy=c.y+.3+a*SMOKE.rise,rot=hash01(c.seed,j+3)*Math.PI;
+ const p=[];for(let i=0;i<SMOKE.n;i++){const q=rot+i/SMOKE.n*Math.PI*2;p.push([cx+Math.cos(q)*r,cy+Math.sin(q)*r]);}S.poly(p,c.z+.05+j*.01,T.cream,{a:SMOKE.alpha,haze:true});}}
+function cyberSmoke(S){for(const c of chimneyTops())if(hash01(c.seed,1)<.55)for(let j=0;j<5;j++){const r=.9+j*.38,cx=c.x+j*.9,cy=c.y+1+j*2.1;const hp=[...Array(6)].map((_,i)=>{const q=i/6*Math.PI*2+.3*j;return [cx+Math.cos(q)*r,cy+Math.sin(q)*r];});S.poly(hp,c.z+.2+j*.01,STEAM_C);}}
+{const X=330,Y=24,fly=(a,W)=>flight({aspect:a,width:W,X,Y}),base=S=>{sky(S);conceptB(S);};
+ const today=shot(S=>{base(S);cyberSmoke(S);},{W:640,H:360,cam:fly(16/9,120),planeAt:[X,Y,0],planeLen:7.75,ui:flyUI});
+ const paper=shot(S=>{base(S);paperSmoke(S);},{W:640,H:360,cam:fly(16/9,120),planeAt:[X,Y,0],planeLen:7.75,ui:flyUI});
+ const land=shot(S=>{base(S);paperSmoke(S);},{W:466,H:215,cam:fly(466/215,120),planeAt:[X,Y,0],planeLen:7.75,ui:flyUI});
+ const near=shot(S=>{base(S);paperSmoke(S,1.3,true);},{W:320,H:240,cam:anchored({aspect:4/3,height:14,P:[X-14,19,0],fx:.5,fy:.5,pitch:2}),planeAt:[X-18,23,0],planeLen:7.75});
+ const startAim=shot(S=>{base(S);paperSmoke(S);},{W:320,H:180,cam:anchored({aspect:16/9,height:9,P:HAND,fx:.38,fy:.6,pitch:-8}),planeAt:HAND,planeLen:HANDLEN});
+ const src=smokeSources(chimneyTops());RES.smoke={sources:src.length,all:chimneyTops().length,xs:src.map(c=>Math.round(c.x)),tris:src.length*SMOKE.puffs*(SMOKE.n-2)};
+ sheet('KOUR: PAPIROVE OBLACKY (ROZHODNUTI 06 BOD 14)','1 DNES CYBER KOULE 3-7 M. 2 NAVRH: KOTOUC 8 STEN, KREM ALFA 0,5, 0,8-2,2 M, 1/4 KOMINU, 200 M A DAL OD RUKY.',
+  [[{label:'1 DNES (LET 120 M)',img:today},{label:'2 NAVRH (LET 120 M)',img:paper}],[{label:'3 NA SIRKU 932X430',img:land},{label:'4 DETAIL 14 M',img:near},{label:'5 MIRENI: ZADNY KOUR',img:startAim}]],'kour-papir.png');}
+console.log(JSON.stringify({C:RES.C,smoke:RES.smoke}));

@@ -3,6 +3,8 @@
 > **Schváleno 14. 10. 2026** (`research/bonusy/06-rozhodnuti.md`): pilíře „Diorama za úsvitu“, paleta čtvrti 1 beze změny, názvy čtvrtí sada C, vlaštovka na úzkých obrazovkách +15 %, písmo zatím systémové (rozhodne se po zahrání). Bible nahrazuje `02-styl.md` pro styl `?styl=papir`; co se z 02 přebírá a co ruší, je v kap. 15. Do přepnutí celé hry platí 02 pro výchozí styl.
 >
 > **Doplněno 14. 10. 2026 podle schválených rozhodnutí** (06, bloky „Začátek hodu, místo odhodu a kamera“ 1–7 a „Odemykatelný obsah“ 1–8): jedno měřítko světa (kap. 3.1, M-1 až M-4), místo odhodu „podkrovní dílna v řezu“ místo Dílny PAPER LAB (kap. 9, S-1 až S-7), modely vlaštovek, papíry a skiny (kap. 17), rozpory R-S1 až R-S9 vyřešené (kap. 16.1). Zdroje: `research/start/02-misto-odhodu-vzhled.md`, `research/obsah/03-vzhled-modelu-a-skinu.md`. **Pozor na podobná označení:** s pomlčkou (M-1, S-1) = místo odhodu, bez pomlčky (M1, S1) = modely a skiny vlaštovky; jsou převzaté beze změny, aby šly dohledat ve zdrojových návrzích.
+>
+> **Doplněno 15. 10. 2026 podle rozhodnutí uživatele** (06, „Plán hratelnosti, odpovědi na otázky“ body 13–15; podrobnosti a dávky v `research/plan-hratelnost/03-art.md`): dítě je **oblá figurka C** z mnoha stěn s vlastní rampou po stěnách (kap. 9.4, výjimka v kap. 3); kouř z komínů je **papírový a jen daleko od místa odhodu** (S-6, kap. 6 bod 2, kap. 7); hra začíná **úvodním záběrem** na dům s dílnou s nápisem „Throw it“ nahoře v nebi (kap. 9.2).
 
 **Vyzkoušej si to:** `npm start` → http://127.0.0.1:4173/prototype-styly.html (výchozí stránka je teď tento návrh; srovnání 5 směrů z `04-nove-smery.md` je na `?srovnani=1`). Nahoře se přepíná záběr (Dílna, let, událost s QTE, výsledek), místo 1–4, velikost (1280×800, telefon 375×667 a 932×430), druh stínů a jazyk. Tlačítko „Změřit“ vypíše kontrast vlaštovky z pixelů a výkon.
 
@@ -136,6 +138,7 @@ Vlaštovka je změřená **z vykresleného snímku** (`__papir.measure()`: pixel
 - **boky a odvrácené střechy** = `mix(barva, #5b4f7a, .3)`, přivrácené ke slunci lehce světlejší;
 - **vlákna**: 3 oktávy šumu ve světových metrech (perioda ~1,1 m, 0,27 m, 0,08 m), síla ±7 % jasu, na zemi 5 %, na mracích 4 %. Statická, nehýbou se s kamerou. **P2.**
 - **žádné obrysy světa, žádný půltón, žádná posterizace, žádná toon rampa** (vše z 02 S2 končí).
+- **Výjimka: dítě** (jediná plastická postava, kap. 9.4) má vlastní plynulejší rampu po stěnách (`kidMaterial`), aby byly vidět jeho stěny. Pořád jeden plochý tón na stěnu, vlákna, žádný lesk ani obrys.
 
 **Tvarosloví (Monument Valley):** kvádry, sedlové střechy se štítem ke kameře (70 % malých domů v ulici, 35 % ve středu, 40 % v dálce), jehlany jen na kopcích a nádržích, kotouče (stromy jako papírový kotouč na kmeni, hlavy postav, balóny, mraky ze tří kotoučů, větrníky jako čtverec natočený o 45°), vlaječky jako trojúhelníky. Okna jsou **malé tmavé výřezy** `mix(barva stěny, #3d4f7a, .6)`, ve středu větší a řidší, v dálce žádná (jen silueta). Dveře jen v ulici. **P2, P4.**
 
@@ -213,7 +216,7 @@ Pokles úrovně automaticky (P95 snímku), nikdy nahoru během letu; čitelnost 
 Pořadí: **vlaštovka a stopa > QTE a nejbližší událost > ulice > střed > dálka a obloha.** **P1, P4.**
 
 1. **Dvojí hrana** (z 02): výplň nebo obrys vlaštovky ≥ 3 : 1 proti okolí v každé čtvrti, změřené z pixelů. Ve dne nese vlaštovku obrys (6,4–9,6), večer výplň. Ráno výplň sama splývá (1,3–1,7), proto **obrys nesmí nikdy zeslábnout pod 2,6 px** ani zmizet s mlhou/oparem (vlaštovka opar nemá).
-2. **Nic ve výšce letu nemá kombinaci „bílá + grafit“.** Mraky jsou krémové bez obrysu a výš než pás letu; pára z ventilace a kouř jsou krémové obláčky s alfou ≤ 0,6 a menší než vlaštovka; žádná jiná grafitová čára v pásu letu kromě stopy a poryvu (poryv je krémový proužek s grafitovým lemem a krátce, jen během události).
+2. **Nic ve výšce letu nemá kombinaci „bílá + grafit“.** Mraky jsou krémové bez obrysu a výš než pás letu; pára z ventilace a kouř z komínů jsou krémové obláčky s alfou ≤ 0,6 a nejvýš ⅓ vlaštovky na obrazovce, kouř jen na komínech ≥ 200 m od ruky (S-6); žádná jiná grafitová čára v pásu letu kromě stopy a poryvu (poryv je krémový proužek s grafitovým lemem a krátce, jen během události).
 3. **Stín vlaštovky** (30 %) jí dává druhou hranu proti světlému nebi a ukazuje „zvednutý papír“. Nesmí být tmavší než obrys.
 4. **Opar dělá pozadí tiché:** dálka a kopce mají kontrast proti nebi < 1,5 : 1, ulice nejsytější. Hodnota (světlost), ne detail.
 5. **HUD nesmí zakrýt pás letu.** Na telefonu je štítek místa **pod scénou**, ve scéně jen malý štítek vzdálenosti vpravo nahoře (`mobil-udalost.jpg`); vlaštovka letí v levé části obrazu (px 148/640).
@@ -236,6 +239,7 @@ Kontrolní test (pro art-review): snímek do šedi a zmenšit na 25 %. Vlaštovk
 | Popupy | **papírové štítky** (krém, lehce natočené, stín zvednutí), písmo `--display` | život 1,1 s, náběh 0,25 s | bez škálování a stoupání |
 | Poryv (událost) | zvlněné krémové proužky s grafitovým lemem (`desktop-udalost-qte.jpg`) | jen během události | statické proužky |
 | Holub | origami holub (skládaný papír, šedomodrý) | | |
+| Kouř z komínů | **ploché krémové obláčky** (kotouč o 8 stěnách, `PAPIR.steam`), ¼ komínů, jen ≥ 200 m od ruky (S-6) | ⌀ 0,8 → 2,2 m, alfa 0,5, 5 obláčků na komín, život 3,2 s, stoupá 1,3 m/s, vítr 0,9 m/s po směru praporku, „on twos“; ≤ 64 obláčků, 1 DC (03-art kap. 3.3) | obláčky stojí (sloupek zamrzne) |
 | Prostředí | „on twos“ 12 kreseb/s (stop-motion papíru sedí ještě víc než ke komiksu) | | prostředí zamrzne |
 
 Pravidla: efekt je odměna (vypuštění < úspěch < perfekt < milník); barva efektu = role (kap. 2.2); blikání ≤ 3 Hz na velké ploše; reduced motion: pohyb pryč, informace zůstane (převzato z 02). **P4, P1.**
@@ -277,6 +281,7 @@ Menu, míření i Dílna jsou **jedna boční kamera**, jen jinak blízko; mezi 
 
 | Záběr | Šířka | Co je v obraze | Pravidla |
 |---|---|---|---|
+| **Úvod** (ustavující, rozhodnuto 15. 10.) | **30 m**, telefon na výšku 18 m, sklon +2° | dům s dílnou v řezu vlevo, dítě na pavlači vpravo od středu v póze klid, nebe a slunce vpravo | nápis „Throw it“ (a „Hold and release“) **nahoře v nebi nad hřebenem**, vodorovně na střed, grafit bez podkladu, s prvním stiskem zmizí (0,2 s). Nic nezakryje dítě a vlaštovku. Po prvním stisku jízda 0,6 s do míření, vstup se přijímá hned; úvod po spuštění a po Dílně / Atlasu, ne po „Hodit znovu“. Reduced motion: střih. Podrobně `03-art.md` kap. 2, obrázek `img/hratelnost/uvod-c.png`. |
 | **Menu** (ustavující) | 25–43 m (náčrt 28 m), sklon +2° | celý domek v řezu, dítě na pavlači, slunce, kus města | dítě a dílna v **pravých dvou třetinách** (desktop, UI vlevo ve sloupci 27 %) nebo v pásu 25–60 % výšky (telefon, UI dole ~40 %), nikdy pod tlačítky. Vlaštovka krouží po křivce (07-menu §6). |
 | **Míření** (polodetail) | **16 m**, telefon na výšku 7 m, sklon −8° | dítě od kolen nahoru, vlaštovka v ruce, zábradlí, kus podkroví a dveře vlevo, trám nad dítětem, nebe a slunce vpravo nahoře, střechy dole | **za vlaštovkou je vždy nebe** (obrys grafit × ranní nebe 6,7–12,2 : 1, změřeno z hex). Mířidla směřují ke slunci (P3). Kamera mírně zespodu, aby se dítě nekreslilo proti fasádám. HUD v rozích nezakrývá dítě ani oblouk mířidel. Ruka na (0,38; 0,60) obrazu, na výšku (0,40; 0,62). |
 | **Oddálení** (po výhozu) | 16 → 120 m do 1,2 s | dům zůstane na levém okraji (červený štít v řezu), otevře se ulice | sklon se vrací z −8° na +6°; vlaštovka roste podle M-2; stopa začíná přesně v ruce. Dál šířka podle přebytku rychlosti (01 §3). |
@@ -288,11 +293,20 @@ Menu, míření i Dílna jsou **jedna boční kamera**, jen jinak blízko; mezi 
 - **S-3 Dítě není bílé ani hořčicové:** pláštěnka `#f2b65a` (`D1.near[1]`), čepice skládaná z kraftového papíru `PT.kraft #c9a57c` s rajčatovým proužkem, nohy `#3d4f7a`, bez obrysu. Vlaštovka je vedle něj jediná bílá věc s grafitem (papír × čepice 2,3 : 1). **P1, „hořčicová jen hodnota“.**
 - **S-4 Domov je jediné teplé světlo ve dne:** teplé sklo `#ffe2a8` (`PAPER_WARM`) jen v podkroví a oknech domu dítěte; lampa na stole smí svítit (teplý kruh jako okno).
 - **S-5 Ráno vždy.** Místo odhodu je za úsvitu ve všech fázích hry (P3: cesta za sluncem začíná doma). Postup ukazují věci v diorámatu (kap. 9.1), ne denní doba.
-- **S-6 Nic v pásu letu nepřebije vlaštovku.** Trám s kladkou, košík, praporek větru a kouř z komína jsou nad nebo za dítětem, matné (kraft, krém s alfou ≤ 0,6), menší než vlaštovka na obrazovce. Praporek větru je proužek pásky `PT.tape #efe0a8`, ne bílý. Hotové vlaštovky na provázku v dílně jsou barevné a **bez obrysu**; jediná bílá s obrysem je ta zvolená. **P1.**
-- **S-7 Reduced motion:** dioráma stojí (žádný kouř, vlání praporku, krouživá vlaštovka v menu). Přechody střihem nebo prolnutím 0,2 s (01 §3.8). Informace zůstává: směr větru ukazuje natočený praporek bez vlání.
+- **S-6 Nic v pásu letu nepřebije vlaštovku.** Trám s kladkou, košík a praporek větru jsou nad nebo za dítětem, matné (kraft, páska), menší než vlaštovka na obrazovce. **V pásu výhledu místa odhodu nic nestoupá ani nelétá** (kouř, balóny, ptáci, drony): za dítětem je jen nebe, slunce, mraky výš než hřeben a střechy pod S-1. **Kouř z komínů** (rozhodnuto 15. 10., 06 bod 14) je jen papírový: ploché krémové obláčky (`PAPIR.steam`, alfa 0,5, nejvýš ⅓ vlaštovky na obrazovce), kouří ¼ komínů a **jen ≥ 200 m od ruky**, takže ho úvod, míření ani oddálení po výhozu neukáže. Čísla v kap. 7 a `03-art.md` kap. 3.3, obrázek `img/hratelnost/kour-papir.png`. Praporek větru je proužek pásky `PT.tape #efe0a8`, ne bílý. Hotové vlaštovky na provázku v dílně jsou barevné a **bez obrysu**; jediná bílá s obrysem je ta zvolená. **P1.**
+- **S-7 Reduced motion:** dioráma stojí (žádné vlání praporku ani krouživá vlaštovka v menu, dítě nedýchá a nemává); kouř ve městě zamrzne. Přechody střihem nebo prolnutím 0,2 s (01 §3.8). Informace zůstává: směr větru ukazuje natočený praporek bez vlání.
 
 ### 9.4 Dítě
-Papírová postavička z modelu `person` × 0,7 (**1,2 m**, karta H1 v 11): hlava kotouč ⌀ 0,3 m, pláštěnka lichoběžník, skládaná čepice (trojúhelník s proužkem), vlasy kotouč za hlavou, oko tečka `pencil-700`. Pózy: míření, nabíjení (záklon a couvnutí jako dnes `kidPose`), hod, mávání po hodu, v menu mávání nebo sezení na pavlači, u stolu (panel Dílny).
+> **Rozhodnuto 15. 10. 2026 (06 bod 13): oblá figurka C.** Obrázky `img/hratelnost/postavicka-c.png` (tvar, velikosti ze hry, LOD 1, šeď), `postavicka-c-pozy.png` (pózy). Díly, klouby, pózy a rozpočet: `research/plan-hratelnost/03-art.md` kap. 1 (dávka H2). Nahrazuje „hlava kotouč, pláštěnka lichoběžník“ (ploché karty).
+
+**Papírový model z mnoha dílků** (papercraft), **1,2 m**, karta H1 v 11: hlava, pláštěnka, čepice, ruce, nohy a boty jsou tuhé „soustružené“ díly s 6–16 stěnami (hlava a pláštěnka 16, čepice-kornout 12, ruce a nohy 8, dlaně a boty 6). Hlava ⌀ 0,34 m („hlavičková“ proporce jako Tearaway), čepice-kornout z kraftu s rajčatovým proužkem **nad očima**, vlasy jako skořápka vzadu na hlavě, oči dvě destičky na přivrácené straně. **Proč papír, ne plast (P2):** každá stěna má **jeden plochý tón** (žádné hladké stínování, lesk ani přechod uvnitř stěny), vlákna papíru jako zbytek města, žádný obrys.
+- **Stínování po stěnách** (`kidMaterial`, výjimka z kap. 3): stěna ke kameře = barva dílu, k bokům plynule do `mix(barva, #5b4f7a, .32)`, přivrácené ke slunci o 0,08 světlejší, horní plochy jen `mix(barva, #fffaf0, .25)` (ne 0,55 jako řez karty: temeno a ramena nesmí zbělat vedle vlaštovky), spodní `mix(barva, #5b4f7a, .42)`. Ramena nemají vodorovnou plochu (pláštěnka končí kuželem ke krku).
+- **Natočení ke kameře** (¾ pohled) 14–52° podle pózy, jinak by z boku byl vidět jen profil a objem by se ztratil.
+- **Hází vzdálenější ruka** (jde za hlavou nahoru k bodu výhozu), blízká ruka ukazuje směr hodu. Obličej tak zůstane vidět. Dlaň vzdálené ruky je v míření přesně v bodě výhozu (M-3); ruka se nenatahuje, dítě neklouže.
+- **Vlaštovku v ruce nic nezakryje** (P1): dokud ji dítě drží, kreslí se přes dítě.
+- **LOD:** H **630 △** (míření 64–96 px, úvod na desktopu 51 px), LOD 1 **130 △** (dítě < 48 px: úvod na telefonu, oddálení), za letu 0. Jeden draw call s praporkem. Lidé ve městě (`person`) zůstávají ploší: hrdina je jediná plastická postava, protože je jediná zblízka (80 px/m proti 4–10 px).
+
+Pózy: klid (úvod, obě dlaně s vlaštovkou před hrudí), míření, nabíjení (záklon a couvnutí jako dnes `kidPose`), výhoz (švih, trup se stočí za hodem), mávání po hodu, sed na pavlači (menu, pokud zůstane), u stolu (panel Dílny). Úhly v `03-art.md` kap. 1.7.
 
 | Část | Barva | Token |
 |---|---|---|
@@ -302,7 +316,7 @@ Papírová postavička z modelu `person` × 0,7 (**1,2 m**, karta H1 v 11): hlav
 | boty, oko | `#4a4038` | `PT.pencil700` |
 | kůže | `#f3d2b4` | `life.people.skin[0]` |
 
-**Kontrast dítěte proti nebi je nízký** (pláštěnka 1,1–1,5 : 1, čepice 1,0–1,9 : 1 proti ranním pásům, změřeno z hex); dítě se odliší odstínem (oranžová × modrá) a tmavomodrýma nohama, ne hodnotou. To je v souladu s P1 (≥ 3 : 1 platí pro vlaštovku), ale čitelnost dítěte na telefonu (64 px) v šedi je **NOT ASSESSED** (kap. 16.2).
+**Kontrast dítěte proti nebi je nízký** (pláštěnka 1,1–1,5 : 1, čepice 1,0–1,9 : 1 proti ranním pásům, změřeno z hex); dítě se odliší odstínem (oranžová × modrá) a tmavomodrýma nohama, ne hodnotou. Objem C pomáhá: tmavší boky po obvodu pláštěnky (≈ `#c29564`) mají proti nebi 1,65–2,16 : 1 (z hex) a v náčrtu v šedi na 64 px je dítě kompaktní tvar hned za vlaštovkou. To je v souladu s P1 (≥ 3 : 1 platí pro vlaštovku), ale čitelnost dítěte ve hře na telefonu v šedi je **NOT ASSESSED** (kap. 16.2).
 
 ### 9.5 Barvy diorámatu
 Jen z tokenů a palety čtvrti 1, nové hexy nevznikají: stěna `PT.cream` (`PAPIR.workshop.wall`), střecha `PT.tomato`, řez střechy `mix(tomato, city.cut, .55)` jako horní řez karet (kap. 3), interiér podkroví o tón tmavší a méně sytý než fasáda (je ve stínu střechy; `mix(barva, city.side, .2)`), rámy oken, dveře a zábradlí `#3d4f7a`, deska pavlače a košík `PT.kraftDark #9c7a55`, opěrná zeď `D1.ground.near #dcc29b` (návrh 02 měl `#d9bf98`, sjednoceno na existující barvu), klika krémová `PT.cream` (dnes `PT.mustard`, mění se), provázky `PT.pencil` (dnes grafit, mění se).
@@ -376,7 +390,7 @@ Nálady čtvrtí: kap. 2.3.
 ## 13. Pravidla pro nové prvky (kontrolní seznam)
 
 1. **Silueta** čitelná v malém (25 %, šeď); dominanta místa poznat do 1 s; tvar čistý (kvádr, štít, kotouč, trojúhelník). (P2, P4)
-2. **Materiál:** papírový shader (čelo, řezaná hrana, boky, vlákna, opar). Žádný obrys, žádná textura s detailem, žádná emise kromě lampionů a okna Dílny. (P2)
+2. **Materiál:** papírový shader (čelo, řezaná hrana, boky, vlákna, opar). Žádný obrys, žádná textura s detailem, žádná emise kromě lampionů a okna Dílny. Jediná výjimka je rampa po stěnách dítěte (kap. 9.4). (P2)
 3. **Paleta:** jen tokeny kap. 2.1 a barvy čtvrti kap. 2.3; nová barva = nový token se jménem role. (P3)
 4. **Vrstva a stencil:** prvek patří do jedné vrstvy (ulice / střed / dálka / nebe) a zapisuje její id; jinak by na něj padaly špatné stíny. (P2)
 5. **Hierarchie:** ve výšce letu nic bílého s grafitem; nic většího a světlejšího než vlaštovka v pásu letu. (P1)
@@ -406,6 +420,8 @@ Nálady čtvrtí: kap. 2.3.
 | 8 UI | `desktop-vysledek.jpg`: papírová karta s páskou, „Delivered.“ rukopisem jen jednou | `pencil` text přímo na stole (3,6 : 1), opraveno na `pencil-700` |
 | 3.1 Měřítko | `img/start/zaber.png` prostřední: dítě 1,2 m, vlaštovka v ruce 0,5 m, záběr 16 m | `img/start/dnes.png`: dítě 11,75 m vysoké jako dům, dveře 4,2 × 6 m |
 | 9 Místo odhodu | `img/start/koncept-2-podkrovi.png`: pavlač nad ulicí, za vlaštovkou nebe, domov v řezu | `img/start/vyhled.png` horní: za dítětem zeď domů 38 m, slunce zakryté (S-1) |
+| 9.4 Dítě | `img/hratelnost/postavicka-c.png` „C hra“: objem z mnoha stěn, oči pod čepicí vidět, v šedi na 64 px hned za vlaštovkou | stejný list, „C náčrt“: proužek čepice přes oči; `postavicka-varianty.png` „Dnes“: plochá karta, ze strany výstřižek |
+| 9.3 S-6 Kouř | `img/hratelnost/kour-papir.png` 2 a 5: malé krémové obláčky daleko za startem, při míření žádný kouř | `kour-papir.png` 1 a `img/hratelnost/zbytky-stareho-stylu.png` 1: fialové koule 3–7 m, za dítětem |
 | 17 Modely | `img/obsah/siluety.png` řádek 3 (Hawk): oddělené křídlo, mezi ním a trupem je vidět nebe i na 24 px | `img/obsah/siluety-pruzkum.png` řádek 7 (vidlicový ocas): krásný shora, z boku splyne se šipkou |
 | 17 Skiny | `img/obsah/skiny.png` K9 Sail Stripes: pruhy vidět na 24 px, vlaštovka zůstane světlá | modrotisk, zlatá, rajčatová (03 kap. 3, zakázané): večer zmizí, nebo si hráč splete roli barvy |
 
@@ -449,7 +465,7 @@ Všechny rozpory z `research/start/02-misto-odhodu-vzhled.md` kap. 6 rozhodl už
 | R-S9 | 01 §3.3 `W_aim` | 55 m (telefon 45 m) | ~16 m (telefon na výšku 7 m) (bod 3) | S2; číslo v 01 upraví game designer |
 
 ### 16.2 Otevřené body po rozhodnutích 14. 10. (bez rozhodnutí uživatele)
-- **Čitelnost dítěte na telefonu v šedi** (kap. 9.4): pláštěnka a čepice mají proti nebi jen 1,0–1,9 : 1. Ověřit art-review po dávce S4 (snímek do šedi, 25 %). Kdyby se dítě ztrácelo, první krok je tmavší vlasy a nohy, ne obrys (obrys patří vlaštovce).
+- **Čitelnost dítěte na telefonu v šedi** (kap. 9.4): pláštěnka a čepice mají proti nebi jen 1,0–1,9 : 1 (boky figurky C 1,65–2,16). Ověřit art-review po dávce H2 (03-art kap. 6; snímek do šedi, 25 %). Kdyby se dítě ztrácelo, první krok je tmavší vlasy a nohy, ne obrys (obrys patří vlaštovce).
 - **Výkon místa 0** s diorámatem: ~17 draw calls proti stropu 14 na místo; návrh řešení je v 11, skupina G2b (sloučení stínů). Měří game-dev (`perf-check`), NOT ASSESSED.
 - **Kruh QTE × velikost modelu** (M4): přepočet logických px na CSS px na telefonu NOT ASSESSED.
 - **Copy × skin N1 Ruled Notebook:** oba mají modré linky sešitu; na Copy by N1 skoro nebyl vidět. Návrh pro game designera: N1 kreslit čtverečkovaně (Graph Paper z rezervy 03), nebo linky Copy ztišit na vlákna. Rozhodne se se skiny v dávce, nemění schválený vzhled.
