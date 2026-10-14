@@ -82,16 +82,28 @@ test('comic.js: kopie čistých částí themes-verse.js dává stejné výsledk
  for(const v of verse.VERSE)assert.deepEqual(comic.skyBands(v.sky,verse.SKY_EDGES),verse.skyBands(v.sky,verse.SKY_EDGES));
  assert.deepEqual(comic.skyBands(['#000000','#ffffff'],[0,100,200],5,30),verse.skyBands(['#000000','#ffffff'],[0,100,200],5,30));
  for(const [vx,f] of [[20,0],[80,1.3],[200,4.2]])assert.deepEqual(comic.speedLines(vx,f),verse.speedLines(vx,f));
- assert.deepEqual(comic.VERSE,verse.VERSE);assert.deepEqual(comic.SKY_EDGES,verse.SKY_EDGES);assert.equal(comic.INK,verse.INK);assert.equal(comic.TWOS,verse.TWOS);
+ assert.deepEqual(comic.SKY_EDGES,verse.SKY_EDGES);assert.equal(comic.INK,verse.INK);assert.equal(comic.TWOS,verse.TWOS);
  for(const [a,b,k] of [['#000000','#ffffff',.5],['#ff4f9e','#15101f',.42]])assert.equal(comic.mix(a,b,k),mix(a,b,k));
  assert.equal(comic.shadeTone('#c23d5a'),verse.shadeTone('#c23d5a'));
+});
+
+// VERSE se záměrně liší od 2D themes-verse.js: obloha čtvrtí je z mood.js (bible 2.3, R4), obzor Neon Core tyrkysový (R18).
+test('comic.VERSE: obloha čtvrti = mood.js ve středu 2. místa čtvrti, Core bez limetkové',()=>{
+ assert.equal(comic.VERSE.length,4);
+ comic.VERSE.forEach((v,d)=>assert.deepEqual(v.sky,MOOD_KEYS[d*4+1].sky,`čtvrť ${d}`));
+ assert.deepEqual(comic.VERSE[3].sky.slice(2),[...CORE_HORIZON]);
+ for(const v of comic.VERSE)for(const c of v.sky)assert.ok(!['#cce65a','#d2ee48','#c4dc74','#e8d070'].includes(c),c);
+ assert.deepEqual(comic.comicLook({district:3}).bands,comic.skyBands(MOOD_KEYS[13].sky,comic.SKY_EDGES),'záloha bez mood.sky');
 });
 
 test('comicLook: parametry toon rampy a post-procesu podle kvality',()=>{
  const m=moodAt(3000),hi=comic.comicLook(m,'high'),lo=comic.comicLook(m,0);
  assert.deepEqual(hi.bands,comic.skyBands(m.sky,comic.SKY_EDGES));assert.equal(hi.paletteId,m.district);
  assert.equal(hi.ramp.length,3);assert.ok(hi.ramp.every((v,i,a)=>v>=0&&v<=255&&(!i||v>a[i-1])));
- assert.ok(hi.halftone===1&&lo.halftone===0&&hi.levels>=2&&hi.dotSize>0&&hi.outline.thickness>lo.outline.thickness);
- assert.match(hi.outline.color,HEX);assert.equal(comic.comicLook(m,'mid').quality,1);assert.equal(comic.comicLook(m).quality,2);
+ assert.ok(hi.halftone===1&&lo.halftone===0&&hi.levels>=2&&hi.dotSize>0);
+ // Obrysy (bible kap. 3): jedna tuš, stejné tloušťky na všech kvalitách, vlaštovka nejsilnější a aspoň 2,6 px.
+ for(const q of [0,1,2]){const o=comic.comicLook(m,q).outline;assert.equal(o,comic.OUTLINE);}
+ assert.deepEqual({...lo.outline},{color:'#15101f',building:2.5,detail:1.7,plane:2.6});assert.equal(hi.outline.color,comic.INK);
+ assert.ok(hi.outline.plane>=2.6&&hi.outline.plane>hi.outline.building&&hi.outline.building>hi.outline.detail);assert.equal(comic.comicLook(m,'mid').quality,1);assert.equal(comic.comicLook(m).quality,2);
  assert.ok(comic.comicLook(moodAt(4300)).ramp[0]<comic.comicLook(moodAt(2600)).ramp[0],'v noci tvrdší stín');
 });

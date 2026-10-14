@@ -1,13 +1,15 @@
-// Komiksové materiály prototypu: toon rampa, obrys inverted hull (vlastní shader, bez addonů),
-// textura oken, neonové cedule a post-process (posterizace + půltónové body ve stínu).
+// Komiksové materiály: toon rampa, obrys inverted hull (vlastní shader, bez addonů), materiál budov s maskou půltónu,
+// textura oken, neonové cedule a post-process (posterizace + půltónové body jen ve stínech budov, bible kap. 3).
 import * as THREE from 'three';
 import {windowPattern} from './life.js';
+import {INK,OUTLINE} from './comic.js';
+import {PAPER,DISPLAY} from './palette.js';
 // 3 tóny s ostrými přechody (NearestFilter = žádné plynulé stínování).
 export function toonRamp(tones=[70,150,255]){const t=new THREE.DataTexture(new Uint8Array(tones),tones.length,1,THREE.RedFormat);t.minFilter=t.magFilter=THREE.NearestFilter;t.needsUpdate=true;return t;}
 // Obrys: vrcholy se posunou ve směru atributu `outline` o `thickness` pixelů na obrazovce (stejně tlustý blízko i daleko).
 // Funguje i pro InstancedMesh (instanceMatrix). Kvádry: BackSide (klasický inverted hull). Vlaštovka: zvětšená kopie za ní (depthWrite off, renderOrder).
 // Mlhu řeší ručně, aby vzdálené obrysy mizely spolu s budovami.
-export function outlineMaterial({color='#07051a',thickness=2.2,side=THREE.BackSide,fog=null}={}){
+export function outlineMaterial({color=INK,thickness=OUTLINE.building,side=THREE.BackSide,fog=null}={}){
  return new THREE.ShaderMaterial({side,uniforms:{color:{value:new THREE.Color(color)},thickness:{value:thickness},resolution:{value:new THREE.Vector2(1280,720)},
   fogColor:{value:new THREE.Color(fog?.color??'#000')},fogNear:{value:fog?.near??1e9},fogFar:{value:fog?.far??2e9}},
   vertexShader:`attribute vec3 outline;uniform float thickness;uniform vec2 resolution;varying float vDepth;
@@ -37,10 +39,38 @@ export function signTexture(text,color,vertical=false){
  const key=text+color+vertical;if(signs.has(key))return signs.get(key);
  const w=vertical?96:512,h=vertical?384:128,c=canvas(w,h),g=c.getContext('2d');
  g.fillStyle='#0c0820';g.fillRect(0,0,w,h);g.strokeStyle=color;g.lineWidth=8;g.shadowColor=color;g.shadowBlur=18;g.strokeRect(10,10,w-20,h-20);
- g.fillStyle='#fff';g.font=`bold ${vertical?54:68}px monospace`;g.textAlign='center';g.textBaseline='middle';
+ g.fillStyle=PAPER;g.font=`bold ${vertical?54:68}px ${DISPLAY}`;g.textAlign='center';g.textBaseline='middle';
  if(vertical){const ch=[...text.replace(/[^A-Z0-9]/g,'')].slice(0,6);ch.forEach((s,i)=>g.fillText(s,w/2,h/2+(i-(ch.length-1)/2)*56));}else g.fillText(text,w/2,h/2+4,w-40);
  g.globalCompositeOperation='source-atop';g.shadowBlur=0;g.fillStyle=color;g.globalAlpha=.35;g.fillRect(0,0,w,h);
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;signs.set(key,t);return t;
+}
+// Budovy: toon s okny (emissiveMap) a maskou půltónu v alfa kanálu render targetu (alfa = 1 − maska; ostatní materiály kreslí alfa 1).
+// Maska = stínová strana (tón 0 klíčového světla directionalLights[0], three řadí stínící světla první) nebo vržený stín, bez svítících oken,
+// slábne s mlhou. Vzdálené řady (svět z < farZ) mají okna jedné barvy winColor se stejným jasem (bible kap. 3: dálka tišší).
+const LUM='vec3(.2126,.7152,.0722)';
+export const BUILDING_FRAG={
+ head:'uniform vec3 winColor;uniform float farZ;varying float vWz;\n',
+ emissive:`{float wl=dot(totalEmissiveRadiance,${LUM});totalEmissiveRadiance=mix(totalEmissiveRadiance,winColor*wl/max(dot(winColor,${LUM}),1e-3),1.-smoothstep(farZ-30.,farZ+30.,vWz));}`,
+ mask:`float htMask=0.;
+#if NUM_DIR_LIGHTS>0
+float keyLit=getGradientIrradiance(normal,directionalLights[0].direction).r;
+#if defined(USE_SHADOWMAP)&&NUM_DIR_LIGHT_SHADOWS>0
+keyLit*=receiveShadow?getShadow(directionalShadowMap[0],directionalLightShadows[0].shadowMapSize,directionalLightShadows[0].shadowIntensity,directionalLightShadows[0].shadowBias,directionalLightShadows[0].shadowRadius,vDirectionalShadowCoord[0]):1.;
+#endif
+htMask=(1.-step(.42,keyLit))*(1.-clamp(2.*dot(totalEmissiveRadiance,${LUM}),0.,1.));
+#endif`,
+ out:`#ifdef USE_FOG
+htMask*=1.-fogFactor;
+#endif
+gl_FragColor.a=1.-htMask;`};
+export function buildingMaterial({ramp,emissiveMap=null,farZ=-1e9}={}){
+ const m=new THREE.MeshToonMaterial({vertexColors:true,gradientMap:ramp,emissive:0xffffff,emissiveMap,emissiveIntensity:1.5}),F=BUILDING_FRAG;
+ const uniforms=m.userData.uniforms={winColor:{value:new THREE.Color(PAPER)},farZ:{value:farZ}};
+ m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,uniforms);
+  const after=(s,inc,add)=>s.replace(`#include <${inc}>`,`#include <${inc}>\n${add}`);
+  sh.vertexShader='varying float vWz;\n'+after(sh.vertexShader,'project_vertex','vWz=(modelMatrix*vec4(transformed,1.)).z;');
+  sh.fragmentShader=F.head+after(after(after(sh.fragmentShader,'emissivemap_fragment',F.emissive),'lights_fragment_end',F.mask),'dithering_fragment',F.out);};
+ m.customProgramCacheKey=()=>'jti-building';return m;
 }
 // Nebe jako přechod na pozadí scény (barvy kyber nebe: tmavě fialová → růžový obzor).
 export function skyTexture(stops=['#0b0824','#1d1150','#52206a','#b0407e']){
@@ -53,14 +83,15 @@ export function skyPainter(){
  return {texture:t,paint(stops){const k=stops.join();if(k===key)return t;key=k;const gr=g.createLinearGradient(0,0,0,256);stops.forEach((s,i)=>gr.addColorStop(i/(stops.length-1),s));g.fillStyle=gr;g.fillRect(0,0,4,256);t.needsUpdate=true;return t;},dispose(){t.dispose();}};
 }
 // Post-process bez EffectComposer: scéna do render targetu, pak celoobrazovkový trojúhelník s tímto shaderem.
+// Půltón jen kde maska budov (1 − alfa render targetu) > 0; velikost tečky roste s tmou pod `shade`, nejméně čtvrtina pokrytí.
 export function postPass(){
  const mat=new THREE.ShaderMaterial({uniforms:{tDiffuse:{value:null},resolution:{value:new THREE.Vector2(1,1)},levels:{value:6},dotSize:{value:5},mode:{value:1},shade:{value:.42}},
   vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
   fragmentShader:`uniform sampler2D tDiffuse;uniform vec2 resolution;uniform float levels;uniform float dotSize;uniform float mode;uniform float shade;varying vec2 vUv;
 void main(){vec4 c=texture2D(tDiffuse,vUv);vec3 s=pow(max(c.rgb,0.),vec3(1./2.2));vec3 p=floor(s*levels+.5)/levels;
 float l=dot(s,vec3(.299,.587,.114));vec2 g=mat2(.7071,-.7071,.7071,.7071)*(vUv*resolution)/dotSize;float d=length(fract(g)-.5);
-float k=clamp((shade-l)/shade,0.,1.);float ink=mode>.5?(1.-smoothstep(.5*sqrt(k)-.06,.5*sqrt(k),d))*step(.03,k):0.;
-gl_FragColor=vec4(mix(p,p*.25+vec3(.02,0.,.06),ink*.85),c.a);}`,depthTest:false,depthWrite:false});
+float k=clamp(1.-c.a,0.,1.)*clamp((shade-l)/shade,.25,1.);float ink=mode>.5?(1.-smoothstep(.5*sqrt(k)-.06,.5*sqrt(k),d))*step(.03,k):0.;
+gl_FragColor=vec4(mix(p,p*.25+vec3(.02,0.,.06),ink*.85),1.);}`,depthTest:false,depthWrite:false});
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([-1,-1,0,3,-1,0,-1,3,0],3));geo.setAttribute('uv',new THREE.Float32BufferAttribute([0,0,2,0,0,2],2));
  const scene=new THREE.Scene(),cam=new THREE.OrthographicCamera(-1,1,1,-1,0,1),mesh=new THREE.Mesh(geo,mat);mesh.frustumCulled=false;scene.add(mesh);
  return {mat,scene,cam};

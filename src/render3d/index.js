@@ -56,6 +56,7 @@ import {planFrame,viewOf,directorFor,planeWorld} from './frame.js';
 import {cameraView} from './camera.js';
 import {createScene} from './scene.js';
 import {drawUi} from './ui-layer.js';
+import {INK,PAPER,NIGHT,CYAN,BODY} from './palette.js';
 import {frameStats,ring} from '../perf.js';
 import {createFlight,step,eventInput} from '../core.js';
 const MAX_DPR=2,SLOW=1000/30-2,WARM=[2,3,4,5];
@@ -88,7 +89,7 @@ export function backdrop(c,mood,s=1,plan=null){
  c.setTransform(s,0,0,s,0,0);const g=c.createLinearGradient(0,0,0,300),sky=mood?.sky??['#3a2a7a','#ff9ec4'];sky.forEach((col,i)=>g.addColorStop(i/(sky.length-1),col));
  c.fillStyle=g;c.fillRect(0,0,640,300);c.fillStyle=mood?.fog?.color??'#2a1d44';c.fillRect(0,300,640,60);c.fillStyle='#00000088';c.fillRect(0,300,640,60);
  // vlaštovka jako bílá silueta (úhel jako ve 2D: kladný = nos dolů), aby let šel sledovat i bez 3D
- const v=plan?.view,a=plan?.plane;if(v&&(a?.visible||plan.hand)){c.translate(v.px,v.py);c.rotate(a?.visible?a.angle:-.15);c.fillStyle='#ffffff';c.strokeStyle='#0b1935';c.lineWidth=2;c.beginPath();c.moveTo(16,0);c.lineTo(-14,-7);c.lineTo(-8,0);c.lineTo(-14,6);c.closePath();c.fill();c.stroke();}
+ const v=plan?.view,a=plan?.plane;if(v&&(a?.visible||plan.hand)){c.translate(v.px,v.py);c.rotate(a?.visible?a.angle:-.15);c.fillStyle=PAPER;c.strokeStyle=INK;c.lineWidth=2;c.beginPath();c.moveTo(16,0);c.lineTo(-14,-7);c.lineTo(-8,0);c.lineTo(-14,6);c.closePath();c.fill();c.stroke();}
  c.setTransform(1,0,0,1,0,0);
 }
 const idle=state=>state==='workshop'||state==='result';
@@ -104,7 +105,7 @@ export function render(canvas,f,model,time=0,visual={},force=false){
 }
 // ?perf=1: panel s ms/snímek (interval mezi snímky), CPU (apply + draw bez čekání na GPU), draw calls a trojúhelníky.
 function perfPanel(canvas){
- const el=document.createElement('pre');el.id='perf3d';el.style.cssText='position:absolute;right:8px;top:64px;margin:0;padding:6px 8px;background:#0b0f1fcc;color:#9ff;font:11px/1.35 monospace;pointer-events:none;z-index:2';
+ const el=document.createElement('pre');el.id='perf3d';el.style.cssText=`position:absolute;right:8px;top:64px;margin:0;padding:6px 8px;background:${NIGHT}cc;color:${CYAN};font:11px/1.35 ${BODY};font-variant-numeric:tabular-nums;pointer-events:none;z-index:2`;
  canvas.parentElement?.append(el);const iv=ring(240),cpu=ring(240);let prev=0,shown=0;
  return {el,iv,cpu,frame(now,r){if(prev&&now-prev<250)iv.push(now-prev);prev=now;if(now-shown<500)return;shown=now;const a=frameStats(iv.values),c=frameStats(cpu.values),st=r.s.stats();
   el.textContent=`3D ${st.size} dpr ${st.dpr}${r.lost?' LOST':''}\nframe ${a.avg.toFixed(1)} ms (p95 ${a.p95.toFixed(1)}) ${a.avg?(1000/a.avg).toFixed(0):0} fps\ncpu ${c.avg.toFixed(2)} ms (p95 ${c.p95.toFixed(2)})\ncalls ${st.calls} tris ${(st.triangles/1000).toFixed(1)}k`;}};

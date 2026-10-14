@@ -1,10 +1,14 @@
-// Komiksový vzhled (čisté): půltón, posterizované pásy oblohy, „on twos“, rychlostní čáry, palety VERSE. Vlastní R4.
+// Komiksový vzhled (čisté): půltón, posterizované pásy oblohy, „on twos“, rychlostní čáry, obloha VERSE, obrysy. Vlastní R4.
 // Čisté části zkopírované ze src/themes-verse.js a mix ze src/themes.js (oba se budou mazat, proto se neimportují).
 // comicLook(mood,quality) → plan.comic: parametry toon rampy (toon.toonRamp), obrysu (toon.outlineMaterial) a post-procesu (toon.postPass).
+import {INK} from './palette.js';
+import {MOOD_KEYS} from './mood.js';
+import {SCREENS_PER_BIOME} from '../scenes.js';
+export {INK};
 const noise=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};
 const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 export function mix(a,b,k){const x=hex(a),y=hex(b);return '#'+x.map((v,i)=>Math.round(v+(y[i]-v)*k).toString(16).padStart(2,'0')).join('');}
-export const INK='#15101f',TWOS=12,HALFTONE_TILE=6,PATTERN_SCALE=2;
+export const TWOS=12,HALFTONE_TILE=6,PATTERN_SCALE=2;
 // Každá kresba drží 1/fps s („on twos“ při 24 fps filmu = 12 kreseb za sekundu).
 export const onTwos=(time,fps=TWOS)=>Math.floor(time*fps+1e-9)/fps;
 // 45° Ben-Day mřížka v dlaždici o straně s: 4 rohové tečky + středová, sousedé s/√2 od sebe. Pokrytí k (0–1): 2πr²/s² = k, strop před dotykem.
@@ -26,26 +30,24 @@ export function speedLines(vx,frame=0,from=40){
  const n=Math.round(6+k*18),seed=Math.floor(frame*TWOS);
  return Array.from({length:n},(_,i)=>{const r=noise(seed*31+i*7.3);return [noise(seed*13+i)*700-30,12+noise(i*17.1+seed*.37)*336,(50+r*110)*(.5+k)];});
 }
-// Paleta po čtvrtích: obloha shora k obzoru, budovy [svítící, tělo, akcent], vzdálené město, zem, slunce.
-export const VERSE=[
- {sky:['#2ea8b8','#7fd9c4','#fff0a0','#ffb08a'],biome:['#ff7a59','#c23d5a','#fff36b'],far:'#5aa0b4',ground:'#2d2440',sun:'#fff7cf'},
- {sky:['#1d47a0','#3a88dc','#9ad4ff','#eef6ff'],biome:['#4ec3c7','#215a8c','#ffe14d'],far:'#6d9bd2',ground:'#0f2b4c',sun:'#ffffff'},
- {sky:['#f2782a','#ffaa45','#ffdc85','#fff3d2'],biome:['#9a63db','#4a2f8a','#ffd23f'],far:'#c47ad6',ground:'#3b1f4f',sun:'#fffbe8'},
- {sky:['#0f1336','#283a8f','#2aa99c','#d2ee48'],biome:['#ff4f9e','#3a1f5c','#5cf2ff'],far:'#3a4c9c',ground:'#0b0a20',sun:'#f4ffd8'}];
+// Obloha po čtvrtích (záloha comicLook bez mood.sky): střed 2. místa čtvrti z mood.js, zdroj pravdy pro barvy čtvrtí (bible 2.3, R4, R18).
+export const VERSE=Object.freeze([0,1,2,3].map(d=>Object.freeze({sky:Object.freeze([...MOOD_KEYS[d*SCREENS_PER_BIOME+1].sky])})));
 export const SKY_EDGES=[0,92,168,232,360];
 // Stupně kvality: 0 nízká (bez půltónu), 1 střední, 2 vysoká. Přijímá i 'low'|'mid'|'high' a objekt {level}.
 const Q={low:0,mid:1,medium:1,high:2};
+// Obrysy (bible kap. 3): jedna tuš, tloušťka v px obrazovky × DPR na všech kvalitách; vlaštovka nejsilnější. scene.js je bere odsud.
+export const OUTLINE=Object.freeze({color:INK,building:2.5,detail:1.7,plane:2.6});
 const qLevel=q=>{const v=typeof q==='string'?Q[q]:typeof q==='number'?q:q?.level!=null?qLevel(q.level):2;return Math.max(0,Math.min(2,Math.round(v??2)));};
-// Komiksový vzhled pro scénu a post-proces. Hodnoty odpovídají toon.js (rampa [70,150,255], obrys 2,2, post levels 6 / dotSize 5).
-//  ramp      tóny toon rampy 0–255 (3 kroky, v noci tvrdší stín) · shadeLimit jas, pod kterým post kreslí půltón
+// Komiksový vzhled pro scénu a post-proces. Hodnoty odpovídají toon.js (rampa [70,150,255], post levels 6 / dotSize 5).
+//  ramp      tóny toon rampy 0–255 (3 kroky, v noci tvrdší stín) · shadeLimit jas, od kterého jsou tečky nejmenší (kde je kreslit, určuje maska budov)
 //  levels    posterizace post-procesu (úrovně na kanál) · dotSize perioda půltónu v px obrazovky · halftone 0|1 (uniform mode)
-//  outline   {color,thickness} pro outlineMaterial (thickness v jednotkách shaderu, jako výchozí 2,2) · lineWidth obrys UI v logických px
+//  outline   OUTLINE {color,building,detail,plane} pro outlineMaterial (px × DPR, nezávisí na kvalitě) · lineWidth obrys UI v logických px
 //  bands     skyBands(mood.sky,SKY_EDGES) pro 2D zálohu oblohy (logické px 640×360) · paletteId index VERSE/čtvrti · twos fps „on twos“
 export function comicLook(mood={},quality=2){
  const q=qLevel(quality),night=Math.max(0,Math.min(1,mood.night??0)),hold=Math.max(0,Math.min(1,mood.hold??0));
  const sky=mood.sky?.length?mood.sky:VERSE[mood.district??0].sky;
  return {quality:q,ramp:[Math.round(70-12*night),Math.round(150-10*night),255],shadeLimit:.42,
   levels:q?Math.round(6-hold):8,dotSize:q===2?5:6,halftone:q?1:0,
-  outline:{color:mix(INK,'#07051a',.5),thickness:[1.6,2,2.2][q]},lineWidth:[1.8,2.2,2.6][q],
+  outline:OUTLINE,lineWidth:[1.8,2.2,2.6][q],
   bands:skyBands(sky,SKY_EDGES,q?3:0),paletteId:Math.max(0,Math.min(3,mood.district??0)),twos:TWOS,ink:INK};
 }
