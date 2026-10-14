@@ -66,10 +66,10 @@ export function createScene(canvas,{dpr=1,shadows=true,style='cyber'}={}){
  const suns=[sunOf(260),sunOf(-380)];
  // Město, vlaštovka, Dílna (R3) a živá čtvrť.
  // Dílna a dítě s vlaštovkou v ruce (workshop.js R3); město proto shop bloky z cityChunk(0) nekreslí.
- const workshop=createWorkshop(scene,{ramp,hull,model:'dart',planeScale:PLANE_SCALE});
+ const workshop=createWorkshop(scene,{ramp,hull,model:'dart',planeScale:PLANE_SCALE,style,paper:kit});
  let mood=null;
  const city=createCity({scene,materials,ramp,hull,mood:()=>mood,reduced:false,shop:()=>false,...(paper?{style}:{})});scene.add(city.group);
- const plane=createPlane({ramp,planeHull,palette:pal,scale:PLANE_SCALE});scene.add(plane.group);
+ const plane=createPlane({ramp,planeHull,palette:pal,scale:PLANE_SCALE,style,shadows:kit?.shadows});scene.add(plane.group);
  // Holub-kurýr a pára z ventilace (a4) v každé čtvrti; life3d.js je proto dostává comp = null.
  const companion=createCompanion({ramp,hull:thinHull,palette:pal});scene.add(companion.group);
  // FALLBACK(D1): Violet Suburbs žije zatím přes life3d.js ve světových souřadnicích (místa 0–3); D1 ji přesune do districts/suburbs.js.
