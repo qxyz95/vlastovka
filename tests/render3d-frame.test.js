@@ -47,9 +47,17 @@ test('determinism: the same seeded flight with and without planFrame ends identi
  for(const seed of [1,2,7]){const a=fly(seed),b=fly(seed,f=>planFrame({f,model:'dart',time:f.t,visual:{clock:f.t,fx:createFx()}}));
   assert.deepEqual(JSON.parse(JSON.stringify(b)),JSON.parse(JSON.stringify(a)));assert.ok(a.landed&&a.x>20);}
 });
-test('after the throw the camera eases from the workshop shot to Follow without a jump, plane stays at px 148',()=>{
- const f=createFlight('dart',undefined,2),r=planFrame({f:null}).camera;let last=planFrame({f}).camera;
- near(last.width,r.width,.5,'starts at the rest shot');
- for(let i=0;i<120;i++){step(f);const p=planFrame({f}),c=p.camera;near(p.view.px,148,1e-6,'px');assert.ok(Math.abs(c.width-last.width)<4,'width eases');last=c;}
- near(last.width,CAMERA.width,1e-9,'Follow after the transition');
+test('after the throw the director eases from the workshop shot to Follow without a jump (prev chains the director)',()=>{
+ const f=createFlight('dart',undefined,2),r=planFrame({f:null,state:'aim'});let prev=r,last=r.camera;
+ for(let i=0;i<150;i++){step(f);const p=planFrame({f,prev,time:f.t}),c=p.camera;
+  if(!i)near(c.width,r.camera.width,4,'starts at the rest shot');
+  assert.ok(Math.abs(Math.log(c.width/last.width))<=.021,'width eases');near(p.view.px,prev.view.px,.51,'px eases');
+  near(viewOf(f,c).py,p.view.py,1e-9,'view(f, plan.camera) = plan.view');last=c;prev=p;}
+ assert.ok(last.width>=CAMERA.width*.8-1e-9&&last.width<=CAMERA.width*1.5+1e-9,`Follow after the transition: ${last.width}`);
+ assert.ok(prev.director.state!=='rest');
+});
+test('hold („zadržení dechu“) rises during a QTE and falls back after it',()=>{
+ const f=createFlight('dart',undefined,1);let prev=planFrame({f:null}),peak=0,after=null;
+ for(let i=0;i<900&&!f.landed;i++){step(f);prev=planFrame({f,prev,time:f.t});peak=Math.max(peak,prev.mood.hold);if(peak>.9&&!f.events[0].phase.match(/warning|interaction/)&&f.t>f.events[0].doneAt+1){after=prev.mood.hold;break;}}
+ assert.ok(peak>.9,`peak ${peak}`);assert.ok(after!==null&&after<.05,`after ${after}`);assert.equal(planFrame({f:null}).mood.hold,0);
 });

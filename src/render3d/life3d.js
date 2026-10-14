@@ -59,11 +59,11 @@ export function createLife({ramp,hull,thinHull}){
  // Ptáci (silueta ve tvaru V), balóny, drony s balíčkem, mraky.
  const birdN=L.flocks.reduce((s,f)=>s+f.n,0),birdGeo=new THREE.BufferGeometry().setFromPoints([[-1],[1]].flatMap(([s])=>[new THREE.Vector3(-.35,0,0),new THREE.Vector3(.4,0,0),new THREE.Vector3(-.1,.55,s*1.3)]));
  const birds=inst(birdGeo,new THREE.MeshBasicMaterial({color:'#3a2050',side:THREE.DoubleSide}),birdN);
- const balloons=inst(outlined(new THREE.IcosahedronGeometry(1,1)),new THREE.MeshToonMaterial({gradientMap:ramp,flatShading:true}),L.balloons.length,{outline:hull,colors:L.balloons.map(b=>b.color)});
+ const balloons=inst(outlined(new THREE.IcosahedronGeometry(1,1)),new THREE.MeshToonMaterial({gradientMap:ramp}),L.balloons.length,{outline:hull,colors:L.balloons.map(b=>b.color)});
  const baskets=inst(boxes([{x:-.8,w:1.6,z:0,d:1.6,h:1.3,y:0,color:'#8a5a4a'},{x:-.05,w:.1,z:0,d:.1,h:2.4,y:1.3,color:'#e0d0ff'}]),toonV,L.balloons.length);
  const droneGeo=boxes([{x:-.9,w:1.8,z:0,d:1.8,h:.5,y:0,color:'#6a5aa8'},{x:-1.9,w:3.8,z:0,d:.2,h:.12,y:.45,color:'#d8c8ff'},{x:-.1,w:.2,z:0,d:3.8,h:.12,y:.45,color:'#d8c8ff'},{x:-.55,w:1.1,z:0,d:1.1,h:.9,y:-1.1,color:'#d9a35a'}]);
  const drones=inst(droneGeo,toonV,D,{outline:thinHull});
- const clouds=inst(new THREE.IcosahedronGeometry(1,1),new THREE.MeshToonMaterial({color:'#ffd0e6',gradientMap:ramp,flatShading:true,fog:false}),L.clouds.length);
+ const clouds=inst(new THREE.IcosahedronGeometry(1,1),new THREE.MeshToonMaterial({color:'#ffd0e6',gradientMap:ramp,fog:false}),L.clouds.length);
  // Bolts: tělo s koly, hlava s okem a anténou, mávací ruka, koště.
  const R=L.robot,robot=new THREE.Group(),rg=list=>{const g=boxes(list),m=new THREE.Mesh(g,toonV);m.castShadow=true;const h=new THREE.Mesh(g,hull);return [m,h];};
  const head=new THREE.Group(),arm=new THREE.Group(),broom=new THREE.Group();

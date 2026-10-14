@@ -1,7 +1,6 @@
 import {BRANCHES,PRICES,DT} from './config.js';
 import {fresh,buy,createFlight,step,activeEvent,eventInput,settle,reward,bestAngle,angleHint} from './core.js';
 import {load,save} from './storage.js';
-import {render,view} from './render.js';
 import {createFx,fxEvent,stepFx} from './juice.js';
 import {lerp} from './motion.js';
 import {districtAt,routeAt,SCREEN_METERS} from './scenes.js';
@@ -9,15 +8,29 @@ import {chargeAt,throwSettings} from './throw.js';
 import {eventProgress,eventStats,windows,TIMING} from './events.js';
 import {createDecorations,stepDecorations} from './decorations.js';
 import {THEMES,THEME_IDS,setTheme,pickTheme} from './themes.js';
+import {drawAim} from './render3d/ui-layer.js';
+// Renderer: 3D výchozí (src/render3d/), ?render=2d nebo prohlížeč bez WebGL2 → 2D render.js (do smazání 2D, fáze f plánu 3D).
+// Oba mají stejné rozhraní render(canvas,f,model,time,visual) a view(f); 3D kreslí mířidla v UI vrstvě, 2D je dostane přes drawAim.
+const webgl2=()=>{try{const g=document.createElement('canvas').getContext('webgl2');g?.getExtension('WEBGL_lose_context')?.loseContext();return !!g;}catch{return false;}};
+let mode=new URLSearchParams(location.search).get('render')!=='2d'&&webgl2()?'3d':'2d';
+let {render,view}=await(mode==='3d'?import('./render3d/index.js').catch(e=>{console.warn('3D renderer unavailable, falling back to 2D',e);mode='2d';return import('./render.js');}):import('./render.js'));
+// 3D selže až při vytvoření kontextu (první snímek) → přepnout na 2D za běhu.
+function fallback2d(e){console.warn('3D renderer failed, falling back to 2D',e);mode='2d';document.body.dataset.render=mode;import('./render.js').then(m=>{({render,view}=m);}).catch(()=>{});render=()=>{};}
 const $=id=>document.getElementById(id),loaded=load();let p=loaded.data,f=null,state='workshop',picked={branch:'power',level:1},last=0,acc=0;
 let fx=null, prev=null, landedAt=0, decorations=null, inputOwner=null, milestoneQueue=[], seenMilestones=new Set(), banner=null, lastDistrict=0, districtUntil=0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+// ?timer: ladicí smyčka ~60 Hz přes MessageChannel (skrytá záložka škrtí rAF i setTimeout) a skrytá záložka se nebere jako pauza
+// (automatické ověření ve skrytém okně prohlížeče; točí jedno jádro CPU, jen pro ladění).
+const TIMER=new URLSearchParams(location.search).has('timer'),hidden=()=>document.hidden&&!TIMER,mc=TIMER?new MessageChannel():null;let tickAt=0;
+if(mc)mc.port1.onmessage=()=>{const n=performance.now();if(n-tickAt>=16){tickAt=n;frame(n);}else mc.port2.postMessage(0);};
+const tick=()=>mc?mc.port2.postMessage(0):requestAnimationFrame(frame);
 $('warning').textContent=loaded.warning;
 // Visual style: ?styl= in the URL wins, otherwise the last choice. Only presentation changes.
 const THEME_KEY='just-throw-it-theme';
+document.body.dataset.render=mode;$('theme-picker').hidden=mode==='3d';// styly patří 2D rendereru, 3D má vlastní vzhled
 function applyTheme(id){setTheme(id);document.body.dataset.theme=id;for(const b of document.querySelectorAll('[data-theme-id]'))b.setAttribute('aria-pressed',b.dataset.themeId===id);try{localStorage.setItem(THEME_KEY,id);}catch{}}
-for(const id of THEME_IDS){const b=document.createElement('button');b.type='button';b.dataset.themeId=id;b.textContent=THEMES[id].name;b.onclick=()=>applyTheme(id);$('theme-picker').append(b);}
-{let stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch{}applyTheme(pickTheme(new URLSearchParams(location.search).get('styl'),stored));}
+if(mode==='2d'){for(const id of THEME_IDS){const b=document.createElement('button');b.type='button';b.dataset.themeId=id;b.textContent=THEMES[id].name;b.onclick=()=>applyTheme(id);$('theme-picker').append(b);}
+{let stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch{}applyTheme(pickTheme(new URLSearchParams(location.search).get('styl'),stored));}}
 function persist(){const warning=save(p);if(warning)$('warning').textContent=warning;}
 const num=(x,d=1)=>x.toLocaleString('cs',{minimumFractionDigits:d,maximumFractionDigits:d});
 // Story line under the scene: the current place in flight, otherwise the farthest place reached.
@@ -41,10 +54,10 @@ function show(next){state=next;document.body.classList.toggle('in-flight',next==
 function prepare(){if($('result').open)$('result').close();f=null;fx=null;held=false;owner=null;heldTime=0;acc=0;show('aim');updateAim();$('hold').focus();$('game').scrollIntoView({block:'center',behavior:'smooth'});}
 function workshop(upgrades=false){if($('result').open)$('result').close();held=false;owner=null;f=null;fx=null;show('workshop');refresh();if(upgrades){$('tree').scrollIntoView({block:'center'});$('tree').querySelector('button').focus();}else $('launch').focus();}
 function updateAim(){const charge=held?chargeAt(heldTime):0;$('angle').value=angle;$('angle-value').textContent=Math.round(angle)+'°';$('charge-fill').style.width=charge*100+'%';$('charge-label').textContent=(held?'Pusť pro hod':'Připraveno')+' · '+Math.round(charge*100)+' %';}
-function begin(source){if(state!=='aim'||held||document.hidden)return;held=true;owner=source;heldTime=0;}
+function begin(source){if(state!=='aim'||held||hidden())return;held=true;owner=source;heldTime=0;}
 function release(source){if(!held||owner!==source||state!=='aim')return;const launch=throwSettings(angle,chargeAt(heldTime));held=false;owner=null;f=createFlight(p.model,p.levels,p.attempts+1,{x:0,y:0},launch);acc=0;prev=null;landedAt=0;fx=createFx();fxEvent(fx,'throw',{power:launch.power});decorations=createDecorations(f.seed);zoneKind=null;inputOwner=null;milestoneQueue=[];seenMilestones=new Set();banner=null;lastDistrict=0;districtUntil=0;show('flight');$('event-help').textContent=launch.label;$('action').disabled=true;}
 function cancelHold(){held=false;owner=null;heldTime=0;updateAim();}
-function aimPointer(e){const r=$('game').getBoundingClientRect();const x=(e.clientX-r.left)*640/r.width,y=(e.clientY-r.top)*360/r.height;angle=Math.max(5,Math.min(40,Math.atan2(258-y,Math.max(1,x-148))*180/Math.PI));updateAim();}
+function aimPointer(e){const r=$('game').getBoundingClientRect(),o=view(null);const x=(e.clientX-r.left)*640/r.width,y=(e.clientY-r.top)*360/r.height;angle=Math.max(5,Math.min(40,Math.atan2(o.py-y,Math.max(1,x-o.px))*180/Math.PI));updateAim();}
 for(const target of [$('hold'),$('game')]){
  target.addEventListener('pointerdown',e=>{if(state!=='aim'||e.button!==0||held)return;e.preventDefault();if(target===$('game'))aimPointer(e);target.setPointerCapture(e.pointerId);begin(e.pointerId);});
  target.addEventListener('pointermove',e=>{if(state==='aim'&&target===$('game')&&(!held||owner===e.pointerId))aimPointer(e);});
@@ -56,7 +69,7 @@ $('angle').oninput=()=>{angle=Number($('angle').value);updateAim();};
 $('launch').onclick=prepare;$('retry').onclick=prepare;$('upgrades').onclick=()=>workshop(true);$('return').onclick=()=>workshop();$('cancel-aim').onclick=()=>workshop();
 $('result').addEventListener('cancel',e=>{e.preventDefault();workshop();});
 for(const m of ['dart','glider'])$(m).onclick=()=>{if(m==='glider'&&p.best<100)return;p.model=m;persist();refresh();};
-function flightDown(source){if(state!=='flight'||document.hidden||inputOwner!==null)return;const e=activeEvent(f);if(!e||e.result)return;inputOwner=source;eventInput(f,'down',source);}
+function flightDown(source){if(state!=='flight'||hidden()||inputOwner!==null)return;const e=activeEvent(f);if(!e||e.result)return;inputOwner=source;eventInput(f,'down',source);}
 function flightUp(source){if(inputOwner!==source)return;eventInput(f,'up',source);inputOwner=null;}
 function flightCancel(){if(inputOwner!==null)eventInput(f,'cancel',inputOwner);inputOwner=null;}
 $('game').addEventListener('pointerdown',e=>{if(state!=='flight'||e.button!==0||inputOwner!==null)return;e.preventDefault();try{$('game').setPointerCapture(e.pointerId);}catch{}flightDown(e.pointerId);});
@@ -75,7 +88,7 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{if(otherButton(e))return;if(e.code==='Space'||e.code==='Enter'){if(state==='aim'){e.preventDefault();release('key');}else if(state==='flight'){e.preventDefault();flightUp('key');}}});
 window.addEventListener('blur',()=>{if(state==='aim')cancelHold();flightCancel();});
 $('reset').onclick=()=>{if(confirm('Opravdu smazat mince, vylepšení a rekord?')){p=fresh();persist();workshop();}};
-document.addEventListener('visibilitychange',()=>{last=0;acc=0;if(document.hidden){if(state==='aim')cancelHold();flightCancel();}$('paused').hidden=!document.hidden;});
+document.addEventListener('visibilitychange',()=>{last=0;acc=0;if(hidden()){if(state==='aim')cancelHold();flightCancel();}$('paused').hidden=!hidden();});
 function finish(){const previous=p.best;settle(p,f);persist();refresh();show('result');
  $('result-title').textContent=f.x>=500?'Obzor je tvůj!':'Hod dokončen!';
  $('stat-distance').textContent=num(f.x)+' m';$('stat-time').textContent=num(f.t)+' s';
@@ -87,7 +100,7 @@ function finish(){const previous=p.best;settle(p,f);persist();refresh();show('re
  $('result-text').textContent=[f.launch.label,angleHint(f.launch.angle*180/Math.PI,bestAngle(f.model,p.levels,f.launch.power)),f.x>previous?'★ Nový rekord!':'',previous<100&&p.best>=100?'Kluzák odemčen!':''].filter(Boolean).join(' · ');
  $('result').showModal();$('retry').focus();
 }
-function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;if(!document.hidden){
+function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;if(!hidden()){
  if(state==='aim'){if(held)heldTime+=elapsed;updateAim();}
  if(state==='flight'){
   // Hitstop freezes physics for a few frames; QTE timing runs on flight time, so it is unaffected.
@@ -101,9 +114,12 @@ function frame(now){const elapsed=last?Math.min((now-last)/1000,.1):0;last=now;i
  // Draw between the last two physics steps so motion is smooth on 120 Hz screens too.
  const a=Math.min(1,acc/DT),shown=f&&prev&&!f.landed?{...f,x:lerp(prev.x,f.x,a),y:lerp(prev.y,f.y,a),vx:lerp(prev.vx,f.vx,a),vy:lerp(prev.vy,f.vy,a),t:lerp(prev.t,f.t,a)}:f;
  if(fx)stepFx(fx,elapsed,shown,view(shown));
- $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name;render($('game'),shown,p.model,f?f.t+(f.landed&&landedAt?(now-landedAt)/1000:0):now/1000,{decorations,reduced:reduced.matches,qte:qteVisual(),fx,charge:state==='aim'&&held?chargeAt(heldTime):0,clock:now/1000});
- if(state==='aim'){const c=$('game').getContext('2d'),a=angle*Math.PI/180,len=65+(held?chargeAt(heldTime)*45:0);c.save();c.translate(148,258);c.rotate(-a);c.strokeStyle='#fff0a6';c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.moveTo(12,0);c.lineTo(len,0);c.stroke();c.setLineDash([]);c.beginPath();c.moveTo(len-10,-6);c.lineTo(len,0);c.lineTo(len-10,6);c.stroke();c.restore();c.fillStyle='#203b3e';c.fillRect(205,168,265,37);c.fillStyle='#fff0b3';c.font='bold 13px monospace';c.fillText(held?'PUSŤ NA VRCHOLU SÍLY':'ZAMIŘ A PODRŽ PRO HOD',220,191);c.fillStyle='#203b3e';c.fillRect(205,211,265,14);c.fillStyle='#f2ce87';c.fillRect(207,213,261*(held?chargeAt(heldTime):0),10);c.strokeStyle='#fff';c.strokeRect(449,212,19,12);}
- }requestAnimationFrame(frame);}
+ $('distance').textContent=Math.floor(f?.x??0)+' m';$('scene-label').textContent=state==='aim'?'ZAMIŘ A PODRŽ · UVOLNĚNÍM HODÍŠ':districtAt(f?.x??0).name;
+ const charge=state==='aim'&&held?chargeAt(heldTime):0,aim=state==='aim'?{angle,held,charge}:null;
+ try{render($('game'),shown,p.model,f?f.t+(f.landed&&landedAt?(now-landedAt)/1000:0):now/1000,{decorations,reduced:reduced.matches,qte:qteVisual(),fx,charge,clock:now/1000,state,aim,best:p.best});}catch(e){if(mode!=='3d')throw e;fallback2d(e);}
+ // 2D renderer mířidla nekreslí: stejná kresba jako UI vrstva 3D, z promítnuté vlaštovky view(null).
+ if(aim&&mode==='2d'){const c=$('game').getContext('2d'),k=c.canvas.width/640;c.setTransform(k,0,0,k,0,0);drawAim(c,aim,view(null));c.setTransform(1,0,0,1,0,0);}
+ }tick();}
 // Bar position of an event's success/perfect windows, as fractions of the bar.
 function zonesFor(kind){const w=windows(f)[kind],c=(kind==='gust'?w.center-TIMING.warning:w.center)/TIMING.bar,s=w.success/TIMING.bar,pf=w.perfect/TIMING.bar;return {success:[c-s,c+s],perfect:[c-pf,c+pf]};}
 let zoneKind=null;
@@ -132,7 +148,7 @@ function updateFlightUI(){
  const district=districtAt(f.x).index;if(district!==lastDistrict){lastDistrict=district;districtUntil=f.t+1.5;}
  $('scene-label').classList.toggle('district-highlight',f.t<districtUntil);
 }
-refresh();requestAnimationFrame(frame);
+refresh();tick();
 
 
 

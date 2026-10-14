@@ -25,13 +25,14 @@ export function speedLines(vx,frame=0,settings={}){
 // Světové px (juice.js) → logické px obrazovky podle view {cam,px,py,k}.
 export function particleScreen(view,wx,y){const k=view.k??1;return [view.px+(wx-view.cam-view.px)*k,view.py+(y-view.py)*k];}
 export const toScreen=(wx,wy,view)=>particleScreen(view,wx,wy);
-// Živé částice v obrazovkových px: {kind,x,y,size,alpha}; tvar a průhlednost jako fx-render.js, velikost × k.
+// Živé částice v obrazovkových px: {kind,x,y,size,alpha}; tvar a průhlednost jako fx-render.js, velikost × min(1,k)
+// (přiblížený záběr Follow, k ≈ 2,5, by z jisker udělal velké čtverce přes vlaštovku; oddálení je zmenší).
 export function particles(fx,view){
  const out=[],k=view.k??1;if(!fx?.parts)return out;
  for(let o=0;o<fx.parts.length;o+=STRIDE){
   const age=fx.parts[o+4],life=fx.parts[o+5];if(age>=life)continue;
   const kind=fx.parts[o+7],s=fx.parts[o+6],left=1-age/life,[x,y]=particleScreen(view,fx.parts[o],fx.parts[o+1]);
-  out.push({kind,x,y,size:(kind===3?s:kind===0?s*(1+age*1.5):s*left+1)*k,alpha:kind===0?left*.8:left});
+  out.push({kind,x,y,size:(kind===3?s:kind===0?s*(1+age*1.5):s*left+1)*Math.min(1,k),alpha:kind===0?left*.8:left});
  }
  return out;
 }

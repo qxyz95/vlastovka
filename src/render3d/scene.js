@@ -10,34 +10,34 @@ import {toonRamp,outlineMaterial,windowTexture,signTexture,skyPainter,postPass} 
 import {createCity} from './city.js';
 import {createPlane} from './plane.js';
 import {createLife} from './life3d.js';
+import {createCompanion} from './companion3d.js';
 import {createWorkshop} from './workshop.js';
 import {palette} from './palette.js';
 
 const C=h=>new THREE.Color(h),col=(v,d)=>typeof v==='string'?v:v?.color??d,num=(v,d)=>typeof v==='object'&&v?.intensity!=null?v.intensity:d;
-// Barvy budov z prototypu (palety cyber podle čtvrti, zesvětlené pro toon světlo; Violet Suburbs pastelové podle polohy).
-// FALLBACK(R2, palette.js): až palette() dodá barvy budov a země, převzít je odtud.
-const BIOMES=[['#322749','#131b31','#ea70c8'],['#294559','#10263a','#78d8ee'],['#63384e','#302638','#ffa66d'],['#44214e','#18142f','#60eed9']],GROUND=['#101a2c','#122e44','#342b38','#101a2c'];
-const FOG0='#4a1d63',DUSK_FOG='#9c5598',ACCENT=['#3d7fa8','#a8458f','#c27a3a','#3aa88f'];
-const TONES=BIOMES.map((p,b)=>[C(p[0]).lerp(C('#ffffff'),.06),C(p[0]).lerp(C('#1a1240'),.15),C(p[0]).lerp(C(FOG0),.45),C(ACCENT[b]),C('#1d5246'),C('#2b2352')].map(c=>c.toArray()));
-const PAL=['#8f6ad8','#c56fb5','#6f86e0','#e08aa0','#5fb0c8','#a58be8','#d98ad0'].map(C),SUB=[PAL,PAL.map(c=>c.clone().lerp(C(DUSK_FOG),.35)),[C('#7a4f9e').lerp(C(DUSK_FOG),.4)]].map(l=>l.map(c=>c.toArray()));
-const colorOf=b=>(b.biome??0)===0&&(b.tone??0)<3?(l=>l[Math.floor(hash(Math.floor(b.x*3))*l.length)])(SUB[b.tone??0]):TONES[b.biome??0][b.tone??0];
+// Barvy budov a země z palette.js (city): tóny podle čtvrti, Violet Suburbs pastelové podle polohy.
+function cityColors(P){
+ const W=C('#ffffff'),tones=P.biomes.map((w,b)=>[C(w).lerp(W,.06),C(w).lerp(C(P.shade),.15),C(w).lerp(C(P.fog0),.45),C(P.accent[b]),C(P.roof),C(P.trim)].map(c=>c.toArray()));
+ const pal=P.suburbs.map(C),sub=[pal,pal.map(c=>c.clone().lerp(C(P.duskFog),.35)),[C(P.far).lerp(C(P.duskFog),.4)]].map(l=>l.map(c=>c.toArray()));
+ return b=>(b.biome??0)===0&&(b.tone??0)<3?(l=>l[Math.floor(hash(Math.floor(b.x*3))*l.length)])(sub[b.tone??0]):tones[b.biome??0][b.tone??0];
+}
 const PLANE_SCALE=7.75;// měřítko vlaštovky jako v Dílně (R3)
 
 export function createScene(canvas,{dpr=1,shadows=true}={}){
  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
  renderer.shadowMap.enabled=shadows;renderer.shadowMap.type=THREE.BasicShadowMap;renderer.info.autoReset=false;
  const rt=new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:4}),post=postPass(),sky=skyPainter();
- const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(20,16/9,1,4000),ramp=toonRamp(),pal=palette('cyber');
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(20,16/9,1,4000),ramp=toonRamp(),pal=palette('cyber'),CP=pal.city,FOG0=CP.fog0,colorOf=cityColors(CP);
  scene.fog=new THREE.Fog(FOG0,300,1100);scene.background=sky.texture;
  // Obrysy: tloušťka v px obrazovky × DPR, mlha ručně v shaderu (vzdálené obrysy mizí s budovami).
  const outlines=[],line=(m,base)=>{outlines.push([m,base]);return m;};
  const hull=line(outlineMaterial({fog:{color:FOG0,near:300,far:1100},thickness:2.5}),2.5),thinHull=line(outlineMaterial({fog:{color:FOG0,near:300,far:1100},thickness:1.7}),1.7);
  const planeHull=line(outlineMaterial({side:THREE.DoubleSide,thickness:2.6,color:pal.plane.outline}),2.6);planeHull.depthWrite=false;
  const signMats=new Map(),signList=[],unit=new THREE.PlaneGeometry(1,1);
- const materials={unit,colorOf,rgb:h=>C(h).toArray(),
+ const materials={unit,colorOf,rgb:h=>C(h).toArray(),city:CP,
   building:new THREE.MeshToonMaterial({vertexColors:true,gradientMap:ramp,emissive:0xffffff,emissiveMap:windowTexture(),emissiveIntensity:1.5}),
   glow:new THREE.MeshBasicMaterial({vertexColors:true}),
-  ground:GROUND.map((g,b)=>new THREE.MeshToonMaterial({color:b===1?C('#10294a'):b===0?C('#4b3778'):C(g).lerp(C('#000000'),.25),gradientMap:ramp})),
+  ground:CP.ground.map((g,b)=>new THREE.MeshToonMaterial({color:C(g).lerp(C('#000000'),CP.groundDark[b]),gradientMap:ramp})),
   sign(text,color,vertical=false){const k=text+color+vertical;if(!signMats.has(k)){const m=new THREE.MeshBasicMaterial({map:signTexture(text,color,vertical),toneMapped:false});signMats.set(k,m);signList.push(m);}return signMats.get(k);},
   hull,thinHull,planeHull};
  // Světla: hemisféra, klíčové (měsíc/slunce se stíny) a růžové protisvětlo.
@@ -58,6 +58,8 @@ export function createScene(canvas,{dpr=1,shadows=true}={}){
  let mood=null;
  const city=createCity({scene,materials,ramp,hull,mood:()=>mood,reduced:false,shop:()=>false});scene.add(city.group);
  const plane=createPlane({ramp,planeHull,palette:pal,scale:PLANE_SCALE});scene.add(plane.group);
+ // Holub-kurýr a pára z ventilace (a4) v každé čtvrti; life3d.js je proto dostává comp = null.
+ const companion=createCompanion({ramp,hull:thinHull,palette:pal});scene.add(companion.group);
  // FALLBACK(D1): Violet Suburbs žije zatím přes life3d.js ve světových souřadnicích (místa 0–3); D1 ji přesune do districts/suburbs.js.
  const life=createLife({ramp,hull,thinHull});scene.add(life.group);
  let trail=createTrail(),lastX=Infinity,usePost=true,size=[4,4];
@@ -68,7 +70,8 @@ export function createScene(canvas,{dpr=1,shadows=true}={}){
   const m=plan.mood,cam=plan.camera,sh=cam.shake??{},X=plan.X,Y=plan.Y,t=plan.t;mood=m;
   // Kamera: Follow + otřes (m) a náklon (rad) kolem osy pohledu.
   camera.fov=cam.fov;camera.aspect=size[0]/size[1]||16/9;camera.updateProjectionMatrix();
-  camera.position.set(cam.position[0]+(sh.dx??0),cam.position[1]+(sh.dy??0),cam.position[2]);camera.lookAt(cam.target[0]+(sh.dx??0),cam.target[1]+(sh.dy??0),cam.target[2]);if(sh.roll)camera.rotateZ(sh.roll);
+  // otřes posouvá obraz o (dx,dy) m stejně jako UI vrstvu (withShake), kamera proto jede opačně
+  const ox=-(sh.dx??0),oy=-(sh.dy??0);camera.position.set(cam.position[0]+ox,cam.position[1]+oy,cam.position[2]);camera.lookAt(cam.target[0]+ox,cam.target[1]+oy,cam.target[2]);const rz=(cam.roll??0)*Math.PI/180+(sh.roll??0);if(rz)camera.rotateZ(rz);// náklon režiséra (°) + otřes (rad)
   // Nálada: mlha (i v obrysech), nebe, světla, slunce/měsíc, hvězdy, okna.
   scene.fog.color.set(m.fog.color);scene.fog.near=m.fog.near;scene.fog.far=m.fog.far;
   for(const o of [...outlines.map(x=>x[0]),...(workshop.userData.outlines??[])])if(o.uniforms.fogNear){o.uniforms.fogColor.value.copy(scene.fog.color);o.uniforms.fogNear.value=m.fog.near;o.uniforms.fogFar.value=m.fog.far;}
@@ -95,7 +98,8 @@ export function createScene(canvas,{dpr=1,shadows=true}={}){
   const flying=plan.state==='flight';if(X<lastX-1)trail=createTrail();lastX=X;if(flying)pushTrail(trail,t,X,Y);
   plane.apply(plan.plane,{flying,trailColor:m.trail});
   const frameCtx={t,X,Y,trail,events:plan.events,comp:plan.comp,quality:plan.quality};city.update(frameCtx);
-  life.group.visible=cam.cx-cam.width<4*SCREEN_METERS+200;if(life.group.visible)life.update({t,X,Y,trail,comp:plan.comp,cheerAge:plan.cheer});
+  life.group.visible=cam.cx-cam.width<4*SCREEN_METERS+200;if(life.group.visible)life.update({t,X,Y,trail,comp:null,cheerAge:plan.cheer});
+  companion.update({t,X,Y,vx:plan.vx,ev:plan.ev,comp:plan.comp,carry:plan.carry,reduced:plan.reduced});
   workshop.update(plan.kid,plan.hand);
   // Neonové cedule občas zablikají (šum, ne náhoda za snímek).
   signList.forEach((s,i)=>s.color.setScalar(noise1(t*.8,i*13)>.62&&noise1(t*25,i)>0?.35:1));
@@ -105,8 +109,10 @@ export function createScene(canvas,{dpr=1,shadows=true}={}){
   if(usePost){renderer.setRenderTarget(rt);renderer.clear();renderer.render(scene,camera);renderer.setRenderTarget(null);post.mat.uniforms.tDiffuse.value=rt.texture;renderer.clear();renderer.render(post.scene,post.cam);}
   else{renderer.setRenderTarget(null);renderer.clear();renderer.render(scene,camera);}
  }
+ // Předehřátí v Dílně: shadery všech materiálů (i skrytých: vlaštovka, holub, pára) bez záseku při prvním hodu.
+ function warm(){const hidden=[];scene.traverse(o=>{if(!o.visible){hidden.push(o);o.visible=true;}});try{renderer.compile(scene,camera);}finally{for(const o of hidden)o.visible=false;}}
  const stats=()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,post:usePost,size:`${canvas.width}×${canvas.height}`,dpr,...city.stats(),lifeInstances:life.instances});
- function dispose(){city.dispose();plane.dispose();workshop.dispose();sky.dispose();rt.dispose();
+ function dispose(){city.dispose();plane.dispose();companion.dispose();workshop.dispose();sky.dispose();rt.dispose();
   scene.traverse(o=>{o.geometry?.dispose?.();});for(const mm of [...signList,...Object.values(materials).filter(v=>v?.isMaterial),...materials.ground])mm.dispose();renderer.dispose();}
- return {renderer,scene,camera,materials,ramp,hull,city,plane,life,resize,apply,draw,stats,dispose};
+ return {renderer,scene,camera,materials,ramp,hull,city,plane,life,companion,resize,apply,draw,warm,stats,dispose};
 }

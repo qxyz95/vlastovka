@@ -1,9 +1,11 @@
 // Plán snímku (čisté, bez three.js a DOM). Vlastní R1. Tvar plan a smlouva view(f) jsou v ./index.js. Testy: tests/render3d-frame.test.js.
 // planFrame({f,model,time,visual,state,prev}) → plan; nemutuje vstup. viewOf(f,camera) → {cam,px,py,ground,k}.
-// Kamera: Follow z geometry.js (follow + sideCamera), x dorovnané tak, aby vlaštovka padla přesně na px 148 i při pohledu shora.
+// Kamera: režisér z camera.js (R5: rest → follow ⇄ vista / intro / district → landing, zámek při QTE). Stav režiséra jede v plan.director,
+// další snímek ho dostane přes prev (nextDirector, bez mutace). Bez prev začíná režisér znovu (první snímek bez dojezdu).
 import {PIXELS_PER_METER as PPM,SCREEN_METERS} from '../scenes.js';
 import {activeEvent} from '../events.js';
-import {noise1,lerp} from '../motion.js';
+import {noise1,damp} from '../motion.js';
+import {createDirector,direct,nextDirector,cameraView,project as projectCam,qteLock} from './camera.js';
 import {follow,sideCamera,PLANE_OFFSET,LAYERS,chunkOffset,placeIndex} from './geometry.js';
 import {companion} from './life.js';
 import {moodAt} from './mood.js';
@@ -16,12 +18,12 @@ import {uiScale} from './ui-layer.js';
 export const LOGICAL={w:640,h:360},ASPECT=16/9,REST={px:148,py:258};
 // Záběr Follow: šířka 120 m ve hloubce letu (k ≈ 2,5), úzký FOV a mírný pohled shora jako v prototypu. V klidu záběr Dílny z pose.js (k = 1,25).
 export const CAMERA={width:120,fov:20,pitch:6};
-// ── Projekce (stejná jako THREE.PerspectiveCamera.lookAt, up = +y, bez zoomu a posunu pohledu).
+// ── Projekce (stejná jako THREE.PerspectiveCamera.lookAt, up = +y, bez zoomu a posunu pohledu; náklon camera.roll ve ° jako camera.js).
 const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const norm=v=>{const l=Math.hypot(...v)||1;return v.map(x=>x/l);};
 const tanV=cam=>Math.tan(cam.fov*Math.PI/360);
 // Bod světa (m) → [sx,sy,depth] v logických px 640×360; depth = vzdálenost podél osy pohledu.
-export function project(p,cam){
+export function project(p,cam){if(cam.roll){const q=projectCam(cam,p,ASPECT);return [q.px,q.py,q.depth];}
  const f=norm(sub(cam.target,cam.position)),r=norm(cross(f,[0,1,0])),u=cross(r,f),d=sub(p,cam.position),z=dot(d,f),tv=tanV(cam);
  return [LOGICAL.w/2*(1+dot(d,r)/(z*tv*ASPECT)),LOGICAL.h/2*(1-dot(d,u)/(z*tv)),z];
 }
@@ -35,25 +37,21 @@ export function cameraFor(X,Y,{width=CAMERA.width,zoom=1,fov=CAMERA.fov,pitch=CA
  const [sx,,z]=project([X,Y,0],cam),dx=(sx-px)/pxPerMeter(z,cam);
  return {...cam,cx:cam.cx+dx,position:[cam.position[0]+dx,...cam.position.slice(1)],target:[cam.target[0]+dx,...cam.target.slice(1)]};
 }
-// Klidový záběr Dílny (pose.js R3: restCamera promítne HAND, vlaštovku v ruce, na (148, 258)). Konstantní, proto spočítaný jednou.
-let rest;const restCam=()=>rest??={zoom:1,lock:false,shake:[0,0],...restCamera(ASPECT)};
 export const planeWorld=f=>f?[f.x+PLANE_OFFSET,f.y]:[HAND.x,HAND.y];
-// Kamera snímku: za letu a po dopadu Follow, v Dílně a při míření klidový záběr.
-// Přechod z klidu do Follow po hodu: čistě podle f.t (smoothstep přes TRANSITION s), takže view(f) zůstává bez stavu a shodný s plan.view.
-export const TRANSITION=1.2;
-const ease01=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);},L3=(a,b,w)=>a.map((v,i)=>lerp(v,b[i],w));
-export function cameraOf(f){
- const o=restCam();if(!f)return {...o,position:[...o.position],target:[...o.target]};
- const [X,Y]=planeWorld(f),c=cameraFor(X,Y),w=ease01(f.t/TRANSITION);if(w>=1)return c;
- const b={...c,cx:lerp(o.cx,c.cx,w),cy:lerp(o.cy,c.cy,w),width:lerp(o.width,c.width,w),height:lerp(o.height,c.height,w),dist:lerp(o.dist,c.dist,w),position:L3(o.position,c.position,w),target:L3(o.target,c.target,w)};
- const [sx,,z]=project([X,Y,0],b),dx=(sx-REST.px)/pxPerMeter(z,b);// vlaštovka i během přechodu přesně na px 148
- return {...b,cx:b.cx+dx,position:[b.position[0]+dx,b.position[1],b.position[2]],target:[b.target[0]+dx,b.target[1],b.target[2]]};
+// Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr Dílny z pose.js (HAND na (148, 258)). Klidový stav je konstantní.
+export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
+let rest;const restDirector=()=>rest??=direct(createDirector(DIRECTOR),{x:HAND.x,y:HAND.y,v:0,t:0,dt:0,flying:false});
+// Jeden krok režiséra pro let f (bez f = klid). time = hodiny scény (za letu f.t, po dopadu f.t + čas od dopadu, v klidu visual.clock).
+// prev = předchozí plan (jeho director a dirT); bez prev nový režisér. Čisté: prev.director se nemutuje.
+export function directorFor({f=null,prev=null,time,visual={}}={}){
+ if(!f)return restDirector();
+ const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
+ const input={x:X,y:Y,v:f.vx,t,dt,flying,landed:f.landed,f,k:1,best:visual.best,calm:!!visual.settings?.calm};
+ return base?nextDirector(base,input):direct(createDirector(DIRECTOR),input);
 }
+export const cameraOf=f=>directorFor({f}).camera;
 // Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px.
-export function viewOf(f,camera){
- const [X,Y]=planeWorld(f),c=camera??cameraOf(f),[px,py,z]=project([X,Y,0],c),ground=project([X,0,0],c)[1];
- return {cam:X*PPM-px,px,py,ground,k:pxPerMeter(z,c)/PPM};
-}
+export function viewOf(f,camera){const [X,Y]=planeWorld(f);return cameraView(camera??cameraOf(f),X,Y);}
 // Místa, která kamera vidí (i panorama v hloubce LAYERS.far a zem za ní), seřazená od nejbližšího ke středu záběru.
 export function placesFor(cam,margin=80){
  const depth=cam.dist-LAYERS.far+60,reach=depth*tanV(cam)*ASPECT+margin,a=Math.max(0,Math.floor((cam.cx-reach)/SCREEN_METERS)),b=Math.floor((cam.cx+reach)/SCREEN_METERS),out=[];
@@ -68,19 +66,23 @@ const cheerAge=f=>{let at=null;if(f)for(const e of f.events)if(e.result&&e.resul
 export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}={}){
  const flying=!!f&&!f.landed,t=flying?f.t:visual.clock??time,clock=visual.clock??time,reduced=!!visual.reduced,charge=f?0:visual.charge??0;
  state=state??visual.state??(f?(f.landed?'landed':'flight'):'aim');
- const [X,Y]=planeWorld(f);
- // FALLBACK(R5, camera.js): pevný Follow bez stavů Vista/Place intro/Landing a bez zámku při QTE.
- const camera=cameraOf(f),v=viewOf(f,camera),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
+ state=state==='result'?'landed':state;
+ const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f);
+ // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
+ const director=rest?restDirector():directorFor({f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=!!visual.settings?.calm;
+ const v=cameraView(director.camera,X,Y),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
  const fxv=fxMap(visual.fx,v,opts);
- camera.shake=fxv.shake??{x:0,y:0,roll:0,dx:0,dy:0};// otřes: x,y logické px (UI vrstva), dx,dy m a roll rad (3D kamera)
+ // otřes: x,y logické px (UI vrstva), dx,dy m a roll rad (3D kamera); Calm camera bez otřesu
+ const camera={...director.camera,shake:calm?{x:0,y:0,roll:0,dx:0,dy:0}:fxv.shake??{x:0,y:0,roll:0,dx:0,dy:0}};if(calm)fxv.shake=camera.shake;
  // Póza z pose.js (R3). Tam je angle = rotation.z three.js (−úhel 2D); plan.plane.angle drží znaménko juice.flightAngle podle smlouvy.
- const anim=reduced?0:t,own=planePose({f,fx:visual.fx,charge,anim,clock,reduced}),rest=state==='aim'||state==='workshop';
+ const anim=reduced?0:t,own=planePose({f:rest?null:f,fx:rest?null:visual.fx,charge,anim,clock,reduced});
  const plane={x:X+own.dx,y:Y+own.dy+(f?.landed?.6:0),z:0,angle:-own.angle,...tilt(t,anim,flying,reduced),squash:own.squash,model,look:null,visible:!rest};// v klidu drží vlaštovku workshop.js
  const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced}),visible:rest};
- const e=activeEvent(f),events=e?[eventView(e,f.t)]:[];
- // hold („zadržení dechu“) zatím 0, rozhodne c1/c2 (kamera a nálada při QTE).
- const m=moodAt(X,t,{hold:0}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
+ const e=rest?null:activeEvent(f),events=e?[eventView(e,f.t)]:[];
+ // „Zadržení dechu“: od varování QTE do 0,3 s po výsledku (qteLock) se pozadí tlumí; náběh i doznění přes damp (stav v prev.mood.hold).
+ const goal=!rest&&qteLock(f)?1:0,hold=prev&&!rest?damp(prev.mood?.hold??0,goal,.12,Math.max(0,Math.min(.1,dirT-(prev.dirT??dirT)))):goal;
+ const m=moodAt(X,t,{hold:hold<1e-3?0:hold}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
  const comic=comicLook(mood,visual.quality??2);
- return {t,state,view:v,hand:rest?{...own,model}:null,X,Y,camera,plane,kid,places:placesFor(camera),mood,comic,events,fx:fxv,comp:companion(e,f?.t??0),cheer:cheerAge(f),
+ return {t,state,view:v,hand:rest?{...own,model}:null,X,Y,camera,director,dirT,vx:f?.vx??0,carry:f?.carry??0,ev:e?{at:e.at,phase:e.phase}:null,plane,kid,places:placesFor(camera),mood,comic,events,fx:fxv,comp:companion(e,f?.t??0),cheer:cheerAge(f),
   ui:{qte:visual.qte??null,aim:visual.aim??null,labels:events,charge,reduced,uiScale:uiScale(visual.cssWidth??640),palette:visual.palette},quality:visual.quality??2,reduced};
 }

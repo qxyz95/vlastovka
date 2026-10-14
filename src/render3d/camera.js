@@ -41,6 +41,7 @@ export function createDirector(opts={}){
  return {place:-1,at:null,zoom:POSE_REST.width/o.width,title:null,alpha:0,opts:o,tz:1,px:REST.px,yaw:0,roll:0,dy:0,state:'rest',shot:null,shotAt:null,shotDur:0,calmFrom:null,thrownAt:null,landedAt:null,lock:false,camera:null};
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),rot=v=>clamp(v,-MAX_ROT,MAX_ROT);
+// Klidový záběr (rest) drží přesně šířku pose.REST i při užší šířce Follow (opts.width < REST.width), proto mimo ZOOM_RANGE.
 // Damp k cíli, pak omezení kroku: ln poměru (zoom) nebo absolutně (px).
 const toward=(x,goal,hl,dt,max,log)=>{const y=damp(x,goal,hl,dt);if(!log)return x+clamp(y-x,-max*dt,max*dt);const d=clamp(Math.log(y/x),-max*dt,max*dt);return x*Math.exp(d);};
 // Jeden krok: x,y zobrazená poloha vlaštovky (m, se zrychlením), v zobrazená rychlost, t hodiny scény, dt krok, k tempo, f let (události, landed),
@@ -62,9 +63,9 @@ export function direct(s,{x,y,v=0,t,dt,flying,landed,f,k=1,best,calm=false,flat=
  else if(f&&!lock&&t-s.calmFrom>=VISTA.calm&&ahead>=(s.state==='vista'?VISTA.leave:VISTA.ahead)){state='vista';mult=VISTA.out;px=VISTA.px;}
  if(flying&&s.thrownAt!=null&&t-s.thrownAt<LAUNCH.dur)roll=LAUNCH.roll*Math.sin(Math.PI*smooth((t-s.thrownAt)/LAUNCH.dur));
  s.state=state;
- if(!lock){// v zámku stojí zoom, tempo zoom, px, natočení i svislý posun; kamera jen sleduje vlaštovku
-  const zg=calm?1:clamp(mult*speedZoom(flying?v:0),...ZOOM_RANGE),tg=calm?1:tempoZoom(k),pg=calm?REST.px:Math.max(Math.min(VISTA.minPx,tempoPx(k)*640),tempoPx(k)*640+px);
-  if(!s.camera){s.zoom=zg;s.tz=tg;s.px=pg;}// první snímek bez dojezdu
+ if(!lock||!s.camera){// v zámku stojí zoom, tempo zoom, px, natočení i svislý posun; kamera jen sleduje vlaštovku
+  const zg=calm?1:rest?mult:clamp(mult*speedZoom(flying?v:0),...ZOOM_RANGE),tg=calm?1:tempoZoom(k),pg=calm?REST.px:Math.max(Math.min(VISTA.minPx,tempoPx(k)*640),tempoPx(k)*640+px);
+  if(!s.camera){s.zoom=zg;s.tz=tg;s.px=pg;}// první snímek bez dojezdu (i v zámku)
   s.zoom=toward(s.zoom,zg,.25,dt,ZOOM_RATE,true);s.tz=toward(s.tz,tg,.25,dt,ZOOM_RATE/2,true);s.px=toward(s.px,pg,.25,dt,PX_RATE,false);
   s.yaw=calm?0:rot(damp(s.yaw,yaw,.2,dt));s.roll=calm?0:rot(damp(s.roll,roll,.2,dt));
   if(!rest)s.dy=damp(s.dy,0,.3,dt);}

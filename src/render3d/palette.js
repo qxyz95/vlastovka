@@ -14,7 +14,16 @@ export const CYBER={
   gust:'#bff8ff',bird:{body:'#ad9fce',wing:'#65f7ef',beak:'#ffd166'}},
  label:{bg:'#141c32',text:'#eefaff'},
  aim:{arrow:'#fff0a6',panel:'#203b3e',text:'#fff0b3',bar:'#f2ce87',cap:'#ffffff'},
- speed:{line:'#ffffff',ink:'#15101f'}
+ speed:{line:'#ffffff',ink:'#15101f'},
+ // Město ve 3D (dřív natvrdo ve scene.js a city.js z prototypu): stěna budov podle čtvrti (tóny 0–2 z ní zesvětlením, ztmavením a mlhou),
+ // akcent (tón 3), střechy a lemy (tóny 4, 5), zem čtvrti (groundDark = ztmavení), pastelové domy Violet Suburbs (mísí se s duskFog), mlha fog0,
+ // záře majáků (beacon) a pruhy u vody / ulic (water, lane).
+ city:{biomes:['#322749','#294559','#63384e','#44214e'],
+  accent:['#3d7fa8','#a8458f','#c27a3a','#3aa88f'],ground:['#4b3778','#10294a','#342b38','#101a2c'],groundDark:[0,0,.25,.25],
+  suburbs:['#8f6ad8','#c56fb5','#6f86e0','#e08aa0','#5fb0c8','#a58be8','#d98ad0'],far:'#7a4f9e',light:'#ffffff',shade:'#1a1240',roof:'#1d5246',trim:'#2b2352',
+  fog0:'#4a1d63',duskFog:'#9c5598',beacon:'#ff4d6d',water:'#2f6f9a',lane:'#3b2d6e'},
+ // Holub-kurýr a pára z ventilace (companion3d.js).
+ companion:{body:'#cfc4f4',head:'#e6defe',beak:'#ffb347',tail:'#8f7fd0',bread:'#f0b860',wing:'#a898e6',eye:'#ff4fc3',steam:'#f3e6ff',vent:'#2a2440',grate:'#5cf2ff'}
 };
 export const PALETTES={cyber:CYBER};
 export const palette=id=>PALETTES[id]??CYBER;

@@ -84,3 +84,9 @@ test('camera: rotation ≤ 3°, deterministic, nextDirector does not mutate',()=
  assert.deepEqual(run(6,{tempo:t=>1+t*.3}).frames,runs[1].frames);
  const s=mk(),copy=structuredClone(s),n=nextDirector(s,{x:100,y:20,v:40,t:1,dt:DT,flying:true});assert.deepEqual(s,copy);assert.notEqual(n,s);assert.equal(n.place,0);
 });
+test('camera: rest keeps the workshop width also with a narrower Follow width; a fresh director snaps even inside a QTE lock',()=>{
+ const s=mk({width:120});dir(s,{x:PLANE_OFFSET,y:HAND.y,v:0,t:0,dt:DT,flying:false});assert.ok(Math.abs(s.camera.width-POSE_REST.width)<1e-9,'rest width outside ZOOM_RANGE');
+ const v=cameraView(s.camera,PLANE_OFFSET,HAND.y);assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2);
+ const f={t:2,landed:false,events:[{type:'gust',at:1.5,phase:'interaction',result:null}]},g=mk({width:120});dir(g,{x:200,y:20,v:20,t:2,dt:DT,flying:true,f});
+ assert.equal(g.lock,true);assert.ok(Math.abs(g.camera.width-120)<1,`first locked frame is Follow, not rest: ${g.camera.width}`);
+});

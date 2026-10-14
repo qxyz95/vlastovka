@@ -17,8 +17,8 @@ export function createCity(ctx){
   index=placeIndex(index);const key=chunkKey(index,screen);if(cache.has(key))return cache.get(key);
   const c0=cityChunk(index),keep=b=>key==='0s'&&ctx.shop()||!b.shop,c={...c0,screen,blocks:c0.blocks.filter(keep),signs:c0.signs.filter(keep)},g=new THREE.Group(),geos=[];
   const solid=c.blocks.filter(b=>!b.beacon).concat(c.lamps.map(l=>({type:'box',x:l.x,w:.5,z:l.z,d:.5,h:l.h,biome:c.biome,tone:1})));
-  const glow=c.blocks.filter(b=>b.beacon).map(b=>({...b,glow:'#ff4d6d'})).concat(c.lamps.map(l=>({type:'box',x:l.x-.6,w:1.7,z:l.z,d:.9,h:.5,y:l.h,glow:l.color})));
-  for(let x=c.x0;x<c.x1-7;x+=14)glow.push({type:'box',x,w:7,z:3,d:.3,h:.05,glow:c.ground.water?'#2f6f9a':'#3b2d6e'});
+  const glow=c.blocks.filter(b=>b.beacon).map(b=>({...b,glow:M.city.beacon})).concat(c.lamps.map(l=>({type:'box',x:l.x-.6,w:1.7,z:l.z,d:.9,h:.5,y:l.h,glow:l.color})));
+  for(let x=c.x0;x<c.x1-7;x+=14)glow.push({type:'box',x,w:7,z:3,d:.3,h:.05,glow:c.ground.water?M.city.water:M.city.lane});
   const geo=bufferOf(mergeBlocks(solid,M.colorOf)),mesh=new THREE.Mesh(geo,M.building),gg=bufferOf(mergeBlocks(glow,b=>M.rgb(b.glow)));geos.push(geo,gg);
   mesh.castShadow=mesh.receiveShadow=true;g.add(mesh,new THREE.Mesh(geo,ctx.hull),new THREE.Mesh(gg,M.glow));
   for(const s of c.signs){const m=new THREE.Mesh(M.unit,M.sign(s.text,s.color,s.vertical));m.scale.set(s.w,s.h,1);m.position.set(s.x+s.w/2,s.y+s.h/2,s.z);g.add(m);}
