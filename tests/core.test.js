@@ -4,6 +4,7 @@ import {fresh,buy,createFlight,step,simulate,settle,bestAngle as passiveBestAngl
 import {PRICES} from '../src/config.js';
 import {decode} from '../src/storage.js';
 import {chargeAt,throwSettings} from '../src/throw.js';
+import {t} from '../src/i18n.js';
 const L=(power,paper,fold)=>({power,paper,fold});
 const bestAngle=(model,levels,power=1)=>{let best=[0,0];for(let a=5;a<=40;a++){const x=simulate(model,levels,2,0,1/60,{launch:throwSettings(a,power)}).x;if(x>best[0])best=[x,a];}return best;};
 test('deterministic flights, finite landing, timestep convergence and all upgrade levels',()=>{
@@ -63,7 +64,7 @@ test('upgrades are shared by both models; older saves migrate without loss',()=>
  const p=fresh();p.coins=100;p.best=120;
  assert.ok(buy(p,'power',1));p.model='glider';assert.ok(buy(p,'paper',1));assert.deepEqual(p.levels,L(1,1,0));assert.equal(p.coins,100-2*PRICES[0]);
  assert.deepEqual(decode(JSON.stringify(p)),p);
- const v1=decode(JSON.stringify({...fresh(),version:1,levels:L(3,2,1)}));assert.equal(v1.version,3);assert.deepEqual(v1.levels,L(3,2,1));
+ const v1=decode(JSON.stringify({...fresh(),version:1,levels:L(3,2,1)}));assert.equal(v1.version,4);assert.deepEqual(v1.levels,L(3,2,1));
  const v2=decode(JSON.stringify({...fresh(),version:2,levels:{dart:L(3,0,1),glider:L(1,4,0)}}));assert.deepEqual(v2.levels,L(3,4,1));
  assert.throws(()=>decode(JSON.stringify({...fresh(),version:2,levels:{dart:L(1,1,1)}})));
  assert.throws(()=>decode(JSON.stringify({...fresh(),levels:L(6,0,0)})));
@@ -73,6 +74,7 @@ test('angle hint points to the best passive angle for model, upgrades and power'
  assert.ok(dart>=15&&dart<=32);assert.ok(glider>dart);
  const x=a=>{const f=createFlight('dart',L(0,0,0),1,{x:0,y:0},throwSettings(a,1));f.events=[];while(!f.landed)step(f);return f.x;};
  assert.ok(x(dart)>=x(dart-5)&&x(dart)>=x(dart+5));
- assert.equal(angleHint(dart+2,dart),'Úhel sedí');assert.equal(angleHint(dart+5,dart),'Zkus o kus plošeji');
- assert.equal(angleHint(dart-12,dart),'Zkus mnohem strměji');
+ assert.equal(angleHint(dart+2,dart),'angle.ok');assert.equal(angleHint(dart+5,dart),'angle.flatter');assert.equal(angleHint(dart-12,dart),'angle.muchSteeper');
+ assert.equal(t(angleHint(dart+2,dart),{},'cs'),'Úhel sedí');assert.equal(t(angleHint(dart+5,dart),{},'cs'),'Zkus o kus plošeji');
+ assert.equal(t(angleHint(dart-12,dart),{},'en'),'Try much steeper');
 });

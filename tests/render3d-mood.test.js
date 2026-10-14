@@ -15,7 +15,7 @@ const walk=(o,p='',out={c:[],n:[]})=>{for(const [k,v] of Object.entries(o)){cons
 
 test('17 klíčů (16 míst + úsvit za cílem) a platné hex barvy',()=>{
  assert.equal(MOOD_KEYS.length,17);assert.equal(ROUTE.length,16);assert.ok(Math.abs(ROUTE_END-4876)<1);
- MOOD_KEYS.forEach((k,i)=>{assert.equal(k.name,ROUTE[i]?.name??'Úsvit');assert.ok(Math.abs(k.x-(i+.5)*SCREEN_METERS)<1e-9);
+ MOOD_KEYS.forEach((k,i)=>{assert.equal(k.name,ROUTE[i]?.name??'Dawn');assert.ok(Math.abs(k.x-(i+.5)*SCREEN_METERS)<1e-9);
   const {c}=walk(k);assert.ok(c.length>=17);for(const [p,v] of c)assert.match(v,HEX,`klíč ${i}${p}`);assert.equal(k.sky.length,4);});
  assert.ok(MOOD_KEYS[16].x>ROUTE_END&&MOOD_KEYS[16].dawn);
  for(const x of [0,700,2500,4000,4876,6000]){const {c}=walk(moodAt(x));for(const [p,v] of c)assert.match(v,HEX,`${x} m${p}`);}

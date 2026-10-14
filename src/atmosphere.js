@@ -1,3 +1,4 @@
+import {t as tr} from './i18n.js';
 import {activeEvent} from './events.js';
 import {theme,box} from './themes.js';
 export function drawAtmosphere(c,f,px,py,time,reduced=false){
@@ -12,7 +13,7 @@ export function drawAtmosphere(c,f,px,py,time,reduced=false){
  }else{
   const wing=reduced?0:Math.round(Math.sin(time*9)*5);r('#a7a6cc',x,y,21,11);r('#e0d9ee',x+16,y-5,9,9);r('#ffcf7c',x+25,y,5,3);r('#18223b',x+20,y-3,2,2);r('#77f5e6',x+3,y-6,10,8);r('#d0daeb',x-9,y-7+wing,15,5);r('#d0daeb',x+2,y-12-wing,14,5);
  }
- c.font='bold 10px monospace';const label=e.phase==='effect'?'':warning?'! PŘIPRAV SE':e.type==='gust'?'↓ KLEPNI':'↕ PODRŽ / PUSŤ';
+ c.font='bold 10px monospace';const label=e.phase==='effect'?'':tr(warning?'event.warning':e.type==='gust'?'event.tap':'event.holdRelease');
  if(label){const w=c.measureText(label).width+12;c.fillStyle='#141c32';c.fillRect(Math.round(Math.min(625-w,x-10)),Math.round(y-39),w,19);c.fillStyle='#eefaff';c.fillText(label,Math.min(625-w,x-10)+6,y-26);}
  c.restore();
 }

@@ -68,7 +68,7 @@ const blueprint={
   c.restore();
  },
  overlay(c){c.save();c.strokeStyle='rgba(234,243,255,.8)';c.lineWidth=1;c.strokeRect(476.5,322.5,152,28);c.beginPath();c.moveTo(476,336.5);c.lineTo(628,336.5);c.moveTo(560.5,322);c.lineTo(560.5,336);c.stroke();
-  c.fillStyle='rgba(234,243,255,.85)';c.font='9px monospace';c.fillText('VLAŠTOVKA',482,333);c.fillText('M 1:200',566,333);c.fillText('JUST THROW IT · LIST 01',482,347);c.restore();}
+  c.fillStyle='rgba(234,243,255,.85)';c.font='9px monospace';c.fillText('PAPER PLANE',482,333);c.fillText('M 1:200',566,333);c.fillText('JUST THROW IT · SHEET 01',482,347);c.restore();}
 };
 function ridgeLine(c,camera,speed,base,amp,seed){for(let x0=tileOffset(camera,speed);x0<640;x0+=960){c.beginPath();for(let x=0;x<=960;x+=12){const k=x/960*TAU,y=base-amp*(.55*Math.sin(k*2+seed)+.3*Math.sin(k*5+seed*2)+.15*Math.sin(k*11+seed*3));x?c.lineTo(x0+x,y):c.moveTo(x0+x,y);}c.stroke();}}
 

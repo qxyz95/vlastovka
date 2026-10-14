@@ -1,6 +1,7 @@
 // Game-feel state for one throw: screen shake (trauma), hitstop, squash & stretch, smoothed
 // rotation, trail, particles and pop-up texts. Pure data + maths, no DOM; drawn by fx-render.js.
 import {spring,wobble,noise1,clamp01} from './motion.js';
+import {t} from './i18n.js';
 export const FX={
  shakePx:7, shakeRad:.035, traumaDecay:1.1,      // trauma² drives shake (Eiserloh); scaled down for 640×360
  hitstop:{perfect:.09,success:.05,land:.12},      // seconds of frozen physics
@@ -16,9 +17,9 @@ export function fxEvent(fx,type,info={}){
  const add=(trauma,stop=0)=>{fx.trauma=clamp01(fx.trauma+trauma);fx.hitstop=Math.max(fx.hitstop,stop);};
  switch(type){
   case 'throw':add(.2+.3*(info.power??0));fx.stretch.v+=5+6*(info.power??0);fx.queue.push([3,6]);break;
-  case 'perfect':add(.35,FX.hitstop.perfect);fx.flash=.12;fx.stretch.v+=6;fx.queue.push([1,22]);popup(fx,'★ PERFEKTNÍ','perfect');break;
-  case 'success':add(.15,FX.hitstop.success);fx.stretch.v+=4;fx.queue.push([2,12]);popup(fx,'✓ ÚSPĚCH','success');break;
-  case 'miss':fx.stretch.v-=3;popup(fx,'○ BEZ BONUSU','miss');break;
+  case 'perfect':add(.35,FX.hitstop.perfect);fx.flash=.12;fx.stretch.v+=6;fx.queue.push([1,22]);popup(fx,t('popup.perfect'),'perfect');break;
+  case 'success':add(.15,FX.hitstop.success);fx.stretch.v+=4;fx.queue.push([2,12]);popup(fx,t('popup.success'),'success');break;
+  case 'miss':fx.stretch.v-=3;popup(fx,t('popup.miss'),'miss');break;
   case 'boost':fx.speedLines=1;fx.queue.push([3,10]);break;
   case 'milestone':fx.queue.push([1,14]);if(info.text)popup(fx,info.text,'milestone');break;
   case 'land':add(.25+.25*clamp01((info.speed??0)/30),FX.hitstop.land);fx.stretch.v-=7;fx.queue.push([0,28]);popup(fx,info.text,'land');fx.landed=true;break;

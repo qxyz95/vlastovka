@@ -30,7 +30,7 @@ function resolve(f,e,result){
   else {f.carry=(result==='perfect'?HELP.birdPerfect:HELP.birdTime)*q;f.vx=Math.max(10,f.vx);f.vy=Math.max(.4,f.vy);}
  }
  e.doneAt=f.t+Math.max(1,e.type==='bird'?f.carry:0);
- f.feedback={success:'✓ Úspěch',perfect:'★ Perfektní',miss:'○ Bez bonusu'}[result];f.feedbackUntil=f.t+1;
+ f.feedback='feedback.'+result;// i18n key, ui.js translatesf.feedbackUntil=f.t+1;
  return result;
 }
 export function updateEvents(f){

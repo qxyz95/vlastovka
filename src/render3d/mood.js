@@ -50,7 +50,7 @@ const KEYS=[
  K(['#5a7ad8','#9ab8f0','#ffd0e0','#fff0b0'],{sun:S('#fffbe8','#ffc58a',.08,1),key:{color:'#ffe0b0',intensity:1.9,dir:[-.7,.4,.55]},rim:{color:'#ffb0d0',intensity:.9},
   hemi:{sky:'#d0e2ff',ground:'#8a74b0',intensity:1.7},fog:{color:'#e8c8e0',near:480,far:1850},windows:.15,windowColor:'#ffe8b0',neon:.15,night:0,trail:'#ffe14d',particles:{color:'#fff7d0',density:.3,kind:'motes'}})];
 // Klíč i leží ve středu místa i; úsvit (16) ve středu „17. místa“ za cílem 4 876 m. Mimo krajní klíče se drží krajní nálada.
-export const MOOD_KEYS=KEYS.map((m,i)=>Object.freeze({...m,x:(i+.5)*SCREEN_METERS,name:ROUTE[i]?.name??'Úsvit',district:Math.min(3,Math.floor(i/SCREENS_PER_BIOME)),dawn:i===16}));
+export const MOOD_KEYS=KEYS.map((m,i)=>Object.freeze({...m,x:(i+.5)*SCREEN_METERS,name:ROUTE[i]?.name??'Dawn',district:Math.min(3,Math.floor(i/SCREENS_PER_BIOME)),dawn:i===16}));
 const isHex=v=>typeof v==='string'&&v[0]==='#';
 // Prolnutí dvou nálad: barvy mix, čísla lerp, směr normalizovaný, kind podle bližšího klíče.
 function blend(a,b,k){

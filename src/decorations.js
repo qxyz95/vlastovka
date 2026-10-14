@@ -25,7 +25,7 @@ export function drawDecorations(c,state,f,px,py,reduced){
  case 'spotlight':c.fillStyle='#b7cdeb';c.globalAlpha*=.25;c.beginPath();c.moveTo(460,300);c.lineTo(100+350*t,50);c.lineTo(230+350*t,50);c.fill();break;
  case 'train':for(let i=0;i<4;i++){r('#3f3c59',x+i*68,210,63,20);for(let j=0;j<4;j++)r('#e8b287',x+i*68+5+j*13,214,8,7);}r('#7e6087',0,234,640,3);break;
  case 'steam':for(let i=0;i<6;i++)r('#b7a5c4',410+Math.sin(i+t*3)*12,255-i*12-t*30,24+i*5,14);break;
- case 'drone':r('#777794',x,y,34,12);r('#5ee8e0',x-13,y-5,18,2);r('#5ee8e0',x+27,y-5,18,2);r('#e568c2',x+5,y+18,54,22);c.fillStyle='#211a39';c.font='10px monospace';c.fillText('LEŤ!',x+13,y+33);break;
+ case 'drone':r('#777794',x,y,34,12);r('#5ee8e0',x-13,y-5,18,2);r('#5ee8e0',x+27,y-5,18,2);r('#e568c2',x+5,y+18,54,22);c.fillStyle='#211a39';c.font='10px monospace';c.fillText('FLY!',x+13,y+33);break;
  case 'hologram':c.strokeStyle='#63e8e5';c.lineWidth=2;c.beginPath();c.moveTo(400,140);c.lineTo(490,164);c.lineTo(426,177);c.closePath();c.stroke();for(let i=0;i<7;i++)r('#56d9ec',410,184+i*5,70-i*8,1);break;
  }
  c.restore();

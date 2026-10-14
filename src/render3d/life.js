@@ -1,15 +1,15 @@
 // Živá čtvrť Violet Suburbs (místa 1–4 trasy): čisté funkce bez three.js a bez DOM.
 // Rozmístění (auta, vlak, lidé, komíny, prádlo, vlajky, okna, ptáci, balóny, drony), časování pohybu a plán reakcí.
 // Vlastní D1 (Suburbs). Testy: tests/render3d-life.test.js. Kreslí je life3d.js.
-import {SCREEN_METERS} from '../scenes.js';
+import {SCREEN_METERS,ROUTE,DISTRICTS} from '../scenes.js';
+import EN from '../locales/en.js';
 import {random} from '../random.js';
 import {TIMING} from '../events.js';
 import {cityChunk,chunkOffset,WINDOW_TILE} from './geometry.js';
 
 export const SUBURBS={x0:0,x1:4*SCREEN_METERS,screens:[0,1,2,3]};
-// Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.3; src/scenes.js je česky a neměníme ho).
-export const PLACE_EN=['Workshop & First Roofs','Market under the Antennas','Gardens at the Edge','Railway to the River','Warehouses by the Water','Crane Forest','Bridge over the Bay',"Lighthouse at the Pier's End",'Fields beyond the Bay','Wind Ridge','Mountain Saddle','Observatory above the Valley','Gates of the Metropolis','Sky Terraces','Broadcast Tower','Rooftop Harbor'];
-export const DISTRICT_EN=['VIOLET SUBURBS','MOON DOCKS','RED HORIZON','NEON CORE'];
+// Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.2), zdroj je slovník src/locales/en.js.
+export const PLACE_EN=ROUTE.map(r=>EN['place.'+r.kind]),DISTRICT_EN=DISTRICTS.map(d=>EN['district.'+d.id]);
 // Hlášky z 08 §7.1 a §7.2 (Bolts, Cyber Pigeon, Market Vent).
 export const BOLTS=["Oh. A paper plane. I used to deliver parcels. Then they invented you.","I logged your flight as 'weather'. Nobody reads my logs anyway.","Past the railway already? Send me a postcard. I'll pretend it's for me."];
 export const EVENT_TEXT={bird:{name:'CYBER PIGEON',hit:'Coo. Carbs delivered.',miss:'The pigeon kept the baguette.'},gust:{name:'MARKET VENT',hit:'Smells like dumplings. Feels like lift.',miss:'Just steam and regret.'}};

@@ -7,9 +7,9 @@
 //   nextDirector(prev,input)                           totéž bez mutace (kopie) pro čistý planFrame
 //   project(camera,[x,y,z],aspect) → {px,py,depth}    logické px 640×360;  cameraView(camera,X,Y) → {cam,px,py,ground,k} (smlouva view)
 // Testy: tests/render3d-camera.test.js.
-import {SCREEN_METERS,ROUTE,PIXELS_PER_METER} from '../scenes.js';
+import {SCREEN_METERS,ROUTE,DISTRICTS,PIXELS_PER_METER} from '../scenes.js';
 import {damp} from '../motion.js';
-import {PLACE_EN,DISTRICT_EN,smooth} from './life.js';
+import {smooth} from './life.js';
 import {follow,sideCamera,tempoZoom,tempoPx} from './geometry.js';
 import {HAND,REST as POSE_REST} from './pose.js';
 export const TITLE={fadeIn:.3,hold:1.9,fadeOut:.6},PUNCH={dur:1.6,depth:.13,yaw:2.5},SPEED={from:24,span:90,out:.45},ZOOM_RANGE=[.8,1.5];
@@ -26,7 +26,7 @@ export const districtZoom=(age,dur=DISTRICT.dur)=>age==null||age<0||age>=dur||du
 // Oddálení podle zobrazené rychlosti (m/s): do 24 m/s nic, pak plynule až o 45 %.
 export const speedZoom=v=>1+SPEED.out*smooth((v-SPEED.from)/SPEED.span);
 export const placeAt=x=>Math.floor(Math.max(0,x)/SCREEN_METERS);
-export function placeTitle(place){const i=place%ROUTE.length,d=Math.floor(i/4);return {title:PLACE_EN[i],sub:`${DISTRICT_EN[d]} · ${i%4+1}/4`,district:d,first:i%4===0};}
+export function placeTitle(place){const i=place%ROUTE.length,d=Math.floor(i/4);return {title:ROUTE[i].name,sub:`${DISTRICTS[d].name} · ${i%4+1}/4`,district:d,first:i%4===0};}
 // QTE zámek: od začátku varování (e.at) do 0,3 s po vyhodnocení (resolvedAt).
 export function qteLock(f){if(!f?.events||f.landed)return false;return f.events.some(e=>e.phase==='warning'||e.phase==='interaction'||(e.phase==='waiting'&&f.t>=e.at)||(e.phase==='effect'&&!(f.t>=(e.resolvedAt??-Infinity)+LOCK_AFTER)));}
 // Kolik s zbývá do začátku další události (nejdřívější možný čas podle at/gap; 0 = právě běží). Bez událostí Infinity.

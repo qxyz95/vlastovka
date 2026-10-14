@@ -6,6 +6,7 @@ import {activeEvent} from '../events.js';
 import {palette,CYBER} from './palette.js';
 import {eventView} from './events-view.js';
 import {fxMap} from './fx-map.js';
+import {t} from '../i18n.js';
 const TAU=Math.PI*2,AIM_VIEW={cam:0,px:148,py:258,ground:300,k:1};
 // Písmo na úzké obrazovce: 10px text v 640 logických px má na 360 css px jen 5,6 px; zvětší se, aby měl aspoň ~9 css px (strop 2×).
 export const uiScale=cssWidth=>cssWidth>0?Math.min(2,Math.max(1,576/cssWidth)):1;
@@ -84,6 +85,6 @@ export function drawAim(c,aim,view=AIM_VIEW,p=CYBER){
  const k=p.aim,charge=aim.held?aim.charge??0:0,a=(aim.angle??15)*Math.PI/180,len=65+charge*45;
  c.save();c.translate(view.px,view.py);c.rotate(-a);c.strokeStyle=k.arrow;c.lineWidth=3;c.setLineDash([7,5]);c.beginPath();c.moveTo(12,0);c.lineTo(len,0);c.stroke();
  c.setLineDash([]);c.beginPath();c.moveTo(len-10,-6);c.lineTo(len,0);c.lineTo(len-10,6);c.stroke();c.restore();
- c.save();c.fillStyle=k.panel;c.fillRect(205,168,265,37);c.fillStyle=k.text;c.font='bold 13px monospace';c.fillText(aim.held?'RELEASE AT PEAK POWER':'AIM AND HOLD TO THROW',220,191);
+ c.save();c.fillStyle=k.panel;c.fillRect(205,168,265,37);c.fillStyle=k.text;c.font='bold 13px monospace';c.fillText(t(aim.held?'aim.panelHeld':'aim.panelIdle'),220,191);
  c.fillStyle=k.panel;c.fillRect(205,211,265,14);c.fillStyle=k.bar;c.fillRect(207,213,261*charge,10);c.strokeStyle=k.cap;c.lineWidth=1;c.strokeRect(449,212,19,12);c.restore();
 }
