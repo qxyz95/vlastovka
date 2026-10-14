@@ -275,3 +275,203 @@ body[data-theme=blueprint] .scene{border:1px solid #eaf3ff;box-shadow:none;outli
 body[data-theme=blueprint] .score-card,body[data-theme=blueprint] .result-actions button{background:#163c6d;border:1px solid #eaf3ff;text-shadow:none}body[data-theme=blueprint] .score-card dd,body[data-theme=blueprint] .total{color:#ffd27a}body[data-theme=blueprint] #result h2{color:#eaf3ff;text-shadow:none}
 body[data-theme=dusk] .scene{border:0;border-radius:14px;box-shadow:0 20px 50px #0007}body[data-theme=dusk] h1{font-weight:300;letter-spacing:0}body[data-theme=dusk] button{border-radius:999px}body[data-theme=dusk] aside{border-radius:14px}
 body[data-theme=dusk] .score-card,body[data-theme=dusk] .result-actions button{background:#2b1a3acc;border:1px solid #f6a96b66;border-radius:14px;text-shadow:none;box-shadow:none}body[data-theme=dusk] .score-card dd,body[data-theme=dusk] .total{color:#f6a96b}body[data-theme=dusk] #result h2{color:#ffe0a3;text-shadow:none;font-family:inherit;font-weight:300}
+
+/* =====================================================================================================
+   Papírové město (?styl=papir, dávka P4): bible research/design/05-styl-papir.md kap. 2, 6, 8, 11; spec 06-papir-ctvrt1.md.
+   Platí jen pod body[data-styl=papir] (nastaví src/ui.js). Bez příznaku se nic nemění: primitivní tokeny na :root jsou nová,
+   jinde nepoužitá jména. Vrstvy 2 a 3 se musí deklarovat znovu celé (vlastní vlastnosti dědí už dosazené hodnoty z :root).
+   Komponenty čtou jen vrstvu 3 nebo 2; varianty tlačítek jen přenastaví tokeny --btn-* (znovupoužitelné pro menu 07).
+   Kontrasty (WCAG, spočítáno z hex): text graphite×cream 13,9 · graphite×card 12,8 · graphite×desk 8,8 · pencil×cream 5,6 ·
+   pencil×card 5,1 · pencil-700×desk 5,9 · pencil-700×cream 9,4 · mustard-800×cream 5,5 · mustard-800×card 5,1 ·
+   cream×tomato-600 4,8 · cream×tomato-700 6,1 · graphite×mustard-400 6,2 · cream×graphite 13,9 · graphite×paper 15,0.
+   Grafika: cobalt×desk 3,8 / ×cream 6,0 · teal×cream 4,4 / ×card 4,1 · tomato×cream 4,0 / ×card 3,7 · warm-grey×cream 3,5 / ×card 3,2 ·
+   tomato-600×desk 3,0 · jehla graphite×teal 3,2 / ×tomato 3,5. Nevyhovuje a proto se NEPOUŽÍVÁ: pencil×desk 3,6, mustard-800×desk 3,5,
+   teal×desk 2,8, warm-grey×desk 2,2, teal jako malý text (4,4), tomato-500 jako text pod 19 px tučně.
+   ===================================================================================================== */
+:root{
+ /* 1 primitivní (bible 05 kap. 2.1, = PAPER_TOKENS v src/render3d/palette.js) */
+ --cream-50:#fbf6ec;--card-100:#f4ecdc;--tape-200:#efe0a8;--desk-300:#d9c4a0;--kraft-400:#c9a57c;--kraft-600:#9c7a55;
+ --graphite-900:#2a2622;--pencil-600:#6b6158;--pencil-700:#4a4038;--warm-grey-500:#8c8379;
+ --tomato-500:#d9472b;--tomato-600:#c43f25;--tomato-700:#a8341e;--teal-600:#13807d;--mustard-400:#e2a43a;--mustard-800:#8a5a00;--cobalt-600:#2456c9;
+ --umber-950:#3c2814;/* jen stín zvednutého papíru v UI (papir.css rgba(60,40,20)) */
+ --font-paper-display:"Trebuchet MS","Segoe UI Semibold","Segoe UI","Avenir Next",system-ui,sans-serif;
+ --font-paper-body:"Segoe UI","Avenir Next",system-ui,sans-serif;
+ --font-paper-hand:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
+html:has(body[data-styl=papir]){color-scheme:light;background:var(--desk-300)}
+body[data-styl=papir]{color-scheme:light;
+ /* 2 sémantické: role bible kap. 2.2 a 8 */
+ --ink:var(--graphite-900);--text:var(--graphite-900);--dim:var(--pencil-700);--dim-on-card:var(--pencil-600);--dim-on-desk:var(--pencil-700);
+ --paper:#ffffff;--card:var(--cream-50);--card2:var(--card-100);--desk:var(--desk-300);
+ --color-success:var(--teal-600);--color-perfect:var(--tomato-500);--color-reward:var(--mustard-400);--color-reward-text:var(--mustard-800);
+ --color-miss:var(--warm-grey-500);--color-warning:var(--graphite-900);--focus:var(--cobalt-600);
+ --display:var(--font-paper-display);--body:var(--font-paper-body);--hand:var(--font-paper-hand);
+ --lift:0 1px 0 color-mix(in srgb,var(--umber-950) 12%,transparent),0 4px 10px color-mix(in srgb,var(--umber-950) 22%,transparent);
+ --lift-hi:0 2px 0 color-mix(in srgb,var(--umber-950) 12%,transparent),0 12px 26px color-mix(in srgb,var(--umber-950) 32%,transparent);
+ --lift-press:0 1px 2px color-mix(in srgb,var(--umber-950) 20%,transparent);
+ --r:4px;--r-dialog:4px;--frame:2px;--tilt-l:-1deg;--tilt-r:1.2deg;--tilt-label:-1.5deg;
+ /* jména starého UI přemapovaná na papír, aby nepřepsaná pravidla výše dávala smysl */
+ --night:var(--desk);--plate:var(--card);--plate2:var(--card2);--plate-hover:var(--paper);--mute:var(--color-miss);
+ --coin:var(--color-reward);--coin-hover:color-mix(in srgb,var(--mustard-400) 70%,var(--paper));--ok:var(--color-success);
+ --shadow:var(--lift);--shadow-sm:var(--lift);--shadow-press:var(--lift-press);
+ /* 3 komponentové */
+ --page-bg:var(--desk);--page-glow:transparent;--page-grain:color-mix(in srgb,var(--kraft-600) 14%,transparent);--page-grain-hi:color-mix(in srgb,var(--paper) 18%,transparent);
+ --rule:color-mix(in srgb,var(--pencil-700) 45%,transparent);
+ --panel-bg:var(--card);--panel-border:transparent;--tape:var(--tape-200);--tag-bg:var(--card);--tag-fg:var(--text);--tag-strong-bg:var(--ink);--tag-strong-fg:var(--card);
+ --btn-bg:var(--card);--btn-bg-hover:var(--paper);--btn-fg:var(--text);--btn-border:transparent;--btn-edge-h:3px;
+ --btn-edge:color-mix(in srgb,var(--desk-300) 80%,var(--graphite-900));--btn-edge-hover:var(--btn-edge);
+ --btn-primary-bg:var(--tomato-600);--btn-primary-bg-hover:var(--tomato-700);--btn-primary-fg:var(--card);
+ --btn-primary-edge:var(--tomato-700);--btn-primary-edge-hover:color-mix(in srgb,var(--tomato-700) 60%,var(--graphite-900));
+ --btn-buy-bg:var(--color-reward);--btn-buy-bg-hover:var(--coin-hover);--btn-buy-fg:var(--ink);--btn-buy-edge:var(--mustard-800);
+ --btn-disabled-fg:var(--dim-on-desk);--btn-disabled-border:var(--dim-on-desk);
+ --btn-pressed-ring:var(--ink);
+ --brand-fg:var(--text);--print-shift:transparent;--wallet-bg:var(--card);--wallet-fg:var(--color-reward-text);
+ --nav-fg:var(--dim-on-desk);--nav-current:var(--text);
+ --scene-border:var(--card);--scene-bg:var(--card);--scene-frame:6px;
+ --hud-bg:transparent;--hud-bg-mid:transparent;--hud-label:var(--dim-on-card);--hud-value:var(--text);--hud-reward:var(--color-reward-text);
+ --label-bg:var(--card);
+ --banner-bg:var(--card);--banner-fg:var(--text);--banner-mark:var(--color-reward);
+ --qte-track:var(--card2);--qte-track-border:var(--color-miss);--qte-zone-ok:var(--color-success);--qte-zone-perfect:var(--color-perfect);
+ --qte-needle:var(--ink);--qte-needle-halo:var(--card);--qte-perfect-hatch:color-mix(in srgb,var(--graphite-900) 22%,transparent);--qte-perfect-edge:var(--card);--qte-star:var(--card);
+ --charge-track:var(--card2);--charge-track-border:var(--color-miss);--charge-fill:var(--ink);--charge-peak:var(--color-perfect);
+ --node-price:var(--color-reward-text);--node-done:var(--text);--node-done-edge:var(--color-success);--node-link:var(--dim-on-desk);
+ --model-selected-bg:var(--paper);--model-selected-ring:var(--ink);
+ --score-value:var(--text);--score-total:var(--color-reward-text);--progress-bar:var(--ink);
+ --scrim:color-mix(in srgb,var(--graphite-900) 35%,transparent);--pause-veil:color-mix(in srgb,var(--desk-300) 78%,transparent);
+ background:radial-gradient(var(--page-grain) 1px,transparent 1.4px) 0 0/7px 7px,radial-gradient(var(--page-grain-hi) 1px,transparent 1.4px) 3px 5px/11px 11px,var(--page-bg);
+ color:var(--text);font-family:var(--body)}
+/* Povrchy karet: slabý text smí být pencil-600 (na stole jen pencil-700, kap. 2.4) */
+body[data-styl=papir] :is(.brand,.wallet,.hud,#scene-label,#milestone-banner,aside,.model:not(:disabled),.score-card,dialog,#flight,#aim,.bonus-empty){--dim:var(--dim-on-card)}
+/* Písmo: systémové humanistické, nikdy zúžené (kap. 8) */
+body[data-styl=papir] *,body[data-styl=papir] :is(#scene-label,#milestone-banner,#paused,#aim label,#charge-label,#result h2,#flight h2,#action){font-stretch:normal}
+body[data-styl=papir] :is(h1,h2,h3){font-weight:700;letter-spacing:-.01em;color:var(--text)}
+body[data-styl=papir] p{color:var(--dim)}
+
+/* ---------- tlačítka: výchozí, hover, stisk, focus, zakázaný; varianty jen přenastaví tokeny ---------- */
+body[data-styl=papir] button{font-family:var(--display);font-weight:700;letter-spacing:0;color:var(--btn-fg);background:var(--btn-bg);border:var(--frame) solid var(--btn-border);border-radius:var(--r);
+ box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);transition:transform var(--t-micro) var(--ease)}
+@media(hover:hover){body[data-styl=papir] button:hover:not(:disabled){background:var(--btn-bg-hover);box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge-hover),var(--lift);transform:translateY(-1px)}}
+body[data-styl=papir] button:active:not(:disabled){transform:translateY(var(--btn-edge-h));box-shadow:0 0 0 var(--btn-edge),var(--lift-press)}
+body[data-styl=papir] button:disabled{background:transparent;color:var(--btn-disabled-fg);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
+body[data-styl=papir] .primary{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
+/* Výsledek: „Házet znovu“ je hlavní akce (06, Struktura menu, bod 3) */
+body[data-styl=papir] #retry{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
+/* Nákup utrácí mince: hořčicová = hodnota (kap. 2.2) */
+body[data-styl=papir] #buy{--btn-edge:var(--btn-buy-edge);--btn-edge-hover:var(--btn-buy-edge)}
+body[data-styl=papir] .quiet{--btn-edge-h:0px;background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);font-family:var(--body);font-weight:600;text-decoration-color:var(--rule)}
+@media(hover:hover){body[data-styl=papir] .quiet:hover:not(:disabled){background:transparent;box-shadow:none;color:var(--text);text-decoration-color:currentColor;transform:none}}
+body[data-styl=papir] .quiet:active:not(:disabled){transform:none;box-shadow:none;color:var(--text)}
+/* Přepínače (jazyk, styl 2D): stisknuté = grafitový rámeček uvnitř + bílý papír, ne jen barva */
+body[data-styl=papir] :is(.lang-picker,.theme-picker) button{--btn-edge-h:2px;color:var(--dim-on-card)}
+body[data-styl=papir] :is(.lang-picker,.theme-picker) button[aria-pressed=true],body[data-styl=papir] :is(.lang-picker,.theme-picker) button[aria-pressed=true]:hover:not(:disabled){background:var(--paper);color:var(--text);box-shadow:inset 0 0 0 2px var(--btn-pressed-ring),var(--lift)}
+
+/* ---------- hlavička, navigace, texty na stole ---------- */
+body[data-styl=papir] header{border-bottom:2px dashed var(--rule)}
+body[data-styl=papir] .brand{color:var(--brand-fg);background:var(--card);padding:6px 12px 7px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-label);text-shadow:none;letter-spacing:-.01em;font-weight:700}
+body[data-styl=papir] .brand span{color:var(--dim);letter-spacing:.14em;font-weight:700}
+body[data-styl=papir] .wallet{box-shadow:var(--lift);font-weight:700}
+body[data-styl=papir] .page-nav a{color:var(--nav-fg);letter-spacing:.06em;border-bottom-width:3px}
+body[data-styl=papir] .page-nav a:hover{color:var(--nav-current)}
+/* aktuální stránka: grafitová linka (tvar) + páska (ozdoba) */
+body[data-styl=papir] .page-nav a[aria-current]{color:var(--nav-current);border-color:var(--nav-current);background:linear-gradient(transparent 62%,var(--tape) 62%)}
+body[data-styl=papir] .eyebrow{color:var(--dim);letter-spacing:.12em}
+body[data-styl=papir] #journey-story{font-family:var(--hand);color:var(--dim-on-desk)}/* jediná ručně psaná řádka hlavní obrazovky (kap. 8) */
+/* Varování = grafitový štítek s krémovým textem (kap. 2.2), ne nová barva */
+body[data-styl=papir] #warning{width:fit-content;max-width:100%;padding:4px 10px;border-radius:2px;background:var(--tag-strong-bg);color:var(--tag-strong-fg);rotate:var(--tilt-l)}
+body[data-styl=papir] footer{border-top:2px dashed var(--rule);color:var(--dim-on-desk);font-family:var(--display);letter-spacing:.04em}
+
+/* ---------- scéna a HUD: krémové štítky vpravo nahoře, pás letu volný (kap. 6, 8) ---------- */
+body[data-styl=papir] .scene{border:var(--scene-frame) solid var(--scene-border);border-radius:3px;box-shadow:var(--lift-hi);background:var(--scene-bg)}
+body[data-styl=papir] .hud{justify-content:flex-end;align-items:flex-start;gap:var(--s2);padding:var(--s3) var(--s3) 0;background:none}
+body[data-styl=papir] .hud span{display:block;padding:5px 10px 6px;border-radius:2px;background:var(--tag-bg);box-shadow:var(--lift);rotate:var(--tilt-l);
+ font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--hud-label);text-shadow:none}
+body[data-styl=papir] .hud span:nth-child(even){rotate:var(--tilt-r)}
+body[data-styl=papir] .hud b{min-width:7ch;margin-top:2px;font-family:var(--display);font-weight:700;font-size:19px;line-height:1.15;color:var(--hud-value);text-shadow:none}
+body[data-styl=papir] .hud #flight-reward{color:var(--hud-reward)}
+body[data-styl=papir] #scene-label{background:var(--label-bg);color:var(--tag-fg);padding:4px 10px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-l);letter-spacing:.08em;font-weight:700}
+/* zvýraznění čtvrti: obrácený štítek (světlost, ne odstín) + páska */
+body[data-styl=papir] #scene-label.district-highlight{background:var(--tag-strong-bg);color:var(--tag-strong-fg);border-left:0;padding-left:10px}
+body[data-styl=papir] #milestone-banner{display:flex;align-items:center;gap:var(--s2);color:var(--banner-fg);background:var(--banner-bg);border:0;border-radius:2px;box-shadow:var(--lift-hi);rotate:var(--tilt-l);font-weight:700;letter-spacing:0;padding:var(--s2) var(--s4)}
+body[data-styl=papir] #milestone-banner::before{content:'';flex:none;width:.85em;height:.85em;border-radius:50%;background:var(--banner-mark);box-shadow:inset 0 0 0 .12em var(--ink)}/* hořčicové kolečko s grafitovým lemem (kap. 7, milník) */
+body[data-styl=papir] #paused{background:var(--pause-veil);color:var(--text);font-weight:700;letter-spacing:.02em}
+
+/* ---------- panely: krémové karty, některé s páskou ---------- */
+body[data-styl=papir] :is(aside,#flight,#aim,.score-card,.bonus-empty){background:var(--panel-bg);border:0;border-radius:var(--r);box-shadow:var(--lift)}
+body[data-styl=papir] :is(#flight,#aim){padding:var(--s4) var(--s5) var(--s5);margin-top:var(--s5)}
+body[data-styl=papir] aside{position:relative}
+body[data-styl=papir] :is(aside,#aim,dialog#result)::before{content:'';position:absolute;left:24px;top:-9px;width:70px;height:18px;background:var(--tape);opacity:.85;transform:rotate(-3deg);pointer-events:none}
+body[data-styl=papir] #aim{position:relative}
+body[data-styl=papir] aside p{color:var(--text)}
+body[data-styl=papir] aside p+p{color:var(--dim)}
+
+/* ---------- Dílna: modely, uzly ---------- */
+body[data-styl=papir] .model{position:relative}
+body[data-styl=papir] .model>span{color:var(--dim)}
+body[data-styl=papir] .model.selected,body[data-styl=papir] .model.selected:hover:not(:disabled){background:var(--model-selected-bg);color:var(--text);box-shadow:inset 0 0 0 2px var(--model-selected-ring),0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);rotate:var(--tilt-l)}
+body[data-styl=papir] .model.selected::before{content:'';position:absolute;right:20px;top:-9px;width:56px;height:16px;background:var(--tape);opacity:.9;transform:rotate(3deg);pointer-events:none}
+body[data-styl=papir] .model.selected>span{color:var(--dim-on-card)}
+body[data-styl=papir] .model:disabled>span{color:var(--dim-on-desk)}
+body[data-styl=papir] .node:not(:last-child)::after{height:2px;background:var(--node-link)}
+body[data-styl=papir] .node small{color:var(--node-price);font-family:var(--display)}
+/* koupeno: ✓ v textu + tyrkysová spodní hrana (úspěch), plocha card */
+body[data-styl=papir] .node.owned,body[data-styl=papir] .node.owned:hover:not(:disabled){background:var(--card2);color:var(--text);box-shadow:0 var(--btn-edge-h) 0 var(--node-done-edge),var(--lift)}
+body[data-styl=papir] .node.owned small{color:var(--node-done)}
+/* zamčeno: obrys tužkou, ještě nevystřižené */
+body[data-styl=papir] .node.locked,body[data-styl=papir] .node.locked:hover:not(:disabled){background:transparent;color:var(--dim-on-desk);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
+body[data-styl=papir] .node.locked small{color:var(--dim-on-desk)}
+body[data-styl=papir] .node.picked{outline:3px solid var(--ink);outline-offset:3px}
+body[data-styl=papir] .node.picked:focus-visible{outline-color:var(--focus)}
+
+/* ---------- míření a QTE lišta (úspěch tyrkysová, perfekt rajčatová + hvězda a krémové hrany, kap. 11) ---------- */
+body[data-styl=papir] #aim label{color:var(--text);font-weight:700}
+body[data-styl=papir] #aim input{accent-color:var(--ink)}
+body[data-styl=papir] :is(.charge-track,.timing){border:var(--frame) solid var(--charge-track-border);border-radius:var(--r);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--umber-950) 8%,transparent)}
+body[data-styl=papir] .timing{background:var(--qte-track);border-color:var(--qte-track-border)}
+body[data-styl=papir] .charge-track span{border-left:2px solid var(--card);background:repeating-linear-gradient(135deg,var(--charge-peak) 0 4px,color-mix(in srgb,var(--charge-peak) 55%,var(--card)) 4px 7px)}
+body[data-styl=papir] .perfect-zone{display:grid;place-items:center;box-shadow:inset 2px 0 var(--qte-perfect-edge),inset -2px 0 var(--qte-perfect-edge)}
+body[data-styl=papir] .perfect-zone::after{content:'★';content:'★'/'';font:700 15px/1 var(--display);color:var(--qte-star)}
+body[data-styl=papir] #needle{background:var(--qte-needle);box-shadow:0 0 0 2px var(--qte-needle-halo);border-radius:1px}
+body[data-styl=papir] #charge-label{font-weight:700;color:var(--text)}
+
+/* ---------- výsledek: papírová karta s páskou, vrchol = vzdálenost (kap. 8) ---------- */
+body[data-styl=papir] dialog#result{color:var(--text);background:var(--card);border:0;border-radius:var(--r-dialog);box-shadow:var(--lift-hi);rotate:-.6deg}
+body[data-styl=papir] dialog#result::before{left:50%;top:0;width:96px;height:20px;transform:translateX(-50%) rotate(2deg);opacity:.9}
+body[data-styl=papir] dialog::backdrop{background:var(--scrim)}
+/* titulek je jediná ručně psaná řádka výsledku („Delivered.“ v prototypu), čísla vždy --display */
+body[data-styl=papir] #result h2{font:400 clamp(26px,6vw,36px)/1.15 var(--hand);color:var(--text);text-shadow:none;letter-spacing:0}
+body[data-styl=papir] .score-card{background:var(--card2);box-shadow:none}
+body[data-styl=papir] .score-card dd{font-weight:700;color:var(--score-value)}
+body[data-styl=papir] :is(.reward-breakdown,.total){border-top:2px dashed var(--rule)}
+body[data-styl=papir] .total{color:var(--score-total);font-weight:700}
+body[data-styl=papir] #result-text{color:var(--text)}
+body[data-styl=papir] .result-progress progress{border:var(--frame) solid var(--charge-track-border);background:var(--card2)}
+body[data-styl=papir] .result-progress progress::-webkit-progress-bar{background:var(--card2)}
+body[data-styl=papir] .result-actions button span{font-family:var(--display);font-weight:700}
+
+/* ---------- Atlas (zatím prázdný) a odkazy ---------- */
+body[data-styl=papir] .bonus-empty{border:2px dashed var(--rule)}
+body[data-styl=papir] .bonus-symbol{color:var(--color-miss)}
+body[data-styl=papir] .back-link{color:var(--text);text-decoration-color:var(--rule)}
+body[data-styl=papir] .back-link:hover{color:var(--text);text-decoration-color:currentColor}
+
+/* ---------- telefon: štítek místa pod scénou, ve scéně jen vzdálenost a mince vpravo nahoře (kap. 6, 8; 06 Struktura menu bod 2) ---------- */
+@media(max-width:650px){
+ body[data-styl=papir]{--scene-frame:4px}
+ body[data-styl=papir] .scene{overflow:visible;margin-bottom:40px}
+ body[data-styl=papir] .scene:has(#scene-label:empty){margin-bottom:0}
+ body[data-styl=papir] #scene-label{top:calc(100% + var(--scene-frame) + var(--s2));bottom:auto;left:calc(-1 * var(--scene-frame));max-width:calc(100% + 2 * var(--scene-frame))}
+ body[data-styl=papir] .hud{padding:var(--s2) var(--s2) 0;gap:6px}
+ body[data-styl=papir] .hud span:has(#best),body[data-styl=papir] .hud span:has(#milestone){display:none}/* rekord je ve výsledku, milník ohlásí banner */
+ body[data-styl=papir] .hud span{padding:3px 7px 4px;font-size:10px;letter-spacing:.06em}
+ body[data-styl=papir] .hud b{font-size:16px}
+ body[data-styl=papir] :is(#flight,#aim){padding:var(--s3) var(--s4) var(--s4)}
+}
+@media(max-width:450px){
+ body[data-styl=papir] .hud b{font-size:14px}
+ body[data-styl=papir] .brand{rotate:-1deg}
+ body[data-styl=papir] dialog#result{rotate:none}
+}
+@media(prefers-reduced-motion:reduce){
+ /* bez posunů; stisk dál čitelný změnou spodní hrany (tvar), hover změnou plochy */
+ body[data-styl=papir] button:is(:hover,:active):not(:disabled){transform:none}
+}
+@media(forced-colors:active){body[data-styl=papir] :is(.hud span,#scene-label,#milestone-banner,aside,#flight,#aim,dialog#result,.score-card){border:1px solid CanvasText}body[data-styl=papir] button:not(:disabled){border-color:ButtonText}}
