@@ -97,3 +97,4 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   6. Půltón jen ve stínech budov.
 - **Pohlednice Atlasu bez výjimky (14. 10.):** půltón jen ve stínech platí přísně i pro pohlednice, vzor čtvrti v nebi (`ht-0…3`) se odstraní. Stopa letu dostane tušový lem (návrh art directora, beze změny voleb).
 - **Pořadí oprav grafiky (14. 10.):** dávka G0 (tokeny) až po commitu současné práce přes `/release`, pak G1, G2, P1, G3 souběžně ve worktree, P2 po dokončení češtiny v prototypu Atlasu.
+- **Pohlednice Railway (14. 10.):** zůstává s barvami jako ve 3D (tuš × obzor 7,9 : 1). Kritérium „tuš × nejsvětlejší pás ≥ 9 : 1“ platí pro referenční místo každé čtvrti (1, 5, 9, 13).
