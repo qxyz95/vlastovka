@@ -270,11 +270,12 @@ function measure(){
 // ---------- smyčka ----------
 let last=performance.now(),dirty=true;
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
- if(state.mode==='flight'){state.t+=dt;if(state.t>36)state.t=3.2;dirty=true;}
- if(dirty&&document.visibilityState==='visible'){const f=render();updateUi(f);dirty=state.mode==='flight';}
+ if(state.mode==='flight'||state.mode==='menu'){state.t+=dt*(state.mode==='menu'?.6:1);if(state.t>36)state.t=3.2;dirty=true;
+  if(state.mode==='flight'&&state.auto!=null&&state.t-state.auto>9)go('still');}
+ if(dirty&&document.visibilityState==='visible'){const f=render();updateUi(f);dirty=state.mode==='flight'||state.mode==='menu';}
  requestAnimationFrame(loop);}
 function set(o={}){const rebuild=o.style!=null&&o.style!==state.style||o.district!=null&&o.district!==state.district||!world;Object.assign(state,o);
- if(o.mode&&o.mode!=='flight')state.t=3.2;if(o.view)sizeStage();if(rebuild){build(state.style,state.district);skyKey='';}
+ if(o.mode&&!['flight','menu','pause','settings','atlas','workshop'].includes(o.mode))state.t=3.2;if(o.mode&&o.mode!=='flight')state.auto=null;if(o.view)sizeStage();if(rebuild){build(state.style,state.district);skyKey='';}
  const f=render();updateUi(f);dirty=true;if((rebuild&&!o.nocards)||o.cards)postcards();
  const u=new URL(location);u.searchParams.set('style',state.style);u.searchParams.set('d',state.district);u.searchParams.set('mode',state.mode);u.searchParams.set('view',state.view);history.replaceState(null,'',u);}
 document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.pick,v=k==='district'?+b.dataset.value:b.dataset.value;set({[k]:v});}));
@@ -283,4 +284,15 @@ addEventListener('keydown',e=>{const i=STYLES.findIndex(s=>s.id===state.style);i
 addEventListener('resize',()=>{sizeStage();dirty=true;});
 if(matchMedia('(prefers-reduced-motion: reduce)').matches&&state.mode==='flight')state.mode='still';
 sizeStage();build(state.style,state.district);set({});postcards();requestAnimationFrame(loop);
-window.__styly={set,measure,postcards,state,renderer,info:()=>({calls:renderer.info.render.calls,tris:renderer.info.render.triangles})};
+// ---------- průchod obrazovkami jako ve hře (maketa): menu → let → výsledek (a) → znovu / Dílna / Atlas / menu ----------
+const T={en:{tagline:'Fly to the horizon · by paper',throw:'Throw',workshop:'Workshop',atlas:'Atlas',settings:'Settings',paused:'Paused',resume:'Resume',menu:'Menu',language:'Language',music:'Music',sound:'Sound',motion:'Reduce motion',back:'Back',delivered:'Delivered',best:'New best',again:'Throw again',distance:'Distance',coins:'Coins',pause:'Pause',paper:'Paper',power:'Power',folds:'Folds'},
+ cs:{tagline:'Leť za obzor · po papíře',throw:'Házet',workshop:'Dílna',atlas:'Atlas',settings:'Nastavení',paused:'Pauza',resume:'Pokračovat',menu:'Menu',language:'Jazyk',music:'Hudba',sound:'Zvuky',motion:'Omezit pohyb',back:'Zpět',delivered:'Doručeno',best:'Nový rekord',again:'Házet znovu',distance:'Vzdálenost',coins:'Mince',pause:'Pauza',paper:'Papír',power:'Síla',folds:'Přehyby'}};
+function lang(id){state.lang=id;const d=T[id]??T.en;document.querySelectorAll('#stage [data-t]').forEach(e=>{e.textContent=d[e.dataset.t]??e.textContent;});
+ document.querySelectorAll('#stage [data-t-aria]').forEach(e=>e.setAttribute('aria-label',d[e.dataset.tAria]));document.querySelectorAll('#stage [data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===id)));}
+const OVER=['pause','settings','atlas','workshop'];let backTo='menu';
+function go(to){if(to==='back')to=backTo;if(OVER.includes(to)&&!OVER.includes(state.mode))backTo=state.mode;
+ if(to==='atlas')fillAtlas();set({mode:to});if(to==='flight'&&!OVER.includes(backTo)){state.t=3.2;state.auto=3.2;}else if(to==='flight')state.auto=state.t;backTo=OVER.includes(to)?backTo:to;}
+function fillAtlas(){const box=document.querySelector('#atlas-cards');if(!box)return;box.innerHTML='';box.dataset.style=state.style;document.querySelectorAll('#cards .card').forEach(c=>box.append(c.cloneNode(true)));}
+stage.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}const l=e.target.closest('[data-lang]');if(l)lang(l.dataset.lang);});
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(state.mode==='flight'||state.mode==='event')go('pause');else if(OVER.includes(state.mode))go('back');}});
+window.__styly={go,lang,set,measure,postcards,state,renderer,info:()=>({calls:renderer.info.render.calls,tris:renderer.info.render.triangles})};

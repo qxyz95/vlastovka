@@ -23,10 +23,15 @@
   <button data-pick="district" data-value="2">3 Horizont</button>
   <button data-pick="district" data-value="3">4 Jádro</button>
  </div>
- <div class="picks" role="group" aria-label="Záběr">
-  <button data-pick="mode" data-value="still">Výsledek</button>
+ <div class="picks" role="group" aria-label="Obrazovka">
+  <button data-pick="mode" data-value="menu">Menu</button>
   <button data-pick="mode" data-value="flight">Let</button>
   <button data-pick="mode" data-value="event">Událost</button>
+  <button data-pick="mode" data-value="pause">Pauza</button>
+  <button data-pick="mode" data-value="still">Výsledek</button>
+  <button data-pick="mode" data-value="settings">Nastavení</button>
+  <button data-pick="mode" data-value="atlas">Atlas</button>
+  <button data-pick="mode" data-value="workshop">Dílna</button>
  </div>
  <div class="picks" role="group" aria-label="Velikost">
   <button data-pick="view" data-value="desktop">1280×800</button>
@@ -41,7 +46,8 @@
    <canvas id="scene"></canvas>
    <div class="hud">
     <div class="hud-l"><small id="hud-district"></small><b id="hud-place"></b></div>
-    <div class="hud-r"><div><small>Distance</small><b id="hud-dist">0 m</b></div><div class="coins"><small>Coins</small><b><i class="coin" aria-hidden="true"></i>1,240</b></div></div>
+    <div class="hud-r"><div><small data-t="distance">Distance</small><b id="hud-dist">0 m</b></div><div class="coins"><small data-t="coins">Coins</small><b><i class="coin" aria-hidden="true"></i>1,240</b></div>
+     <button class="icon pause-btn" data-go="pause" aria-label="Pause" data-t-aria="pause"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.5" height="12"/><rect x="11.5" y="4" width="3.5" height="12"/></svg></button></div>
    </div>
    <div id="qte" aria-hidden="true">
     <svg viewBox="-50 -50 100 100" width="100" height="100">
@@ -54,11 +60,55 @@
     </svg>
     <span class="q-label">GUST! <em>Tap</em></span>
    </div>
-   <section class="result" aria-label="Výsledek hodu">
-    <small>Delivered</small>
+   <!-- Hlavní menu: název hry jen tady, živá scéna za ním -->
+   <section class="screen menu" aria-label="Main menu">
+    <div class="menu-coins"><i class="coin" aria-hidden="true"></i>1,240</div>
+    <div class="title"><small data-t="tagline">Fly to the horizon · by paper</small><h1>Just Throw It</h1></div>
+    <nav class="menu-actions">
+     <button class="cta" data-go="flight" data-t="throw">Throw</button>
+     <button class="btn" data-go="workshop" data-t="workshop">Workshop</button>
+     <button class="btn" data-go="atlas" data-t="atlas">Atlas</button>
+    </nav>
+    <button class="icon settings-btn" data-go="settings" aria-label="Settings" data-t-aria="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 2h3.4l.5 2.6 1.9.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.9 2.6.5v3.4l-2.6.5-.8 1.9 1.5 2.2-2.4 2.4-2.2-1.5-1.9.8-.5 2.6h-3.4l-.5-2.6-1.9-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.9L2 13.7v-3.4l2.6-.5.8-1.9-1.5-2.2 2.4-2.4 2.2 1.5 1.9-.8zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/></svg></button>
+   </section>
+   <!-- Pauza -->
+   <section class="screen pause panel-screen" aria-label="Pause">
+    <div class="panel"><h2 data-t="paused">Paused</h2>
+     <button class="cta" data-go="flight" data-t="resume">Resume</button>
+     <button class="btn" data-go="settings" data-t="settings">Settings</button>
+     <button class="btn" data-go="menu" data-t="menu">Menu</button></div>
+   </section>
+   <!-- Nastavení: jazyk, zvuk, pohyb (dřív v rohu stránky) -->
+   <section class="screen settings panel-screen" aria-label="Settings">
+    <div class="panel"><h2 data-t="settings">Settings</h2>
+     <div class="row"><span data-t="language">Language</span><span class="seg"><button data-lang="en" aria-pressed="true">English</button><button data-lang="cs" aria-pressed="false">Čeština</button></span></div>
+     <label class="row"><span data-t="music">Music</span><input type="range" min="0" max="100" value="60"></label>
+     <label class="row"><span data-t="sound">Sound</span><input type="range" min="0" max="100" value="80"></label>
+     <label class="row"><span data-t="motion">Reduce motion</span><input type="checkbox"></label>
+     <button class="cta" data-go="back" data-t="back">Back</button></div>
+   </section>
+   <!-- Výsledek: možnost (a) -->
+   <section class="result" aria-label="Result">
+    <button class="icon menu-btn" data-go="menu" aria-label="Menu" data-t-aria="menu"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="2.4"/><rect x="3" y="8.8" width="14" height="2.4"/><rect x="3" y="13.6" width="14" height="2.4"/></svg></button>
+    <small data-t="delivered">Delivered</small>
     <b class="big">1,412 m</b>
-    <p><span>New best</span><span class="val"><i class="coin" aria-hidden="true"></i>+86</span></p>
-    <button class="cta">Throw again</button>
+    <p><span data-t="best">New best</span><span class="val"><i class="coin" aria-hidden="true"></i>+86</span></p>
+    <button class="cta" data-go="flight" data-t="again">Throw again</button>
+    <div class="row2"><button class="btn" data-go="workshop" data-t="workshop">Workshop</button><button class="btn" data-go="atlas" data-t="atlas">Atlas</button></div>
+   </section>
+   <!-- Atlas a Dílna: jen náznak obrazovky (obsah navrhuje product-designer) -->
+   <section class="screen atlas panel-screen" aria-label="Atlas">
+    <div class="panel wide"><button class="icon close-btn" data-go="back" aria-label="Back" data-t-aria="back"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke-width="2.6" stroke="currentColor"/></svg></button>
+     <h2 data-t="atlas">Atlas</h2><div id="atlas-cards"></div>
+     <button class="cta" data-go="flight" data-t="throw">Throw</button></div>
+   </section>
+   <section class="screen workshop panel-screen" aria-label="Workshop">
+    <div class="panel"><button class="icon close-btn" data-go="back" aria-label="Back" data-t-aria="back"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke-width="2.6" stroke="currentColor"/></svg></button>
+     <h2 data-t="workshop">Workshop</h2>
+     <ul class="shop"><li><span data-t="paper">Paper</span><b>Kraft</b><button class="btn small"><i class="coin" aria-hidden="true"></i>900</button></li>
+      <li><span data-t="power">Power</span><b>2 / 3</b><button class="btn small"><i class="coin" aria-hidden="true"></i>450</button></li>
+      <li><span data-t="folds">Folds</span><b>1 / 3</b><button class="btn small"><i class="coin" aria-hidden="true"></i>300</button></li></ul>
+     <button class="cta" data-go="flight" data-t="throw">Throw</button></div>
    </section>
   </div>
  </div>
@@ -66,6 +116,7 @@
  <div id="cards"></div>
  <p class="note">Klávesy: ←/→ styl, 1–4 čtvrť. URL: <code>?style=a0|b|c|d|e&amp;d=0–3&amp;mode=still|flight|event&amp;view=desktop|phone|landscape</code>. Ladění: <code>__styly.measure()</code> (změřený kontrast vlaštovky), <code>__styly.info()</code>.</p>
 </main>
-<script type="module" src="./prototype/styly/main.js"></script>
+<!-- Výchozí: finální návrh B „Papírové město“ pro čtvrť 1 (papir.js). Srovnání 5 směrů z 04-nove-smery.md: ?srovnani=1 -->
+<script type="module">import(new URLSearchParams(location.search).has('srovnani')?'./prototype/styly/main.js':'./prototype/styly/papir.js');</script>
 </body>
 </html>

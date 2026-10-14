@@ -109,3 +109,10 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   3. Výsledek: skóre (vzdálenost, rekord, mince), tlačítka Házet znovu (hlavní), Dílna, Atlas a malá ikonka Menu.
   4. Z hlavní obrazovky pryč: logo v hlavičce, odkazy „01 / Workshop“, „02 / Atlas“, přepínač stylu, EN/CS a úvodní text.
   Rozložení nezávisí na grafickém stylu, vzhled převezme styl B.
+- **Bible Papírového města schválena (14. 10., `research/design/05-styl-papir.md`): vše podle doporučení.**
+  1. Pilíře „Diorama za úsvitu“: barevné papírové karty, opar, vlaštovka jako jediná nakreslená věc.
+  2. Paleta čtvrti 1 „ráno“ beze změny (perfekt rajčatový s hvězdou, úspěch tyrkysový, mince hořčicové).
+  3. Názvy čtvrtí: Sunrise Roofs / Střechy za úsvitu, Bright Harbor / Slunný přístav, Golden Fields / Zlatá pole, Lantern City / Město lampionů, a 4 nové názvy míst podle kap. 12.
+  4. Vlaštovka na úzkých obrazovkách o 15 % větší.
+  5. Písmo zatím systémové, rozhodne se po zahrání.
+  6. Postup podle `06-papir-ctvrt1.md`: příznak `?styl=papir`, dávky P0–P4; nové menu (`07-menu.md`) se staví až po dávkách P, protože sdílí `ui.js` a `style.css`.
