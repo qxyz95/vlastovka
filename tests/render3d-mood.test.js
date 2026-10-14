@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {MOOD_KEYS,moodAt,breath,ROUTE_END} from '../src/render3d/mood.js';
+import {MOOD_KEYS,moodAt,breath,ROUTE_END,CORE_HORIZON} from '../src/render3d/mood.js';
 import * as comic from '../src/render3d/comic.js';
 import * as verse from '../src/themes-verse.js';
 import {mix} from '../src/themes.js';
@@ -52,6 +52,17 @@ test('oblouk „za sluncem“: soumrak, měsíc, druhý západ, neony, úsvit; b
  assert.ok(K[16].sun.height>0&&K[16].night===0&&moodAt(ROUTE_END+SCREEN_METERS).dawn===1,'úsvit za cílem');
  for(let x=0;x<=5400;x+=50){const m=moodAt(x),avg=m.sky.reduce((s,c)=>s+lum(c),0)/4;assert.ok(avg>55,`obloha moc tmavá u ${x} m (${avg.toFixed(0)})`);
   assert.ok(lum(m.fog.color)>35&&m.hemi.intensity>=1.2,`scéna moc tmavá u ${x} m`);}
+});
+
+test('Neon Core: obzor tyrkysový #2aa99c → #7ff0d8 v klíčích 12–15, limetková nikde (bible kap. 2.3)',()=>{
+ assert.deepEqual([...CORE_HORIZON],['#2aa99c','#7ff0d8']);assert.ok(Object.isFrozen(CORE_HORIZON));
+ for(let i=12;i<16;i++){assert.equal(MOOD_KEYS[i].district,3);assert.deepEqual(MOOD_KEYS[i].sky.slice(2),[...CORE_HORIZON],`klíč ${i}`);}
+ const LIME=['#cce65a','#d2ee48','#c4dc74','#e8d070'],hsv=h=>{const [r,g,b]=rgb(h),M=Math.max(r,g,b),d=M-Math.min(r,g,b);
+  const H=!d?0:M===r?60*(((g-b)/d+6)%6):M===g?60*((b-r)/d+2):60*((r-g)/d+4);return [H,M?d/M:0];};
+ for(const k of MOOD_KEYS)for(const [p,v] of walk(k).c)assert.ok(!LIME.includes(v),`${k.name}${p}`);
+ for(let x=0;x<=5400;x+=5)moodAt(x).sky.forEach((c,i)=>{const [H,S]=hsv(c);assert.ok(!(H>=60&&H<=140&&S>.3),`zelený pás ${i} u ${x} m: ${c}`);});
+ const ink='#15101f',L=h=>{const [r,g,b]=rgb(h).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*r+.7152*g+.0722*b;},cr=(a,b)=>(Math.max(L(a),L(b))+.05)/(Math.min(L(a),L(b))+.05);
+ assert.ok(cr(ink,'#7ff0d8')>=13.5&&cr(ink,'#2aa99c')>=6.3,'tuš × obzor podle bible (13,6 a 6,4)');
 });
 
 test('breath tlumí pozadí, popředí nechává',()=>{

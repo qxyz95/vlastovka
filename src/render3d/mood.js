@@ -13,6 +13,8 @@ const lerp=(a,b,k)=>a+(b-a)*k,norm=v=>{const l=Math.hypot(...v)||1;return v.map(
 export const ROUTE_END=ROUTE.length*SCREEN_METERS;// 4 876 m
 const S=(color,halo,height,alpha)=>({color,halo,height,alpha}),OFF=S('#ffe6b8','#ff9e8a',-.2,0),MOON_OFF={color:'#f4f8ff',height:.1,alpha:0};
 const K=(sky,o)=>({sky,sun:OFF,sun2:OFF,moon:MOON_OFF,...o});
+// Obzor Neon Core (místa 12–15): 3. pás a obzor tyrkysové, ne limetkové (bible kap. 2.3, rozhodnutí 14. 10.).
+export const CORE_HORIZON=Object.freeze(['#2aa99c','#7ff0d8']);
 // Pořadí = ROUTE (0–15), 16 = úsvit. kind částic: fireflies, drizzle, pollen, snow, sparks, motes.
 const KEYS=[
  K(['#3a2a7a','#7a4fb8','#ff9ec4','#ffc58a'],{sun:S('#ffe6b8','#ffb38a',-.02,.9),key:{color:'#ffb38a',intensity:1.3,dir:[.8,.25,.5]},rim:{color:'#ff6fb5',intensity:.9},
@@ -39,13 +41,13 @@ const KEYS=[
   hemi:{sky:'#ffa8c8',ground:'#5a3a80',intensity:1.5},fog:{color:'#c8708a',near:400,far:1550},windows:.08,windowColor:'#ffd27a',neon:0,night:.15,trail:'#ffd23f',particles:{color:'#ffffff',density:.4,kind:'snow'}}),
  K(['#2a226e','#5a3a9e','#b46aa8','#ff9e8a'],{sun2:S('#ffc0a0','#ff8a9a',-.06,.4),key:{color:'#e0a8d0',intensity:1.3,dir:[.6,.4,.6]},rim:{color:'#c77dff',intensity:1},
   hemi:{sky:'#a898f0',ground:'#3e2a6a',intensity:1.4},fog:{color:'#7a5098',near:380,far:1450},windows:.25,windowColor:'#ffe0a0',neon:.2,night:.55,trail:'#ffb0d8',particles:{color:'#f0e8ff',density:.25,kind:'snow'}}),
- K(['#1c1c52','#353c9e','#3a92b4','#c4dc74'],{key:{color:'#c77dff',intensity:1,dir:[0,.9,.4]},rim:{color:'#5cf2ff',intensity:1.2},
+ K(['#1c1c52','#353c9e',...CORE_HORIZON],{key:{color:'#c77dff',intensity:1,dir:[0,.9,.4]},rim:{color:'#5cf2ff',intensity:1.2},
   hemi:{sky:'#8a7eff',ground:'#2e1448',intensity:1.35},fog:{color:'#33206a',near:360,far:1400},windows:.55,windowColor:'#ffe14d',neon:.7,night:.8,trail:'#ff4f9e',particles:{color:'#5cf2ff',density:.3,kind:'sparks'}}),
- K(['#18184c','#303a98','#2ea4a4','#cce65a'],{key:{color:'#d08aff',intensity:1,dir:[.1,.9,.4]},rim:{color:'#5cf2ff',intensity:1.3},
+ K(['#18184c','#303a98',...CORE_HORIZON],{key:{color:'#d08aff',intensity:1,dir:[.1,.9,.4]},rim:{color:'#5cf2ff',intensity:1.3},
   hemi:{sky:'#8a7aff',ground:'#2c1446',intensity:1.35},fog:{color:'#301e66',near:360,far:1400},windows:.65,windowColor:'#ffe14d',neon:.85,night:.85,trail:'#ff4f9e',particles:{color:'#5cf2ff',density:.35,kind:'sparks'}}),
- K(['#141444','#283a90','#2aa99c','#d2ee48'],{key:{color:'#ff8ad8',intensity:.95,dir:[0,.95,.3]},rim:{color:'#5cf2ff',intensity:1.4},
+ K(['#141444','#283a90',...CORE_HORIZON],{key:{color:'#ff8ad8',intensity:.95,dir:[0,.95,.3]},rim:{color:'#5cf2ff',intensity:1.4},
   hemi:{sky:'#8070ff',ground:'#2a1244',intensity:1.3},fog:{color:'#2c1c62',near:380,far:1450},windows:.75,windowColor:'#ffe14d',neon:1,night:.9,trail:'#ff4f9e',particles:{color:'#ff4f9e',density:.4,kind:'sparks'}}),
- K(['#1e2058','#363e9c','#4a9ab4','#e8d070'],{key:{color:'#e8a0ff',intensity:1.1,dir:[-.3,.8,.5]},rim:{color:'#5cf2ff',intensity:1.2},
+ K(['#1e2058','#363e9c',...CORE_HORIZON],{key:{color:'#e8a0ff',intensity:1.1,dir:[-.3,.8,.5]},rim:{color:'#5cf2ff',intensity:1.2},
   hemi:{sky:'#8c84ff',ground:'#34184c',intensity:1.4},fog:{color:'#3a2a70',near:400,far:1500},windows:.7,windowColor:'#ffe14d',neon:.85,night:.7,trail:'#ff4f9e',particles:{color:'#ffe14d',density:.3,kind:'sparks'}}),
  K(['#5a7ad8','#9ab8f0','#ffd0e0','#fff0b0'],{sun:S('#fffbe8','#ffc58a',.08,1),key:{color:'#ffe0b0',intensity:1.9,dir:[-.7,.4,.55]},rim:{color:'#ffb0d0',intensity:.9},
   hemi:{sky:'#d0e2ff',ground:'#8a74b0',intensity:1.7},fog:{color:'#e8c8e0',near:480,far:1850},windows:.15,windowColor:'#ffe8b0',neon:.15,night:0,trail:'#ffe14d',particles:{color:'#fff7d0',density:.3,kind:'motes'}})];
