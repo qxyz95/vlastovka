@@ -1,0 +1,9364 @@
+{
+ "name": "k-sim2-tricks",
+ "date": "2026-10-14T19:54:39.025Z",
+ "n": 6,
+ "seed": 1,
+ "over": {
+  "models": {
+   "hawk": {
+    "speed": 17,
+    "glide": 3,
+    "drag": 0.12,
+    "cruise": 11,
+    "ideal": 34,
+    "qte": 1,
+    "perfectK": 1.6,
+    "missK": 0.06,
+    "unlockPlace": 4,
+    "price": 400
+   },
+   "kite": {
+    "speed": 12,
+    "glide": 4.6,
+    "drag": 0.12,
+    "cruise": 8,
+    "ideal": 40,
+    "qte": 1.1,
+    "liftK": 1.6,
+    "pushK": 0.6,
+    "unlockPlace": 6,
+    "price": 700
+   },
+   "skimmer": {
+    "speed": 21,
+    "glide": 2.8,
+    "drag": 0.12,
+    "cruise": 12,
+    "ideal": 10,
+    "qte": 0.9,
+    "ground": {
+     "below": 6,
+     "glide": 1.7
+    },
+    "skip": 1,
+    "unlockPlace": 8,
+    "price": 1000
+   },
+   "sail": {
+    "speed": 15,
+    "glide": 4.2,
+    "drag": 0.12,
+    "cruise": 10,
+    "ideal": 26,
+    "qte": 0.9,
+    "windK": 2.5,
+    "unlockPlace": 10,
+    "price": 1400
+   },
+   "needle": {
+    "speed": 24,
+    "glide": 2.6,
+    "drag": 0.08,
+    "cruise": 14,
+    "ideal": 12,
+    "qte": 0.9,
+    "windK": 0.4,
+    "droneBurst": 1.5,
+    "unlockPlace": 14,
+    "price": 2000
+   }
+  },
+  "targets": {
+   "throwsPerDistrict": [
+    [
+     34,
+     46
+    ],
+    [
+     36,
+     48
+    ],
+    [
+     37,
+     49
+    ],
+    [
+     36,
+     48
+    ]
+   ],
+   "minutesPerDistrict": [
+    [
+     14,
+     20
+    ],
+    [
+     18,
+     24
+    ],
+    [
+     21,
+     27
+    ],
+    [
+     23,
+     29
+    ]
+   ],
+   "totalMinutes": [
+    82,
+    98
+   ],
+   "totalThrows": [
+    150,
+    185
+   ],
+   "weakFinishWithin": 250,
+   "weakVsAverage": 1.35,
+   "weakVsAverageStat": "minutes",
+   "expertVsAverage": 0.69,
+   "droughtA": {
+    "median": 3,
+    "p90": 6,
+    "maxP90": 12
+   },
+   "droughtP90": 5,
+   "placeGapMedian": 11,
+   "placeGapP90": 17,
+   "repeat": [
+    0.95,
+    0.6,
+    0.6,
+    0.6
+   ],
+   "buyGap": {
+    "median": [
+     1,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "model": "preview",
+   "notAssessed": true
+  },
+  "economy": {
+   "mailbag": {
+    "on": true
+   }
+  }
+ },
+ "groups": {
+  "weak|realistic|auto|preview": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 85,
+   "throwsP90": 96,
+   "throwsMax": 96,
+   "minutes": 45.47204057618442,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 15,
+     "minutes": 9.044682065884537
+    },
+    {
+     "throws": 17,
+     "minutes": 12.584610943213917
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 30.49,
+     "p90": 38.18,
+     "max": 42.67
+    },
+    {
+     "median": 33.35,
+     "p90": 39.89,
+     "max": 44.85
+    }
+   ],
+   "flightP90": 35.28,
+   "flightMax": 44.85,
+   "simMax": 48.19,
+   "droughtMedian": 2,
+   "droughtMax": 6,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 7,
+   "placeGapP90": 13,
+   "firstPocket": 42,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.46875,
+   "eCap": 0.11176470588235295,
+   "betaCap": 0,
+   "craneTugRate": 0.011764705882352941,
+   "craneNewPlace": 0.16666666666666666,
+   "qteHit": 0.9217758985200846,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     4359.833333333333,
+     7588.333333333333
+    ],
+    "spend": [
+     1975,
+     3675,
+     4010,
+     6320
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5753.333333333333,
+     "atlas": 6040,
+     "pocket": 300,
+     "model": 566.6666666666666,
+     "mailbag": 2200
+    },
+    "left": 2340,
+    "models": {
+     "dart": {
+      "share": 0.1843137254901961,
+      "coins": 100.30851063829788,
+      "x": 856.3506321082091,
+      "coinsPerMin": 239.6020995848597,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5,
+      "coins": 127.36470588235294,
+      "x": 1110.9574446433808,
+      "coinsPerMin": 250.5515205737714,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.3156862745098039,
+      "coins": 417.7080745341615,
+      "x": 3300.4060678519018,
+      "coinsPerMin": 620.3624637099,
+      "bought": 1,
+      "buyThrow": 67
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.7207207207207207,
+    0.5254988913525499
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     1,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2464.3333333333335,
+    "incomeRatio": 1.1556628505753475,
+    "income": 18193,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.2254901960784315,
+     1.5845070422535212
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.5581395348837209
+     },
+     {
+      "bought": 1,
+      "buyThrow": 64,
+      "payEst": 29.73977695167286,
+      "paid": 0.5,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 75,
+      "payEst": 26.706231454005934,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 510,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.717
+     },
+     "kettleSong": {
+      "flights": 338,
+      "rate": 0.20414201183431951,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 172,
+      "rate": 0.005813953488372093,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 298,
+      "rate": 0.09731543624161074,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 139,
+      "rate": 0.19424460431654678,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 105,
+      "rate": 0.009523809523809525,
+      "campaigns": 6,
+      "first": 9,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 93,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3,
+      "gapMed": 11.417
+     },
+     "allTheVerbs": {
+      "flights": 147,
+      "rate": 0.12244897959183673,
+      "campaigns": 6,
+      "first": 7,
+      "never": 0,
+      "firstIng": 7,
+      "firstIngP90": 14
+     },
+     "hawkFeather": {
+      "flights": 161,
+      "rate": 0.17391304347826086,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 12
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 139
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 139
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:overTheLine": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 98,
+   "throwsP90": 107,
+   "throwsMax": 107,
+   "minutes": 52.9196589361026,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 15,
+     "minutes": 9.169709445331662
+    },
+    {
+     "throws": 22,
+     "minutes": 15.34712492025939
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 30.89,
+     "p90": 38.52,
+     "max": 41.84
+    },
+    {
+     "median": 34.59,
+     "p90": 41.2,
+     "max": 54.43
+    }
+   ],
+   "flightP90": 37.15,
+   "flightMax": 54.43,
+   "simMax": 60.32,
+   "droughtMedian": 2,
+   "droughtMax": 5,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 7,
+   "placeGapP90": 14,
+   "firstPocket": 42,
+   "levelsBought": 0.782608695652174,
+   "gliderShare": 0.47959183673469385,
+   "eCap": 0.14388489208633093,
+   "betaCap": 0,
+   "craneTugRate": 0.007194244604316547,
+   "craneNewPlace": 0.25,
+   "qteHit": 0.9203747072599532,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     4233,
+     10712.5
+    ],
+    "spend": [
+     1975,
+     3675,
+     4088.3333333333335,
+     9325
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5886.666666666667,
+     "atlas": 8706.666666666666,
+     "pocket": 300,
+     "mailbag": 2200,
+     "model": 850
+    },
+    "left": 1812,
+    "models": {
+     "dart": {
+      "share": 0.16546762589928057,
+      "coins": 94.92391304347827,
+      "x": 816.080697125701,
+      "coinsPerMin": 227.54847177214907,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.4694244604316547,
+      "coins": 129.84674329501917,
+      "x": 1131.7105152157378,
+      "coinsPerMin": 254.10882740255136,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.3471223021582734,
+      "coins": 412.03108808290153,
+      "x": 3218.471039231382,
+      "coinsPerMin": 598.6526820004249,
+      "bought": 1,
+      "buyThrow": 70
+     },
+     "kite": {
+      "share": 0.017985611510791366,
+      "coins": 499.7,
+      "x": 3752.5391090143444,
+      "coinsPerMin": 609.7200834282359,
+      "bought": 0.16666666666666666,
+      "buyThrow": 93
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.7219101123595506,
+    0.5171385991058122
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 3155.6666666666665,
+    "incomeRatio": 1.1712865945533502,
+    "income": 21190.333333333332,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.2626262626262625,
+     1.6286644951140066
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.5
+     },
+     {
+      "bought": 1,
+      "buyThrow": 64,
+      "payEst": 33.333333333333336,
+      "paid": 0.6666666666666666,
+      "payFrac": 1
+     },
+     {
+      "bought": 1,
+      "buyThrow": 76,
+      "payEst": 33.45724907063197,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 556,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.783
+     },
+     "kettleSong": {
+      "flights": 384,
+      "rate": 0.19010416666666666,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 218,
+      "rate": 0.12385321100917432,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 10
+     },
+     "tapeSave": {
+      "flights": 344,
+      "rate": 0.11918604651162791,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 160,
+      "rate": 0.1375,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0.16666666666666663,
+      "firstIng": 5,
+      "firstIngP90": null
+     },
+     "wish": {
+      "flights": 139,
+      "rate": 0.007194244604316547,
+      "campaigns": 6,
+      "first": 9,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 136,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.967,
+      "gapMed": 11.417
+     },
+     "allTheVerbs": {
+      "flights": 192,
+      "rate": 0.09895833333333333,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 20
+     },
+     "hawkFeather": {
+      "flights": 193,
+      "rate": 0.15544041450777202,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 13
+     },
+     "kiteTail": {
+      "flights": 10,
+      "rate": 0.9,
+      "campaigns": 1,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 1
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 160
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 160
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:kiteTail": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 82,
+   "throwsP90": 96,
+   "throwsMax": 96,
+   "minutes": 52.920205169799786,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 19,
+     "minutes": 11.47515089106782
+    },
+    {
+     "throws": 13,
+     "minutes": 11.460082991337526
+    },
+    {
+     "throws": 19,
+     "minutes": 19.09072097642003
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 30.74,
+     "p90": 49.2,
+     "max": 58.32
+    },
+    {
+     "median": 44.2,
+     "p90": 56.68,
+     "max": 64.84
+    },
+    {
+     "median": 45.23,
+     "p90": 58.79,
+     "max": 65.12
+    }
+   ],
+   "flightP90": 52.54,
+   "flightMax": 65.12,
+   "simMax": 72.36,
+   "droughtMedian": 2,
+   "droughtMax": 6,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 7,
+   "placeGapP90": 11,
+   "firstPocket": 55,
+   "levelsBought": 0.6521739130434783,
+   "gliderShare": 0.38823529411764707,
+   "eCap": 0.16666666666666666,
+   "betaCap": 0,
+   "craneTugRate": 0.01016260162601626,
+   "craneNewPlace": 0.2,
+   "qteHit": 0.9160472234368168,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     2788.3333333333335,
+     3650,
+     8431
+    ],
+    "spend": [
+     1975,
+     2558.3333333333335,
+     3211.6666666666665,
+     8386.666666666666
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 6353.333333333333,
+     "atlas": 5058.333333333333,
+     "pocket": 300,
+     "model": 1100,
+     "mailbag": 2200
+    },
+    "left": 852,
+    "models": {
+     "dart": {
+      "share": 0.15447154471544716,
+      "coins": 65.60526315789474,
+      "x": 560.6312523577114,
+      "coinsPerMin": 167.13230243091297,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.3556910569105691,
+      "coins": 82.72,
+      "x": 724.4392236469608,
+      "coinsPerMin": 175.59243424779444,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "kite": {
+      "share": 0.4898373983739837,
+      "coins": 345.8215767634855,
+      "x": 2784.279544883336,
+      "coinsPerMin": 395.44812505185195,
+      "bought": 1,
+      "buyThrow": 43
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7575107296137339,
+    0.7024070021881839,
+    0.536813922356091
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2347.1666666666665,
+    "incomeRatio": 1.1560520128034775,
+    "income": 17134.166666666668,
+    "toGo": [
+     3.076923076923077,
+     2.272727272727273,
+     1.1029411764705883,
+     1.1764705882352942
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 50,
+      "payEst": 24.87562189054726,
+      "paid": 1,
+      "payFrac": 0.6571428571428571
+     },
+     {
+      "bought": 1,
+      "buyThrow": 58,
+      "payEst": 25.236593059936908,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 69,
+      "payEst": 23.25581395348837,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 492,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 320,
+      "rate": 0.2375,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 173,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 280,
+      "rate": 0.1392857142857143,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 142,
+      "rate": 0.24647887323943662,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 127,
+      "rate": 0.007874015748031496,
+      "campaigns": 6,
+      "first": 24,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 112,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 7.017,
+      "gapMed": 15.867
+     },
+     "allTheVerbs": {
+      "flights": 161,
+      "rate": 0.3416149068322981,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 8
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 241,
+      "rate": 0.950207468879668,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 3
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 142
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 142
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:sailStripes": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 110,
+   "throwsP90": 125,
+   "throwsMax": 125,
+   "minutes": 59.43375128366639,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 36,
+     "minutes": 21.634268251412728
+    },
+    {
+     "throws": 14,
+     "minutes": 8.988151008261084
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 27.89,
+     "p90": 34.55,
+     "max": 39.56
+    },
+    {
+     "median": 30.29,
+     "p90": 37.64,
+     "max": 75.09
+    }
+   ],
+   "flightP90": 32.82,
+   "flightMax": 75.09,
+   "simMax": 84.63,
+   "droughtMedian": 2,
+   "droughtMax": 8,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 8,
+   "placeGapP90": 16,
+   "firstPocket": 42,
+   "levelsBought": 0.7391304347826086,
+   "gliderShare": 0.4144144144144144,
+   "eCap": 0.12096774193548387,
+   "betaCap": 0,
+   "craneTugRate": 0.0032258064516129032,
+   "craneNewPlace": 0,
+   "qteHit": 0.9226642825212338,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     9490.166666666666,
+     7139.666666666667
+    ],
+    "spend": [
+     1975,
+     3675,
+     8603.333333333334,
+     6850
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 6953.333333333333,
+     "atlas": 7346.666666666667,
+     "pocket": 300,
+     "mailbag": 1900,
+     "model": 3483.3333333333335
+    },
+    "left": 2024,
+    "models": {
+     "dart": {
+      "share": 0.14677419354838708,
+      "coins": 93.06593406593407,
+      "x": 799.564388672361,
+      "coinsPerMin": 224.92632448649434,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.41451612903225804,
+      "coins": 128.4669260700389,
+      "x": 1122.6267384334772,
+      "coinsPerMin": 252.02380960073256,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "sail": {
+      "share": 0.2870967741935484,
+      "coins": 343.5,
+      "x": 2698.118975639257,
+      "coinsPerMin": 581.3351784004941,
+      "bought": 1,
+      "buyThrow": 66
+     },
+     "hawk": {
+      "share": 0.13064516129032258,
+      "coins": 356.7901234567901,
+      "x": 2889.0791565039467,
+      "coinsPerMin": 556.0441259695308,
+      "bought": 1,
+      "buyThrow": 67
+     },
+     "kite": {
+      "share": 0.020967741935483872,
+      "coins": 440,
+      "x": 3343.8416285833746,
+      "coinsPerMin": 542.6674415048561,
+      "bought": 0.5,
+      "buyThrow": 87
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 10,
+    "maxP90": 18
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.6708860759493671,
+    0.5
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     3
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 3240.5,
+    "incomeRatio": 1.157152929581912,
+    "income": 22874.666666666668,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.644736842105263,
+     2.050113895216401
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.43636363636363634
+     },
+     {
+      "bought": 1,
+      "buyThrow": 66,
+      "payEst": 34.63203463203463,
+      "paid": 0.6666666666666666,
+      "payFrac": 0.9375
+     },
+     {
+      "bought": 0.6666666666666666,
+      "buyThrow": 94,
+      "payEst": 24.59016393442623,
+      "paid": 0.5,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 620,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.783
+     },
+     "kettleSong": {
+      "flights": 448,
+      "rate": 0.17633928571428573,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 282,
+      "rate": 0.01773049645390071,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0.33333333333333337,
+      "firstIng": 19,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 408,
+      "rate": 0.09313725490196079,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 234,
+      "rate": 0.13247863247863248,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 11
+     },
+     "wish": {
+      "flights": 120,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 96,
+      "rate": 0,
+      "campaigns": 4,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.2,
+      "gapMed": 5.667
+     },
+     "allTheVerbs": {
+      "flights": 257,
+      "rate": 0.05058365758754864,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.33333333333333337,
+      "firstIng": 33,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 81,
+      "rate": 0.13580246913580246,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0.33333333333333337,
+      "firstIng": 14,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 13,
+      "rate": 0.7692307692307693,
+      "campaigns": 2,
+      "first": 26,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 3
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 178,
+      "rate": 1,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 1
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 234
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 234
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:pigeonExpress": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 70,
+   "throwsP90": 83,
+   "throwsMax": 83,
+   "minutes": 37.678222612218825,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 16,
+     "minutes": 9.811207112619897
+    },
+    {
+     "throws": 8,
+     "minutes": 5.573916872051612
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 28.98,
+     "p90": 38.06,
+     "max": 43
+    },
+    {
+     "median": 35.26,
+     "p90": 42.94,
+     "max": 48.57
+    }
+   ],
+   "flightP90": 33.12,
+   "flightMax": 48.57,
+   "simMax": 52.65,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 6,
+   "placeGapP90": 11,
+   "firstPocket": 41,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.5873015873015873,
+   "eCap": 0.11162790697674418,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.968609865470852,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     4278.666666666667,
+     3081.5
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     3868.3333333333335,
+     2448.3333333333335
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 3886.6666666666665,
+     "atlas": 4621.666666666667,
+     "mailbag": 1766.6666666666667,
+     "pocket": 300,
+     "model": 400
+    },
+    "left": 1222,
+    "models": {
+     "dart": {
+      "share": 0.2837209302325581,
+      "coins": 109.91803278688525,
+      "x": 951.8426960897514,
+      "coinsPerMin": 246.9504621901489,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5488372093023256,
+      "coins": 165.22881355932202,
+      "x": 1450.6763746749016,
+      "coinsPerMin": 307.11427871599676,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.16744186046511628,
+      "coins": 409.90277777777777,
+      "x": 3270.848935571101,
+      "coinsPerMin": 613.315626311477,
+      "bought": 1,
+      "buyThrow": 64
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.7262247838616714,
+    0.5561224489795918
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     1,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1404.8333333333333,
+    "incomeRatio": 1.10898995469565,
+    "income": 13652.833333333334,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.2578616352201257,
+     1.3966480446927374
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.88
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 58,
+      "payEst": 31.746031746031743,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 0.6666666666666666,
+      "buyThrow": 68,
+      "payEst": 23.872679045092838,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 430,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.867,
+      "gapMed": 5.717
+     },
+     "kettleSong": {
+      "flights": 297,
+      "rate": 0.2962962962962963,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 260,
+      "rate": 0.03076923076923077,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0.33333333333333337,
+      "firstIng": 38,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 83,
+      "rate": 0.24096385542168675,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 57,
+      "rate": 0.03508771929824561,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 38,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.833,
+      "gapMed": 8.3
+     },
+     "allTheVerbs": {
+      "flights": 83,
+      "rate": 0.1927710843373494,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0.16666666666666663,
+      "firstIng": 2,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 72,
+      "rate": 0.3194444444444444,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 7
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 83
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 83
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:dronePingPong": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 83,
+   "throwsP90": 86,
+   "throwsMax": 86,
+   "minutes": 45.33832110157621,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 18,
+     "minutes": 11.273279467913497
+    },
+    {
+     "throws": 12,
+     "minutes": 9.410728235878182
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 29.23,
+     "p90": 36.71,
+     "max": 43.55
+    },
+    {
+     "median": 34.41,
+     "p90": 42.99,
+     "max": 67.31
+    }
+   ],
+   "flightP90": 34.41,
+   "flightMax": 67.31,
+   "simMax": 74.12,
+   "droughtMedian": 1,
+   "droughtMax": 6,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 6,
+   "placeGapP90": 12,
+   "firstPocket": 41,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.6144578313253012,
+   "eCap": 0.15384615384615385,
+   "betaCap": 0,
+   "craneTugRate": 0.002079002079002079,
+   "craneNewPlace": 0,
+   "qteHit": 0.9654977375565611,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     5852.5,
+     4528.5
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     5143.333333333333,
+     4508.333333333333
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5286.666666666667,
+     "atlas": 6040,
+     "pocket": 300,
+     "mailbag": 2050,
+     "model": 633.3333333333334
+    },
+    "left": 1133,
+    "models": {
+     "dart": {
+      "share": 0.2702702702702703,
+      "coins": 120.9076923076923,
+      "x": 1040.767385190904,
+      "coinsPerMin": 267.00800036070177,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5363825363825364,
+      "coins": 176.8294573643411,
+      "x": 1530.9951384870267,
+      "coinsPerMin": 325.00783354915046,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.1683991683991684,
+      "coins": 416.55555555555554,
+      "x": 3282.0138298205934,
+      "coinsPerMin": 620.8719568264167,
+      "bought": 1,
+      "buyThrow": 67
+     },
+     "kite": {
+      "share": 0.02494802494802495,
+      "coins": 413.4166666666667,
+      "x": 3178.5253367159953,
+      "coinsPerMin": 518.4859842214487,
+      "bought": 0.3333333333333333,
+      "buyThrow": 75
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.7164835164835165,
+    0.5152542372881356
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2007.3333333333333,
+    "incomeRatio": 1.136095469651878,
+    "income": 16673.666666666668,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.4718614718614718,
+     1.9396551724137931
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.5675675675675675
+     },
+     {
+      "bought": 1,
+      "buyThrow": 62,
+      "payEst": 34.04255319148936,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 70,
+      "payEst": 23.25581395348837,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 481,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 6.05
+     },
+     "kettleSong": {
+      "flights": 348,
+      "rate": 0.29310344827586204,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 311,
+      "rate": 0.04180064308681672,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0.16666666666666663,
+      "firstIng": 47,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 113,
+      "rate": 0.23008849557522124,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0,
+      "firstIng": 6,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 94,
+      "rate": 0.010638297872340425,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 58,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.8,
+      "gapMed": 2.933
+     },
+     "allTheVerbs": {
+      "flights": 119,
+      "rate": 0.12605042016806722,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0.16666666666666663,
+      "firstIng": 11,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 81,
+      "rate": 0.2839506172839506,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0.16666666666666663,
+      "firstIng": 5,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 12,
+      "rate": 0.8333333333333334,
+      "campaigns": 2,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 2
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 113
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 113
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:skimmerRipples": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 152,
+   "throwsP90": 160,
+   "throwsMax": 160,
+   "minutes": 77.12267686799434,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 51,
+     "minutes": 25.12911326251997
+    },
+    {
+     "throws": 46,
+     "minutes": 23.29141803663786
+    },
+    {
+     "throws": 34,
+     "minutes": 18.1281334628719
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 22.3,
+     "p90": 28.34,
+     "max": 32.46
+    },
+    {
+     "median": 24.34,
+     "p90": 29.02,
+     "max": 32.24
+    },
+    {
+     "median": 25.84,
+     "p90": 29.53,
+     "max": 33.41
+    }
+   ],
+   "flightP90": 28.75,
+   "flightMax": 33.41,
+   "simMax": 36.47,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 12,
+   "placeGapMedian": 8,
+   "placeGapP90": 25,
+   "firstPocket": 41,
+   "levelsBought": 0.9347826086956522,
+   "gliderShare": 0.21710526315789475,
+   "eCap": 0.060227272727272727,
+   "betaCap": 0,
+   "craneTugRate": 0.007954545454545454,
+   "craneNewPlace": 0,
+   "qteHit": 0.9752650176678446,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     7812.5,
+     12913.833333333334,
+     14079.333333333334
+    ],
+    "spend": [
+     1618.3333333333333,
+     6848.333333333333,
+     11436.666666666666,
+     15166.666666666666
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 14353.333333333334,
+     "atlas": 11596.666666666666,
+     "mailbag": 2200,
+     "model": 5500,
+     "pocket": 300
+    },
+    "left": 1597,
+    "models": {
+     "dart": {
+      "share": 0.11704545454545455,
+      "coins": 87.09708737864078,
+      "x": 757.9356688140649,
+      "coinsPerMin": 201.17250633372342,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.21022727272727273,
+      "coins": 125.99459459459459,
+      "x": 1134.9760010341972,
+      "coinsPerMin": 245.49632181182844,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "skimmer": {
+      "share": 0.6727272727272727,
+      "coins": 317.7432432432432,
+      "x": 2508.6825800587526,
+      "coinsPerMin": 624.968059077986,
+      "bought": 1,
+      "buyThrow": 50
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 13,
+    "maxP90": 31
+   },
+   "droughtP90": 6,
+   "repeat": [
+    0.9412878787878788,
+    0.8086592178770949,
+    0.6979310344827586,
+    0.5432525951557093
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     3,
+     3
+    ],
+    "p90": 6
+   },
+   "mailbag": {
+    "coins": 5783.166666666667,
+    "incomeRatio": 1.1857750355033008,
+    "income": 36730.666666666664,
+    "toGo": [
+     2.5806451612903225,
+     1.744186046511628,
+     2.4691358024691357,
+     2.6178010471204187
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 45,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.2815533980582524
+     },
+     {
+      "bought": 1,
+      "buyThrow": 79,
+      "payEst": 37.73584905660377,
+      "paid": 1,
+      "payFrac": 0.5
+     },
+     {
+      "bought": 1,
+      "buyThrow": 117,
+      "payEst": 23.62204724409449,
+      "paid": 0.6666666666666666,
+      "payFrac": 1
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 880,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 5.9
+     },
+     "kettleSong": {
+      "flights": 747,
+      "rate": 0.1927710843373494,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 451,
+      "rate": 0.09312638580931264,
+      "campaigns": 6,
+      "first": 10,
+      "never": 0,
+      "firstIng": 10,
+      "firstIngP90": 19
+     },
+     "tapeSave": {
+      "flights": 710,
+      "rate": 0.02535211267605634,
+      "campaigns": 6,
+      "first": 47,
+      "never": 0.16666666666666663,
+      "firstIng": 86,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 286,
+      "rate": 0.15034965034965034,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 240,
+      "rate": 0.016666666666666666,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0.5,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 198,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.967,
+      "gapMed": 3.2
+     },
+     "allTheVerbs": {
+      "flights": 357,
+      "rate": 0.0028011204481792717,
+      "campaigns": 6,
+      "first": 55,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 592,
+      "rate": 0.5777027027027027,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 286
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 286
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:needleThread": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 96,
+   "throwsP90": 111,
+   "throwsMax": 111,
+   "minutes": 49.391214251898035,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 19,
+     "minutes": 12.119569030833631
+    },
+    {
+     "throws": 29,
+     "minutes": 15.827631681613354
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 29.11,
+     "p90": 38.05,
+     "max": 52.95
+    },
+    {
+     "median": 23.79,
+     "p90": 31.74,
+     "max": 77.03
+    }
+   ],
+   "flightP90": 29.94,
+   "flightMax": 77.03,
+   "simMax": 84.16,
+   "droughtMedian": 2,
+   "droughtMax": 8,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 8,
+   "placeGapMedian": 6,
+   "placeGapP90": 12,
+   "firstPocket": 41,
+   "levelsBought": 0.7608695652173914,
+   "gliderShare": 0.5161290322580645,
+   "eCap": 0.10905730129390019,
+   "betaCap": 0,
+   "craneTugRate": 0.005545286506469501,
+   "craneNewPlace": 0,
+   "qteHit": 0.9647505422993492,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     4991,
+     9814
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     4296.666666666667,
+     9471.666666666666
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 6486.666666666667,
+     "atlas": 6790,
+     "pocket": 300,
+     "mailbag": 2200,
+     "model": 2650
+    },
+    "left": 1351,
+    "models": {
+     "dart": {
+      "share": 0.24399260628465805,
+      "coins": 126.57575757575758,
+      "x": 1086.4606448718944,
+      "coinsPerMin": 277.94730297789573,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.4602587800369686,
+      "coins": 176.91164658634537,
+      "x": 1527.7215028939454,
+      "coinsPerMin": 326.9025266098398,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.066543438077634,
+      "coins": 372.25,
+      "x": 3032.308003308916,
+      "coinsPerMin": 587.1130551724651,
+      "bought": 0.8333333333333334,
+      "buyThrow": 64
+     },
+     "needle": {
+      "share": 0.21256931608133087,
+      "coins": 425.5826086956522,
+      "x": 3244.571007559642,
+      "coinsPerMin": 833.5948419375534,
+      "bought": 0.6666666666666666,
+      "buyThrow": 72
+     },
+     "kite": {
+      "share": 0.0166358595194085,
+      "coins": 387.1111111111111,
+      "x": 3080.1137958706554,
+      "coinsPerMin": 449.75597680306504,
+      "bought": 0.5,
+      "buyThrow": 80
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 28
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.7055702917771883,
+    0.5389755011135857
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 3010,
+    "incomeRatio": 1.157915353464863,
+    "income": 21097.666666666668,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.4450867052023122,
+     1.991150442477876
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.42105263157894735
+     },
+     {
+      "bought": 1,
+      "buyThrow": 60,
+      "payEst": 31.372549019607842,
+      "paid": 0.6666666666666666,
+      "payFrac": 0.9230769230769231
+     },
+     {
+      "bought": 1,
+      "buyThrow": 75,
+      "payEst": 28.213166144200624,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 541,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 5.95
+     },
+     "kettleSong": {
+      "flights": 408,
+      "rate": 0.2696078431372549,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 229,
+      "rate": 0.07423580786026202,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.16666666666666663,
+      "firstIng": 16,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 371,
+      "rate": 0.04043126684636118,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.5,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 163,
+      "rate": 0.2147239263803681,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0,
+      "firstIng": 6,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 159,
+      "rate": 0.018867924528301886,
+      "campaigns": 6,
+      "first": 28,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 138,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.85,
+      "gapMed": 5.917
+     },
+     "allTheVerbs": {
+      "flights": 195,
+      "rate": 0.041025641025641026,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0.16666666666666663,
+      "firstIng": 7,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 36,
+      "rate": 0.3055555555555556,
+      "campaigns": 5,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 7
+     },
+     "kiteTail": {
+      "flights": 9,
+      "rate": 0.8888888888888888,
+      "campaigns": 1,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 2
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 115,
+      "rate": 0.02608695652173913,
+      "campaigns": 4,
+      "first": 20,
+      "never": 0.25,
+      "firstIng": 38,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.46153846153846156,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 0.9999999999999999,
+     "n": 163
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 0.9999999999999999,
+      "n": 163
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:overTheLine": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 71,
+   "throwsP90": 77,
+   "throwsMax": 77,
+   "minutes": 42.285345409932134,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 19,
+     "minutes": 12.229825086433415
+    },
+    {
+     "throws": 13,
+     "minutes": 8.990103587845127
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 30.6,
+     "p90": 35.98,
+     "max": 40.78
+    },
+    {
+     "median": 33.65,
+     "p90": 38.52,
+     "max": 41.04
+    }
+   ],
+   "flightP90": 34.94,
+   "flightMax": 41.04,
+   "simMax": 44.87,
+   "droughtMedian": 1,
+   "droughtMax": 6,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 5,
+   "placeGapP90": 10,
+   "firstPocket": 35,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.8441558441558441,
+   "eCap": 0.23317307692307693,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9848116646415553,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     6069.166666666667,
+     5070.333333333333
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     5546.666666666667,
+     4818.333333333333
+    ],
+    "kind": {
+     "paper": 5286.666666666667,
+     "workshop": 1120,
+     "atlas": 6176.666666666667,
+     "pocket": 300,
+     "mailbag": 1900,
+     "model": 333.3333333333333
+    },
+    "left": 1353,
+    "models": {
+     "dart": {
+      "share": 0.11538461538461539,
+      "coins": 141.91666666666666,
+      "x": 1254.5571960038271,
+      "coinsPerMin": 299.04124297170125,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.7740384615384616,
+      "coins": 223.06521739130434,
+      "x": 1866.6754528872962,
+      "coinsPerMin": 373.0269839104167,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.11057692307692307,
+      "coins": 431.39130434782606,
+      "x": 3479.44040130041,
+      "coinsPerMin": 639.5531042345291,
+      "bought": 0.8333333333333334,
+      "buyThrow": 68
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.6417582417582418,
+    0.5571955719557196
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 2064.1666666666665,
+    "incomeRatio": 1.139818592760848,
+    "income": 16413.833333333332,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.3089005235602094,
+     1.3550135501355014
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.5588235294117647
+     },
+     {
+      "bought": 1,
+      "buyThrow": 50,
+      "payEst": 29.62962962962963,
+      "paid": 0.5,
+      "payFrac": null
+     },
+     {
+      "bought": 0.6666666666666666,
+      "buyThrow": 62,
+      "payEst": 28.571428571428573,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 416,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.933
+     },
+     "kettleSong": {
+      "flights": 311,
+      "rate": 0.5498392282958199,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 154,
+      "rate": 0.14285714285714285,
+      "campaigns": 6,
+      "first": 7,
+      "never": 0.16666666666666663,
+      "firstIng": 10,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 287,
+      "rate": 0.05574912891986063,
+      "campaigns": 6,
+      "first": 11,
+      "never": 0.33333333333333337,
+      "firstIng": 19,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 116,
+      "rate": 0.5431034482758621,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 2
+     },
+     "wish": {
+      "flights": 93,
+      "rate": 0.03225806451612903,
+      "campaigns": 6,
+      "first": 13,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 64,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.883,
+      "gapMed": 20.867
+     },
+     "allTheVerbs": {
+      "flights": 154,
+      "rate": 0.09740259740259741,
+      "campaigns": 6,
+      "first": 11,
+      "never": 0.16666666666666663,
+      "firstIng": 18,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 46,
+      "rate": 0.9347826086956522,
+      "campaigns": 5,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 116
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 116
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:hawkFeather": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 49,
+   "throwsP90": 58,
+   "throwsMax": 58,
+   "minutes": 29.99919278210863,
+   "district": [
+    {
+     "throws": 23,
+     "minutes": 11.376468155900097
+    },
+    {
+     "throws": 9,
+     "minutes": 5.962224295805223
+    },
+    {
+     "throws": 8,
+     "minutes": 5.717174865888694
+    },
+    {
+     "throws": 10,
+     "minutes": 7.326945928447778
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.06,
+     "p90": 27.68,
+     "max": 34.73
+    },
+    {
+     "median": 31.65,
+     "p90": 36.59,
+     "max": 39.98
+    },
+    {
+     "median": 35.66,
+     "p90": 40.4,
+     "max": 41.42
+    },
+    {
+     "median": 38.14,
+     "p90": 43.2,
+     "max": 47.29
+    }
+   ],
+   "flightP90": 39.8,
+   "flightMax": 47.29,
+   "simMax": 48.29,
+   "droughtMedian": 1,
+   "droughtMax": 4,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 4,
+   "placeGapMedian": 4,
+   "placeGapP90": 7,
+   "firstPocket": 34,
+   "levelsBought": 0.5652173913043478,
+   "gliderShare": 0.3448275862068966,
+   "eCap": 0.08417508417508418,
+   "betaCap": 0,
+   "craneTugRate": 0.010101010101010102,
+   "craneNewPlace": 0,
+   "qteHit": 0.9275834011391375,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1749.3333333333333,
+     1761,
+     2452.3333333333335,
+     4373
+    ],
+    "spend": [
+     1415,
+     1686.6666666666667,
+     2245,
+     3855
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 3236.6666666666665,
+     "model": 400,
+     "atlas": 2828.3333333333335,
+     "pocket": 300,
+     "mailbag": 1316.6666666666667
+    },
+    "left": 811,
+    "models": {
+     "dart": {
+      "share": 0.09090909090909091,
+      "coins": 67.18518518518519,
+      "x": 577.1254150140558,
+      "coinsPerMin": 154.42844606420903,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.2996632996632997,
+      "coins": 68.28089887640449,
+      "x": 586.909173143059,
+      "coinsPerMin": 133.80306561709443,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.6094276094276094,
+      "coins": 299.0220994475138,
+      "x": 2634.3921113742254,
+      "coinsPerMin": 436.0124270122563,
+      "bought": 1,
+      "buyThrow": 18
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 6,
+    "maxP90": 9
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9376299376299376,
+    0.78,
+    0.6929824561403509,
+    0.5703703703703704
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     1,
+     1,
+     1
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 786.6666666666666,
+    "incomeRatio": 1.0778196228899277,
+    "income": 10335.666666666666,
+    "toGo": [
+     2.3529411764705883,
+     0.8465608465608465,
+     1.023391812865497,
+     1.1494252873563218
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 34,
+      "payEst": 19.23076923076923,
+      "paid": 0.5,
+      "payFrac": null
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 42,
+      "payEst": 19.002375296912113,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 0.16666666666666666,
+      "buyThrow": 51,
+      "payEst": 24.59016393442623,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 297,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.3,
+      "gapMed": 5.733
+     },
+     "kettleSong": {
+      "flights": 192,
+      "rate": 0.4427083333333333,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 158,
+      "rate": 0.25316455696202533,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 14
+     },
+     "steamOrgan": {
+      "flights": 78,
+      "rate": 0.358974358974359,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 3
+     },
+     "wish": {
+      "flights": 69,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 56,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 6,
+      "gapMed": 22.717
+     },
+     "allTheVerbs": {
+      "flights": 91,
+      "rate": 0.054945054945054944,
+      "campaigns": 6,
+      "first": 10,
+      "never": 0.33333333333333337,
+      "firstIng": 14,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 181,
+      "rate": 0.6519337016574586,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 3
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 78
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 78
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:sailStripes": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 77,
+   "throwsP90": 96,
+   "throwsMax": 96,
+   "minutes": 44.55524573198192,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 34,
+     "minutes": 19.23978374949013
+    },
+    {
+     "throws": 7,
+     "minutes": 4.550103363749315
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 28,
+     "p90": 33.43,
+     "max": 42.97
+    },
+    {
+     "median": 30.79,
+     "p90": 40.4,
+     "max": 44.77
+    }
+   ],
+   "flightP90": 33.17,
+   "flightMax": 44.77,
+   "simMax": 45.68,
+   "droughtMedian": 1,
+   "droughtMax": 4,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 4,
+   "placeGapMedian": 5,
+   "placeGapP90": 12,
+   "firstPocket": 35,
+   "levelsBought": 0.6739130434782609,
+   "gliderShare": 0.5733333333333334,
+   "eCap": 0.14489795918367346,
+   "betaCap": 0,
+   "craneTugRate": 0.0020408163265306124,
+   "craneNewPlace": 0,
+   "qteHit": 0.9173055859802848,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     8916.166666666666,
+     4591.333333333333
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     7848.333333333333,
+     4813.333333333333
+    ],
+    "kind": {
+     "paper": 4953.333333333333,
+     "workshop": 1120,
+     "atlas": 5206.666666666667,
+     "pocket": 300,
+     "mailbag": 1900,
+     "model": 3933.3333333333335
+    },
+    "left": 1355,
+    "models": {
+     "dart": {
+      "share": 0.10204081632653061,
+      "coins": 134.8,
+      "x": 1192.3723714780765,
+      "coinsPerMin": 286.288727690274,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.49183673469387756,
+      "coins": 162.2033195020747,
+      "x": 1437.3268765877676,
+      "coinsPerMin": 284.0738196659015,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "sail": {
+      "share": 0.30612244897959184,
+      "coins": 314.46,
+      "x": 2511.4842717119436,
+      "coinsPerMin": 532.2493509261158,
+      "bought": 1,
+      "buyThrow": 50
+     },
+     "hawk": {
+      "share": 0.08775510204081632,
+      "coins": 408.2093023255814,
+      "x": 3294.059546759369,
+      "coinsPerMin": 593.5554588566381,
+      "bought": 1,
+      "buyThrow": 57
+     },
+     "kite": {
+      "share": 0.012244897959183673,
+      "coins": 356.3333333333333,
+      "x": 2719.6724727999267,
+      "coinsPerMin": 537.3673486574199,
+      "bought": 0.6666666666666666,
+      "buyThrow": 70
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 13
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.657185628742515,
+    0.5588235294117647
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     3
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 2325.5,
+    "incomeRatio": 1.1363361984275608,
+    "income": 18781.833333333332,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.691542288557214,
+     1.9867549668874172
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.5348837209302325
+     },
+     {
+      "bought": 1,
+      "buyThrow": 57,
+      "payEst": 30.075187969924812,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 0.6666666666666666,
+      "buyThrow": 72,
+      "payEst": 25.936599423631122,
+      "paid": 0.25,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 490,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 385,
+      "rate": 0.4155844155844156,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 361,
+      "rate": 0.2077562326869806,
+      "campaigns": 6,
+      "first": 19,
+      "never": 0,
+      "firstIng": 19,
+      "firstIngP90": 26
+     },
+     "steamOrgan": {
+      "flights": 161,
+      "rate": 0.33540372670807456,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 6
+     },
+     "wish": {
+      "flights": 116,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 62,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.883,
+      "gapMed": 28.867
+     },
+     "allTheVerbs": {
+      "flights": 217,
+      "rate": 0.018433179723502304,
+      "campaigns": 6,
+      "first": 10,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 43,
+      "rate": 0.32558139534883723,
+      "campaigns": 6,
+      "first": 13,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 5
+     },
+     "kiteTail": {
+      "flights": 6,
+      "rate": 0.8333333333333334,
+      "campaigns": 3,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 2
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 150,
+      "rate": 1,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 1
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 161
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 161
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:dronePingPong": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 90,
+   "throwsP90": 100,
+   "throwsMax": 100,
+   "minutes": 49.108732998629065,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 15,
+     "minutes": 9.966425731384518
+    },
+    {
+     "throws": 15,
+     "minutes": 10.500916887080749
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 31.13,
+     "p90": 38.2,
+     "max": 43.09
+    },
+    {
+     "median": 33.44,
+     "p90": 40.16,
+     "max": 45.8
+    }
+   ],
+   "flightP90": 36.58,
+   "flightMax": 45.8,
+   "simMax": 49.29,
+   "droughtMedian": 2,
+   "droughtMax": 6,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 7,
+   "placeGapP90": 13,
+   "firstPocket": 42,
+   "levelsBought": 0.7391304347826086,
+   "gliderShare": 0.44871794871794873,
+   "eCap": 0.1374764595103578,
+   "betaCap": 0,
+   "craneTugRate": 0.005649717514124294,
+   "craneNewPlace": 0,
+   "qteHit": 0.9163366336633664,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     5080.833333333333,
+     7732.833333333333
+    ],
+    "spend": [
+     1975,
+     3675,
+     4633.333333333333,
+     6480
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5286.666666666667,
+     "atlas": 7456.666666666667,
+     "pocket": 300,
+     "model": 400,
+     "mailbag": 2200
+    },
+    "left": 2103,
+    "models": {
+     "dart": {
+      "share": 0.1713747645951036,
+      "coins": 92.28571428571429,
+      "x": 792.8777162237568,
+      "coinsPerMin": 222.88791640962077,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.4764595103578154,
+      "coins": 124.5494071146245,
+      "x": 1086.2383200778659,
+      "coinsPerMin": 245.5250387977729,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.352165725047081,
+      "coins": 398.0855614973262,
+      "x": 3120.5615079115883,
+      "coinsPerMin": 586.5911739342943,
+      "bought": 1,
+      "buyThrow": 67
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 19
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.7298578199052133,
+    0.5040816326530613
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2708.1666666666665,
+    "incomeRatio": 1.1624700939707828,
+    "income": 19058.5,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.2406947890818858,
+     1.9736842105263157
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.5813953488372093
+     },
+     {
+      "bought": 1,
+      "buyThrow": 63,
+      "payEst": 29.73977695167286,
+      "paid": 0.6666666666666666,
+      "payFrac": 1
+     },
+     {
+      "bought": 1,
+      "buyThrow": 77,
+      "payEst": 26.16279069767442,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 531,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 359,
+      "rate": 0.1894150417827298,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 319,
+      "rate": 0.109717868338558,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 135,
+      "rate": 0.15555555555555556,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 9
+     },
+     "wish": {
+      "flights": 120,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 98,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.85,
+      "gapMed": 13.75
+     },
+     "allTheVerbs": {
+      "flights": 156,
+      "rate": 0.12179487179487179,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 16
+     },
+     "hawkFeather": {
+      "flights": 187,
+      "rate": 0.17647058823529413,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 13
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 135
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 135
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:needleThread": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 126,
+   "throwsP90": 143,
+   "throwsMax": 143,
+   "minutes": 63.897454727210494,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 15,
+     "minutes": 9.044682065884537
+    },
+    {
+     "throws": 62,
+     "minutes": 30.868915692412678
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 30.49,
+     "p90": 38.18,
+     "max": 42.67
+    },
+    {
+     "median": 22.42,
+     "p90": 25.97,
+     "max": 39.48
+    }
+   ],
+   "flightP90": 30.2,
+   "flightMax": 42.67,
+   "simMax": 46.72,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 8,
+   "placeGapP90": 16,
+   "firstPocket": 42,
+   "levelsBought": 0.9130434782608695,
+   "gliderShare": 0.3146853146853147,
+   "eCap": 0.06596306068601583,
+   "betaCap": 0,
+   "craneTugRate": 0.027704485488126648,
+   "craneNewPlace": 0,
+   "qteHit": 0.9183098591549296,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     4359.833333333333,
+     23466
+    ],
+    "spend": [
+     1975,
+     3675,
+     4010,
+     22633.333333333332
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 10553.333333333334,
+     "atlas": 12180,
+     "pocket": 1140,
+     "model": 5100,
+     "mailbag": 2200
+    },
+    "left": 1264,
+    "models": {
+     "dart": {
+      "share": 0.12401055408970976,
+      "coins": 100.30851063829788,
+      "x": 856.3506321082091,
+      "coinsPerMin": 239.6020995848597,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.33641160949868076,
+      "coins": 127.36470588235294,
+      "x": 1110.9574446433808,
+      "coinsPerMin": 250.5515205737714,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.11741424802110818,
+      "coins": 339.9438202247191,
+      "x": 2855.138547480271,
+      "coinsPerMin": 522.8006931944478,
+      "bought": 1,
+      "buyThrow": 67
+     },
+     "needle": {
+      "share": 0.42216358839050133,
+      "coins": 413.31875,
+      "x": 3112.4874289486715,
+      "coinsPerMin": 845.3114862936392,
+      "bought": 1,
+      "buyThrow": 77
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 12,
+    "maxP90": 31
+   },
+   "droughtP90": 5,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.7207207207207207,
+    0.5258620689655172
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     1,
+     3
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 5969,
+    "incomeRatio": 1.2117823167204436,
+    "income": 34070.666666666664,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.2254901960784315,
+     2.356902356902357
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.26666666666666666
+     },
+     {
+      "bought": 1,
+      "buyThrow": 67,
+      "payEst": 29.73977695167286,
+      "paid": 1,
+      "payFrac": 0.4444444444444444
+     },
+     {
+      "bought": 1,
+      "buyThrow": 79,
+      "payEst": 43.689320388349515,
+      "paid": 1,
+      "payFrac": 0.6545454545454545
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 758,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 586,
+      "rate": 0.14846416382252559,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 420,
+      "rate": 0.05952380952380952,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0,
+      "firstIng": 27,
+      "firstIngP90": 44
+     },
+     "tapeSave": {
+      "flights": 546,
+      "rate": 0.08424908424908426,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 387,
+      "rate": 0.11627906976744186,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 353,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 341,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.017,
+      "gapMed": 5.667
+     },
+     "allTheVerbs": {
+      "flights": 395,
+      "rate": 0.027848101265822784,
+      "campaigns": 6,
+      "first": 7,
+      "never": 0,
+      "firstIng": 7,
+      "firstIngP90": 14
+     },
+     "hawkFeather": {
+      "flights": 89,
+      "rate": 0.14606741573033707,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0.33333333333333337,
+      "firstIng": 12,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 320,
+      "rate": 0.0375,
+      "campaigns": 6,
+      "first": 22,
+      "never": 0.33333333333333337,
+      "firstIng": 42,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.46153846153846156,
+    "foundMin": 0.46153846153846156,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 387
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 387
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:hawkFeather": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 69,
+   "throwsP90": 72,
+   "throwsMax": 72,
+   "minutes": 40.579026349683126,
+   "district": [
+    {
+     "throws": 29,
+     "minutes": 12.981120483238215
+    },
+    {
+     "throws": 13,
+     "minutes": 8.622867381344301
+    },
+    {
+     "throws": 13,
+     "minutes": 9.017428753497416
+    },
+    {
+     "throws": 14,
+     "minutes": 9.939426407388599
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.1,
+     "p90": 24.52,
+     "max": 30.98
+    },
+    {
+     "median": 29.93,
+     "p90": 33.69,
+     "max": 38.66
+    },
+    {
+     "median": 33.51,
+     "p90": 37.43,
+     "max": 40.3
+    },
+    {
+     "median": 35.14,
+     "p90": 39.37,
+     "max": 43.67
+    }
+   ],
+   "flightP90": 36.54,
+   "flightMax": 43.67,
+   "simMax": 46.6,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 5,
+   "placeGapP90": 10,
+   "firstPocket": 42,
+   "levelsBought": 0.6739130434782609,
+   "gliderShare": 0.2222222222222222,
+   "eCap": 0.15196078431372548,
+   "betaCap": 0,
+   "craneTugRate": 0.007352941176470588,
+   "craneNewPlace": 0,
+   "qteHit": 0.9618988132417239,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1982.1666666666667,
+     2582.6666666666665,
+     4334.5,
+     6371.833333333333
+    ],
+    "spend": [
+     1641.6666666666667,
+     2286.6666666666665,
+     3966.6666666666665,
+     5885
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 4353.333333333333,
+     "model": 400,
+     "atlas": 5406.666666666667,
+     "mailbag": 2200,
+     "pocket": 300
+    },
+    "left": 1886,
+    "models": {
+     "dart": {
+      "share": 0.19117647058823528,
+      "coins": 60.05128205128205,
+      "x": 505.4781983119533,
+      "coinsPerMin": 143.5553961879647,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.6446078431372549,
+      "coins": 315.17110266159693,
+      "x": 2615.6070005151537,
+      "coinsPerMin": 483.3401563816182,
+      "bought": 1,
+      "buyThrow": 24
+     },
+     "glider": {
+      "share": 0.1642156862745098,
+      "coins": 60.492537313432834,
+      "x": 510.23531956326804,
+      "coinsPerMin": 132.9642561083023,
+      "bought": 0,
+      "buyThrow": null
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9329608938547486,
+    0.7885714285714286,
+    0.6857142857142857,
+    0.5357142857142857
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1933.6666666666667,
+    "incomeRatio": 1.144240376618001,
+    "income": 15271.166666666666,
+    "toGo": [
+     2.5806451612903225,
+     1.9662921348314606,
+     1.2396694214876034,
+     1.0416666666666667
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 42,
+      "payEst": 22.727272727272727,
+      "paid": 1,
+      "payFrac": 0.7083333333333334
+     },
+     {
+      "bought": 1,
+      "buyThrow": 50,
+      "payEst": 27.027027027027025,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 58,
+      "payEst": 27.52293577981651,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 408,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.233,
+      "gapMed": 5.867
+     },
+     "kettleSong": {
+      "flights": 275,
+      "rate": 0.3054545454545455,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 144,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 233,
+      "rate": 0.060085836909871244,
+      "campaigns": 6,
+      "first": 31,
+      "never": 0,
+      "firstIng": 31,
+      "firstIngP90": 39
+     },
+     "steamOrgan": {
+      "flights": 126,
+      "rate": 0.2619047619047619,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 4
+     },
+     "wish": {
+      "flights": 95,
+      "rate": 0.021052631578947368,
+      "campaigns": 6,
+      "first": 15,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 77,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.833,
+      "gapMed": 7.733
+     },
+     "allTheVerbs": {
+      "flights": 141,
+      "rate": 0.14184397163120568,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 6
+     },
+     "hawkFeather": {
+      "flights": 263,
+      "rate": 0.40304182509505704,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 13
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 126
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 126
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 63,
+   "throwsP90": 65,
+   "throwsMax": 65,
+   "minutes": 36.24169078999365,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 18,
+     "minutes": 11.509087220803302
+    },
+    {
+     "throws": 5,
+     "minutes": 3.9460578821637284
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 29.53,
+     "p90": 38.12,
+     "max": 43.18
+    },
+    {
+     "median": 37.25,
+     "p90": 41.56,
+     "max": 45.46
+    }
+   ],
+   "flightP90": 35.73,
+   "flightMax": 45.46,
+   "simMax": 46.52,
+   "droughtMedian": 1,
+   "droughtMax": 4,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 4,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 35,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.7857142857142857,
+   "eCap": 0.11731843575418995,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9371877230549608,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     4703.5,
+     2263.3333333333335
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     4166.666666666667,
+     2021.6666666666667
+    ],
+    "kind": {
+     "paper": 3236.6666666666665,
+     "workshop": 1120,
+     "atlas": 4033.3333333333335,
+     "pocket": 300,
+     "mailbag": 1466.6666666666667,
+     "model": 783.3333333333334
+    },
+    "left": 1200,
+    "models": {
+     "dart": {
+      "share": 0.13687150837988826,
+      "coins": 130.75510204081633,
+      "x": 1153.312385997016,
+      "coinsPerMin": 279.5654237791487,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.7346368715083799,
+      "coins": 182.35361216730038,
+      "x": 1581.4915339283073,
+      "coinsPerMin": 313.05271023577126,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.12569832402234637,
+      "coins": 409.64444444444445,
+      "x": 3492.2893278991837,
+      "coinsPerMin": 590.3305889793352,
+      "bought": 0.8333333333333334,
+      "buyThrow": 53
+     },
+     "needle": {
+      "share": 0.002793296089385475,
+      "coins": 647,
+      "x": 4887.5285888556045,
+      "coinsPerMin": 1020.5209199275189,
+      "bought": 0.16666666666666666,
+      "buyThrow": 64
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 13
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.6552706552706553,
+    0.5076923076923077
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1097.1666666666667,
+    "incomeRatio": 1.0952990605767678,
+    "income": 12241.166666666666,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.3385826771653544,
+     1.6736401673640167
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.8235294117647058
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 50,
+      "payEst": 23.880597014925375,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 0.3333333333333333,
+      "buyThrow": 62,
+      "payEst": 20.408163265306122,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 358,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 253,
+      "rate": 0.4901185770750988,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 229,
+      "rate": 0.25327510917030566,
+      "campaigns": 6,
+      "first": 19,
+      "never": 0,
+      "firstIng": 19,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 61,
+      "rate": 0.4426229508196721,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 4
+     },
+     "wish": {
+      "flights": 49,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 27,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.883,
+      "gapMed": 24.217
+     },
+     "allTheVerbs": {
+      "flights": 85,
+      "rate": 0.058823529411764705,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.16666666666666663,
+      "firstIng": 10,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 45,
+      "rate": 0.4888888888888889,
+      "campaigns": 5,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 1,
+      "rate": 0,
+      "campaigns": 1,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1.0000000000000002,
+     "n": 61
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1.0000000000000002,
+      "n": 61
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:kiteTail": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 70,
+   "throwsP90": 72,
+   "throwsMax": 72,
+   "minutes": 51.217220650768446,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 14,
+     "minutes": 10.644514726284783
+    },
+    {
+     "throws": 10,
+     "minutes": 9.515564654639473
+    },
+    {
+     "throws": 15,
+     "minutes": 13.378182428324969
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 30.62,
+     "p90": 50.45,
+     "max": 59.6
+    },
+    {
+     "median": 48.78,
+     "p90": 56.76,
+     "max": 63.59
+    },
+    {
+     "median": 45.59,
+     "p90": 56.55,
+     "max": 67.51
+    }
+   ],
+   "flightP90": 54,
+   "flightMax": 67.51,
+   "simMax": 72.84,
+   "droughtMedian": 2,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 39,
+   "levelsBought": 0.6521739130434783,
+   "gliderShare": 0.4,
+   "eCap": 0.078125,
+   "betaCap": 0,
+   "craneTugRate": 0.0026041666666666665,
+   "craneNewPlace": 0,
+   "qteHit": 0.9052851909994767,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     2795,
+     3557.6666666666665,
+     6826.666666666667
+    ],
+    "spend": [
+     1328.3333333333333,
+     2578.3333333333335,
+     3123.3333333333335,
+     6298.333333333333
+    ],
+    "kind": {
+     "paper": 3886.6666666666665,
+     "workshop": 1061.6666666666667,
+     "atlas": 4513.333333333333,
+     "model": 1566.6666666666667,
+     "mailbag": 2050,
+     "pocket": 250
+    },
+    "left": 1418,
+    "models": {
+     "dart": {
+      "share": 0.0703125,
+      "coins": 67.18518518518519,
+      "x": 577.1254150140558,
+      "coinsPerMin": 154.42844606420906,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.359375,
+      "coins": 95.81884057971014,
+      "x": 862.4470248611408,
+      "coinsPerMin": 177.2612726949055,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "kite": {
+      "share": 0.5703125,
+      "coins": 336.2511415525114,
+      "x": 2812.2011238325194,
+      "coinsPerMin": 383.58900018592414,
+      "bought": 1,
+      "buyThrow": 28
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 7,
+    "maxP90": 12
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7873684210526316,
+    0.6682577565632458,
+    0.5663082437275986
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     1,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1662,
+    "incomeRatio": 1.1208880872572076,
+    "income": 14779.333333333334,
+    "toGo": [
+     2.3529411764705883,
+     1.3709677419354838,
+     0.8356545961002786,
+     1.2077294685990339
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 38,
+      "payEst": 19.84126984126984,
+      "paid": 1,
+      "payFrac": 0.782608695652174
+     },
+     {
+      "bought": 1,
+      "buyThrow": 51,
+      "payEst": 26.75585284280936,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 56,
+      "payEst": 29.22077922077922,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 384,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.85
+     },
+     "kettleSong": {
+      "flights": 279,
+      "rate": 0.5053763440860215,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 255,
+      "rate": 0.38823529411764707,
+      "campaigns": 6,
+      "first": 21,
+      "never": 0.16666666666666663,
+      "firstIng": 22,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 129,
+      "rate": 0.4186046511627907,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 109,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 92,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.85,
+      "gapMed": 31.533
+     },
+     "allTheVerbs": {
+      "flights": 145,
+      "rate": 0.18620689655172415,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 16
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 219,
+      "rate": 0.9497716894977168,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 3
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1.0000000000000002,
+     "n": 129
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1.0000000000000002,
+      "n": 129
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:pigeonExpress": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 85,
+   "throwsP90": 96,
+   "throwsMax": 96,
+   "minutes": 49.36232547861671,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 24,
+     "minutes": 13.847983723053677
+    },
+    {
+     "throws": 11,
+     "minutes": 7.881349535508317
+    },
+    {
+     "throws": 19,
+     "minutes": 12.8912134018654
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 26.47,
+     "p90": 31.08,
+     "max": 37.79
+    },
+    {
+     "median": 32.34,
+     "p90": 37.73,
+     "max": 40.64
+    },
+    {
+     "median": 33.54,
+     "p90": 39.92,
+     "max": 45.52
+    }
+   ],
+   "flightP90": 36,
+   "flightMax": 45.52,
+   "simMax": 49.2,
+   "droughtMedian": 2,
+   "droughtMax": 5,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 8,
+   "placeGapP90": 13,
+   "firstPocket": 42,
+   "levelsBought": 0.7391304347826086,
+   "gliderShare": 0.4375,
+   "eCap": 0.13127413127413126,
+   "betaCap": 0,
+   "craneTugRate": 0.003861003861003861,
+   "craneNewPlace": 0,
+   "qteHit": 0.918918918918919,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     3980,
+     3601.3333333333335,
+     8903.833333333334
+    ],
+    "spend": [
+     1975,
+     3675,
+     3326.6666666666665,
+     8410
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 6353.333333333333,
+     "atlas": 7013.333333333333,
+     "pocket": 300,
+     "model": 400,
+     "mailbag": 2200
+    },
+    "left": 1468,
+    "models": {
+     "dart": {
+      "share": 0.1640926640926641,
+      "coins": 80.25882352941177,
+      "x": 691.7503427561342,
+      "coinsPerMin": 197.98109824001168,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.4942084942084942,
+      "coins": 127.99609375,
+      "x": 1117.5953553806146,
+      "coinsPerMin": 250.6813393359449,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.3416988416988417,
+      "coins": 411.9265536723164,
+      "x": 3237.526945385285,
+      "coinsPerMin": 602.4700728640627,
+      "bought": 1,
+      "buyThrow": 67
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9627228525121556,
+    0.7759674134419552,
+    0.7032258064516129,
+    0.5413793103448276
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2629,
+    "incomeRatio": 1.1622674896198328,
+    "income": 18750,
+    "toGo": [
+     3.076923076923077,
+     1.3765182186234817,
+     1.1940298507462686,
+     1.5552099533437014
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.73563218390804,
+      "paid": 1,
+      "payFrac": 0.5581395348837209
+     },
+     {
+      "bought": 1,
+      "buyThrow": 63,
+      "payEst": 31.49606299212598,
+      "paid": 0.6666666666666666,
+      "payFrac": 0.9642857142857143
+     },
+     {
+      "bought": 1,
+      "buyThrow": 73,
+      "payEst": 29.126213592233007,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 518,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.917,
+      "gapMed": 5.617
+     },
+     "kettleSong": {
+      "flights": 346,
+      "rate": 0.20520231213872833,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 306,
+      "rate": 0.10457516339869281,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 151,
+      "rate": 0.19205298013245034,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 4
+     },
+     "wish": {
+      "flights": 115,
+      "rate": 0.008695652173913044,
+      "campaigns": 6,
+      "first": 13,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 114,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.1,
+      "gapMed": 15.867
+     },
+     "allTheVerbs": {
+      "flights": 154,
+      "rate": 0.12987012987012986,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 17
+     },
+     "hawkFeather": {
+      "flights": 177,
+      "rate": 0.1638418079096045,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 13
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 0.9999999999999998,
+     "n": 151
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 0.9999999999999998,
+      "n": 151
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:skimmerRipples": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 168,
+   "throwsP90": 175,
+   "throwsMax": 175,
+   "minutes": 83.40526824208337,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.490719183053708
+    },
+    {
+     "throws": 37,
+     "minutes": 19.840400458950644
+    },
+    {
+     "throws": 51,
+     "minutes": 25.819736577564036
+    },
+    {
+     "throws": 49,
+     "minutes": 25.099805462132963
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.85,
+     "max": 29
+    },
+    {
+     "median": 24.46,
+     "p90": 30.15,
+     "max": 37.24
+    },
+    {
+     "median": 24.14,
+     "p90": 28.76,
+     "max": 33.84
+    },
+    {
+     "median": 24.91,
+     "p90": 28.29,
+     "max": 33.22
+    }
+   ],
+   "flightP90": 28.44,
+   "flightMax": 37.24,
+   "simMax": 40.89,
+   "droughtMedian": 2,
+   "droughtMax": 13,
+   "droughtMaxMedian": 11,
+   "droughtMaxP90": 13,
+   "placeGapMedian": 9,
+   "placeGapP90": 31,
+   "firstPocket": 42,
+   "levelsBought": 0.9565217391304348,
+   "gliderShare": 0.24404761904761904,
+   "eCap": 0.05284147557328016,
+   "betaCap": 0,
+   "craneTugRate": 0.010967098703888335,
+   "craneNewPlace": 0,
+   "qteHit": 0.9285467725233,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2264.8333333333335,
+     6228.666666666667,
+     15143.666666666666,
+     17529.166666666668
+    ],
+    "spend": [
+     1975,
+     5806.666666666667,
+     14038.333333333334,
+     18250
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 18686.666666666668,
+     "atlas": 12263.333333333334,
+     "pocket": 300,
+     "model": 5500,
+     "mailbag": 2200
+    },
+    "left": 924,
+    "models": {
+     "dart": {
+      "share": 0.08275174476570289,
+      "coins": 74.86746987951807,
+      "x": 646.7750909353224,
+      "coinsPerMin": 186.4664383482756,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.2333000997008973,
+      "coins": 112.58974358974359,
+      "x": 986.0045984266983,
+      "coinsPerMin": 225.23024143458525,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.01694915254237288,
+      "coins": 215.41176470588235,
+      "x": 1954.0957803716801,
+      "coinsPerMin": 370.61626847404557,
+      "bought": 1,
+      "buyThrow": 58
+     },
+     "skimmer": {
+      "share": 0.6669990029910269,
+      "coins": 315.0612855007474,
+      "x": 2463.550076474264,
+      "coinsPerMin": 622.5833931579195,
+      "bought": 1,
+      "buyThrow": 55
+     }
+    }
+   },
+   "droughtA": {
+    "median": 5,
+    "p90": 19,
+    "maxP90": 29
+   },
+   "droughtP90": 6,
+   "repeat": [
+    0.9627228525121556,
+    0.7726597325408618,
+    0.6984304932735426,
+    0.5300699300699301
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     3,
+     3
+    ],
+    "p90": 7
+   },
+   "mailbag": {
+    "coins": 6814.333333333333,
+    "incomeRatio": 1.1981867676125433,
+    "income": 41166.333333333336,
+    "toGo": [
+     3.076923076923077,
+     1.9607843137254901,
+     2.5906735751295336,
+     2.544529262086514
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 28.90173410404624,
+      "paid": 1,
+      "payFrac": 0.2459016393442623
+     },
+     {
+      "bought": 1,
+      "buyThrow": 80,
+      "payEst": 39.40886699507389,
+      "paid": 1,
+      "payFrac": 0.40816326530612246
+     },
+     {
+      "bought": 1,
+      "buyThrow": 124,
+      "payEst": 23.809523809523807,
+      "paid": 1,
+      "payFrac": 0.775
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 1003,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 831,
+      "rate": 0.13598074608904934,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 10
+     },
+     "overTheLine": {
+      "flights": 590,
+      "rate": 0.1288135593220339,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0,
+      "firstIng": 8,
+      "firstIngP90": 10
+     },
+     "tapeSave": {
+      "flights": 791,
+      "rate": 0.0493046776232617,
+      "campaigns": 6,
+      "first": 17,
+      "never": 0,
+      "firstIng": 17,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 392,
+      "rate": 0.1096938775510204,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 12
+     },
+     "wish": {
+      "flights": 275,
+      "rate": 0.014545454545454545,
+      "campaigns": 6,
+      "first": 26,
+      "never": 0.5,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 258,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.917,
+      "gapMed": 3.167
+     },
+     "allTheVerbs": {
+      "flights": 450,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 17,
+      "rate": 0.058823529411764705,
+      "campaigns": 3,
+      "first": 4,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 669,
+      "rate": 0.6158445440956651,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 13
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 392
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 392
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:overTheLine": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 84,
+   "throwsP90": 88,
+   "throwsMax": 88,
+   "minutes": 46.8457386498692,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 17,
+     "minutes": 11.023029199265935
+    },
+    {
+     "throws": 11,
+     "minutes": 8.482077463709508
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 29.6,
+     "p90": 36.45,
+     "max": 40.35
+    },
+    {
+     "median": 35.47,
+     "p90": 41.44,
+     "max": 44.73
+    }
+   ],
+   "flightP90": 35.21,
+   "flightMax": 44.73,
+   "simMax": 48.68,
+   "droughtMedian": 2,
+   "droughtMax": 6,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 6,
+   "placeGapP90": 12,
+   "firstPocket": 41,
+   "levelsBought": 0.7391304347826086,
+   "gliderShare": 0.5952380952380952,
+   "eCap": 0.15106382978723404,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9677608440797186,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     5360.166666666667,
+     4619
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     4593.333333333333,
+     4591.666666666667
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 4820,
+     "atlas": 6123.333333333333,
+     "mailbag": 2200,
+     "pocket": 300,
+     "model": 400
+    },
+    "left": 1068,
+    "models": {
+     "dart": {
+      "share": 0.2723404255319149,
+      "coins": 120.609375,
+      "x": 1042.287408771962,
+      "coinsPerMin": 264.2474576520093,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5212765957446809,
+      "coins": 166.4816326530612,
+      "x": 1461.5900136810528,
+      "coinsPerMin": 308.3702567433014,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.20638297872340425,
+      "coins": 426.8556701030928,
+      "x": 3363.0211913520848,
+      "coinsPerMin": 619.544591966063,
+      "bought": 1,
+      "buyThrow": 67
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.7031630170316302,
+    0.51985559566787
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1898.8333333333333,
+    "incomeRatio": 1.130403091906105,
+    "income": 16271.833333333334,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.4534883720930232,
+     1.7716535433070866
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.6875
+     },
+     {
+      "bought": 1,
+      "buyThrow": 62,
+      "payEst": 28.07017543859649,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 76,
+      "payEst": 23.872679045092838,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 470,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 5.95
+     },
+     "kettleSong": {
+      "flights": 337,
+      "rate": 0.29080118694362017,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 147,
+      "rate": 0.10884353741496598,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 12
+     },
+     "tapeSave": {
+      "flights": 300,
+      "rate": 0.03333333333333333,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0.33333333333333337,
+      "firstIng": 38,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 105,
+      "rate": 0.2761904761904762,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 73,
+      "rate": 0.0273972602739726,
+      "campaigns": 6,
+      "first": 10,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 57,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 6,
+      "gapMed": 8.3
+     },
+     "allTheVerbs": {
+      "flights": 122,
+      "rate": 0.09016393442622951,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0,
+      "firstIng": 12,
+      "firstIngP90": 20
+     },
+     "hawkFeather": {
+      "flights": 97,
+      "rate": 0.36082474226804123,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 7
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 105
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 105
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:sailStripes": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 97,
+   "throwsP90": 107,
+   "throwsMax": 107,
+   "minutes": 52.33162391627989,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 24,
+     "minutes": 14.4248461023791
+    },
+    {
+     "throws": 23,
+     "minutes": 14.464556526332125
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 28.59,
+     "p90": 34.8,
+     "max": 53.73
+    },
+    {
+     "median": 30.93,
+     "p90": 37.41,
+     "max": 55.23
+    }
+   ],
+   "flightP90": 33.53,
+   "flightMax": 55.23,
+   "simMax": 61.4,
+   "droughtMedian": 2,
+   "droughtMax": 7,
+   "droughtMaxMedian": 6,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 7,
+   "placeGapP90": 14,
+   "firstPocket": 41,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.4205607476635514,
+   "eCap": 0.14616755793226383,
+   "betaCap": 0,
+   "craneTugRate": 0.0017825311942959,
+   "craneNewPlace": 0,
+   "qteHit": 0.9700833742030407,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     6550,
+     9243.333333333334
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     5218.333333333333,
+     9216.666666666666
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 6820,
+     "atlas": 6790,
+     "mailbag": 2200,
+     "pocket": 300,
+     "model": 2983.3333333333335
+    },
+    "left": 1982,
+    "models": {
+     "dart": {
+      "share": 0.23172905525846701,
+      "coins": 123.1923076923077,
+      "x": 1060.1767907726494,
+      "coinsPerMin": 271.39648509521106,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.40819964349376114,
+      "coins": 159.29694323144105,
+      "x": 1399.0932459053367,
+      "coinsPerMin": 298.96981695443293,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "sail": {
+      "share": 0.23529411764705882,
+      "coins": 375.90909090909093,
+      "x": 2920.8107067557244,
+      "coinsPerMin": 610.8552695622967,
+      "bought": 1,
+      "buyThrow": 62
+     },
+     "hawk": {
+      "share": 0.10160427807486631,
+      "coins": 427.9122807017544,
+      "x": 3354.8533427068123,
+      "coinsPerMin": 654.3876682320456,
+      "bought": 1,
+      "buyThrow": 64
+     },
+     "kite": {
+      "share": 0.023172905525846704,
+      "coins": 462.38461538461536,
+      "x": 3531.100260372231,
+      "coinsPerMin": 566.5157321612746,
+      "bought": 0.5,
+      "buyThrow": 76
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.6846473029045643,
+    0.5250463821892394
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 3182.6666666666665,
+    "incomeRatio": 1.165416044689552,
+    "income": 22086,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.4912280701754386,
+     1.7110266159695817
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.47619047619047616
+     },
+     {
+      "bought": 1,
+      "buyThrow": 61,
+      "payEst": 31.372549019607842,
+      "paid": 0.8333333333333334,
+      "payFrac": 0.8518518518518519
+     },
+     {
+      "bought": 1,
+      "buyThrow": 77,
+      "payEst": 23.62204724409449,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 561,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 5.95
+     },
+     "kettleSong": {
+      "flights": 428,
+      "rate": 0.2850467289719626,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 249,
+      "rate": 0.024096385542168676,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0.33333333333333337,
+      "firstIng": 15,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 391,
+      "rate": 0.03324808184143223,
+      "campaigns": 6,
+      "first": 27,
+      "never": 0.16666666666666663,
+      "firstIng": 51,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 145,
+      "rate": 0.2689655172413793,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 6
+     },
+     "wish": {
+      "flights": 130,
+      "rate": 0.03076923076923077,
+      "campaigns": 6,
+      "first": 18,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 125,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.167,
+      "gapMed": 17.6
+     },
+     "allTheVerbs": {
+      "flights": 215,
+      "rate": 0.13023255813953488,
+      "campaigns": 6,
+      "first": 11,
+      "never": 0,
+      "firstIng": 11,
+      "firstIngP90": 29
+     },
+     "hawkFeather": {
+      "flights": 57,
+      "rate": 0.49122807017543857,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 7
+     },
+     "kiteTail": {
+      "flights": 13,
+      "rate": 0.8461538461538461,
+      "campaigns": 3,
+      "first": 8,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 2
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 132,
+      "rate": 1,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 1
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.6153846153846154,
+    "foundMin": 0.46153846153846156,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1.0000000000000002,
+     "n": 145
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1.0000000000000002,
+      "n": 145
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:dronePingPong": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 70,
+   "throwsP90": 75,
+   "throwsMax": 75,
+   "minutes": 39.8202130628391,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 20,
+     "minutes": 12.523938372362611
+    },
+    {
+     "throws": 4,
+     "minutes": 3.066597194410253
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 29.89,
+     "p90": 34.92,
+     "max": 40.23
+    },
+    {
+     "median": 31.57,
+     "p90": 40.25,
+     "max": 46.94
+    }
+   ],
+   "flightP90": 34.1,
+   "flightMax": 46.94,
+   "simMax": 51.06,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 5,
+   "placeGapP90": 10,
+   "firstPocket": 35,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.7464788732394366,
+   "eCap": 0.22588832487309646,
+   "betaCap": 0,
+   "craneTugRate": 0.007614213197969543,
+   "craneNewPlace": 0,
+   "qteHit": 0.9826254826254827,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     5170.166666666667,
+     4404
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     4375,
+     3875
+    ],
+    "kind": {
+     "paper": 4353.333333333333,
+     "workshop": 1120,
+     "atlas": 4645,
+     "pocket": 300,
+     "mailbag": 1916.6666666666667,
+     "model": 666.6666666666666
+    },
+    "left": 2491,
+    "models": {
+     "dart": {
+      "share": 0.14720812182741116,
+      "coins": 175.56896551724137,
+      "x": 1489.940605183556,
+      "coinsPerMin": 357.6907007173725,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.7182741116751269,
+      "coins": 197.6572438162544,
+      "x": 1692.5034324409996,
+      "coinsPerMin": 336.1425568113972,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "needle": {
+      "share": 0.025380710659898477,
+      "coins": 460.4,
+      "x": 3450.7119223222544,
+      "coinsPerMin": 859.3499110590622,
+      "bought": 0.16666666666666666,
+      "buyThrow": 60
+     },
+     "hawk": {
+      "share": 0.10913705583756345,
+      "coins": 427.13953488372096,
+      "x": 3485.0598181471505,
+      "coinsPerMin": 638.7969892175073,
+      "bought": 0.8333333333333334,
+      "buyThrow": 58
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 14
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.618925831202046,
+    0.5761316872427984
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1726.8333333333333,
+    "incomeRatio": 1.1274508402347514,
+    "income": 14848.5,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.2531328320802004,
+     1.675977653631285
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.6470588235294118
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 53,
+      "payEst": 29.62962962962963,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 0.8333333333333334,
+      "buyThrow": 59,
+      "payEst": 22.388059701492537,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 394,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.883
+     },
+     "kettleSong": {
+      "flights": 289,
+      "rate": 0.5467128027681661,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 265,
+      "rate": 0.07169811320754717,
+      "campaigns": 6,
+      "first": 11,
+      "never": 0.33333333333333337,
+      "firstIng": 19,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 89,
+      "rate": 0.5280898876404494,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 4
+     },
+     "wish": {
+      "flights": 74,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 56,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.867,
+      "gapMed": 20.033
+     },
+     "allTheVerbs": {
+      "flights": 128,
+      "rate": 0.0859375,
+      "campaigns": 6,
+      "first": 9,
+      "never": 0.33333333333333337,
+      "firstIng": 10,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 43,
+      "rate": 0.9069767441860465,
+      "campaigns": 5,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 10,
+      "rate": 0,
+      "campaigns": 1,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.3076923076923077,
+    "foundMin": 0.23076923076923078,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1.0000000000000002,
+     "n": 89
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1.0000000000000002,
+      "n": 89
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:needleThread": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 69,
+   "throwsP90": 81,
+   "throwsMax": 81,
+   "minutes": 39.89645261926939,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 18,
+     "minutes": 11.509087220803302
+    },
+    {
+     "throws": 16,
+     "minutes": 9.572464258117655
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 29.53,
+     "p90": 38.12,
+     "max": 43.18
+    },
+    {
+     "median": 27.21,
+     "p90": 39.04,
+     "max": 45.46
+    }
+   ],
+   "flightP90": 33.12,
+   "flightMax": 45.46,
+   "simMax": 46.52,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 35,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.6666666666666666,
+   "eCap": 0.10723192019950124,
+   "betaCap": 0,
+   "craneTugRate": 0.0024937655860349127,
+   "craneNewPlace": 0,
+   "qteHit": 0.927536231884058,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     4703.5,
+     5394.166666666667
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     4166.666666666667,
+     4905
+    ],
+    "kind": {
+     "paper": 4303.333333333333,
+     "workshop": 1120,
+     "atlas": 4566.666666666667,
+     "pocket": 300,
+     "mailbag": 1750,
+     "model": 1783.3333333333333
+    },
+    "left": 1425,
+    "models": {
+     "dart": {
+      "share": 0.12219451371571072,
+      "coins": 130.75510204081633,
+      "x": 1153.312385997016,
+      "coinsPerMin": 279.5654237791487,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.6408977556109726,
+      "coins": 175.41634241245137,
+      "x": 1536.7186042704807,
+      "coinsPerMin": 302.65134274117077,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.09226932668329177,
+      "coins": 379.8378378378378,
+      "x": 3249.888471438017,
+      "coinsPerMin": 556.4014612627344,
+      "bought": 0.8333333333333334,
+      "buyThrow": 53
+     },
+     "needle": {
+      "share": 0.14463840399002495,
+      "coins": 460.1551724137931,
+      "x": 3637.507644581617,
+      "coinsPerMin": 804.5714499968079,
+      "bought": 0.6666666666666666,
+      "buyThrow": 58
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 17
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.6552706552706553,
+    0.5182186234817814
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1690.3333333333333,
+    "incomeRatio": 1.1178511748976365,
+    "income": 15372,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.3385826771653544,
+     1.7271157167530224
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.6206896551724138
+     },
+     {
+      "bought": 1,
+      "buyThrow": 55,
+      "payEst": 31.007751937984494,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 0.5,
+      "buyThrow": 64,
+      "payEst": 25.423728813559322,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 401,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.767
+     },
+     "kettleSong": {
+      "flights": 296,
+      "rate": 0.4560810810810811,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 272,
+      "rate": 0.22058823529411764,
+      "campaigns": 6,
+      "first": 19,
+      "never": 0,
+      "firstIng": 19,
+      "firstIngP90": 22
+     },
+     "steamOrgan": {
+      "flights": 104,
+      "rate": 0.36538461538461536,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 4
+     },
+     "wish": {
+      "flights": 92,
+      "rate": 0.010869565217391304,
+      "campaigns": 5,
+      "first": 14,
+      "never": 0.8,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 70,
+      "rate": 0,
+      "campaigns": 5,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.883,
+      "gapMed": 6
+     },
+     "allTheVerbs": {
+      "flights": 128,
+      "rate": 0.03125,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.33333333333333337,
+      "firstIng": 10,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 37,
+      "rate": 0.43243243243243246,
+      "campaigns": 5,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 58,
+      "rate": 0.017241379310344827,
+      "campaigns": 4,
+      "first": 18,
+      "never": 0.75,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1.0000000000000002,
+     "n": 104
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1.0000000000000002,
+      "n": 104
+     }
+    ]
+   }
+  },
+  "weak|realistic|auto|preview|i:hawkFeather": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 80,
+   "throwsP90": 82,
+   "throwsMax": 82,
+   "minutes": 44.659633704125554,
+   "district": [
+    {
+     "throws": 37,
+     "minutes": 15.877376538726764
+    },
+    {
+     "throws": 13,
+     "minutes": 8.403585384775347
+    },
+    {
+     "throws": 15,
+     "minutes": 10.603896209451161
+    },
+    {
+     "throws": 19,
+     "minutes": 12.968422138368027
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.69,
+     "p90": 24.04,
+     "max": 33.51
+    },
+    {
+     "median": 31.02,
+     "p90": 33.85,
+     "max": 37.79
+    },
+    {
+     "median": 31.86,
+     "p90": 37.05,
+     "max": 41.98
+    },
+    {
+     "median": 34.93,
+     "p90": 40.15,
+     "max": 45.76
+    }
+   ],
+   "flightP90": 36.19,
+   "flightMax": 45.76,
+   "simMax": 49.91,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 6,
+   "placeGapP90": 11,
+   "firstPocket": 45,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.27848101265822783,
+   "eCap": 0.15711252653927812,
+   "betaCap": 0,
+   "craneTugRate": 0.004246284501061571,
+   "craneNewPlace": 0,
+   "qteHit": 0.9261672095548317,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2299.1666666666665,
+     2375.1666666666665,
+     4896.333333333333,
+     7916.833333333333
+    ],
+    "spend": [
+     1955,
+     2305,
+     4200,
+     7356.666666666667
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5286.666666666667,
+     "atlas": 6510,
+     "model": 400,
+     "mailbag": 2200,
+     "pocket": 300
+    },
+    "left": 1507,
+    "models": {
+     "dart": {
+      "share": 0.13588110403397027,
+      "coins": 58.828125,
+      "x": 492.8180873227818,
+      "coinsPerMin": 151.7215138362524,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.2526539278131635,
+      "coins": 55.80672268907563,
+      "x": 463.196883458398,
+      "coinsPerMin": 128.48850777055736,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.6114649681528662,
+      "coins": 328.19097222222223,
+      "x": 2702.0227974569384,
+      "coinsPerMin": 504.197975376627,
+      "bought": 1,
+      "buyThrow": 32
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9525316455696202,
+    0.7885196374622356,
+    0.6972704714640199,
+    0.5147058823529411
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2326.5,
+    "incomeRatio": 1.152829138484081,
+    "income": 17487.5,
+    "toGo": [
+     3.2110091743119265,
+     1.3761467889908257,
+     0.9289617486338798,
+     1.1904761904761905
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 46,
+      "payEst": 21.27659574468085,
+      "paid": 1,
+      "payFrac": 0.5483870967741935
+     },
+     {
+      "bought": 1,
+      "buyThrow": 55,
+      "payEst": 27.3972602739726,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 67,
+      "payEst": 26.011560693641616,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 471,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.25,
+      "gapMed": 5.683
+     },
+     "kettleSong": {
+      "flights": 299,
+      "rate": 0.2140468227424749,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 8
+     },
+     "overTheLine": {
+      "flights": 184,
+      "rate": 0.005434782608695652,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 256,
+      "rate": 0.09765625,
+      "campaigns": 6,
+      "first": 9,
+      "never": 0,
+      "firstIng": 9,
+      "firstIngP90": 19
+     },
+     "steamOrgan": {
+      "flights": 142,
+      "rate": 0.19014084507042253,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 109,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 97,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3,
+      "gapMed": 11.417
+     },
+     "allTheVerbs": {
+      "flights": 167,
+      "rate": 0.1497005988023952,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 12
+     },
+     "hawkFeather": {
+      "flights": 288,
+      "rate": 0.14583333333333334,
+      "campaigns": 6,
+      "first": 9,
+      "never": 0,
+      "firstIng": 9,
+      "firstIngP90": 25
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 34,
+    "found": 0.38461538461538464,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 142
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 142
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 78,
+   "throwsP90": 88,
+   "throwsMax": 88,
+   "minutes": 41.907551803656425,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 25,
+     "minutes": 13.732732030343572
+    },
+    {
+     "throws": 19,
+     "minutes": 12.119569030833631
+    },
+    {
+     "throws": 13,
+     "minutes": 8.37694981987979
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 24.27,
+     "p90": 28.19,
+     "max": 37.38
+    },
+    {
+     "median": 29.11,
+     "p90": 38.05,
+     "max": 52.95
+    },
+    {
+     "median": 33.81,
+     "p90": 38.71,
+     "max": 77.03
+    }
+   ],
+   "flightP90": 34.04,
+   "flightMax": 77.03,
+   "simMax": 84.16,
+   "droughtMedian": 2,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 6,
+   "placeGapP90": 12,
+   "firstPocket": 41,
+   "levelsBought": 0.6956521739130435,
+   "gliderShare": 0.6153846153846154,
+   "eCap": 0.1336206896551724,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.968452380952381,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     4367.666666666667,
+     4991,
+     5118.5
+    ],
+    "spend": [
+     1618.3333333333333,
+     4160,
+     4296.666666666667,
+     4458.333333333333
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5286.666666666667,
+     "atlas": 5176.666666666667,
+     "mailbag": 2200,
+     "pocket": 300,
+     "model": 450
+    },
+    "left": 1756,
+    "models": {
+     "dart": {
+      "share": 0.28448275862068967,
+      "coins": 126.57575757575758,
+      "x": 1086.4606448718944,
+      "coinsPerMin": 277.9473029778958,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5366379310344828,
+      "coins": 176.91164658634537,
+      "x": 1527.7215028939454,
+      "coinsPerMin": 326.9025266098398,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "kite": {
+      "share": 0.01939655172413793,
+      "coins": 387.1111111111111,
+      "x": 3080.1137958706554,
+      "coinsPerMin": 449.75597680306504,
+      "bought": 0.16666666666666666,
+      "buyThrow": 60
+     },
+     "hawk": {
+      "share": 0.15948275862068967,
+      "coins": 461.7567567567568,
+      "x": 3574.2077960997626,
+      "coinsPerMin": 688.9761417548115,
+      "bought": 0.8333333333333334,
+      "buyThrow": 64
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9412878787878788,
+    0.7877551020408163,
+    0.7055702917771883,
+    0.5263157894736842
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2065,
+    "incomeRatio": 1.1410006208144965,
+    "income": 16402.166666666668,
+    "toGo": [
+     2.5806451612903225,
+     1.4049586776859504,
+     1.4450867052023122,
+     1.814516129032258
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 43,
+      "payEst": 32.25806451612903,
+      "paid": 1,
+      "payFrac": 0.6875
+     },
+     {
+      "bought": 1,
+      "buyThrow": 60,
+      "payEst": 31.372549019607842,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 68,
+      "payEst": 23.62204724409449,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 464,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 5.95
+     },
+     "kettleSong": {
+      "flights": 331,
+      "rate": 0.2930513595166163,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 152,
+      "rate": 0.039473684210526314,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.33333333333333337,
+      "firstIng": 16,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 294,
+      "rate": 0.034013605442176874,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.5,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 86,
+      "rate": 0.2558139534883721,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0,
+      "firstIng": 6,
+      "firstIngP90": 8
+     },
+     "wish": {
+      "flights": 82,
+      "rate": 0.012195121951219513,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 61,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 6,
+      "gapMed": 8.3
+     },
+     "allTheVerbs": {
+      "flights": 118,
+      "rate": 0.11864406779661017,
+      "campaigns": 6,
+      "first": 7,
+      "never": 0,
+      "firstIng": 7,
+      "firstIngP90": 12
+     },
+     "hawkFeather": {
+      "flights": 74,
+      "rate": 0.32432432432432434,
+      "campaigns": 5,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 7
+     },
+     "kiteTail": {
+      "flights": 9,
+      "rate": 0.8888888888888888,
+      "campaigns": 1,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 2
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 86
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 86
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview|i:kiteTail": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 75,
+   "throwsP90": 88,
+   "throwsMax": 88,
+   "minutes": 52.539947750324146,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.924205945749984
+    },
+    {
+     "throws": 19,
+     "minutes": 13.050261731484285
+    },
+    {
+     "throws": 7,
+     "minutes": 7.1384615850933955
+    },
+    {
+     "throws": 24,
+     "minutes": 22.563573364905956
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.34,
+     "p90": 24.86,
+     "max": 29.71
+    },
+    {
+     "median": 27.42,
+     "p90": 48.35,
+     "max": 55.71
+    },
+    {
+     "median": 50.69,
+     "p90": 59.53,
+     "max": 63.57
+    },
+    {
+     "median": 48.11,
+     "p90": 58.29,
+     "max": 65.12
+    }
+   ],
+   "flightP90": 54.29,
+   "flightMax": 65.12,
+   "simMax": 73.4,
+   "droughtMedian": 1,
+   "droughtMax": 5,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 6,
+   "placeGapP90": 10,
+   "firstPocket": 51,
+   "levelsBought": 0.6521739130434783,
+   "gliderShare": 0.3150684931506849,
+   "eCap": 0.1822125813449024,
+   "betaCap": 0,
+   "craneTugRate": 0.008676789587852495,
+   "craneNewPlace": 0,
+   "qteHit": 0.958740017746229,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1925,
+     3476.8333333333335,
+     2320.5,
+     10359.166666666666
+    ],
+    "spend": [
+     1618.3333333333333,
+     3245,
+     1853.3333333333333,
+     9076.666666666666
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 4820,
+     "atlas": 6253.333333333333,
+     "model": 1100,
+     "mailbag": 2200,
+     "pocket": 300
+    },
+    "left": 2668,
+    "models": {
+     "dart": {
+      "share": 0.18872017353579176,
+      "coins": 67.65517241379311,
+      "x": 581.4076229414682,
+      "coinsPerMin": 160.14220656158804,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.2950108459869848,
+      "coins": 99.16911764705883,
+      "x": 896.7250389838412,
+      "coinsPerMin": 198.3699933460681,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "kite": {
+      "share": 0.5162689804772235,
+      "coins": 374.43697478991595,
+      "x": 3007.163943328972,
+      "coinsPerMin": 416.3845905202163,
+      "bought": 1,
+      "buyThrow": 37
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 8,
+    "maxP90": 17
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9412878787878788,
+    0.7926605504587156,
+    0.6782006920415224,
+    0.531390134529148
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     1,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 2547.1666666666665,
+    "incomeRatio": 1.1612390173489657,
+    "income": 18081.5,
+    "toGo": [
+     2.5806451612903225,
+     1.5315315315315314,
+     1.048951048951049,
+     1.1333333333333333
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 46,
+      "payEst": 22.727272727272727,
+      "paid": 1,
+      "payFrac": 0.6551724137931034
+     },
+     {
+      "bought": 1,
+      "buyThrow": 54,
+      "payEst": 30.65134099616858,
+      "paid": 0.3333333333333333,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 62,
+      "payEst": 22.388059701492537,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 461,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.367,
+      "gapMed": 6.383
+     },
+     "kettleSong": {
+      "flights": 328,
+      "rate": 0.375,
+      "campaigns": 6,
+      "first": 5,
+      "never": 0,
+      "firstIng": 5,
+      "firstIngP90": 7
+     },
+     "overTheLine": {
+      "flights": 161,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 291,
+      "rate": 0.08934707903780069,
+      "campaigns": 6,
+      "first": 31,
+      "never": 0,
+      "firstIng": 31,
+      "firstIngP90": 38
+     },
+     "steamOrgan": {
+      "flights": 143,
+      "rate": 0.38461538461538464,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 140,
+      "rate": 0.03571428571428571,
+      "campaigns": 6,
+      "first": 8,
+      "never": 0.5,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 131,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.833,
+      "gapMed": 8.767
+     },
+     "allTheVerbs": {
+      "flights": 163,
+      "rate": 0.4171779141104294,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 2
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 238,
+      "rate": 0.9453781512605042,
+      "campaigns": 6,
+      "first": 3,
+      "never": 0,
+      "firstIng": 3,
+      "firstIngP90": 3
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 27,
+    "found": 0.46153846153846156,
+    "foundMin": 0.38461538461538464,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 143
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 143
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:pigeonExpress": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 70,
+   "throwsP90": 75,
+   "throwsMax": 75,
+   "minutes": 41.642665507856876,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 19,
+     "minutes": 10.979468625964795
+    },
+    {
+     "throws": 10,
+     "minutes": 6.564976188291517
+    },
+    {
+     "throws": 17,
+     "minutes": 11.555021104759732
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 27.44,
+     "p90": 31.47,
+     "max": 36.01
+    },
+    {
+     "median": 32.02,
+     "p90": 36.6,
+     "max": 39.61
+    },
+    {
+     "median": 32.19,
+     "p90": 36.95,
+     "max": 40.26
+    }
+   ],
+   "flightP90": 34.64,
+   "flightMax": 40.26,
+   "simMax": 43.33,
+   "droughtMedian": 1,
+   "droughtMax": 6,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 35,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.8533333333333334,
+   "eCap": 0.228287841191067,
+   "betaCap": 0,
+   "craneTugRate": 0.009925558312655087,
+   "craneNewPlace": 0,
+   "qteHit": 0.9836759371221282,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     3674.3333333333335,
+     3611.1666666666665,
+     7481.5
+    ],
+    "spend": [
+     1328.3333333333333,
+     3423.3333333333335,
+     3313.3333333333335,
+     6698.333333333333
+    ],
+    "kind": {
+     "paper": 5286.666666666667,
+     "workshop": 1120,
+     "atlas": 5256.666666666667,
+     "pocket": 300,
+     "mailbag": 2200,
+     "model": 600
+    },
+    "left": 1363,
+    "models": {
+     "dart": {
+      "share": 0.10421836228287841,
+      "coins": 112.92857142857143,
+      "x": 1018.666506228742,
+      "coinsPerMin": 246.4172400349792,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.8039702233250621,
+      "coins": 239.5,
+      "x": 1994.612365614265,
+      "coinsPerMin": 397.1644797086521,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "needle": {
+      "share": 0.01488833746898263,
+      "coins": 483.8333333333333,
+      "x": 3634.2302346628317,
+      "coinsPerMin": 887.7934050593879,
+      "bought": 0.16666666666666666,
+      "buyThrow": 61
+     },
+     "hawk": {
+      "share": 0.07692307692307693,
+      "coins": 418,
+      "x": 3360.076772984274,
+      "coinsPerMin": 640.3917574419772,
+      "bought": 0.6666666666666666,
+      "buyThrow": 72
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 11
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.954248366013072,
+    0.7874186550976139,
+    0.62751677852349,
+    0.5756880733944955
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     1
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 2144.6666666666665,
+    "incomeRatio": 1.1464661582015625,
+    "income": 16367,
+    "toGo": [
+     2.3529411764705883,
+     0.8542713567839196,
+     1.2135922330097086,
+     1.17096018735363
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.5789473684210527
+     },
+     {
+      "bought": 1,
+      "buyThrow": 47,
+      "payEst": 22.09944751381215,
+      "paid": 0.5,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 57,
+      "payEst": 27.027027027027025,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 403,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 2.85,
+      "gapMed": 5.683
+     },
+     "kettleSong": {
+      "flights": 298,
+      "rate": 0.5302013422818792,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 274,
+      "rate": 0.06569343065693431,
+      "campaigns": 6,
+      "first": 11,
+      "never": 0.33333333333333337,
+      "firstIng": 19,
+      "firstIngP90": null
+     },
+     "steamOrgan": {
+      "flights": 130,
+      "rate": 0.5076923076923077,
+      "campaigns": 6,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 2
+     },
+     "wish": {
+      "flights": 107,
+      "rate": 0.009345794392523364,
+      "campaigns": 6,
+      "first": 12,
+      "never": 0.8333333333333334,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 96,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.883,
+      "gapMed": 18.95
+     },
+     "allTheVerbs": {
+      "flights": 149,
+      "rate": 0.10067114093959731,
+      "campaigns": 6,
+      "first": 6,
+      "never": 0,
+      "firstIng": 6,
+      "firstIngP90": 31
+     },
+     "hawkFeather": {
+      "flights": 31,
+      "rate": 0.9032258064516129,
+      "campaigns": 4,
+      "first": 1,
+      "never": 0,
+      "firstIng": 1,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 6,
+      "rate": 0,
+      "campaigns": 1,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.38461538461538464,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 130
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 130
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview|i:skimmerRipples": {
+   "n": 6,
+   "doneRate": 1,
+   "throws": 113,
+   "throwsP90": 135,
+   "throwsMax": 135,
+   "minutes": 60.457233213412536,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 10.435580284851357
+    },
+    {
+     "throws": 37,
+     "minutes": 19.667496473866066
+    },
+    {
+     "throws": 31,
+     "minutes": 16.070454991225514
+    },
+    {
+     "throws": 29,
+     "minutes": 17.27737849820725
+    }
+   ],
+   "flight": [
+    {
+     "median": 22.84,
+     "p90": 29.59,
+     "max": 31.75
+    },
+    {
+     "median": 25.78,
+     "p90": 30.19,
+     "max": 36.01
+    },
+    {
+     "median": 22.21,
+     "p90": 32.19,
+     "max": 41.17
+    },
+    {
+     "median": 22.96,
+     "p90": 33.81,
+     "max": 36.91
+    }
+   ],
+   "flightP90": 32.15,
+   "flightMax": 41.17,
+   "simMax": 41.66,
+   "droughtMedian": 2,
+   "droughtMax": 9,
+   "droughtMaxMedian": 7,
+   "droughtMaxP90": 9,
+   "placeGapMedian": 6,
+   "placeGapP90": 23,
+   "firstPocket": 38,
+   "levelsBought": 0.8260869565217391,
+   "gliderShare": 0.28888888888888886,
+   "eCap": 0.05927051671732523,
+   "betaCap": 0,
+   "craneTugRate": 0.00911854103343465,
+   "craneNewPlace": 0,
+   "qteHit": 0.875626423690205,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1600,
+     5556.833333333333,
+     9183,
+     11377.333333333334
+    ],
+    "spend": [
+     1328.3333333333333,
+     5186.666666666667,
+     8741.666666666666,
+     10330
+    ],
+    "kind": {
+     "paper": 7553.333333333333,
+     "workshop": 1120,
+     "atlas": 9846.666666666666,
+     "model": 4566.666666666667,
+     "pocket": 300,
+     "mailbag": 2200
+    },
+    "left": 1612,
+    "models": {
+     "dart": {
+      "share": 0.06231003039513678,
+      "coins": 107.26829268292683,
+      "x": 969.2006542903977,
+      "coinsPerMin": 235.4971092880921,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.2872340425531915,
+      "coins": 127.80952380952381,
+      "x": 1153.9551716203575,
+      "coinsPerMin": 229.11632133292483,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "skimmer": {
+      "share": 0.6413373860182371,
+      "coins": 322.8009478672986,
+      "x": 2564.998232549776,
+      "coinsPerMin": 599.7622532240028,
+      "bought": 1,
+      "buyThrow": 39
+     },
+     "hawk": {
+      "share": 0.00911854103343465,
+      "coins": 254.5,
+      "x": 2303.9394657649677,
+      "coinsPerMin": 399.73963744400066,
+      "bought": 1,
+      "buyThrow": 54
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 11,
+    "maxP90": 23
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.954248366013072,
+    0.7967479674796748,
+    0.6851851851851852,
+    0.5161290322580645
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     3
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 4103.5,
+    "incomeRatio": 1.1714172754920726,
+    "income": 27717.166666666668,
+    "toGo": [
+     2.3529411764705883,
+     1.4655172413793103,
+     1.6233766233766234,
+     2.4752475247524752
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 35,
+      "payEst": 24.154589371980673,
+      "paid": 1,
+      "payFrac": 0.37662337662337664
+     },
+     {
+      "bought": 1,
+      "buyThrow": 62,
+      "payEst": 31.372549019607842,
+      "paid": 1,
+      "payFrac": 0.6458333333333334
+     },
+     {
+      "bought": 1,
+      "buyThrow": 90,
+      "payEst": 32.02846975088968,
+      "paid": 0.16666666666666666,
+      "payFrac": null
+     }
+    ]
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 658,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.35,
+      "gapMed": 5.717
+     },
+     "kettleSong": {
+      "flights": 553,
+      "rate": 0.3453887884267631,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 529,
+      "rate": 0.29300567107750475,
+      "campaigns": 6,
+      "first": 20,
+      "never": 0,
+      "firstIng": 20,
+      "firstIngP90": 24
+     },
+     "steamOrgan": {
+      "flights": 260,
+      "rate": 0.23846153846153847,
+      "campaigns": 6,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 5
+     },
+     "wish": {
+      "flights": 181,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 167,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.033,
+      "gapMed": 3.2
+     },
+     "allTheVerbs": {
+      "flights": 290,
+      "rate": 0,
+      "campaigns": 6,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 6,
+      "rate": 0.3333333333333333,
+      "campaigns": 1,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 4
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 422,
+      "rate": 0.4218009478672986,
+      "campaigns": 6,
+      "first": 4,
+      "never": 0,
+      "firstIng": 4,
+      "firstIngP90": 10
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 20,
+    "found": 0.3076923076923077,
+    "foundMin": 0.3076923076923077,
+    "corrMax": {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 260
+    },
+    "corrHigh": [
+     {
+      "a": "kettleSong",
+      "b": "steamOrgan",
+      "phi": 1,
+      "n": 260
+     }
+    ]
+   }
+  }
+ },
+ "targetSet": "t90",
+ "tricks": {
+  "combo": "realistic|auto|preview",
+  "rows": [
+   {
+    "id": "pigeonExpress",
+    "name": "Pigeon Express",
+    "model": false,
+    "note": "interval puštění holuba → klepnutí dalšího poryvu je v rozvrhu 08 nejméně ~5 s (Whistle ~2,2 s), okno 1,5 s je nedosažitelné",
+    "rate": 0,
+    "flights": 464,
+    "weak": 0,
+    "expert": 0,
+    "intent": 0,
+    "first": null,
+    "never": 1,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": 5.367,
+    "gapMed": 5.95,
+    "gapIntent": 2.867,
+    "ratio": null,
+    "ew": null,
+    "vRate": "vzácný",
+    "vIntent": "vzácný",
+    "vFirst": "vzácný",
+    "vEW": "–",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "kettleSong",
+    "name": "Kettle Song",
+    "model": false,
+    "note": "záměr: simulátor nemá páku na perfektnost (šum časování je vlastnost profilu)",
+    "rate": 0.2930513595166163,
+    "flights": 331,
+    "weak": 0.20414201183431951,
+    "expert": 0.4901185770750988,
+    "intent": null,
+    "first": 5,
+    "never": 0,
+    "firstIng": 5,
+    "firstIngP90": 7,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": 2.4008707108896146,
+    "vRate": "samozřejmý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "overTheLine",
+    "name": "Over the Line",
+    "model": false,
+    "note": "jen Paper Rocket (od D3); Boost tap v simulátoru není, část „od místa 1“ NOT ASSESSED; „poslední sekunda“ = do 1 s před dotykem země (i před odrazem Stone Skip), přes hranici se hodnotí konečný dolet",
+    "rate": 0.039473684210526314,
+    "flights": 152,
+    "weak": 0.005813953488372093,
+    "expert": null,
+    "intent": 0.10884353741496598,
+    "first": 8,
+    "never": 0.33333333333333337,
+    "firstIng": 16,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": 2.7573696145124718,
+    "ew": null,
+    "vRate": "zdravý",
+    "vIntent": "zdravý",
+    "vFirst": "zdravý",
+    "vEW": "–",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "tapeSave",
+    "name": "Tape Save",
+    "model": false,
+    "note": "záměr: hráč si minutí nevybírá, simulátor nemá páku",
+    "rate": 0.034013605442176874,
+    "flights": 294,
+    "weak": 0.09731543624161074,
+    "expert": 0.25327510917030566,
+    "intent": null,
+    "first": 8,
+    "never": 0.5,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": 2.6026200873362444,
+    "vRate": "zdravý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "verdict": "HEALTHY (záměr NOT ASSESSED)"
+   },
+   {
+    "id": "steamOrgan",
+    "name": "Steam Organ",
+    "model": false,
+    "note": "pára má v simulátoru 2 obláčky (08), 05 píše 3; Echo je pasivní bonus Atlasu (ne kapsa), záměr „Echo v kapse“ nemá páku",
+    "rate": 0.2558139534883721,
+    "flights": 86,
+    "weak": 0.19424460431654678,
+    "expert": 0.4426229508196721,
+    "intent": null,
+    "first": 6,
+    "never": 0,
+    "firstIng": 6,
+    "firstIngP90": 8,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": 2.2786885245901636,
+    "vRate": "samozřejmý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "wish",
+    "name": "Wish",
+    "model": false,
+    "note": "záměr: simulátor nemá páku",
+    "rate": 0.012195121951219513,
+    "flights": 82,
+    "weak": 0.009523809523809525,
+    "expert": 0,
+    "intent": null,
+    "first": 4,
+    "never": 0.8333333333333334,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": 0,
+    "vRate": "hraniční",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "vzácný",
+    "vEW": "zdravý",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "dronePingPong",
+    "name": "Drone Ping-Pong",
+    "model": false,
+    "note": "dvojice dronů (úr. 3) má mezi vyhodnoceními nejméně ~3,1 s (effectMin 1 + followGap 0,2 + 1,88), okno 2 s je nedosažitelné",
+    "rate": 0,
+    "flights": 61,
+    "weak": 0,
+    "expert": 0,
+    "intent": 0,
+    "first": null,
+    "never": 1,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": 6,
+    "gapMed": 8.3,
+    "gapIntent": 2.8,
+    "ratio": null,
+    "ew": null,
+    "vRate": "vzácný",
+    "vIntent": "vzácný",
+    "vFirst": "vzácný",
+    "vEW": "–",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "allTheVerbs",
+    "name": "All the Verbs",
+    "model": false,
+    "note": "tap = poryv/hvězda, hold = holub, tap-tap = pára, tap in place = termika/dron (08 §8 slovesa); záměr: simulátor nemá páku",
+    "rate": 0.11864406779661017,
+    "flights": 118,
+    "weak": 0.12244897959183673,
+    "expert": 0.058823529411764705,
+    "intent": null,
+    "first": 7,
+    "never": 0,
+    "firstIng": 7,
+    "firstIngP90": 12,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": 0.4803921568627451,
+    "vRate": "zdravý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "verdict": "HEALTHY (záměr NOT ASSESSED)"
+   },
+   {
+    "id": "hawkFeather",
+    "name": "Hawk: 3 perfekty za sebou",
+    "model": true,
+    "note": "hvězda řadu nepřerušuje ani nepočítá",
+    "rate": 0.32432432432432434,
+    "flights": 74,
+    "weak": 0.17391304347826086,
+    "expert": 0.4888888888888889,
+    "intent": 0.40304182509505704,
+    "first": 4,
+    "never": 0,
+    "firstIng": 4,
+    "firstIngP90": 7,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": 1.2427122940430924,
+    "ew": 2.811111111111111,
+    "vRate": "samozřejmý",
+    "vIntent": "hraniční",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "kiteTail",
+    "name": "Kite: perfekt termiky nebo 40 m",
+    "model": true,
+    "note": "",
+    "rate": 0.8888888888888888,
+    "flights": 9,
+    "weak": null,
+    "expert": null,
+    "intent": 0.9453781512605042,
+    "first": 2,
+    "never": 0,
+    "firstIng": 2,
+    "firstIngP90": 2,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": 1.0635504201680672,
+    "ew": null,
+    "vRate": "samozřejmý",
+    "vIntent": "náhoda",
+    "vFirst": "zdravý",
+    "vEW": "–",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "skimmerRipples",
+    "name": "Skimmer: dvojitý odraz",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": 0.5777027027027027,
+    "first": null,
+    "never": null,
+    "firstIng": 2,
+    "firstIngP90": 5,
+    "firstFrom": "záměr",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "zdravý",
+    "vFirst": "zdravý",
+    "vEW": "–",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "sailStripes",
+    "name": "Sail: zadní vítr",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": 1,
+    "first": null,
+    "never": null,
+    "firstIng": 1,
+    "firstIngP90": 1,
+    "firstFrom": "záměr",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "zdravý",
+    "vFirst": "zdravý",
+    "vEW": "–",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "needleThread",
+    "name": "Needle: 2 drony",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": 0,
+    "intent": 0.02608695652173913,
+    "first": null,
+    "never": null,
+    "firstIng": 38,
+    "firstIngP90": null,
+    "firstFrom": "záměr",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "vzácný",
+    "vFirst": "pomalý",
+    "vEW": "–",
+    "verdict": "CONCERNS"
+   }
+  ],
+  "gate": {
+   "strict": 1,
+   "lenient": 3,
+   "of": 8,
+   "need": 6
+  },
+  "system": {
+   "firstTrick": 27,
+   "found": 0.38461538461538464,
+   "foundWeak": 0.38461538461538464,
+   "corrMax": {
+    "a": "kettleSong",
+    "b": "steamOrgan",
+    "phi": 1,
+    "n": 86
+   },
+   "corrHigh": [
+    {
+     "a": "kettleSong",
+     "b": "steamOrgan",
+     "phi": 1,
+     "n": 86
+    }
+   ]
+  }
+ },
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 28,
+   "goal": "34–46",
+   "ok": false
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 25,
+   "goal": "36–48",
+   "ok": false
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 19,
+   "goal": "37–49",
+   "ok": false
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 13,
+   "goal": "36–48",
+   "ok": false
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "12.9",
+   "goal": "14–20",
+   "ok": false
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "13.7",
+   "goal": "18–24",
+   "ok": false
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "12.1",
+   "goal": "21–27",
+   "ok": false
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "8.4",
+   "goal": "23–29",
+   "ok": false
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "41.9",
+   "goal": "82–98",
+   "ok": false
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.3",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "24.3",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "29.1",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "33.8",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "34.0",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 5 (max 5, P90 5)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": true
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "6 / 12",
+   "goal": "≤ 11 / ≤ 17",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "0.0 % / –",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "13 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "62 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 41,
+   "goal": "20–40",
+   "ok": false
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "70 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Hody celkem (průměrný)",
+   "value": 78,
+   "goal": "150–185",
+   "ok": false
+  },
+  {
+   "name": "Sucho bez novinky A medián / P90 / P90 max kampaní (bez zastávek a variant)",
+   "value": "4 / 9 / 15",
+   "goal": "≤ 3 / ≤ 6 / ≤ 12",
+   "ok": false
+  },
+  {
+   "name": "Sucho bez nákupu ani novinky P90",
+   "value": 4,
+   "goal": "≤ 5",
+   "ok": true
+  },
+  {
+   "name": "Poryv + holub mezi QTE D1 (bez variant)",
+   "value": "94 %",
+   "goal": "≤ 95 %",
+   "ok": true
+  },
+  {
+   "name": "Poryv + holub mezi QTE D2 (bez variant)",
+   "value": "79 %",
+   "goal": "≤ 60 %",
+   "ok": false
+  },
+  {
+   "name": "Poryv + holub mezi QTE D3 (bez variant)",
+   "value": "71 %",
+   "goal": "≤ 60 %",
+   "ok": false
+  },
+  {
+   "name": "Poryv + holub mezi QTE D4 (bez variant)",
+   "value": "53 %",
+   "goal": "≤ 60 %",
+   "ok": true
+  },
+  {
+   "name": "Hody mezi nákupy medián D1–D4 / P90",
+   "value": "3 / 2 / 2 / 2 / 5",
+   "goal": "≤ 1 / 2 / 2 / 2 / ≤ 4",
+   "ok": false
+  },
+  {
+   "name": "Mezi zastávkami (zastávky v simulátoru nejsou)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Fronta novinek (není v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Varianty událostí: přínos a první setkání (nejsou v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Délka letu: varianty, vír a lampiony (nejsou v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "77.0",
+   "goal": "≤ 60",
+   "ok": false
+  },
+  {
+   "name": "Slabý: cíl do 250 hodů",
+   "value": "100 % (max 96)",
+   "goal": "100 %",
+   "ok": true
+  },
+  {
+   "name": "Slabý / průměrný (minuty)",
+   "value": "1.09",
+   "goal": "≤ 1.35",
+   "ok": true
+  },
+  {
+   "name": "Expert / průměrný (hody)",
+   "value": "0.81",
+   "goal": "≥ 0.69",
+   "ok": true
+  },
+  {
+   "name": "Expert / slabý (hody)",
+   "value": "0.74",
+   "goal": "0.6–0.75",
+   "ok": true
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (weak)",
+   "value": "1.16",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (weak, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (average)",
+   "value": "1.14",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (average, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (expert)",
+   "value": "1.10",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (expert, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  }
+ ],
+ "seconds": 112.55
+}

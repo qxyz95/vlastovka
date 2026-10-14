@@ -76,7 +76,7 @@ export function createFlight(kit,ctx){
   mom:mo?{step:A.momentum.step[mo-1],cap:A.momentum.cap[mo-1]}:null,onAirB:oa?A.onAir.beta[oa-1]:0,tape:lv(kit,'tape')?A.tape[lv(kit,'tape')-1]:0,
   echo:lv(kit,'echo')?A.echo.share[lv(kit,'echo')-1]:0,reach:pc?A.paperCrane.reach[pc-1]*P.route.place:0,craneUsed:false,
   gull:lv(kit,'gull')?{carry:A.gull.carry[lv(kit,'gull')-1],push:A.gull.push[lv(kit,'gull')-1]}:null,
-  stats:{done:0,hits:0,perfect:0,miss:0,types:{},comboMax:0,eCap:false,betaCap:false,eMax:0,betaMax:0,bursts:{},skips:0,tug:0,star:{seen:0,hit:0},
+  stats:{done:0,hits:0,perfect:0,miss:0,maxY:d.y0,types:{},comboMax:0,eCap:false,betaCap:false,eMax:0,betaMax:0,bursts:{},skips:0,tug:0,star:{seen:0,hit:0},
    dive:{uses:0,crash:0,low:0,high:0},cushion:{used:0,band:null},rocket:0,whistle:0}};
 }
 
@@ -120,9 +120,12 @@ export function effect(f,e,grade,share,withCombo){
  const dvx=P.push.base*((P.push.scaleWithPace?f.d.pi:1)+f.d.pi*Math.min(P.caps.E,raw))*perfH*f.d.S*typeMul*share*(m.pushK??1);
  f.vx+=dvx;return dvx;
 }
+// ctx.grades = {i: výsledek} vynutí výsledky QTE z jiného letu (náhled přehráním, 01 §2.10 bod 2); jen u událostí, které tam byly vyhodnoceny.
+// Záznam letu pro detektory kousků: e.resolvedAt, e.comboBefore, f.lastEv (poslední vyhodnocená událost).
 function resolve(f,e,grade){
  if(e.result)return null;
- e.result=grade;e.phase='effect';f.lastResolved=f.t;const st=f.stats,ok=grade!=='miss';
+ const fg=f.ctx.grades?.[e.i];if(fg!=null&&fg!=='interrupted')grade=fg;
+ e.result=grade;e.phase='effect';f.lastResolved=f.t;e.resolvedAt=f.t;e.comboBefore=f.combo;f.lastEv=e;const st=f.stats,ok=grade!=='miss';
  st.done++;st.types[e.type]??={n:0,hit:0};st.types[e.type].n++;
  if(e.type==='star'){st.star.seen++;if(ok){st.star.hit++;st.hits++;st.types.star.hit++;setBurst(f,P.events.star.burst,'star');f.combo+=P.combo.star;}else f.combo=0;}
  else if(!ok){st.miss++;f.combo=0;if(f.d.m.missK)f.vx*=1-f.d.m.missK;if(f.tape)effect(f,e,'success',f.tape,false);}
@@ -130,7 +133,7 @@ function resolve(f,e,grade){
   st.hits++;st.types[e.type].hit++;if(grade==='perfect')st.perfect++;
   const dvx=effect(f,e,grade,1,true);
   f.combo+=grade==='perfect'?P.combo.perfect:grade==='success'?P.combo.success:P.combo.partial;
-  if(grade==='perfect'&&f.echo)f.echoes.push({at:f.t+P.atlas.echo.delay,dvx:dvx*f.echo});
+  if(grade==='perfect'&&f.echo)f.echoes.push({at:f.t+P.atlas.echo.delay,dvx:dvx*f.echo,src:e.i});
   if(e.type==='steam'&&grade==='perfect'&&lv(f.kit,'steam')>=3)setBurst(f,P.events.steam.burst,'steam');
  }
  st.comboMax=Math.max(st.comboMax,f.combo);
@@ -212,7 +215,7 @@ export function whistle(f){
  const next=f.events.find(e=>e.phase==='waiting');if(!next||!(next.at>f.t))return false;
  next.at=f.t;next.whistled=true;f.abil.whistle=(f.abil.whistle??0)+1;f.stats.whistle++;return true;
 }
-export function rocket(f){const R=P.specials.rocket;if((f.abil.rocket??0)>=R.charges||!canAct(f))return false;f.abil.rocket=(f.abil.rocket??0)+1;f.stats.rocket++;setBurst(f,{amp:R.amp,tau:R.tau,shape:'exp'},'rocket');return true;}
+export function rocket(f){const R=P.specials.rocket;if((f.abil.rocket??0)>=R.charges||!canAct(f))return false;f.abil.rocket=(f.abil.rocket??0)+1;f.stats.rocket++;(f.stats.rocketT??=[]).push(f.t);setBurst(f,{amp:R.amp,tau:R.tau,shape:'exp'},'rocket');return true;}
 export const burstLeft=f=>f.burst?burstAt(f.burst,f.t-f.burst.t0):0;
 
 // Jeden krok fyziky (dnešní arkádový model + π, β, výtrysk, vítr se střihem, Dive, Cushion, Stone Skip, Paper Crane).
@@ -234,11 +237,13 @@ export function step(f){
   else{f.vy-=g*h;const gl=m.ground&&f.y<m.ground.below?glide*m.ground.glide:glide,sink=-Math.max(0,f.vx-wx)/gl;if(f.vy<sink)f.vy=sink;} // ground (01 §2.4): pod below m klesá pomaleji
   f.x+=f.vx*h;f.y+=f.vy*h;
  }
+ if(f.y>f.stats.maxY)f.stats.maxY=f.y;
  if(f.burst)f.x+=burstAt(f.burst,f.t-f.burst.t0)*cruise*dt;
  f.hoverT=Math.max(0,f.hoverT-dt);f.glideT=Math.max(0,f.glideT-dt);f.t+=dt;
  if(f.y<=0){
   const a=oy/(oy-f.y);f.x=ox+(f.x-ox)*a;f.vx=ovx+(f.vx-ovx)*a;f.vy=ovy+(f.vy-ovy)*a;f.t-=dt*(1-a);f.y=0;
   if(f.dive){st.dive.crash++;f.dive=null;}
+  (st.touchT??=[]).push(f.t); // časy dotyků země (i odrazy Stone Skip), pro kousek Over the Line
   const S=P.atlas.skip,vEff=f.vx+(f.burst?burstAt(f.burst,f.t-f.burst.t0)*cruise:0);
   if(st.landV==null)st.landV=vEff/cruise;
   // Oprava 3 z F2 (06): první odraz jen při rychlém dopadu (efektivní vodorovná rychlost vč. výtrysku > minVx·cruise),
