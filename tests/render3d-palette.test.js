@@ -29,15 +29,16 @@ test('jedna tuš: obrysy, lem stopy, podklad QTE a stín písma = ink; staré tu
 });
 
 test('vlaštovka: obrys ink, tónování nejvýš 20 %, záhyby azurová a magenta',()=>{
- assert.equal(CYBER.plane.maxTint,.2);assert.deepEqual(CYBER.plane.crease,[CYAN,MAGENTA]);
+ assert.equal(CYBER.plane.fill,PAPER);assert.equal(CYBER.plane.maxTint,.2);assert.deepEqual(CYBER.plane.crease,[CYAN,MAGENTA]);
  assert.ok(ratio(PAPER,INK)>=17);assert.equal(CYBER.workshop.plane,PAPER);assert.equal(CYBER.workshop.crease,MAGENTA);
 });
 
 test('perfekt magenta, úspěch azurová, zlatá jen hodnota',()=>{
  const p=CYBER.popup;assert.equal(p.perfect,MAGENTA);assert.equal(p.success,CYAN);assert.equal(p.milestone,GOLD);assert.equal(p.miss,MISS);
- assert.equal(CYBER.particles[2],CYAN,'jiskra úspěchu');assert.equal(CYBER.particles[4],GOLD,'jiskra hodnoty');
- // Zlatá nesmí být v UI mimo hodnotu (QTE, mířidla, štítky, vlaštovka, záblesk, rychlostní čáry).
- for(const key of ['qte','aim','label','plane','speed'])assert.ok(!walk(CYBER[key]).some(([,v])=>v===GOLD),key);
+ const q=CYBER.qte;assert.deepEqual([q.perfect,q.result.perfect,q.success,q.result.success,q.warning],[MAGENTA,MAGENTA,CYAN,CYAN,FOCUS]);
+ assert.equal(CYBER.particles[1],MAGENTA,'jiskra perfektu');assert.equal(CYBER.particles[2],CYAN,'jiskra úspěchu');assert.equal(CYBER.particles[4],GOLD,'jiskra hodnoty');
+ // Zlatá jen hodnota: milník, jiskra hodnoty a neonové cedule (kap. 2.2), nikde jinde.
+ assert.deepEqual(colors.filter(([,v])=>v===GOLD).map(([p])=>p),['.particles.4','.popup.milestone','.life.ads.1','.life.ads.3']);
  assert.notEqual(CYBER.flash,GOLD);assert.notEqual(CYBER.qte.bird.beak,GOLD);
 });
 
@@ -46,8 +47,7 @@ test('sjednocená azurová a magenta: neonové akcenty jsou tokeny, staré odst�
  for(const v of [C.qte.bird.wing,C.companion.grate,L3.drone.on,L3.robot.eye,W.light,W.visor,C.kid[1],C.shop.light])assert.equal(v,CYAN);
  for(const v of [C.companion.eye,L3.pigeon.eye,L3.bulb.party[1],W.shirt,C.lights.rim,C.kid[2],C.shop.sign])assert.equal(v,MAGENTA);
  assert.equal(C.qte.gust,mix(CYAN,PAPER,.6));
- // qte.success a qte.result.success jsou zatím LEGACY (hlídá je test UI), jinde staré odstíny nejsou.
- const OLD=['#00bddb','#53dbea','#53e6ff','#61eafa','#62ecff','#65f7ef','#66f7ef','#6ffff0','#ff43b5','#ff4fc3','#ee50b4','#ef59c1','#ff6fd0','#ff8fd8'];
+ const OLD=['#00bddb','#53dbea','#53e6ff','#61eafa','#62ecff','#65f7ef','#66f7ef','#6ffff0','#ff43b5','#ff4fc3','#ee50b4','#ef59c1','#ff6fd0','#ff8fd8','#2fb5c9','#2fe0c9','#ff5fc8','#5fd3c8','#5ee0c8','#8ff0e4','#3aa88f','#5fb0c8'];
  assert.deepEqual(colors.filter(([,v])=>OLD.includes(v)),[]);
  for(const c of L3.ads)assert.ok([CYAN,MAGENTA,GOLD].includes(c),'cedule jen cyan / magenta / gold');assert.equal(L3.ads.length,4);
 });
@@ -60,7 +60,8 @@ test('pára a kouř šedofialové, svítivost nejvýš 60 % papíru',()=>{
 
 test('UI vrstva na tokenech Atlasu: mířicí panel, štítky, písmo bez monospace',()=>{
  const a=CYBER.aim,l=CYBER.label;
- assert.deepEqual([a.panel,a.text,a.arrow,a.cap,l.bg,l.text],[PLATE,TEXT,FOCUS,PAPER,NIGHT,TEXT]);
+ assert.deepEqual([a.panel,a.text,a.arrow,a.bar,a.cap,l.bg,l.text],[PLATE,TEXT,FOCUS,FOCUS,PAPER,NIGHT,TEXT]);
+ for(const old of ['#efffff','#fff0a6','#f2ce87','#203b3e'])assert.ok(!colors.some(([,v])=>v===old),old);
  assert.ok(ratio(a.text,a.panel)>=4.5&&ratio(l.text,l.bg)>=4.5,'text ≥ 4,5 : 1');assert.ok(ratio(a.arrow,PLATE)>=3,'šipka ≥ 3 : 1');
  assert.equal(CYBER.popup.font,DISPLAY);assert.ok(!JSON.stringify(CYBER).includes('monospace'));
  assert.match(DISPLAY,/^"Bahnschrift Condensed".*"Arial Narrow",sans-serif$/);assert.match(BODY,/sans-serif$/);
@@ -80,4 +81,13 @@ test('nové tokeny pro scene/life3d/workshop existují; stará jména zůstávaj
  for(const k of ['biomes','accent','ground','groundDark','suburbs','far','light','shade','roof','trim','fog0','duskFog','beacon','water','lane'])assert.ok(k in C.city,k);
  for(const k of ['body','head','beak','tail','bread','wing','eye','steam','vent','grate'])assert.ok(k in C.companion,k);
  assert.equal(palette('cyber'),CYBER);assert.equal(palette('nope'),CYBER);assert.deepEqual(Object.keys(PALETTES),['cyber']);
+});
+
+test('budovy a život bez zelené (U11): Docks modré, Suburbs bez tyrkysové, žádný odstín se zelenou nad červenou i modrou',()=>{
+ const C=CYBER.city,hue=h=>{const [r,g,b]=rgb(h),M=Math.max(r,g,b),d=M-Math.min(r,g,b);return !d?0:M===r?60*(((g-b)/d+6)%6):M===g?60*((b-r)/d+2):60*((r-g)/d+4);};
+ assert.equal(C.biomes[1],'#215a8c');const hd=hue(C.biomes[1]);assert.ok(hd>=200&&hd<=230,'Docks stěny modré');
+ const green=([p,v])=>{const [r,g,b]=rgb(v);return g>r+12&&g>b+12;};
+ assert.deepEqual([...walk(C),...walk(CYBER.life,'.life'),...walk(CYBER.workshop,'.workshop')].filter(green),[]);
+ for(const v of C.suburbs){const h=hue(v);assert.ok(!(h>=150&&h<=200),'tyrkysový pastel '+v);}
+ assert.equal(C.accent[3],mix(CYAN,INK,.4));assert.deepEqual(C.roof,'#2a1d52');
 });

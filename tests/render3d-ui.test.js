@@ -38,8 +38,8 @@ test('drawQte: track, success and perfect arcs at zone angles, white progress do
  assert.equal(arcs.length,3);
  for(const a of arcs){assert.equal(a.args[0],148);assert.equal(a.args[1],200);assert.equal(a.args[2],30);assert.equal(a.style.lineWidth,7);}
  assert.ok(near(by('#3b4170').args[3],at(0))&&near(by('#3b4170').args[4],at(1)),'grey full track');
- assert.ok(near(by('#2fb5c9').args[3],at(.4))&&near(by('#2fb5c9').args[4],at(.7)),'cyan success arc');
- assert.ok(near(by('#ff5fc8').args[3],at(.5))&&near(by('#ff5fc8').args[4],at(.6)),'pink perfect arc');
+ assert.ok(near(by(CYBER.qte.success).args[3],at(.4))&&near(by(CYBER.qte.success).args[4],at(.7)),'cyan success arc');
+ assert.ok(near(by(CYBER.qte.perfect).args[3],at(.5))&&near(by(CYBER.qte.perfect).args[4],at(.6)),'magenta perfect arc');
  const dot=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#ffffff');
  assert.deepEqual(dot.args,[Math.round(148+30-4),Math.round(200-4),8,8],'dot at 3 o\'clock for progress .25');
  assert.equal(c.depth(),0,'save/restore balanced');
@@ -47,9 +47,9 @@ test('drawQte: track, success and perfect arcs at zone angles, white progress do
 
 test('drawQte: warning is dashed, result is one arc in one colour, bird cue only before holding',()=>{
  const w=fakeCtx();drawQte(w,{type:'gust',phase:'warning',result:null,progress:0,zones},view,0,false);
- const wa=strokes(w);assert.equal(wa.length,1);assert.deepEqual(wa[0].style.dash,[6,6]);assert.equal(wa[0].style.strokeStyle,'#fff0a6');
+ const wa=strokes(w);assert.equal(wa.length,1);assert.deepEqual(wa[0].style.dash,[6,6]);assert.equal(wa[0].style.strokeStyle,CYBER.qte.warning);
  assert.ok(wa[0].style.globalAlpha<1);
- for(const [result,color] of [['perfect','#ff5fc8'],['success','#2fe0c9'],['miss','#6b6f8a']]){
+ for(const [result,color] of [['perfect',CYBER.qte.result.perfect],['success',CYBER.qte.result.success],['miss',CYBER.qte.result.other]]){
   const c=fakeCtx();drawQte(c,{type:'bird',phase:'effect',result,progress:1,zones},view,0,false);
   const a=strokes(c);assert.equal(a.length,1,result);assert.equal(a[0].style.strokeStyle,color);assert.equal(a[0].style.lineWidth,5);assert.deepEqual(a[0].style.dash,[]);
  }
@@ -95,7 +95,7 @@ test('particles follow the view contract sx = px + (wx − cam − px)·k',()=>{
  assert.deepEqual(particleScreen({cam:0,px:148,py:258},300,100),[300,100],'k defaults to 1 (2D framing)');
  const fx=createFx();fx.parts.set([748,240,0,0,0,1,4,1],0);
  const m=fxMap(fx,v),p=m.particles;assert.equal(p.length,1);assert.equal(p[0].x,198);assert.equal(p[0].y,220);assert.equal(p[0].size,(4+1)*.5);
- const c=fakeCtx(640);drawUi(c,{view:v,fx:m,ui:{}});const r=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#ffd166');
+ const c=fakeCtx(640);drawUi(c,{view:v,fx:m,ui:{}});const r=c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.particles[1]);
  assert.deepEqual(r.args,[198-1.25,220-1.25,2.5,2.5]);assert.equal(STRIDE,8);
 });
 
@@ -126,9 +126,9 @@ test('drawAim: arrow from the projected plane, panel and power bar; uiScale and 
  const c=fakeCtx();drawAim(c,{angle:30,held:true,charge:.5},{px:148,py:258});
  assert.deepEqual(c.ops.find(o=>o.name==='translate').args,[148,258]);assert.ok(near(c.ops.find(o=>o.name==='rotate').args[0],-Math.PI/6));
  const line=c.ops.filter(o=>o.name==='lineTo')[0];assert.equal(line.args[0],65+.5*45);assert.deepEqual(c.ops.find(o=>o.name==='stroke').style.dash,[7,5]);
- assert.deepEqual(c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#f2ce87').args,[207,213,261*.5,10]);
+ assert.deepEqual(c.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.aim.bar).args,[207,213,261*.5,10]);
  assert.ok(c.ops.some(o=>o.name==='fillText'&&o.args[0]==='RELEASE AT PEAK POWER'));assert.equal(c.depth(),0);
- const idle=fakeCtx();drawAim(idle,{angle:15,held:false,charge:.9},{px:148,py:258});assert.equal(idle.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle==='#f2ce87').args[2],0);
+ const idle=fakeCtx();drawAim(idle,{angle:15,held:false,charge:.9},{px:148,py:258});assert.equal(idle.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.aim.bar).args[2],0);
  assert.equal(uiScale(1280),1);assert.equal(uiScale(640),1);assert.ok(uiScale(360)>1.5&&uiScale(360)<=2);assert.equal(uiScale(100),2);assert.equal(uiScale(0),1);
- assert.equal(palette('nope'),CYBER);assert.equal(CYBER.plane.fill,'#efffff');assert.deepEqual(CYBER.trail,['#3c91ab','#913a90']);
+ assert.equal(palette('nope'),CYBER);assert.equal(CYBER.plane.fill,'#ffffff');assert.deepEqual(CYBER.trail,['#3c91ab','#913a90']);
 });
