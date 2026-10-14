@@ -207,6 +207,6 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Formátování kódu (15. 10.):** zaveden Prettier (přes `npx`, bez npm závislostí), hutný styl one-linerů končí. Hromadný commit je v `.git-blame-ignore-revs`.
 - **Karty mechanik, odpovědi na BLOCKED z `research/plan-hratelnost/05-karty-mechanik.md` (15. 10.):**
   1. **Tlačítko na výsledku nekupuje, otevře Dílnu**; z Dílny vede cesta na Atlas. K4 „koupě jedním klepnutím + Undo“ neplatí (bez nového pole `p.lastBranch`, bez migrace).
-  2. Řádek „rozdíl proti minule“ ve výsledku: čeká na vysvětlení s ukázkou.
+  2. **(a)** Řádek „rozdíl proti minule“ (K2) **jen ve výsledku a jen když se něco změnilo**: rozdíl v metrech + změněné faktory (výbava, zásahy, úhel, vítr), netvrdí příčinu, pod prahem mlčí.
   3. **(a)** Rozkládání města nese herní informaci (D2 mola jako dílčí cíle, D3 obilí ukazuje dolet bez pomoci, D4 lampiony podle rychlosti).
   4. **(c)** Díru v hodech 21–24 zatím nezaplňovat, rozhodne playtest.

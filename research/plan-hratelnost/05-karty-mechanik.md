@@ -1,3 +1,5 @@
+> **Rozhodnutí uživatele 15. 10. (06, „Karty mechanik, odpovědi na BLOCKED“) mají přednost:** K4 čip **nekupuje**, otevře Dílnu (odtud Atlas), bez `p.lastBranch` a migrace; K2 řádek rozdílu (a); rozkládání nese informaci (a); díra 21–24 zatím bez výplně (c).
+
 # Karty mechanik „chuti hrát dál“ (game designer)
 
 **15. 10. 2026.** Realizační karty z návrhu kreativního ředitele `04-chut-hrat-dal.md`, upravené podle rozhodnutí 06 z 15. 10. („Plán hratelnosti, odpovědi…“ body 1–15 a „Chuť hrát dál…“ body 1–5). Sjednocuje i můj dřívější návrh `01-game-design.md`. Pro product-designera, art-directora, game-deva a narrative-writera.
