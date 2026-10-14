@@ -1,294 +1,14 @@
-/* Jedno UI na tokenech Atlasu: bible research/design/02-styl.md kap. 7, rozhodnutí 06 (14. 10.), zdroj prototype/atlas/atlas.css.
-   Tři vrstvy: 1 primitivní (jen hex) -> 2 sémantické (jména Atlasu a role) -> 3 komponentové. Komponenty čtou jen vrstvu 3 nebo 2. */
-:root{color-scheme:dark;
- /* 1 primitivní */
- --indigo-900:#1b1444;--indigo-800:#251c57;--indigo-700:#30256d;--indigo-600:#3b2e82;--ink-950:#15101f;--paper-0:#ffffff;
- --lilac-50:#f5f1ff;--lilac-200:#c9c0f0;--lilac-300:#a79cd8;
- --gold-300:#ffd166;--gold-200:#ffe08f;--yellow-200:#fff27a;--mint-300:#7dffcf;--cyan-300:#5cf2ff;--magenta-400:#ff4f9e;
- --pink-300:#ff6fb5;--sky-300:#5cc8ff;--amber-300:#ffc35a;--grey-200:#cfd3e0;
- /* Bahnschrift je variabilní: zúžení dává font-stretch:condensed (rodina „Bahnschrift Condensed“ v Chrome neexistuje a váha 900 by padla na široké záložní písmo) */
- --font-condensed:"Bahnschrift","Bahnschrift Condensed","Avenir Next Condensed","Roboto Condensed","Arial Narrow",sans-serif;
- --font-sans:"Bahnschrift","Segoe UI","Avenir Next",system-ui,sans-serif;
- /* 2 sémantické: jména Atlasu (02-design-spec §3, --ink podle bible kap. 2.1) a role (bible kap. 2.2) */
- --night:var(--indigo-900);--plate:var(--indigo-800);--plate2:var(--indigo-700);--plate-hover:var(--indigo-600);--ink:var(--ink-950);--paper:var(--paper-0);
- --text:var(--lilac-50);--dim:var(--lilac-200);--mute:var(--lilac-300);--coin:var(--gold-300);--coin-hover:var(--gold-200);--focus:var(--yellow-200);--ok:var(--mint-300);
- --d0:var(--pink-300);--d1:var(--sky-300);--d2:var(--amber-300);--d3:var(--magenta-400);
- --color-success:var(--cyan-300);--color-perfect:var(--magenta-400);--color-reward:var(--coin);--color-miss:var(--grey-200);--color-warning:var(--focus);
- --display:var(--font-condensed);--body:var(--font-sans);
- --t-micro:120ms;--t-fast:150ms;--t-mid:240ms;--t-panel:320ms;--t-reveal:480ms;--ease:cubic-bezier(.2,.8,.2,1);--ease-in:cubic-bezier(.5,0,.75,0);
- --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--gut:16px;--r:6px;--r-dialog:12px;--frame:3px;
- --shadow:4px 4px 0 var(--ink);--shadow-sm:3px 3px 0 var(--ink);--shadow-press:1px 1px 0 var(--ink);
- /* 3 komponentové */
- --page-bg:var(--night);--page-glow:var(--plate);--panel-bg:var(--plate);--panel-border:var(--ink);
- --btn-bg:var(--plate2);--btn-bg-hover:var(--plate-hover);--btn-fg:var(--text);--btn-border:var(--ink);
- --btn-primary-bg:var(--text);--btn-primary-bg-hover:var(--paper);--btn-primary-fg:var(--ink);
- --btn-buy-bg:var(--coin);--btn-buy-bg-hover:var(--coin-hover);--btn-buy-fg:var(--ink);
- --btn-disabled-fg:var(--dim);--btn-disabled-border:var(--mute);
- --brand-fg:var(--text);--print-shift:var(--d3);
- --wallet-bg:var(--ink);--wallet-fg:var(--color-reward);
- --nav-fg:var(--dim);--nav-current:var(--text);
- --scene-border:var(--ink);--scene-bg:var(--ink);
- --hud-bg:color-mix(in srgb,var(--night) 95%,transparent);--hud-bg-mid:color-mix(in srgb,var(--night) 82%,transparent);--hud-label:var(--dim);--hud-value:var(--text);--hud-reward:var(--color-reward);
- --label-bg:color-mix(in srgb,var(--night) 88%,transparent);
- --banner-bg:var(--color-reward);--banner-fg:var(--ink);
- --qte-track:var(--ink);--qte-track-border:var(--mute);--qte-zone-ok:var(--color-success);--qte-zone-perfect:var(--color-perfect);--qte-needle:var(--text);--qte-perfect-hatch:color-mix(in srgb,var(--ink) 35%,transparent);
- --charge-track:var(--plate);--charge-track-border:var(--mute);--charge-fill:var(--text);--charge-peak:var(--color-perfect);
- --node-price:var(--color-reward);--node-done:var(--ok);--node-link:var(--mute);
- --score-value:var(--text);--score-total:var(--color-reward);--progress-bar:var(--text);
- --scrim:color-mix(in srgb,var(--ink) 80%,transparent)}
-*{box-sizing:border-box}
-html{background:var(--page-bg);font-synthesis:none;-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;color:var(--text);font:16px/1.45 var(--body);background:radial-gradient(ellipse at 85% 0,var(--page-glow),transparent 60%) var(--page-bg)}
-main{max-width:1080px;margin:auto;padding:var(--s5) var(--s6)}
-[hidden]{display:none!important}
-.num,.wallet,.hud b,.score-card dd,.total,.node,.result-progress b,#angle-value,#charge-label,#milestone-banner{font-variant-numeric:tabular-nums}
-
-/* ---------- tlačítka a odkazy (stavy: výchozí, hover, stisk, focus, zakázaný) ---------- */
-button,a{-webkit-tap-highlight-color:transparent}
-button{font:700 condensed 18px/1.15 var(--display);font-stretch:condensed;letter-spacing:.01em;color:var(--btn-fg);background:var(--btn-bg);border:var(--frame) solid var(--btn-border);border-radius:var(--r);box-shadow:var(--shadow-sm);min-height:48px;min-width:48px;padding:10px 16px;cursor:pointer;touch-action:manipulation;transition:transform var(--t-micro) var(--ease)}
-button:hover:not(:disabled){background:var(--btn-bg-hover)}
-button:active:not(:disabled){transform:translate(2px,2px);box-shadow:var(--shadow-press)}
-:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-button:disabled{cursor:default;background:transparent;color:var(--btn-disabled-fg);border-style:dashed;border-color:var(--btn-disabled-border);box-shadow:none}
-.primary{background:var(--btn-primary-bg);color:var(--btn-primary-fg)}
-.primary:hover:not(:disabled){background:var(--btn-primary-bg-hover);color:var(--btn-primary-fg)}
-.quiet{background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);font:600 15px/1.2 var(--body);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;min-height:44px;padding:8px 12px}
-.quiet:hover:not(:disabled){background:transparent;color:var(--text)}
-.quiet:active:not(:disabled){box-shadow:none}
-
-/* ---------- hlavička, navigace, typografie ---------- */
-header,.intro,.section-title,footer{display:flex;justify-content:space-between;align-items:center;gap:var(--s4)}
-header{flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:var(--frame) solid var(--ink)}
-.brand{display:inline-block;min-height:44px;white-space:nowrap;color:var(--brand-fg);text-decoration:none;font:900 condensed 30px/1 var(--display);font-stretch:condensed;letter-spacing:.04em;text-shadow:2px 2px 0 var(--print-shift),4px 4px 0 var(--ink)}
-.brand span{display:block;font:600 condensed 12px/1 var(--display);letter-spacing:.24em;color:var(--dim);margin-top:var(--s2);text-shadow:none}
-.wallet{font:800 condensed 24px/1 var(--display);font-stretch:condensed;color:var(--wallet-fg);background:var(--wallet-bg);padding:var(--s2) var(--s3);border-radius:var(--r);white-space:nowrap;text-align:right}
-.wallet small{display:block;font:400 12px/1.2 var(--body);color:var(--dim);margin-top:var(--s1)}
-.page-nav{display:flex;align-items:center;gap:var(--s5);padding:var(--s3) 0 0}
-.page-nav a{display:inline-flex;align-items:center;min-height:44px;color:var(--nav-fg);text-decoration:none;text-transform:uppercase;letter-spacing:.08em;font:700 condensed 16px/1 var(--display);font-stretch:condensed;border-bottom:var(--frame) solid transparent}
-.page-nav a:hover{color:var(--nav-current)}
-.page-nav a[aria-current]{color:var(--nav-current);border-color:var(--nav-current)}
-.intro{padding:var(--s5) 0 var(--s4)}
-.eyebrow{font:700 condensed 13px/1.2 var(--display);font-stretch:condensed;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
-h1,h2,h3{font-family:var(--display);font-stretch:condensed;font-weight:800;color:var(--text);letter-spacing:.01em}
-h1{font-size:clamp(30px,5vw,40px);line-height:1;margin:var(--s2) 0}
-h2{font-size:clamp(22px,3.4vw,28px);line-height:1.05;margin:var(--s1) 0}
-h3{font-size:22px;line-height:1.1;margin:var(--s2) 0}
-p{line-height:1.5;color:var(--dim);font-size:15px}
-#warning:empty{display:none}#warning{color:var(--color-warning);font-weight:600}
-#journey-story{margin:var(--s2) 0 0;font-size:15px;color:var(--dim)}#journey-story:empty{display:none}
-footer{border-top:var(--frame) solid var(--ink);padding-top:var(--s3);margin-top:var(--s4);color:var(--mute);font:600 condensed 13px/1.3 var(--display);letter-spacing:.06em}
-
-/* ---------- scéna a HUD (priorita: stav -> cíl -> zpětná vazba -> ozdoba) ---------- */
-.scene{position:relative;overflow:hidden;border:var(--frame) solid var(--scene-border);border-radius:var(--r);box-shadow:var(--shadow);background:var(--scene-bg)}
-canvas{width:100%;display:block;aspect-ratio:16/9}
-/* #scene3d (WebGL, src/render3d/) dole, nad ním průhledná UI vrstva #game, která drží všechny vstupy; HUD a štítky nahoře.
-   ?render=2d (nebo bez WebGL2): 2D render.js kreslí celé #game pixelově, 3D plátno je skryté. */
-#scene3d{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#game{position:relative}
-body[data-render="2d"] #scene3d{display:none}body[data-render="2d"] #game{image-rendering:pixelated}
-.hud{position:absolute;top:0;left:0;right:0;z-index:1;display:flex;gap:var(--s5);padding:var(--s3) var(--s4) var(--s5);background:linear-gradient(var(--hud-bg) 0,var(--hud-bg-mid) 62%,transparent);pointer-events:none}
-.hud span{min-width:0;font:700 condensed 12px/1.1 var(--display);font-stretch:condensed;letter-spacing:.1em;color:var(--hud-label);text-shadow:0 1px 0 var(--ink)}
-.hud i{font-style:normal}
-.hud b{display:block;margin-top:var(--s1);font:800 condensed 24px/1 var(--display);font-stretch:condensed;letter-spacing:0;color:var(--hud-value);white-space:nowrap;text-shadow:1px 1px 0 var(--ink)}
-.hud #flight-reward{color:var(--hud-reward)}
-#scene-label{position:absolute;bottom:var(--s3);left:var(--s3);max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;
- font:700 condensed 13px/1.2 var(--display);font-stretch:condensed;letter-spacing:.1em;color:var(--text);background:var(--label-bg);padding:var(--s1) var(--s2);border-radius:4px}
-#scene-label:empty{display:none}
-#scene-label.district-highlight{background:var(--text);color:var(--ink);border-left:6px solid var(--ink);padding-left:var(--s2)}
-#milestone-banner{position:absolute;left:0;right:0;top:84px;margin-inline:auto;width:fit-content;max-width:calc(100% - 24px);padding:var(--s2) var(--s3);text-align:center;pointer-events:none;
- font:800 condensed 16px/1.15 var(--display);font-stretch:condensed;letter-spacing:.02em;color:var(--banner-fg);background:var(--banner-bg);border:var(--frame) solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow-sm);animation:banner-in var(--t-mid) var(--ease)}
-@keyframes banner-in{from{opacity:0;transform:translateY(-8px)}}
-#paused{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center;background:var(--scrim);font:800 condensed 32px/1 var(--display);font-stretch:condensed;letter-spacing:.06em;color:var(--text)}
-section:not(.scene){padding:var(--s5) 0}
-
-/* ---------- Dílna ---------- */
-.models{display:flex;gap:var(--s3);margin:var(--s4) 0 var(--s6)}
-.model{flex:1;text-align:left;padding:var(--s3) var(--s4)}
-.model>strong,.model>span{display:block}
-.model>strong{font:800 condensed 22px/1.1 var(--display)}
-.model>span{font:400 15px/1.35 var(--body);margin-top:var(--s1);color:var(--dim)}
-.model.selected,.model.selected:hover:not(:disabled){background:var(--btn-primary-bg);color:var(--btn-primary-fg)}
-.model.selected>span{color:var(--plate)}
-.model:disabled>span{color:var(--dim)}
-.section-title>button{flex:none;white-space:nowrap}
-.upgrade-layout{display:grid;grid-template-columns:1.65fr 1fr;gap:var(--s5)}
-.upgrade-note{font-size:15px;margin:var(--s2) 0}
-.branch{margin-top:var(--s4)}
-.branch-label{font:700 condensed 18px/1.2 var(--display);font-stretch:condensed;margin-bottom:var(--s2);color:var(--text)}
-.nodes{display:flex;align-items:center;gap:var(--s3)}
-.node{position:relative;flex:1;min-width:44px;padding:var(--s2) 2px;font-size:18px}
-.node:not(:last-child)::after{content:'';position:absolute;width:var(--s3);height:3px;background:var(--node-link);top:50%;left:calc(100% + 3px)}
-.node small{display:block;font:700 condensed 13px/1.1 var(--display);margin-top:var(--s1);color:var(--node-price)}
-.node.owned,.node.owned:hover:not(:disabled){background:var(--plate);box-shadow:none}
-.node.owned small{color:var(--node-done)}
-.node.locked,.node.locked:hover:not(:disabled){background:transparent;color:var(--dim);border-style:dashed;border-color:var(--mute);box-shadow:none}
-.node.locked small{color:var(--dim)}
-.node.picked{outline:3px solid var(--text);outline-offset:2px}
-.node.picked:focus-visible{outline-color:var(--focus)}
-aside{background:var(--panel-bg);border:var(--frame) solid var(--panel-border);border-radius:var(--r);box-shadow:var(--shadow);padding:var(--s4) var(--s4) var(--s5)}
-aside h3{margin:var(--s2) 0}
-aside p{font-size:15px;color:var(--text)}
-aside p+p{color:var(--dim)}
-aside button{width:100%;margin-top:var(--s2)}
-#buy:not(:disabled){background:var(--btn-buy-bg);color:var(--btn-buy-fg)}
-#buy:hover:not(:disabled){background:var(--btn-buy-bg-hover)}
-
-/* ---------- míření (DOM část; kanvasový panel „Aim and hold“ kreslí palette.aim, úkol U20) ---------- */
-#aim label{display:flex;align-items:baseline;gap:var(--s2);font:700 condensed 18px/1.2 var(--display);font-stretch:condensed;color:var(--text)}
-#aim label b{font-size:22px}
-#aim input{display:block;width:100%;margin:var(--s3) 0;accent-color:var(--text);min-height:44px;cursor:pointer}
-.charge-track{height:32px;border:var(--frame) solid var(--charge-track-border);border-radius:var(--r);background:var(--charge-track);position:relative;margin:var(--s4) 0;overflow:hidden}
-.charge-track span{position:absolute;right:0;top:0;width:7%;height:100%;border-left:3px solid var(--charge-peak);background:repeating-linear-gradient(135deg,var(--charge-peak) 0 3px,transparent 3px 7px)}
-#charge-fill{height:100%;width:0;background:var(--charge-fill)}
-.aim-actions{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
-#hold,canvas.aiming{touch-action:none;user-select:none}
-canvas.aiming{cursor:crosshair}
-#charge-label{font:800 condensed 20px/1.2 var(--display);font-stretch:condensed;color:var(--text)}
-
-/* ---------- let a QTE lišta (úspěch azurová, perfekt magenta + tvar: užší pole s tušovými hranami a šrafou) ---------- */
-.in-flight .intro,.in-flight .page-nav{display:none}
-.in-flight header{padding-bottom:var(--s3);margin-bottom:var(--s3)}
-.in-flight #warning{margin:var(--s1) 0}
-#action{touch-action:none;user-select:none;min-height:48px;min-width:176px}
-#flight{padding:var(--s3) 0;min-height:160px}
-.timing{height:32px;margin-top:var(--s3);position:relative;overflow:hidden;background:var(--qte-track);border:var(--frame) solid var(--qte-track-border);border-radius:var(--r)}
-.success-zone{position:absolute;left:33.333%;width:33.333%;height:100%;background:var(--qte-zone-ok)}
-.perfect-zone{position:absolute;left:45%;width:10%;height:100%;background:repeating-linear-gradient(135deg,transparent 0 4px,var(--qte-perfect-hatch) 4px 6px),var(--qte-zone-perfect);box-shadow:inset 3px 0 var(--ink),inset -3px 0 var(--ink)}
-#needle{position:absolute;width:6px;height:100%;left:0;background:var(--qte-needle);box-shadow:0 0 0 2px var(--ink);transform:translateX(-50%)}
-#flight[data-phase="idle"] .timing,#flight[data-phase="effect"] .timing{opacity:.35}
-#flight #event-help{margin:var(--s2) 0;min-height:24px;color:var(--text)}
-
-/* ---------- výsledek hodu (vrchol obrazovky = vzdálenost, S4) ---------- */
-dialog#result{padding:var(--s5);max-width:620px;width:calc(100% - 24px);max-height:calc(100dvh - 24px);overflow:auto;color:var(--text);background:var(--night);border:var(--frame) solid var(--ink);border-radius:var(--r-dialog);box-shadow:8px 8px 0 var(--ink);text-align:center}
-dialog#result[open]{animation:dialog-in var(--t-panel) var(--ease)}
-@keyframes dialog-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-dialog::backdrop{background:var(--scrim)}
-#result h2{margin:0 0 var(--s4);font:900 condensed clamp(32px,7vw,48px)/1 var(--display);font-stretch:condensed;letter-spacing:.01em;color:var(--text);text-shadow:2px 2px 0 var(--print-shift),4px 4px 0 var(--ink)}
-.result-progress{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
-.result-progress progress{appearance:none;-webkit-appearance:none;width:100%;height:20px;border:var(--frame) solid var(--charge-track-border);border-radius:var(--r);background:var(--plate);overflow:hidden;accent-color:var(--progress-bar)}
-.result-progress progress::-webkit-progress-bar{background:var(--plate)}
-.result-progress progress::-webkit-progress-value{background:var(--progress-bar)}
-.result-progress progress::-moz-progress-bar{background:var(--progress-bar)}
-.result-progress b{white-space:nowrap;font:800 condensed 18px/1 var(--display);font-stretch:condensed}
-.score-card{background:var(--panel-bg);border:var(--frame) solid var(--ink);border-radius:var(--r);box-shadow:var(--shadow);padding:var(--s4);text-align:left}
-.score-card dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3) var(--s4);margin:0 0 var(--s4)}
-.score-card dl>div{display:flex;flex-direction:column;gap:2px;min-width:0}
-.score-card dl>div:first-child{grid-column:1/-1}
-.score-card dt{font:600 14px/1.2 var(--body);color:var(--dim)}
-.score-card dd{margin:0;font:800 condensed 24px/1.05 var(--display);font-stretch:condensed;color:var(--score-value)}
-.score-card dl>div:first-child dd{font-size:clamp(40px,10vw,56px)}
-.reward-breakdown{padding:var(--s3) 0;border-top:2px solid var(--plate2);font-size:14px;line-height:1.5;color:var(--dim)}
-.total{border-top:2px solid var(--plate2);padding-top:var(--s3);font:800 condensed 28px/1.1 var(--display);font-stretch:condensed;color:var(--score-total)}
-#result-text{color:var(--text);font-size:16px;min-height:1.5em}
-.result-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
-.result-actions button{font-size:24px;padding:var(--s2) var(--s1)}
-.result-actions button span{display:block;margin-top:2px;font:700 condensed 16px/1.1 var(--display)}
-
-/* ---------- bonus.html (Atlas zatím prázdný) ---------- */
-.bonus-empty{min-height:420px;padding:var(--s5) var(--s4);background:var(--panel-bg);border:var(--frame) dashed var(--mute);border-radius:var(--r);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.bonus-symbol{font:800 condensed 88px/1 var(--display);color:var(--mute);margin-bottom:var(--s4)}
-.back-link{display:inline-flex;align-items:center;min-height:44px;margin-top:var(--s4);color:var(--text);font:700 condensed 18px/1 var(--display);font-stretch:condensed;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
-.back-link:hover{color:var(--paper)}
-header>.eyebrow{text-align:right}
-
-/* ---------- přepínač jazyka (EN / CS) ---------- */
-.lang-picker{display:flex;align-items:center;gap:var(--s2);margin-left:auto}
-.theme-picker:not([hidden])+.lang-picker{margin-left:0}
-.lang-picker button{min-height:44px;min-width:44px;padding:6px 10px;font-size:16px;letter-spacing:.06em}
-.lang-picker button[aria-pressed=true],.lang-picker button[aria-pressed=true]:hover{background:var(--btn-primary-bg);color:var(--btn-primary-fg)}
-
-/* ---------- telefon ---------- */
-@media(max-width:650px){
- main{padding:var(--s4)}
- .intro{display:block;padding:var(--s4) 0 var(--s2)}
- .intro p{font-size:14px}
- .hud{padding:var(--s2) var(--s3) var(--s4);gap:var(--s4)}
- .hud b{font-size:18px}
- .section-title{align-items:flex-start}
- .upgrade-layout{grid-template-columns:1fr}
- .nodes{gap:var(--s2)}
- .node:not(:last-child)::after{width:var(--s2)}
- .models{gap:var(--s2)}
- .model{padding:var(--s3)}
- .model>strong{font-size:20px}
- .model>span{font-size:14px}
- .brand{font-size:24px}
- .brand span{font-size:11px;letter-spacing:.18em}
- .wallet{font-size:20px}
- #scene-label{font-size:12px;bottom:var(--s2);left:var(--s2);max-width:calc(100% - 16px)}
- #milestone-banner{top:64px;font-size:15px}
- .page-nav{flex-wrap:wrap;column-gap:var(--s4);row-gap:0}
- .lang-picker{margin-left:auto}
-}
-@media(max-width:450px){
- dialog#result{padding:var(--s3);width:calc(100% - 16px);max-height:calc(100dvh - 16px)}
- #result h2{text-shadow:3px 3px 0 var(--ink)}
- .score-card{padding:var(--s3)}
- .score-card dd{font-size:21px}
- .result-actions button{font-size:21px}
- .in-flight main{padding:var(--s2) var(--s3)}
- .in-flight header{padding:var(--s2) 0}
- .in-flight .brand{font-size:18px}
- .in-flight .brand span{display:none}
- .in-flight .wallet{font-size:18px;padding:6px var(--s2)}
- .in-flight .wallet small{font-size:11px}
- .hud{gap:var(--s2);padding:6px var(--s2) var(--s3)}
- .hud span{font-size:10px;letter-spacing:.04em}
- .hud b{font-size:16px}
- #flight h2{font-size:20px}
- #flight .eyebrow{font-size:12px;letter-spacing:.06em}
- #flight .section-title{gap:var(--s2);align-items:center}
- #action{min-width:0;max-width:52%;padding:var(--s2);font-size:16px}
- #event-help{font-size:14px}
- #milestone-banner{top:52px;font-size:14px;padding:6px var(--s2)}
- .in-flight footer{margin-top:var(--s1);padding-top:var(--s1)}
-}
-
-/* ---------- reduced motion: trvání ~0, bez posunů; zpětná vazba (barva, tvar, stín) zůstává ---------- */
-@media(prefers-reduced-motion:reduce){
- *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
- button:active:not(:disabled){transform:none}
-}
-@media(forced-colors:active){button,.scene,aside,.score-card,.timing,.charge-track{border-color:CanvasText}.perfect-zone{forced-color-adjust:none}}
-
-/* Visual styles (themes.js, jen 2D záloha; zmizí s 2D, 06 14. 10.). Výchozí „cyber“ = jedno UI výše; obecná pravidla platí jen pro paper, blueprint a dusk. */
-.theme-picker{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.theme-picker span{font:700 condensed 13px var(--display);letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-right:4px}.theme-picker button{min-height:44px;padding:6px 11px;font-size:15px}.theme-picker button[aria-pressed=true]{background:var(--btn-primary-bg);color:var(--btn-primary-fg)}
-@media(max-width:650px){.theme-picker{margin-left:0;width:100%}.theme-picker button{flex:1 1 40%}}
-body[data-theme=paper]{--bg:#efe3cc;--ink:#3b2a1d;--soft:#7a6450;--accent:#c4573f;--line:#c9b393;background:radial-gradient(ellipse at 80% 0,#f8eedb,transparent 60%) var(--bg);min-height:100vh;color:var(--ink);font-family:Georgia,'Times New Roman',serif}
-body[data-theme=blueprint]{--bg:#163c6d;--ink:#eaf3ff;--soft:#a9c2e0;--accent:#ffd27a;--line:#5d82b3;background:repeating-linear-gradient(0deg,#ffffff0d 0 1px,transparent 1px 16px),repeating-linear-gradient(90deg,#ffffff0d 0 1px,transparent 1px 16px) var(--bg);min-height:100vh;color:var(--ink);font-family:Consolas,'Courier New',monospace}
-body[data-theme=dusk]{--bg:#1d1430;--ink:#fbeee6;--soft:#c9a9b8;--accent:#f6a96b;--line:#4d3352;background:linear-gradient(#2b2d5c,#1d1430 420px,#1d1430);min-height:100vh;color:var(--ink);font-family:'Segoe UI Light','Segoe UI',sans-serif}
-html:has(body[data-theme=paper]){background:#efe3cc}html:has(body[data-theme=blueprint]){background:#163c6d}html:has(body[data-theme=dusk]){background:#1d1430}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) h1,body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) h2,body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .model strong{color:var(--ink)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(p,.model span,.eyebrow,.brand span,.wallet small,.page-nav a,.theme-picker span,.quiet,footer,#journey-story){color:var(--soft)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(.brand,.wallet,.page-nav a[aria-current]){color:var(--accent);text-shadow:none;background:transparent}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .page-nav a[aria-current]{border-color:var(--accent)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(header,footer){border-color:var(--line)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) button{background:transparent;color:var(--ink);border-color:var(--line);box-shadow:none}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) button:hover:not(:disabled){border-color:var(--accent);background:#ffffff14}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(.primary,.primary:hover:not(:disabled)){background:var(--accent);border-color:var(--accent);color:var(--bg);box-shadow:3px 3px 0 #00000040}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(.theme-picker button[aria-pressed=true],.lang-picker button[aria-pressed=true],.model.selected,.node.picked){background:transparent;border-color:var(--accent);color:var(--accent);outline-color:var(--accent)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .model.selected{background:#ffffff10;box-shadow:inset 3px 0 var(--accent)}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .model.selected span{color:var(--soft)}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .node.owned{background:#ffffff1c;border-color:var(--accent)}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .node.locked{background:transparent;color:var(--soft)}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .node:not(:last-child)::after{background:var(--line)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(aside,.timing,.charge-track){background:#ffffff0d;border-color:var(--line);box-shadow:none}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) #charge-fill{background:var(--accent)}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) :is(#charge-label,.hud b,#scene-label){color:var(--accent)}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .scene{border-color:var(--line);box-shadow:5px 5px 0 #00000030}
-body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .hud span{color:#fff}body:is([data-theme=paper],[data-theme=blueprint],[data-theme=dusk]) .hud{background:linear-gradient(#00000055,transparent)}
-body[data-theme=paper] .scene{border:6px solid #fffaf0;border-radius:3px;box-shadow:0 6px 18px #6b4a2c40,2px 3px 0 #d8c6a5}
-body[data-theme=paper] .hud{background:linear-gradient(#3b2a1d99,transparent)}body[data-theme=paper] .hud b,body[data-theme=paper] #scene-label{color:#fffaf0}body[data-theme=paper] #scene-label{text-shadow:0 1px 2px #3b2a1d}
-body[data-theme=paper] .score-card,body[data-theme=paper] .result-actions button{background:#fffaf0;border:1px solid #c9b393;color:var(--ink);text-shadow:none;box-shadow:2px 3px 8px #6b4a2c30}body[data-theme=paper] .score-card dd,body[data-theme=paper] .total{color:var(--accent)}body[data-theme=paper] #result h2{color:#fffaf0;text-shadow:2px 2px #6b4a2c}body[data-theme=paper] #result-text{color:#fffaf0}
-body[data-theme=blueprint] .scene{border:1px solid #eaf3ff;box-shadow:none;outline:1px solid #eaf3ff66;outline-offset:5px}body[data-theme=blueprint] h1,body[data-theme=blueprint] h2{font-weight:400;text-transform:uppercase;letter-spacing:2px}
-body[data-theme=blueprint] .score-card,body[data-theme=blueprint] .result-actions button{background:#163c6d;border:1px solid #eaf3ff;text-shadow:none}body[data-theme=blueprint] .score-card dd,body[data-theme=blueprint] .total{color:#ffd27a}body[data-theme=blueprint] #result h2{color:#eaf3ff;text-shadow:none}
-body[data-theme=dusk] .scene{border:0;border-radius:14px;box-shadow:0 20px 50px #0007}body[data-theme=dusk] h1{font-weight:300;letter-spacing:0}body[data-theme=dusk] button{border-radius:999px}body[data-theme=dusk] aside{border-radius:14px}
-body[data-theme=dusk] .score-card,body[data-theme=dusk] .result-actions button{background:#2b1a3acc;border:1px solid #f6a96b66;border-radius:14px;text-shadow:none;box-shadow:none}body[data-theme=dusk] .score-card dd,body[data-theme=dusk] .total{color:#f6a96b}body[data-theme=dusk] #result h2{color:#ffe0a3;text-shadow:none;font-family:inherit;font-weight:300}
-
-/* =====================================================================================================
-   Papírové město (?styl=papir, dávka P4): bible research/design/05-styl-papir.md kap. 2, 6, 8, 11; spec 06-papir-ctvrt1.md.
-   Platí jen pod body[data-styl=papir] (nastaví src/ui.js). Bez příznaku se nic nemění: primitivní tokeny na :root jsou nová,
-   jinde nepoužitá jména. Vrstvy 2 a 3 se musí deklarovat znovu celé (vlastní vlastnosti dědí už dosazené hodnoty z :root).
-   Komponenty čtou jen vrstvu 3 nebo 2; varianty tlačítek jen přenastaví tokeny --btn-* (znovupoužitelné pro menu 07).
+/* Jediný styl UI = Papírové město (rozhodnutí 06, 15. 10.; dávka U0 v research/plan-hratelnost/02-ux.md §3.2).
+   Bible research/design/05-styl-papir.md kap. 2, 6, 8, 11; spec 06-papir-ctvrt1.md.
+   Tři vrstvy: 1 primitivní (jen hex) -> 2 sémantické (role) -> 3 komponentové. Komponenty čtou jen vrstvu 3 nebo 2;
+   varianty tlačítek jen přenastaví tokeny --btn-* (znovupoužitelné pro menu 07).
    Kontrasty (WCAG, spočítáno z hex): text graphite×cream 13,9 · graphite×card 12,8 · graphite×desk 8,8 · pencil×cream 5,6 ·
    pencil×card 5,1 · pencil-700×desk 5,9 · pencil-700×cream 9,4 · mustard-800×cream 5,5 · mustard-800×card 5,1 ·
    cream×tomato-600 4,8 · cream×tomato-700 6,1 · graphite×mustard-400 6,2 · cream×graphite 13,9 · graphite×paper 15,0.
    Grafika: cobalt×desk 3,8 / ×cream 6,0 · teal×cream 4,4 / ×card 4,1 · tomato×cream 4,0 / ×card 3,7 · warm-grey×cream 3,5 / ×card 3,2 ·
    tomato-600×desk 3,0 · jehla graphite×teal 3,2 / ×tomato 3,5. Nevyhovuje a proto se NEPOUŽÍVÁ: pencil×desk 3,6, mustard-800×desk 3,5,
-   teal×desk 2,8, warm-grey×desk 2,2, teal jako malý text (4,4), tomato-500 jako text pod 19 px tučně.
-   ===================================================================================================== */
-:root{
+   teal×desk 2,8, warm-grey×desk 2,2, teal jako malý text (4,4), tomato-500 jako text pod 19 px tučně. */
+:root{color-scheme:light;
  /* 1 primitivní (bible 05 kap. 2.1, = PAPER_TOKENS v src/render3d/palette.js) */
  --cream-50:#fbf6ec;--card-100:#f4ecdc;--tape-200:#efe0a8;--desk-300:#d9c4a0;--kraft-400:#c9a57c;--kraft-600:#9c7a55;
  --graphite-900:#2a2622;--pencil-600:#6b6158;--pencil-700:#4a4038;--warm-grey-500:#8c8379;
@@ -296,9 +16,7 @@ body[data-theme=dusk] .score-card,body[data-theme=dusk] .result-actions button{b
  --umber-950:#3c2814;/* jen stín zvednutého papíru v UI (papir.css rgba(60,40,20)) */
  --font-paper-display:"Trebuchet MS","Segoe UI Semibold","Segoe UI","Avenir Next",system-ui,sans-serif;
  --font-paper-body:"Segoe UI","Avenir Next",system-ui,sans-serif;
- --font-paper-hand:"Segoe Print","Bradley Hand","Comic Sans MS",cursive}
-html:has(body[data-styl=papir]){color-scheme:light;background:var(--desk-300)}
-body[data-styl=papir]{color-scheme:light;
+ --font-paper-hand:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;
  /* 2 sémantické: role bible kap. 2.2 a 8 */
  --ink:var(--graphite-900);--text:var(--graphite-900);--dim:var(--pencil-700);--dim-on-card:var(--pencil-600);--dim-on-desk:var(--pencil-700);
  --paper:#ffffff;--card:var(--cream-50);--card2:var(--card-100);--desk:var(--desk-300);
@@ -308,15 +26,13 @@ body[data-styl=papir]{color-scheme:light;
  --lift:0 1px 0 color-mix(in srgb,var(--umber-950) 12%,transparent),0 4px 10px color-mix(in srgb,var(--umber-950) 22%,transparent);
  --lift-hi:0 2px 0 color-mix(in srgb,var(--umber-950) 12%,transparent),0 12px 26px color-mix(in srgb,var(--umber-950) 32%,transparent);
  --lift-press:0 1px 2px color-mix(in srgb,var(--umber-950) 20%,transparent);
- --r:4px;--r-dialog:4px;--frame:2px;--tilt-l:-1deg;--tilt-r:1.2deg;--tilt-label:-1.5deg;
- /* jména starého UI přemapovaná na papír, aby nepřepsaná pravidla výše dávala smysl */
- --night:var(--desk);--plate:var(--card);--plate2:var(--card2);--plate-hover:var(--paper);--mute:var(--color-miss);
- --coin:var(--color-reward);--coin-hover:color-mix(in srgb,var(--mustard-400) 70%,var(--paper));--ok:var(--color-success);
- --shadow:var(--lift);--shadow-sm:var(--lift);--shadow-press:var(--lift-press);
+ --t-micro:120ms;--t-fast:150ms;--t-mid:240ms;--t-panel:320ms;--t-reveal:480ms;--ease:cubic-bezier(.2,.8,.2,1);--ease-in:cubic-bezier(.5,0,.75,0);
+ --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--gut:16px;--r:4px;--r-dialog:4px;--frame:2px;--tilt-l:-1deg;--tilt-r:1.2deg;--tilt-label:-1.5deg;
+ --coin-hover:color-mix(in srgb,var(--mustard-400) 70%,var(--paper));
  /* 3 komponentové */
- --page-bg:var(--desk);--page-glow:transparent;--page-grain:color-mix(in srgb,var(--kraft-600) 14%,transparent);--page-grain-hi:color-mix(in srgb,var(--paper) 18%,transparent);
+ --page-bg:var(--desk);--page-grain:color-mix(in srgb,var(--kraft-600) 14%,transparent);--page-grain-hi:color-mix(in srgb,var(--paper) 18%,transparent);
  --rule:color-mix(in srgb,var(--pencil-700) 45%,transparent);
- --panel-bg:var(--card);--panel-border:transparent;--tape:var(--tape-200);--tag-bg:var(--card);--tag-fg:var(--text);--tag-strong-bg:var(--ink);--tag-strong-fg:var(--card);
+ --panel-bg:var(--card);--tape:var(--tape-200);--tag-bg:var(--card);--tag-fg:var(--text);--tag-strong-bg:var(--ink);--tag-strong-fg:var(--card);
  --btn-bg:var(--card);--btn-bg-hover:var(--paper);--btn-fg:var(--text);--btn-border:transparent;--btn-edge-h:3px;
  --btn-edge:color-mix(in srgb,var(--desk-300) 80%,var(--graphite-900));--btn-edge-hover:var(--btn-edge);
  --btn-primary-bg:var(--tomato-600);--btn-primary-bg-hover:var(--tomato-700);--btn-primary-fg:var(--card);
@@ -324,10 +40,10 @@ body[data-styl=papir]{color-scheme:light;
  --btn-buy-bg:var(--color-reward);--btn-buy-bg-hover:var(--coin-hover);--btn-buy-fg:var(--ink);--btn-buy-edge:var(--mustard-800);
  --btn-disabled-fg:var(--dim-on-desk);--btn-disabled-border:var(--dim-on-desk);
  --btn-pressed-ring:var(--ink);
- --brand-fg:var(--text);--print-shift:transparent;--wallet-bg:var(--card);--wallet-fg:var(--color-reward-text);
+ --brand-fg:var(--text);--wallet-bg:var(--card);--wallet-fg:var(--color-reward-text);
  --nav-fg:var(--dim-on-desk);--nav-current:var(--text);
  --scene-border:var(--card);--scene-bg:var(--card);--scene-frame:6px;
- --hud-bg:transparent;--hud-bg-mid:transparent;--hud-label:var(--dim-on-card);--hud-value:var(--text);--hud-reward:var(--color-reward-text);
+ --hud-label:var(--dim-on-card);--hud-value:var(--text);--hud-reward:var(--color-reward-text);
  --label-bg:var(--card);
  --banner-bg:var(--card);--banner-fg:var(--text);--banner-mark:var(--color-reward);
  --qte-track:var(--card2);--qte-track-border:var(--color-miss);--qte-zone-ok:var(--color-success);--qte-zone-perfect:var(--color-perfect);
@@ -336,142 +52,253 @@ body[data-styl=papir]{color-scheme:light;
  --node-price:var(--color-reward-text);--node-done:var(--text);--node-done-edge:var(--color-success);--node-link:var(--dim-on-desk);
  --model-selected-bg:var(--paper);--model-selected-ring:var(--ink);
  --score-value:var(--text);--score-total:var(--color-reward-text);--progress-bar:var(--ink);
- --scrim:color-mix(in srgb,var(--graphite-900) 35%,transparent);--pause-veil:color-mix(in srgb,var(--desk-300) 78%,transparent);
- background:radial-gradient(var(--page-grain) 1px,transparent 1.4px) 0 0/7px 7px,radial-gradient(var(--page-grain-hi) 1px,transparent 1.4px) 3px 5px/11px 11px,var(--page-bg);
- color:var(--text);font-family:var(--body)}
+ --scrim:color-mix(in srgb,var(--graphite-900) 35%,transparent);--pause-veil:color-mix(in srgb,var(--desk-300) 78%,transparent)}
+*{box-sizing:border-box}
+html{background:var(--page-bg);font-synthesis:none;-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--text);font:16px/1.45 var(--body);
+ background:radial-gradient(var(--page-grain) 1px,transparent 1.4px) 0 0/7px 7px,radial-gradient(var(--page-grain-hi) 1px,transparent 1.4px) 3px 5px/11px 11px,var(--page-bg)}
+main{max-width:1080px;margin:auto;padding:var(--s5) var(--s6)}
+[hidden]{display:none!important}
+.num,.wallet,.hud b,.score-card dd,.total,.node,.result-progress b,#angle-value,#charge-label,#milestone-banner{font-variant-numeric:tabular-nums}
 /* Povrchy karet: slabý text smí být pencil-600 (na stole jen pencil-700, kap. 2.4) */
-body[data-styl=papir] :is(.brand,.wallet,.hud,#scene-label,#milestone-banner,aside,.model:not(:disabled),.score-card,dialog,#flight,#aim,.bonus-empty){--dim:var(--dim-on-card)}
-/* Písmo: systémové humanistické, nikdy zúžené (kap. 8) */
-body[data-styl=papir] *,body[data-styl=papir] :is(#scene-label,#milestone-banner,#paused,#aim label,#charge-label,#result h2,#flight h2,#action){font-stretch:normal}
-body[data-styl=papir] :is(h1,h2,h3){font-weight:700;letter-spacing:-.01em;color:var(--text)}
-body[data-styl=papir] p{color:var(--dim)}
+:is(.brand,.wallet,.hud,#scene-label,#milestone-banner,aside,.model:not(:disabled),.score-card,dialog,#flight,#aim,.bonus-empty){--dim:var(--dim-on-card)}
 
 /* ---------- tlačítka: výchozí, hover, stisk, focus, zakázaný; varianty jen přenastaví tokeny ---------- */
-body[data-styl=papir] button{font-family:var(--display);font-weight:700;letter-spacing:0;color:var(--btn-fg);background:var(--btn-bg);border:var(--frame) solid var(--btn-border);border-radius:var(--r);
- box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);transition:transform var(--t-micro) var(--ease)}
-@media(hover:hover){body[data-styl=papir] button:hover:not(:disabled){background:var(--btn-bg-hover);box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge-hover),var(--lift);transform:translateY(-1px)}}
-body[data-styl=papir] button:active:not(:disabled){transform:translateY(var(--btn-edge-h));box-shadow:0 0 0 var(--btn-edge),var(--lift-press)}
-body[data-styl=papir] button:disabled{background:transparent;color:var(--btn-disabled-fg);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
-body[data-styl=papir] .primary{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:700 18px/1.15 var(--display);letter-spacing:0;color:var(--btn-fg);background:var(--btn-bg);border:var(--frame) solid var(--btn-border);border-radius:var(--r);
+ box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);min-height:48px;min-width:48px;padding:10px 16px;cursor:pointer;touch-action:manipulation;transition:transform var(--t-micro) var(--ease)}
+button:hover:not(:disabled){background:var(--btn-bg-hover)}
+@media(hover:hover){
+ button:hover:not(:disabled){box-shadow:0 var(--btn-edge-h) 0 var(--btn-edge-hover),var(--lift);transform:translateY(-1px)}
+ .quiet:hover:not(:disabled){box-shadow:none;text-decoration-color:currentColor;transform:none}
+}
+button:active:not(:disabled){transform:translateY(var(--btn-edge-h));box-shadow:0 0 0 var(--btn-edge),var(--lift-press)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+button:disabled{cursor:default;background:transparent;color:var(--btn-disabled-fg);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
+.primary{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
 /* Výsledek: „Házet znovu“ je hlavní akce (06, Struktura menu, bod 3) */
-body[data-styl=papir] #retry{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
-/* Nákup utrácí mince: hořčicová = hodnota (kap. 2.2) */
-body[data-styl=papir] #buy{--btn-edge:var(--btn-buy-edge);--btn-edge-hover:var(--btn-buy-edge)}
-body[data-styl=papir] .quiet{--btn-edge-h:0px;background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);font-family:var(--body);font-weight:600;text-decoration-color:var(--rule)}
-@media(hover:hover){body[data-styl=papir] .quiet:hover:not(:disabled){background:transparent;box-shadow:none;color:var(--text);text-decoration-color:currentColor;transform:none}}
-body[data-styl=papir] .quiet:active:not(:disabled){transform:none;box-shadow:none;color:var(--text)}
-/* Přepínače (jazyk, styl 2D): stisknuté = grafitový rámeček uvnitř + bílý papír, ne jen barva */
-body[data-styl=papir] :is(.lang-picker,.theme-picker) button{--btn-edge-h:2px;color:var(--dim-on-card)}
-body[data-styl=papir] :is(.lang-picker,.theme-picker) button[aria-pressed=true],body[data-styl=papir] :is(.lang-picker,.theme-picker) button[aria-pressed=true]:hover:not(:disabled){background:var(--paper);color:var(--text);box-shadow:inset 0 0 0 2px var(--btn-pressed-ring),var(--lift)}
+#retry{--btn-bg:var(--btn-primary-bg);--btn-bg-hover:var(--btn-primary-bg-hover);--btn-fg:var(--btn-primary-fg);--btn-edge:var(--btn-primary-edge);--btn-edge-hover:var(--btn-primary-edge-hover);--btn-edge-h:4px}
+.quiet{--btn-edge-h:0px;background:transparent;border-color:transparent;box-shadow:none;color:var(--dim);font:600 15px/1.2 var(--body);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--rule);min-height:44px;padding:8px 12px}
+.quiet:hover:not(:disabled){background:transparent;color:var(--text)}
+.quiet:active:not(:disabled){transform:none;box-shadow:none;color:var(--text)}
 
 /* ---------- hlavička, navigace, texty na stole ---------- */
-body[data-styl=papir] header{border-bottom:2px dashed var(--rule)}
-body[data-styl=papir] .brand{color:var(--brand-fg);background:var(--card);padding:6px 12px 7px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-label);text-shadow:none;letter-spacing:-.01em;font-weight:700}
-body[data-styl=papir] .brand span{color:var(--dim);letter-spacing:.14em;font-weight:700}
-body[data-styl=papir] .wallet{box-shadow:var(--lift);font-weight:700}
-body[data-styl=papir] .page-nav a{color:var(--nav-fg);letter-spacing:.06em;border-bottom-width:3px}
-body[data-styl=papir] .page-nav a:hover{color:var(--nav-current)}
+header,.intro,.section-title,footer{display:flex;justify-content:space-between;align-items:center;gap:var(--s4)}
+header{flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:2px dashed var(--rule)}
+.brand{display:inline-block;min-height:44px;white-space:nowrap;color:var(--brand-fg);background:var(--card);padding:6px 12px 7px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-label);text-decoration:none;font:700 30px/1 var(--display);letter-spacing:-.01em}
+.brand span{display:block;font:700 12px/1 var(--display);letter-spacing:.14em;color:var(--dim);margin-top:var(--s2)}
+.wallet{font:700 24px/1 var(--display);color:var(--wallet-fg);background:var(--wallet-bg);padding:var(--s2) var(--s3);border-radius:var(--r);box-shadow:var(--lift);white-space:nowrap;text-align:right}
+.wallet small{display:block;font:400 12px/1.2 var(--body);color:var(--dim);margin-top:var(--s1)}
+.page-nav{display:flex;align-items:center;gap:var(--s5);padding:var(--s3) 0 0}
+.page-nav a{display:inline-flex;align-items:center;min-height:44px;color:var(--nav-fg);text-decoration:none;text-transform:uppercase;letter-spacing:.06em;font:700 16px/1 var(--display);border-bottom:3px solid transparent}
+.page-nav a:hover{color:var(--nav-current)}
 /* aktuální stránka: grafitová linka (tvar) + páska (ozdoba) */
-body[data-styl=papir] .page-nav a[aria-current]{color:var(--nav-current);border-color:var(--nav-current);background:linear-gradient(transparent 62%,var(--tape) 62%)}
-body[data-styl=papir] .eyebrow{color:var(--dim);letter-spacing:.12em}
-body[data-styl=papir] #journey-story{font-family:var(--hand);color:var(--dim-on-desk)}/* jediná ručně psaná řádka hlavní obrazovky (kap. 8) */
+.page-nav a[aria-current]{color:var(--nav-current);border-color:var(--nav-current);background:linear-gradient(transparent 62%,var(--tape) 62%)}
+.intro{padding:var(--s5) 0 var(--s4)}
+.eyebrow{font:700 13px/1.2 var(--display);letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+/* Písmo: systémové humanistické, nikdy zúžené (kap. 8) */
+h1,h2,h3{font-family:var(--display);font-weight:700;color:var(--text);letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,40px);line-height:1;margin:var(--s2) 0}
+h2{font-size:clamp(22px,3.4vw,28px);line-height:1.05;margin:var(--s1) 0}
+h3{font-size:22px;line-height:1.1;margin:var(--s2) 0}
+p{line-height:1.5;color:var(--dim);font-size:15px}
 /* Varování = grafitový štítek s krémovým textem (kap. 2.2), ne nová barva */
-body[data-styl=papir] #warning{width:fit-content;max-width:100%;padding:4px 10px;border-radius:2px;background:var(--tag-strong-bg);color:var(--tag-strong-fg);rotate:var(--tilt-l)}
-body[data-styl=papir] footer{border-top:2px dashed var(--rule);color:var(--dim-on-desk);font-family:var(--display);letter-spacing:.04em}
+#warning:empty{display:none}#warning{width:fit-content;max-width:100%;padding:4px 10px;border-radius:2px;background:var(--tag-strong-bg);color:var(--tag-strong-fg);rotate:var(--tilt-l);font-weight:600}
+/* jediná ručně psaná řádka hlavní obrazovky (kap. 8) */
+#journey-story{margin:var(--s2) 0 0;font-size:15px;font-family:var(--hand);color:var(--dim-on-desk)}#journey-story:empty{display:none}
+footer{border-top:2px dashed var(--rule);padding-top:var(--s3);margin-top:var(--s4);color:var(--dim-on-desk);font:600 13px/1.3 var(--display);letter-spacing:.04em}
 
-/* ---------- scéna a HUD: krémové štítky vpravo nahoře, pás letu volný (kap. 6, 8) ---------- */
-body[data-styl=papir] .scene{border:var(--scene-frame) solid var(--scene-border);border-radius:3px;box-shadow:var(--lift-hi);background:var(--scene-bg)}
-body[data-styl=papir] .hud{justify-content:flex-end;align-items:flex-start;gap:var(--s2);padding:var(--s3) var(--s3) 0;background:none}
-body[data-styl=papir] .hud span{display:block;padding:5px 10px 6px;border-radius:2px;background:var(--tag-bg);box-shadow:var(--lift);rotate:var(--tilt-l);
- font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--hud-label);text-shadow:none}
-body[data-styl=papir] .hud span:nth-child(even){rotate:var(--tilt-r)}
-body[data-styl=papir] .hud b{min-width:7ch;margin-top:2px;font-family:var(--display);font-weight:700;font-size:19px;line-height:1.15;color:var(--hud-value);text-shadow:none}
-body[data-styl=papir] .hud #flight-reward{color:var(--hud-reward)}
-body[data-styl=papir] #scene-label{background:var(--label-bg);color:var(--tag-fg);padding:4px 10px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-l);letter-spacing:.08em;font-weight:700}
+/* ---------- scéna a HUD: krémové štítky vpravo nahoře, pás letu volný (kap. 6, 8; priorita: stav -> cíl -> zpětná vazba -> ozdoba) ---------- */
+.scene{position:relative;overflow:hidden;border:var(--scene-frame) solid var(--scene-border);border-radius:3px;box-shadow:var(--lift-hi);background:var(--scene-bg)}
+canvas{width:100%;display:block;aspect-ratio:16/9}
+/* #scene3d (WebGL, src/render3d/) dole, nad ním průhledná UI vrstva #game, která drží všechny vstupy; HUD a štítky nahoře.
+   ?render=2d (nebo bez WebGL2): 2D render.js kreslí celé #game pixelově, 3D plátno je skryté. */
+#scene3d{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#game{position:relative}
+body[data-render="2d"] #scene3d{display:none}body[data-render="2d"] #game{image-rendering:pixelated}
+.hud{position:absolute;top:0;left:0;right:0;z-index:1;display:flex;justify-content:flex-end;align-items:flex-start;gap:var(--s2);padding:var(--s3) var(--s3) 0;pointer-events:none}
+.hud span{display:block;min-width:0;padding:5px 10px 6px;border-radius:2px;background:var(--tag-bg);box-shadow:var(--lift);rotate:var(--tilt-l);font:700 11px/1.1 var(--display);letter-spacing:.08em;color:var(--hud-label)}
+.hud span:nth-child(even){rotate:var(--tilt-r)}
+.hud i{font-style:normal}
+.hud b{display:block;min-width:7ch;margin-top:2px;font:700 19px/1.15 var(--display);letter-spacing:0;color:var(--hud-value);white-space:nowrap}
+.hud #flight-reward{color:var(--hud-reward)}
+#scene-label{position:absolute;bottom:var(--s3);left:var(--s3);max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;
+ font:700 13px/1.2 var(--display);letter-spacing:.08em;color:var(--tag-fg);background:var(--label-bg);padding:4px 10px;border-radius:2px;box-shadow:var(--lift);rotate:var(--tilt-l)}
+#scene-label:empty{display:none}
 /* zvýraznění čtvrti: obrácený štítek (světlost, ne odstín) + páska */
-body[data-styl=papir] #scene-label.district-highlight{background:var(--tag-strong-bg);color:var(--tag-strong-fg);border-left:0;padding-left:10px}
-body[data-styl=papir] #milestone-banner{display:flex;align-items:center;gap:var(--s2);color:var(--banner-fg);background:var(--banner-bg);border:0;border-radius:2px;box-shadow:var(--lift-hi);rotate:var(--tilt-l);font-weight:700;letter-spacing:0;padding:var(--s2) var(--s4)}
-body[data-styl=papir] #milestone-banner::before{content:'';flex:none;width:.85em;height:.85em;border-radius:50%;background:var(--banner-mark);box-shadow:inset 0 0 0 .12em var(--ink)}/* hořčicové kolečko s grafitovým lemem (kap. 7, milník) */
-body[data-styl=papir] #paused{background:var(--pause-veil);color:var(--text);font-weight:700;letter-spacing:.02em}
+#scene-label.district-highlight{background:var(--tag-strong-bg);color:var(--tag-strong-fg)}
+#milestone-banner{position:absolute;left:0;right:0;top:84px;margin-inline:auto;width:fit-content;max-width:calc(100% - 24px);display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s4);text-align:center;pointer-events:none;
+ font:700 16px/1.15 var(--display);letter-spacing:0;color:var(--banner-fg);background:var(--banner-bg);border-radius:2px;box-shadow:var(--lift-hi);rotate:var(--tilt-l);animation:banner-in var(--t-mid) var(--ease)}
+#milestone-banner::before{content:'';flex:none;width:.85em;height:.85em;border-radius:50%;background:var(--banner-mark);box-shadow:inset 0 0 0 .12em var(--ink)}/* hořčicové kolečko s grafitovým lemem (kap. 7, milník) */
+@keyframes banner-in{from{opacity:0;transform:translateY(-8px)}}
+#paused{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center;background:var(--pause-veil);font:700 32px/1 var(--display);letter-spacing:.02em;color:var(--text)}
+section:not(.scene){padding:var(--s5) 0}
 
 /* ---------- panely: krémové karty, některé s páskou ---------- */
-body[data-styl=papir] :is(aside,#flight,#aim,.score-card,.bonus-empty){background:var(--panel-bg);border:0;border-radius:var(--r);box-shadow:var(--lift)}
-body[data-styl=papir] :is(#flight,#aim){padding:var(--s4) var(--s5) var(--s5);margin-top:var(--s5)}
-body[data-styl=papir] aside{position:relative}
-body[data-styl=papir] :is(aside,#aim,dialog#result)::before{content:'';position:absolute;left:24px;top:-9px;width:70px;height:18px;background:var(--tape);opacity:.85;transform:rotate(-3deg);pointer-events:none}
-body[data-styl=papir] #aim{position:relative}
-body[data-styl=papir] aside p{color:var(--text)}
-body[data-styl=papir] aside p+p{color:var(--dim)}
+:is(aside,#flight,#aim,.score-card,.bonus-empty){background:var(--panel-bg);border:0;border-radius:var(--r);box-shadow:var(--lift)}
+:is(#flight,#aim){padding:var(--s4) var(--s5) var(--s5);margin-top:var(--s5)}
+:is(aside,#aim,dialog#result)::before{content:'';position:absolute;left:24px;top:-9px;width:70px;height:18px;background:var(--tape);opacity:.85;transform:rotate(-3deg);pointer-events:none}
 
 /* ---------- Dílna: modely, uzly ---------- */
-body[data-styl=papir] .model{position:relative}
-body[data-styl=papir] .model>span{color:var(--dim)}
-body[data-styl=papir] .model.selected,body[data-styl=papir] .model.selected:hover:not(:disabled){background:var(--model-selected-bg);color:var(--text);box-shadow:inset 0 0 0 2px var(--model-selected-ring),0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);rotate:var(--tilt-l)}
-body[data-styl=papir] .model.selected::before{content:'';position:absolute;right:20px;top:-9px;width:56px;height:16px;background:var(--tape);opacity:.9;transform:rotate(3deg);pointer-events:none}
-body[data-styl=papir] .model.selected>span{color:var(--dim-on-card)}
-body[data-styl=papir] .model:disabled>span{color:var(--dim-on-desk)}
-body[data-styl=papir] .node:not(:last-child)::after{height:2px;background:var(--node-link)}
-body[data-styl=papir] .node small{color:var(--node-price);font-family:var(--display)}
+.models{display:flex;gap:var(--s3);margin:var(--s4) 0 var(--s6)}
+.model{position:relative;flex:1;text-align:left;padding:var(--s3) var(--s4)}
+.model>strong,.model>span{display:block}
+.model>strong{font:800 22px/1.1 var(--display)}
+.model>span{font:400 15px/1.35 var(--body);margin-top:var(--s1);color:var(--dim)}
+.model.selected,.model.selected:hover:not(:disabled){background:var(--model-selected-bg);color:var(--text);box-shadow:inset 0 0 0 2px var(--model-selected-ring),0 var(--btn-edge-h) 0 var(--btn-edge),var(--lift);rotate:var(--tilt-l)}
+.model.selected::before{content:'';position:absolute;right:20px;top:-9px;width:56px;height:16px;background:var(--tape);opacity:.9;transform:rotate(3deg);pointer-events:none}
+.model.selected>span{color:var(--dim-on-card)}
+.model:disabled>span{color:var(--dim-on-desk)}
+.section-title>button{flex:none;white-space:nowrap}
+.upgrade-layout{display:grid;grid-template-columns:1.65fr 1fr;gap:var(--s5)}
+.upgrade-note{font-size:15px;margin:var(--s2) 0}
+.branch{margin-top:var(--s4)}
+.branch-label{font:700 18px/1.2 var(--display);margin-bottom:var(--s2);color:var(--text)}
+.nodes{display:flex;align-items:center;gap:var(--s3)}
+.node{position:relative;flex:1;min-width:44px;padding:var(--s2) 2px;font-size:18px}
+.node:not(:last-child)::after{content:'';position:absolute;width:var(--s3);height:2px;background:var(--node-link);top:50%;left:calc(100% + 3px)}
+.node small{display:block;font:700 13px/1.1 var(--display);margin-top:var(--s1);color:var(--node-price)}
 /* koupeno: ✓ v textu + tyrkysová spodní hrana (úspěch), plocha card */
-body[data-styl=papir] .node.owned,body[data-styl=papir] .node.owned:hover:not(:disabled){background:var(--card2);color:var(--text);box-shadow:0 var(--btn-edge-h) 0 var(--node-done-edge),var(--lift)}
-body[data-styl=papir] .node.owned small{color:var(--node-done)}
+.node.owned,.node.owned:hover:not(:disabled){background:var(--card2);color:var(--text);box-shadow:0 var(--btn-edge-h) 0 var(--node-done-edge),var(--lift)}
+.node.owned small{color:var(--node-done)}
 /* zamčeno: obrys tužkou, ještě nevystřižené */
-body[data-styl=papir] .node.locked,body[data-styl=papir] .node.locked:hover:not(:disabled){background:transparent;color:var(--dim-on-desk);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
-body[data-styl=papir] .node.locked small{color:var(--dim-on-desk)}
-body[data-styl=papir] .node.picked{outline:3px solid var(--ink);outline-offset:3px}
-body[data-styl=papir] .node.picked:focus-visible{outline-color:var(--focus)}
+.node.locked,.node.locked:hover:not(:disabled){background:transparent;color:var(--dim-on-desk);border:var(--frame) dashed var(--btn-disabled-border);box-shadow:none;transform:none}
+.node.locked small{color:var(--dim-on-desk)}
+.node.picked{outline:3px solid var(--ink);outline-offset:3px}
+.node.picked:focus-visible{outline-color:var(--focus)}
+aside{position:relative;padding:var(--s4) var(--s4) var(--s5)}
+aside h3{margin:var(--s2) 0}
+aside p{font-size:15px;color:var(--text)}
+aside p+p{color:var(--dim)}
+aside button{width:100%;margin-top:var(--s2)}
+/* Nákup utrácí mince: hořčicová = hodnota (kap. 2.2) */
+#buy{--btn-edge:var(--btn-buy-edge);--btn-edge-hover:var(--btn-buy-edge)}
+#buy:not(:disabled){background:var(--btn-buy-bg);color:var(--btn-buy-fg)}
+#buy:hover:not(:disabled){background:var(--btn-buy-bg-hover)}
 
 /* ---------- míření a QTE lišta (úspěch tyrkysová, perfekt rajčatová + hvězda a krémové hrany, kap. 11) ---------- */
-body[data-styl=papir] #aim label{color:var(--text);font-weight:700}
-body[data-styl=papir] #aim input{accent-color:var(--ink)}
-body[data-styl=papir] :is(.charge-track,.timing){border:var(--frame) solid var(--charge-track-border);border-radius:var(--r);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--umber-950) 8%,transparent)}
-body[data-styl=papir] .timing{background:var(--qte-track);border-color:var(--qte-track-border)}
-body[data-styl=papir] .charge-track span{border-left:2px solid var(--card);background:repeating-linear-gradient(135deg,var(--charge-peak) 0 4px,color-mix(in srgb,var(--charge-peak) 55%,var(--card)) 4px 7px)}
-body[data-styl=papir] .perfect-zone{display:grid;place-items:center;box-shadow:inset 2px 0 var(--qte-perfect-edge),inset -2px 0 var(--qte-perfect-edge)}
-body[data-styl=papir] .perfect-zone::after{content:'★';content:'★'/'';font:700 15px/1 var(--display);color:var(--qte-star)}
-body[data-styl=papir] #needle{background:var(--qte-needle);box-shadow:0 0 0 2px var(--qte-needle-halo);border-radius:1px}
-body[data-styl=papir] #charge-label{font-weight:700;color:var(--text)}
+#aim{position:relative}
+#aim label{display:flex;align-items:baseline;gap:var(--s2);font:700 18px/1.2 var(--display);color:var(--text)}
+#aim label b{font-size:22px}
+#aim input{display:block;width:100%;margin:var(--s3) 0;accent-color:var(--ink);min-height:44px;cursor:pointer}
+:is(.charge-track,.timing){border-radius:var(--r);box-shadow:inset 0 2px 0 color-mix(in srgb,var(--umber-950) 8%,transparent)}
+.charge-track{height:32px;border:var(--frame) solid var(--charge-track-border);background:var(--charge-track);position:relative;margin:var(--s4) 0;overflow:hidden}
+.charge-track span{position:absolute;right:0;top:0;width:7%;height:100%;border-left:2px solid var(--card);background:repeating-linear-gradient(135deg,var(--charge-peak) 0 4px,color-mix(in srgb,var(--charge-peak) 55%,var(--card)) 4px 7px)}
+#charge-fill{height:100%;width:0;background:var(--charge-fill)}
+.aim-actions{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
+#hold,canvas.aiming{touch-action:none;user-select:none}
+canvas.aiming{cursor:crosshair}
+#charge-label{font:700 20px/1.2 var(--display);color:var(--text)}
+.in-flight .intro,.in-flight .page-nav{display:none}
+.in-flight header{padding-bottom:var(--s3);margin-bottom:var(--s3)}
+.in-flight #warning{margin:var(--s1) 0}
+#action{touch-action:none;user-select:none;min-height:48px;min-width:176px}
+#flight{min-height:160px}
+.timing{height:32px;margin-top:var(--s3);position:relative;overflow:hidden;background:var(--qte-track);border:var(--frame) solid var(--qte-track-border)}
+.success-zone{position:absolute;left:33.333%;width:33.333%;height:100%;background:var(--qte-zone-ok)}
+.perfect-zone{position:absolute;left:45%;width:10%;height:100%;display:grid;place-items:center;background:repeating-linear-gradient(135deg,transparent 0 4px,var(--qte-perfect-hatch) 4px 6px),var(--qte-zone-perfect);box-shadow:inset 2px 0 var(--qte-perfect-edge),inset -2px 0 var(--qte-perfect-edge)}
+.perfect-zone::after{content:'★';content:'★'/'';font:700 15px/1 var(--display);color:var(--qte-star)}
+#needle{position:absolute;width:6px;height:100%;left:0;background:var(--qte-needle);box-shadow:0 0 0 2px var(--qte-needle-halo);border-radius:1px;transform:translateX(-50%)}
+#flight[data-phase="idle"] .timing,#flight[data-phase="effect"] .timing{opacity:.35}
+#flight #event-help{margin:var(--s2) 0;min-height:24px;color:var(--text)}
 
 /* ---------- výsledek: papírová karta s páskou, vrchol = vzdálenost (kap. 8) ---------- */
-body[data-styl=papir] dialog#result{color:var(--text);background:var(--card);border:0;border-radius:var(--r-dialog);box-shadow:var(--lift-hi);rotate:-.6deg}
-body[data-styl=papir] dialog#result::before{left:50%;top:0;width:96px;height:20px;transform:translateX(-50%) rotate(2deg);opacity:.9}
-body[data-styl=papir] dialog::backdrop{background:var(--scrim)}
+dialog#result{padding:var(--s5);max-width:620px;width:calc(100% - 24px);max-height:calc(100dvh - 24px);overflow:auto;color:var(--text);background:var(--card);border:0;border-radius:var(--r-dialog);box-shadow:var(--lift-hi);rotate:-.6deg;text-align:center}
+dialog#result::before{left:50%;top:0;width:96px;height:20px;transform:translateX(-50%) rotate(2deg);opacity:.9}
+dialog#result[open]{animation:dialog-in var(--t-panel) var(--ease)}
+@keyframes dialog-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+dialog::backdrop{background:var(--scrim)}
 /* titulek je jediná ručně psaná řádka výsledku („Delivered.“ v prototypu), čísla vždy --display */
-body[data-styl=papir] #result h2{font:400 clamp(26px,6vw,36px)/1.15 var(--hand);color:var(--text);text-shadow:none;letter-spacing:0}
-body[data-styl=papir] .score-card{background:var(--card2);box-shadow:none}
-body[data-styl=papir] .score-card dd{font-weight:700;color:var(--score-value)}
-body[data-styl=papir] :is(.reward-breakdown,.total){border-top:2px dashed var(--rule)}
-body[data-styl=papir] .total{color:var(--score-total);font-weight:700}
-body[data-styl=papir] #result-text{color:var(--text)}
-body[data-styl=papir] .result-progress progress{border:var(--frame) solid var(--charge-track-border);background:var(--card2)}
-body[data-styl=papir] .result-progress progress::-webkit-progress-bar{background:var(--card2)}
-body[data-styl=papir] .result-actions button span{font-family:var(--display);font-weight:700}
+#result h2{margin:0 0 var(--s4);font:400 clamp(26px,6vw,36px)/1.15 var(--hand);letter-spacing:0;color:var(--text)}
+.result-progress{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4)}
+.result-progress progress{appearance:none;-webkit-appearance:none;width:100%;height:20px;border:var(--frame) solid var(--charge-track-border);border-radius:var(--r);background:var(--card2);overflow:hidden;accent-color:var(--progress-bar)}
+.result-progress progress::-webkit-progress-bar{background:var(--card2)}
+.result-progress progress::-webkit-progress-value{background:var(--progress-bar)}
+.result-progress progress::-moz-progress-bar{background:var(--progress-bar)}
+.result-progress b{white-space:nowrap;font:800 18px/1 var(--display)}
+.score-card{padding:var(--s4);text-align:left}
+.score-card dl{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3) var(--s4);margin:0 0 var(--s4)}
+.score-card dl>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.score-card dl>div:first-child{grid-column:1/-1}
+.score-card dt{font:600 14px/1.2 var(--body);color:var(--dim)}
+.score-card dd{margin:0;font:700 24px/1.05 var(--display);color:var(--score-value)}
+.score-card dl>div:first-child dd{font-size:clamp(40px,10vw,56px)}
+.reward-breakdown{padding:var(--s3) 0;border-top:2px dashed var(--rule);font-size:14px;line-height:1.5;color:var(--dim)}
+.total{border-top:2px dashed var(--rule);padding-top:var(--s3);font:700 28px/1.1 var(--display);color:var(--score-total)}
+#result-text{color:var(--text);font-size:16px;min-height:1.5em}
+.result-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
+.result-actions button{font-size:24px;padding:var(--s2) var(--s1)}
+.result-actions button span{display:block;margin-top:2px;font:700 16px/1.1 var(--display)}
 
-/* ---------- Atlas (zatím prázdný) a odkazy ---------- */
-body[data-styl=papir] .bonus-empty{border:2px dashed var(--rule)}
-body[data-styl=papir] .bonus-symbol{color:var(--color-miss)}
-body[data-styl=papir] .back-link{color:var(--text);text-decoration-color:var(--rule)}
-body[data-styl=papir] .back-link:hover{color:var(--text);text-decoration-color:currentColor}
+/* ---------- bonus.html (Atlas zatím prázdný) a odkazy ---------- */
+.bonus-empty{min-height:420px;padding:var(--s5) var(--s4);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bonus-symbol{font:800 88px/1 var(--display);color:var(--color-miss);margin-bottom:var(--s4)}
+.back-link{display:inline-flex;align-items:center;min-height:44px;margin-top:var(--s4);color:var(--text);font:700 18px/1 var(--display);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--rule)}
+.back-link:hover{color:var(--text);text-decoration-color:currentColor}
+header>.eyebrow{text-align:right}
+
+/* ---------- přepínač jazyka (EN / CS): stisknuté = grafitový rámeček uvnitř + bílý papír, ne jen barva ---------- */
+.lang-picker{display:flex;align-items:center;gap:var(--s2);margin-left:auto}
+.lang-picker button{--btn-edge-h:2px;min-height:44px;min-width:44px;padding:6px 10px;font-size:16px;color:var(--dim-on-card)}
+.lang-picker button[aria-pressed=true],.lang-picker button[aria-pressed=true]:hover:not(:disabled){background:var(--paper);color:var(--text);box-shadow:inset 0 0 0 2px var(--btn-pressed-ring),var(--lift)}
 
 /* ---------- telefon: štítek místa pod scénou, ve scéně jen vzdálenost a mince vpravo nahoře (kap. 6, 8; 06 Struktura menu bod 2) ---------- */
 @media(max-width:650px){
- body[data-styl=papir]{--scene-frame:4px}
- body[data-styl=papir] .scene{overflow:visible;margin-bottom:40px}
- body[data-styl=papir] .scene:has(#scene-label:empty){margin-bottom:0}
- body[data-styl=papir] #scene-label{top:calc(100% + var(--scene-frame) + var(--s2));bottom:auto;left:calc(-1 * var(--scene-frame));max-width:calc(100% + 2 * var(--scene-frame))}
- body[data-styl=papir] .hud{padding:var(--s2) var(--s2) 0;gap:6px}
- body[data-styl=papir] .hud span:has(#best),body[data-styl=papir] .hud span:has(#milestone){display:none}/* rekord je ve výsledku, milník ohlásí banner */
- body[data-styl=papir] .hud span{padding:3px 7px 4px;font-size:10px;letter-spacing:.06em}
- body[data-styl=papir] .hud b{font-size:16px}
- body[data-styl=papir] :is(#flight,#aim){padding:var(--s3) var(--s4) var(--s4)}
+ :root{--scene-frame:4px}
+ main{padding:var(--s4)}
+ .intro{display:block;padding:var(--s4) 0 var(--s2)}
+ .intro p{font-size:14px}
+ .scene{overflow:visible;margin-bottom:40px}
+ .scene:has(#scene-label:empty){margin-bottom:0}
+ .hud{padding:var(--s2) var(--s2) 0;gap:6px}
+ .hud span:has(#best),.hud span:has(#milestone){display:none}/* rekord je ve výsledku, milník ohlásí banner */
+ .hud span{padding:3px 7px 4px;font-size:10px;letter-spacing:.06em}
+ .hud b{font-size:16px}
+ :is(#flight,#aim){padding:var(--s3) var(--s4) var(--s4)}
+ .section-title{align-items:flex-start}
+ .upgrade-layout{grid-template-columns:1fr}
+ .nodes{gap:var(--s2)}
+ .node:not(:last-child)::after{width:var(--s2)}
+ .models{gap:var(--s2)}
+ .model{padding:var(--s3)}
+ .model>strong{font-size:20px}
+ .model>span{font-size:14px}
+ .brand{font-size:24px}
+ .brand span{font-size:11px}
+ .wallet{font-size:20px}
+ #scene-label{font-size:12px;top:calc(100% + var(--scene-frame) + var(--s2));bottom:auto;left:calc(-1 * var(--scene-frame));max-width:calc(100% + 2 * var(--scene-frame))}
+ #milestone-banner{top:64px;font-size:15px}
+ .page-nav{flex-wrap:wrap;column-gap:var(--s4);row-gap:0}
+ .lang-picker{margin-left:auto}
 }
 @media(max-width:450px){
- body[data-styl=papir] .hud b{font-size:14px}
- body[data-styl=papir] .brand{rotate:-1deg}
- body[data-styl=papir] dialog#result{rotate:none}
+ dialog#result{padding:var(--s3);width:calc(100% - 16px);max-height:calc(100dvh - 16px);rotate:none}
+ .score-card{padding:var(--s3)}
+ .score-card dd{font-size:21px}
+ .result-actions button{font-size:21px}
+ .in-flight main{padding:var(--s2) var(--s3)}
+ .in-flight header{padding:var(--s2) 0}
+ .brand{rotate:-1deg}
+ .in-flight .brand{font-size:18px}
+ .in-flight .brand span{display:none}
+ .in-flight .wallet{font-size:18px;padding:6px var(--s2)}
+ .in-flight .wallet small{font-size:11px}
+ .hud b{font-size:14px}
+ #flight h2{font-size:20px}
+ #flight .eyebrow{font-size:12px;letter-spacing:.06em}
+ #flight .section-title{gap:var(--s2);align-items:center}
+ #action{min-width:0;max-width:52%;padding:var(--s2);font-size:16px}
+ #event-help{font-size:14px}
+ #milestone-banner{top:52px;font-size:14px}
+ .in-flight footer{margin-top:var(--s1);padding-top:var(--s1)}
 }
+
+/* ---------- reduced motion: trvání ~0, bez posunů; stisk dál čitelný změnou spodní hrany (tvar), hover změnou plochy ---------- */
 @media(prefers-reduced-motion:reduce){
- /* bez posunů; stisk dál čitelný změnou spodní hrany (tvar), hover změnou plochy */
- body[data-styl=papir] button:is(:hover,:active):not(:disabled){transform:none}
+ *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important;scroll-behavior:auto!important}
+ button:is(:hover,:active):not(:disabled){transform:none}
 }
-@media(forced-colors:active){body[data-styl=papir] :is(.hud span,#scene-label,#milestone-banner,aside,#flight,#aim,dialog#result,.score-card){border:1px solid CanvasText}body[data-styl=papir] button:not(:disabled){border-color:ButtonText}}
+@media(forced-colors:active){
+ button,.scene,.timing,.charge-track{border-color:CanvasText}button:not(:disabled){border-color:ButtonText}
+ :is(.hud span,#scene-label,#milestone-banner,aside,#flight,#aim,dialog#result,.score-card){border:1px solid CanvasText}
+ .perfect-zone{forced-color-adjust:none}
+}

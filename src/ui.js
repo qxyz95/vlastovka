@@ -8,10 +8,8 @@ import {districtAt,routeAt,SCREEN_METERS} from './scenes.js';
 import {chargeAt,throwSettings} from './throw.js';
 import {eventProgress,eventStats,windows,TIMING} from './events.js';
 import {createDecorations,stepDecorations} from './decorations.js';
-import {THEMES,THEME_IDS,setTheme,pickTheme} from './themes.js';
 import {drawAim} from './render3d/ui-layer.js';
 import {eventView} from './render3d/events-view.js';
-import {PAPER_TOKENS} from './render3d/palette.js';
 // Renderer: 3D výchozí (src/render3d/), ?render=2d nebo prohlížeč bez WebGL2 → 2D render.js (do smazání 2D, fáze f plánu 3D).
 // Oba mají stejné rozhraní render(canvas,f,model,time,visual) a view(f); 3D kreslí mířidla v UI vrstvě, 2D je dostane přes drawAim.
 const webgl2=()=>{try{const g=document.createElement('canvas').getContext('webgl2');g?.getExtension('WEBGL_lose_context')?.loseContext();return !!g;}catch{return false;}};
@@ -28,25 +26,19 @@ const TIMER=new URLSearchParams(location.search).has('timer'),hidden=()=>documen
 if(mc)mc.port1.onmessage=()=>{const n=performance.now();if(n-tickAt>=16){tickAt=n;frame(n);}else mc.port2.postMessage(0);};
 const tick=()=>mc?mc.port2.postMessage(0):requestAnimationFrame(frame);
 let warning=loaded.warning;const showWarning=()=>{$('warning').textContent=translateMessage(warning);};
-// Visual style: ?styl= in the URL wins, otherwise the last choice. Only presentation changes.
-const THEME_KEY='just-throw-it-theme';
-document.body.dataset.render=mode;$('theme-picker').hidden=mode==='3d';// styly patří 2D rendereru, 3D má vlastní vzhled
-function applyTheme(id){setTheme(id);document.body.dataset.theme=id;for(const b of document.querySelectorAll('[data-theme-id]'))b.setAttribute('aria-pressed',b.dataset.themeId===id);try{localStorage.setItem(THEME_KEY,id);}catch{}}
-if(mode==='2d'){for(const id of THEME_IDS){const b=document.createElement('button');b.type='button';b.dataset.themeId=id;b.textContent=t('theme.'+id);b.onclick=()=>applyTheme(id);$('theme-picker').append(b);}
-{let stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch{}applyTheme(pickTheme(new URLSearchParams(location.search).get('styl'),stored));}}
-// ?styl=papir: Papírové město (dávky P0–P4, výchozí vypnuto). Jen vzhled: renderer dostane visual.style, UI body[data-styl] a theme-color.
-const STYLE=new URLSearchParams(location.search).get('styl')==='papir'?'papir':'cyber',coarse=matchMedia('(pointer: coarse)');
-if(STYLE==='papir'){document.body.dataset.styl=STYLE;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',PAPER_TOKENS.desk);}
+// Jediný styl je Papírové město (06, 15. 10.): CSS ho má na :root, renderer dostane visual.style jako konstantu, dokud R0 nesmaže cyber větve.
+// Bývalý klíč 2D přepínače motivů se jednou uklidí; save hry se nemění.
+const STYLE='papir',coarse=matchMedia('(pointer: coarse)');
+document.body.dataset.render=mode;try{localStorage.removeItem('just-throw-it-theme');}catch{}
 function persist(){const w=save(p);if(w){warning=w;showWarning();}}
 const m=(x,d=0)=>unit(x,'m',d);
-// Language: ?lang= in the URL wins, then the last choice, otherwise English. Stored outside the save, like the theme.
+// Language: ?lang= in the URL wins, then the last choice, otherwise English. Stored outside the save.
 // Switching redraws every text without a reload: static HTML via data-i18n / data-i18n-aria, the rest through refresh() and the frame loop.
 function applyLang(id){
  const lang=setLang(id);document.documentElement.lang=lang;try{localStorage.setItem(LANG_KEY,lang);}catch{}
  for(const el of document.querySelectorAll('[data-i18n]'))el.textContent=t(el.dataset.i18n);
  for(const el of document.querySelectorAll('[data-i18n-aria]'))el.setAttribute('aria-label',t(el.dataset.i18nAria));
  for(const b of document.querySelectorAll('[data-lang]'))b.setAttribute('aria-pressed',b.dataset.lang===lang);
- for(const b of document.querySelectorAll('[data-theme-id]'))b.textContent=t('theme.'+b.dataset.themeId);
  $('version').textContent=t('footer.version',{version:VERSION});showWarning();
  refresh();if(state==='aim')updateAim();if($('result').open&&f&&outcome)fillResult();
 }
