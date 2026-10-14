@@ -63,7 +63,7 @@ export default Object.freeze({
  // Výchozí varianta (3 patra, 3 osy, štít): šířka štítu s přesahem, výška po nástavec komína, hloubka karty ulice + přesah střechy + balkon.
  size:Object.freeze({w:widthOf(3)+1,h:3*F+widthOf(3)*.42+1+.3+.35,d:CARD_DEPTH.near+.2+.9}),
  // Strop △ (11 kap. 4.3: [600, 130, 13]) pro nejbohatší variantu ulice 6 os × 7 pater; vyšší domy středu (8–12 pater) jsou jen v LOD 1 a strop jim
- // neplatí (6 × 12 v LOD 1 ≈ 173 △). LOD 0 dočasně 650: střecha okapem se 2 vikýři, okenicemi a truhlíky má 640 △ (BLOCKED v runs/2026-10-14-k3-modely.md).
+ // neplatí (6 × 12 v LOD 1 ≈ 173 △). LOD 0 650 (rozhodnutí 14. 10.): střecha okapem se 2 vikýři, okenicemi a truhlíky má 640 △.
  tris:Object.freeze([650,130,13]),trisScope:Object.freeze({floors:7}),
  lod:Object.freeze([p=>build(p,0),p=>build(p,1),p=>build(p,2)]),shadow
 });

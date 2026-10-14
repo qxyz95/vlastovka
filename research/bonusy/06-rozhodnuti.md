@@ -130,3 +130,6 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   2. Drobnosti: herní velikost jen u toho, co hráč potřebuje vidět (holub v události, větrník kvůli Pinwheel), ozdoby jako praporky 0,8 m, zbytek ve skutečné velikosti.
   3. Praporky bez hořčicové, místo ní `#f2b65a`. Hořčicová zůstává jen pro hodnotu.
   4. Hodně detailu všude podle scénáře C (tenké díly jako ploché karty `panel`/`lista`, kap. 1.3 a 4).
+- **Katalog, skupina G1 (K3, 14. 10.): schváleno.** Řadový dům, dům se štítem, vzdálené město a komín podle katalogu, včetně rozměrů odhadnutých agentem.
+  1. Strop LOD 0 řadového domu 650 △ místo 600 (nejbohatší kombinace je vzácná, rozpočet místa se počítá hustotou).
+  2. Komín nejvýš 2 nástavce (se třemi by překročil strop 20 △).
