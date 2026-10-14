@@ -121,7 +121,7 @@ export function effect(f,e,grade,share,withCombo){
  f.vx+=dvx;return dvx;
 }
 // ctx.grades = {i: výsledek} vynutí výsledky QTE z jiného letu (náhled přehráním, 01 §2.10 bod 2); jen u událostí, které tam byly vyhodnoceny.
-// Záznam letu pro detektory kousků: e.resolvedAt, e.comboBefore, f.lastEv (poslední vyhodnocená událost).
+// Záznam letu pro detektory kousků: e.resolvedAt, e.comboBefore, e.doneAt (konec účinku), e.whistledAt (čas pískání), f.lastEv (poslední vyhodnocená událost).
 function resolve(f,e,grade){
  if(e.result)return null;
  const fg=f.ctx.grades?.[e.i];if(fg!=null&&fg!=='interrupted')grade=fg;
@@ -213,7 +213,7 @@ export function cushion(f){
 export function whistle(f){
  if((f.abil.whistle??0)>=P.specials.whistle.uses||!canAct(f)||activeEvent(f))return false;
  const next=f.events.find(e=>e.phase==='waiting');if(!next||!(next.at>f.t))return false;
- next.at=f.t;next.whistled=true;f.abil.whistle=(f.abil.whistle??0)+1;f.stats.whistle++;return true;
+ next.at=f.t;next.whistled=true;next.whistledAt=f.t;f.abil.whistle=(f.abil.whistle??0)+1;f.stats.whistle++;return true;
 }
 export function rocket(f){const R=P.specials.rocket;if((f.abil.rocket??0)>=R.charges||!canAct(f))return false;f.abil.rocket=(f.abil.rocket??0)+1;f.stats.rocket++;(f.stats.rocketT??=[]).push(f.t);setBurst(f,{amp:R.amp,tau:R.tau,shape:'exp'},'rocket');return true;}
 export const burstLeft=f=>f.burst?burstAt(f.burst,f.t-f.burst.t0):0;

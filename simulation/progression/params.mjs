@@ -100,7 +100,9 @@ const DEFAULTS={
   // minutí u každé události), úhel hodu posunutý o rozdíl ideálů, medián poměru doletu proti modelu v ruce. wind 'same' = vítr původního
   // hodu (01: „stejný seed, stejný vítr“), 'next' = známý vítr příštího hodu. mode 'passive' = náhled do 14. 10. (pasivní let bez událostí
   // s úhlem záměru modelu, silou mu a známým větrem).
-  modelPick:{noise:0,mode:'replay',throws:5,wind:'same'},
+  // wind 'both' (01 §2.10 bod 7): koupě a model v ruce podle 'same', na jeden hod model s windK ≠ 1 (Sail, Needle), když přehrání s větrem
+  // příštího hodu dá aspoň o switchGain víc než model v ruce a |vítr| ≥ switchWind (řádek „This throw“ se ukáže jen od tohoto větru).
+  modelPick:{noise:0,mode:'replay',throws:5,wind:'same',switchGain:.05,switchWind:.08},
  },
  // fallback = čím se řídí paper-/atlas-/models-first a no-models mimo svou prioritu; no-models modely nekupuje, models-first šetří na model hned po odemčení
  // no-mailbag Mailbag nekupuje, mailbag-first šetří na další úroveň Mailbagu hned po jejím otevření (01 §2.11 „Mailbag napřed“)
@@ -108,7 +110,10 @@ const DEFAULTS={
  // Kousky (05 §4.5, ověření §4.6): podmínky detektorů jen v simulátoru (tricks.mjs), ve hře nejsou. Okna v s simulovaného času letu:
  // pigeonWindow puštění perfektního holuba → klepnutí perfektního poryvu, droneWindow mezi vyhodnocením dvou perfektních dronů,
  // lineWindow Paper Rocket před dopadem. ok = výsledky, které se počítají jako „úspěšně“ (All the Verbs, Needle).
- tricks:{pigeonWindow:1.5,droneWindow:2,lineWindow:1,wishCombo:5,hawkRun:3,kiteY:40,sailWind:.08,needleDrones:2,skimmerSkips:2,ok:['success','perfect']},
+ // v2 (05 §4.5, §4.6.2): Pigeon Express a Drone Ping-Pong = sousední běžné události (okno 99 = „hned další“ bez sekund), droneLevel = úroveň
+ // Gates (drony) pro přísadu Drone Ping-Pong, whistleGap = pískání do tolika s od konce účinku (doneAt) předchozí perfektní události (Whistle Stop).
+ tricks:{pigeonWindow:1.5,droneWindow:2,lineWindow:1,wishCombo:5,hawkRun:3,kiteY:40,sailWind:.08,needleDrones:2,skimmerSkips:2,ok:['success','perfect'],
+  droneLevel:3,whistleGap:1},
  // Výbavy pro tabulku křivky (08 §2.4). atlas: úroveň každého bonusu; '*' = všechny odemčené na danou úroveň.
  curve:[
   {name:'1. hod (nic)',power:0,folds:0,paper:0,atlas:{}},
@@ -141,7 +146,12 @@ const DEFAULTS={
   // do 1. provedení medián ≤ model[0], P90 ≤ model[1] (01 §6.1 bod 15). Systém: 1. kousek do firstTrick (medián průměrného), nalezeno
   // found (průměrný) / ≥ foundWeak (slabý) z 13, korelace > corr = tentýž čin, brána gate zdravých z 8.
   tricks:{rare:.01,healthy:[.02,.20],obvious:.25,intentMin:.08,intentRatio:1.5,chance:1.2,first:[3,25],firstRare:40,firstObvious:1,never:.5,
-   expertWeak:4,expertWeakRare:5,model:[5,15],firstTrick:15,found:[.4,.75],foundWeak:.25,corr:.8,gate:6},
+   expertWeak:4,expertWeakRare:5,model:[5,15],firstTrick:15,found:[.4,.75],foundWeak:.25,corr:.8,gate:6,
+   // v2 (05 §4.6, doplněno 14. 10.): výskyt v žádné čtvrti s přísadami > obvious (aspoň districtMin letů ve čtvrti), φ vypsat pro dvojice nad corrList;
+   // gateBy 'class' (rozhodnutí uživatele 14. 10., konec 06) = podle třídy: dovednost zdravou četností a poměrem expert / slabý (≥ skillEW
+   // zdravý, < skillChance náhoda), pestrost jen četností, volba záměrem; 'intent' = záměr u všech kousků (brána 1. běhu).
+   // Postavit: při ≥ gate zdravých systém, při gateMin..gate−1 jen zdravé + kousky modelů, pod gateMin §4.7 (jen kousky modelů).
+   districtMin:30,corrList:.5,gateBy:'class',skillEW:1.3,skillChance:1,gateMin:4},
  },
 };
 

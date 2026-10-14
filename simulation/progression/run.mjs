@@ -9,9 +9,9 @@ import {fileURLToPath} from 'node:url';
 import {dirname,join} from 'node:path';
 import {P,setParams,merge,parseSet,PROFILE_SETS,MODEL_SETS,TARGET_SETS} from './params.mjs';
 import {campaign} from './campaign.mjs';
-import {TRICKS,intentTricks} from './tricks.mjs';
+import {TRICKS,trickById,intentTricks} from './tricks.mjs';
 import {bestAngle,lv,createEvents,derive} from './model.mjs';
-import {throwOnce} from './abilities.mjs';
+import {throwOnce,INTENT_BOTS} from './abilities.mjs';
 
 if(!isMainThread){setParams(workerData.over);parentPort.postMessage(workerData.tasks.map(campaign));}
 
@@ -53,7 +53,9 @@ export function summarize(rs){
   craneTugRate:rs.reduce((a,r)=>a+(r.crane?.tugs??0),0)/flights,craneNewPlace:(()=>{const t=rs.reduce((a,r)=>a+(r.crane?.tugs??0),0);return t?rs.reduce((a,r)=>a+r.crane.newPlace,0)/t:null;})(),
   qteHit:rs.reduce((a,r)=>a+r.qte.hits,0)/Math.max(1,rs.reduce((a,r)=>a+r.qte.done,0)),
   diveCrash:(()=>{const u=rs.reduce((a,r)=>a+r.dive.uses,0);return u?rs.reduce((a,r)=>a+r.dive.crash,0)/u:null;})(),econ:economy(rs),
-  ...pace90(rs),...(rs.some(r=>r.mailbag?.length||r.strategy?.includes('mailbag'))?{mailbag:mailbagSummary(rs)}:{}),...(rs.some(r=>r.tricks)?{tricks:trickSummary(rs)}:{})};
+  ...pace90(rs),...(rs.some(r=>r.mailbag?.length||r.strategy?.includes('mailbag'))?{mailbag:mailbagSummary(rs)}:{}),...(rs.some(r=>r.tricks)?{tricks:trickSummary(rs)}:{}),
+  // vítr náhledu 'both' (01 §2.10 bod 7): podíl hodů s modelem jen na jeden hod (Sail / Needle podle větru příštího hodu)
+  ...(rs.some(r=>r.windSwitch!=null)?{windSwitch:rs.reduce((a,r)=>a+(r.windSwitch??0),0)/Math.max(1,rs.reduce((a,r)=>a+r.throws,0))}:{})};
 }
 // Metriky pásem 90 min (05 §7.2), které simulátor umí: sucho bez novinky A, P90 sucha, opakování poryvu + holuba po čtvrtích (podíl mezi
 // vyhodnocenými QTE podle čtvrti rekordu před hodem), hody mezi nákupy (rozdíl hodů s nákupem, čtvrť pozdějšího nákupu).
@@ -79,12 +81,15 @@ export function mailbagSummary(rs){
 // Kousky (05 §4.6) skupiny: pro každý kousek lety s přísadami, výskyt (podíl letů s přísadami), kampaně s přísadami, 1. provedení
 // (hody od prvního letu s přísadami, medián z kampaní s provedením), podíl kampaní bez provedení, lety s přísadami do 1. provedení
 // (medián a P90, nikdy = ∞, pro kousky modelů), diagnostika intervalu dvojic. Systém: 1. kousek mimo modely (medián, nikdy = ∞),
-// nalezeno z 13 (medián kampaní), korelace výskytu (φ v letech, kde mají přísady oba).
+// nalezeno z 13 (medián kampaní), korelace výskytu (φ v letech, kde mají přísady oba). v2: share = podíl všech letů s přísadami (strop Drone
+// Ping-Pong = lety s Gates úr. 3), cap = podíl letů s přísadami, kde nastala událost-strop (hvězda, dvojice), byD = výskyt po čtvrtích rekordu
+// před hodem (null pod districtMin letů), corr = všechny dvojice (sestupně).
 export function trickSummary(rs){
- const T=rs.filter(r=>r.tricks),fl=T.flatMap(r=>r.tricks.flights),bit=(m,i)=>m>>i&1;
+ const T=rs.filter(r=>r.tricks),fl=T.flatMap(r=>r.tricks.flights),bit=(m,i)=>m>>i&1,dMin=P.targets.tricks?.districtMin??30;
  const per=TRICKS.map((t,i)=>{const ing=fl.filter(f=>bit(f[0],i)),fs=T.map(r=>r.tricks.first[t.id]).filter(Boolean),hit=fs.filter(x=>x.hit!=null);
-  const dg=T.flatMap(r=>r.tricks.diag[t.id]??[]);
-  return [t.id,{flights:ing.length,rate:ing.length?ing.filter(f=>bit(f[1],i)).length/ing.length:null,campaigns:fs.length,
+  const dg=T.flatMap(r=>r.tricks.diag[t.id]??[]),byD=[0,1,2,3].map(d=>{const v=ing.filter(f=>f[3]===d);return v.length>=dMin?v.filter(f=>bit(f[1],i)).length/v.length:null;});
+  return [t.id,{flights:ing.length,rate:ing.length?ing.filter(f=>bit(f[1],i)).length/ing.length:null,campaigns:fs.length,share:fl.length?ing.length/fl.length:null,
+   ...(t.cap&&ing.length?{cap:ing.filter(f=>bit(f[4]??0,i)).length/ing.length}:{}),byD,dMax:byD.some(v=>v!=null)?Math.max(...byD.filter(v=>v!=null)):null,
    first:med(hit.map(x=>x.hit-x.ing+1)),never:fs.length?1-hit.length/fs.length:null,
    firstIng:med(fs.map(x=>x.hitN??Infinity)),firstIngP90:q(fs.map(x=>x.hitN??Infinity),.9),...(dg.length?{gapMin:Math.min(...dg),gapMed:med(dg)}:{})}];});
  const reg=TRICKS.map((t,i)=>[t,i]).filter(([t])=>!t.model);
@@ -93,7 +98,8 @@ export function trickSummary(rs){
  const corr=[];for(let a=0;a<TRICKS.length;a++)for(let b=a+1;b<TRICKS.length;b++){const both=fl.filter(f=>bit(f[0],a)&&bit(f[0],b));if(both.length<20)continue;
   const n=both.length,pa=both.filter(f=>bit(f[1],a)).length/n,pb=both.filter(f=>bit(f[1],b)).length/n,pab=both.filter(f=>bit(f[1],a)&&bit(f[1],b)).length/n,den=Math.sqrt(pa*(1-pa)*pb*(1-pb));
   if(den>0)corr.push({a:TRICKS[a].id,b:TRICKS[b].id,phi:(pab-pa*pb)/den,n});}
- return {per:Object.fromEntries(per),firstTrick:med(firstAny),found:med(found),foundMin:Math.min(...found),corrMax:corr.reduce((m,c)=>!m||c.phi>m.phi?c:m,null),corrHigh:corr.filter(c=>c.phi>(P.targets.tricks?.corr??.8))};
+ return {per:Object.fromEntries(per),firstTrick:med(firstAny),found:med(found),foundMin:Math.min(...found),corrMax:corr.reduce((m,c)=>!m||c.phi>m.phi?c:m,null),corrHigh:corr.filter(c=>c.phi>(P.targets.tricks?.corr??.8)),
+  corr:[...corr].sort((x,y)=>y.phi-x.phi)};
 }
 
 // Křivka 08 §2.4: pevné výbavy, úhel = nejlepší pasivní + chyba profilu, n letů na buňku (hod č. 20: plující střed i švih zapnuté).
@@ -200,33 +206,49 @@ export function checks(G,probes){
 }
 
 // Tabulka kousků s verdikty podle prahů 05 §4.6 (targets.tricks). Základ = skupiny bez záměru s detekcí, záměr = skupiny `…|i:<id>`.
-// Hodnotí se průměrný (výskyt, záměr, 1. provedení) a poměr expert / slabý. Kousek bez letů s přísadami = NOT ASSESSED.
+// Hodnotí se průměrný (výskyt, výskyt po čtvrtích, záměr, 1. provedení) a poměr expert / slabý. Kousek bez letů s přísadami = NOT ASSESSED.
+// Dva verdikty: verdictIntent = záměr u všech kousků (brána strict / lenient), verdictClass = podle třídy (05 §4.6, doplněno 14. 10.):
+// volba záměrem, dovednost poměrem expert / slabý (skillEW / skillChance), pestrost jen četností. verdict = podle targets.tricks.gateBy.
 export function trickTable(G){
  const TT=P.targets.tricks,ref=P.targets.reference??'balanced',keys=Object.keys(G).filter(k=>G[k].tricks&&!k.includes('|i:'));if(!keys.length)return null;
  const combo=(keys.find(k=>k.split('|')[1]===ref)??keys[0]).split('|').slice(1).join('|'),grp=(p,i)=>G[`${p}|${combo}${i?'|i:'+i:''}`];
  const band=(v,lo,hi,lab)=>v==null?'NOT ASSESSED':v<lo-1e-9?lab[0]:v>hi+1e-9?lab[2]:lab[1];
  const rows=TRICKS.map(t=>{
-  const a=grp('average')?.tricks?.per[t.id],w=grp('weak')?.tricks?.per[t.id],x=grp('expert')?.tricks?.per[t.id],ai=t.intent?grp('average',t.id)?.tricks?.per[t.id]:null;
+  // výskyt bez záměru: běžná skupina; když v ní kapsa ze záměru není (0 letů s přísadami), skupina „kapsa bez záměru“ (`|i:<id>|base`),
+  // a když kousek nemá vlastního bota (Kettle Song), skupina se záměrem (jen kapsa)
+  const pb=t.intent?.pocket?INTENT_BOTS[t.id]?t.id+'|base':t.id:null,base=p=>{const v=grp(p)?.tricks?.per[t.id];if(v?.flights||!pb)return [v,''];const u=grp(p,pb)?.tricks?.per[t.id];return u?.flights?[u,'kapsa']:[v,''];};
+  const [a,af]=base('average'),[w]=base('weak'),[x]=base('expert'),ai=t.intent?grp('average',t.id)?.tricks?.per[t.id]:null;
   // kousky modelů: 1. provedení z lety s modelem; když ho základní bot (volba modelu) nevolí, ze skupiny se záměrem (model v ruce)
   const fm=t.model&&!a?.campaigns&&ai?.campaigns?ai:a;
   const r={id:t.id,name:t.name,model:!!t.model,note:t.note??'',rate:a?.flights?a.rate:null,flights:a?.flights??0,weak:w?.flights?w.rate:null,expert:x?.flights?x.rate:null,
    intent:ai?.flights?ai.rate:null,first:a?.first??null,never:a?.never??null,firstIng:fm?.firstIng??null,firstIngP90:fm?.firstIngP90??null,firstFrom:fm&&fm===ai?'záměr':'',
-   gapMin:a?.gapMin??null,gapMed:a?.gapMed??null,gapIntent:ai?.gapMin??null};
+   gapMin:a?.gapMin??null,gapMed:a?.gapMed??null,gapIntent:ai?.gapMin??null,baseFrom:af,cls:t.cls??null,share:a?.share??null,cap:a?.cap??null,byD:a?.byD??null,dMax:a?.dMax??null};
   r.ratio=r.intent!=null&&r.rate?r.intent/r.rate:r.intent!=null&&r.intent>0?Infinity:null;r.ew=r.weak==null||r.expert==null?null:r.weak?r.expert/r.weak:r.expert>0?Infinity:null;
   r.vRate=r.rate==null?'NOT ASSESSED':r.rate<TT.rare?'vzácný':r.rate>TT.obvious?'samozřejmý':r.rate>=TT.healthy[0]-1e-9&&r.rate<=TT.healthy[1]+1e-9?'zdravý':'hraniční';
   r.vIntent=!t.intent?'NOT ASSESSED (bez páky)':r.intent==null?'NOT ASSESSED (neběželo)':r.intent<TT.intentMin?'vzácný':r.ratio<TT.chance?'náhoda':r.ratio>=TT.intentRatio?'zdravý':'hraniční';
   r.vFirst=t.model?(r.firstIng==null?'NOT ASSESSED':r.firstIng<=TT.model[0]&&r.firstIngP90<=TT.model[1]?'zdravý':'pomalý')
    :r.rate==null?'NOT ASSESSED':r.never>TT.never||r.first==null||r.first>TT.firstRare?'vzácný':r.first<=TT.firstObvious?'samozřejmý':band(r.first,TT.first[0],TT.first[1],['hraniční','zdravý','hraniční']);
   r.vEW=r.ew==null?'–':r.ew>TT.expertWeakRare?'jen perfektnost':r.ew<=TT.expertWeak?'zdravý':'hraniční';
-  const parts=[r.vRate,r.vFirst,r.vEW].filter(v=>v!=='–');
+  r.vDist=r.dMax==null?'–':r.dMax>TT.obvious+1e-9?'samozřejmý':'zdravý';
+  r.vSkill=r.ew==null?'NOT ASSESSED':r.ew>=(TT.skillEW??1.3)-1e-9?'zdravý':r.ew<(TT.skillChance??1)-1e-9?'náhoda':'hraniční';
+  const parts=[r.vRate,r.vFirst,r.vEW,r.vDist].filter(v=>v!=='–');
   // kousky modelů (= podpisové skiny) se hodnotí jen hody s modelem do 1. provedení (01 §6.1 bod 15), výskyt a záměr jsou informace
-  if(t.model){r.verdict=r.vFirst==='NOT ASSESSED'?'NOT ASSESSED':r.vFirst==='zdravý'?'HEALTHY':'CONCERNS';return r;}
-  r.verdict=r.vRate.startsWith('NOT')?'NOT ASSESSED':parts.some(v=>v==='vzácný'||v==='samozřejmý')?'CRITICAL':parts.some(v=>v!=='zdravý')||r.vIntent==='vzácný'||r.vIntent==='náhoda'||r.vIntent==='hraniční'?'CONCERNS':r.vIntent==='zdravý'?'HEALTHY':'HEALTHY (záměr NOT ASSESSED)';
+  if(t.model){r.verdict=r.verdictIntent=r.verdictClass=r.vFirst==='NOT ASSESSED'?'NOT ASSESSED':r.vFirst==='zdravý'?'HEALTHY':'CONCERNS';r.vClass='01 §6.1 b. 15';return r;}
+  const verd=c=>r.vRate.startsWith('NOT')?'NOT ASSESSED':parts.some(v=>v==='vzácný'||v==='samozřejmý')?'CRITICAL':parts.some(v=>v!=='zdravý')||c==='vzácný'||c==='náhoda'||c==='hraniční'?'CONCERNS':c==='zdravý'?'HEALTHY':'HEALTHY (záměr NOT ASSESSED)';
+  r.vClass=t.cls==='dovednost'?r.vSkill:t.cls==='pestrost'?'zdravý':r.vIntent;
+  r.verdictIntent=verd(r.vIntent);r.verdictClass=verd(r.vClass);r.verdict=TT.gateBy==='class'?r.verdictClass:r.verdictIntent;
   return r;});
  const A=grp('average')?.tricks,Wk=grp('weak')?.tricks,reg=rows.filter(r=>!r.model);
- return {combo,rows,gate:{strict:reg.filter(r=>r.verdict==='HEALTHY').length,lenient:reg.filter(r=>r.verdict.startsWith('HEALTHY')).length,of:reg.length,need:TT.gate},
-  system:{firstTrick:A?.firstTrick??null,found:A?.found??null,foundWeak:Wk?.found??null,corrMax:A?.corrMax??null,corrHigh:A?.corrHigh??[]}};
+ return {combo,rows,gate:{strict:reg.filter(r=>r.verdictIntent==='HEALTHY').length,lenient:reg.filter(r=>r.verdictIntent.startsWith('HEALTHY')).length,
+   byClass:reg.filter(r=>r.verdictClass==='HEALTHY').length,by:TT.gateBy??'intent',of:reg.length,need:TT.gate,build:build(rows)},
+  system:{firstTrick:A?.firstTrick??null,found:A?.found??null,foundWeak:Wk?.found??null,corrMax:A?.corrMax??null,corrHigh:A?.corrHigh??[],
+   corrList:(A?.corr??[]).filter(c=>c.phi>(TT.corrList??.5))}};
 }
+// Verdikt „postavit“ (rozhodnutí uživatele 14. 10., konec 06): zdravé kousky mimo modely podle platné brány (verdict) + všechny kousky modelů;
+// ≥ gate zdravých = systém, gateMin..gate−1 = jen zdravé + modely, méně = 05 §4.7 (jen kousky modelů = podpisové skiny).
+function build(rows){const TT=P.targets.tricks,ok=rows.filter(r=>!r.model&&r.verdict==='HEALTHY').map(r=>r.id),models=rows.filter(r=>r.model).map(r=>r.id),k=ok.length;
+ const mode=k>=TT.gate?'system':k>=(TT.gateMin??4)?'healthy+models':'4.7';return {mode,tricks:mode==='4.7'?[]:ok,models,healthy:ok};}
+const BUILD={system:'systém kousků (brána prošla)','healthy+models':'jen zdravé kousky + kousky modelů','4.7':'05 §4.7, kousky mimo modely nestavět'};
 const inf=v=>v==null?'–':v===Infinity?'∞':r0(v),ratio=v=>v==null?'–':v===Infinity?'∞':v.toFixed(2)+'×';
 
 function markdown(rep){
@@ -247,6 +269,7 @@ function markdown(rep){
  if(rep.probes?.atlas){L.push('','## Atlas na úr. 3 (plná výbava s bonusem / bez něj, průměrný)','',rep.probes.atlas.map(a=>`${a.bonus} ${pc1(a.gain)}${a.rate!=null?` (${pc(a.rate)} letů)`:''}`).join(' · '));}
  if(rep.probes?.star){const s=rep.probes.star;L.push('',`Shooting Star úr. ${s.level} v letech s hvězdou: ${pc1(s.gain)} (${s.flights} letů, hvězda v rozvrhu ${pc(s.scheduled)} klíčů, začala v ${pc(s.seen)}).`);}
  {const cr=Object.entries(rep.groups).filter(([,s])=>s.craneTugRate);if(cr.length)L.push('','Paper Crane v kampani (tah v letech / přes nové místo): '+cr.map(([k,s])=>`${k} ${pc1(s.craneTugRate)} / ${pc(s.craneNewPlace)}`).join(' · '));}
+ {const ws=Object.entries(rep.groups).filter(([,s])=>s.windSwitch!=null);if(ws.length)L.push('','Náhled s větrem „both“ (01 §2.10 bod 7), hody s modelem jen na jeden hod: '+ws.map(([k,s])=>`${k} ${pc1(s.windSwitch)}`).join(' · '));}
  if(rep.probes?.atlasWeak){L.push('','Slabý: '+rep.probes.atlasWeak.map(a=>`${a.bonus} ${pc1(a.gain)}${a.rate!=null?` (${pc(a.rate)})`:''}`).join(' · '));}
  if(rep.sensitivity){L.push('',`## Citlivost (08 §10.3, průměrný a slabý, ${P.targets.reference??'balanced'})`,'','| Varianta | průměrný hody / min | průměrný D1–D4 | let P90 / max [s] | slabý hody / min (max) | plná výbava průměrný [m] / let [s] |','|---|---|---|---|---|---|');
   for(const s of rep.sensitivity)L.push(`| ${s.name} | ${r0(s.average?.throws)} / ${r1(s.average?.minutes)} | ${(s.average?.district??[]).map(r0).join(' / ')} | ${r1(s.average?.flightP90)} / ${r1(s.average?.flightMax)} | ${r0(s.weak?.throws)} / ${r1(s.weak?.minutes)} (${s.weak?.max??'–'}) | ${r0(s.full?.x)} / ${r1(s.full?.real)} |`);}
@@ -255,10 +278,12 @@ function markdown(rep){
    for(const [k,s] of M)L.push(`| ${k} | ${r0(s.mailbag.coins)} / ${r0(s.mailbag.income)} | ${s.mailbag.incomeRatio.toFixed(3)} | ${s.mailbag.toGo.map(r1).join(' / ')} | ${s.mailbag.levels.map(l=>`${pc(l.bought)} (${r0(l.buyThrow)}) · ${r0(l.payEst)} · ${pc(l.paid)} · ${l.payFrac===Infinity?'∞':pc(l.payFrac)}`).join(' — ')} |`);}}
  if(rep.tricks){const X=rep.tricks,S=X.system;
   L.push('',`## Kousky (05 §4.6, skupina ${X.combo})`,'',`Výskyt = podíl letů s přísadami. Záměr = bot se záměrem (průměrný). 1. provedení = hody od prvního letu s přísadami (medián kampaní s provedením; nikdy = podíl kampaní bez provedení), u kousků modelů lety s modelem (medián / P90). Interval = nejkratší / medián intervalu dvojice v letech, kde dvojice perfektů nastala.`,'',
-   '| Kousek | lety (prům.) | slabý | průměrný | expert | se záměrem (×) | 1. provedení (nikdy) | expert / slabý | interval [s] | výskyt · záměr · 1. · E/S | verdikt | poznámka |','|---|---:|---:|---:|---:|---|---|---:|---|---|---|---|');
-  for(const r of X.rows)L.push(`| ${r.name} | ${r.flights} | ${pc1(r.weak)} | ${pc1(r.rate)} | ${pc1(r.expert)} | ${pc1(r.intent)} (${ratio(r.ratio)}) | ${r.model?`${inf(r.firstIng)} / ${inf(r.firstIngP90)}${r.firstFrom?' (záměr)':''}`:`${inf(r.first)} (${pc(r.never)})`} | ${ratio(r.ew)} | ${r.gapMin!=null?`${r1(r.gapMin)} / ${r1(r.gapMed)}`:'–'}${r.gapIntent!=null?`; záměr min ${r1(r.gapIntent)}`:''} | ${r.vRate} · ${r.vIntent} · ${r.vFirst} · ${r.vEW} | ${r.verdict} | ${r.note} |`);
+   '| Kousek | třída | lety (prům.) · podíl letů | strop | slabý | průměrný | expert | D1 / D2 / D3 / D4 | se záměrem (×) | 1. provedení (nikdy) | expert / slabý | interval [s] | výskyt · záměr · 1. · E/S · čtvrti · třída | verdikt záměr / třída | poznámka |','|---|---|---|---:|---:|---:|---:|---|---|---|---:|---|---|---|---|');
+  for(const r of X.rows)L.push(`| ${r.name} | ${r.cls??'–'} | ${r.flights} · ${pc(r.share)} | ${pc(r.cap)} | ${pc1(r.weak)} | ${pc1(r.rate)} | ${pc1(r.expert)} | ${(r.byD??[]).map(pc).join(' / ')||'–'} | ${pc1(r.intent)} (${ratio(r.ratio)}) | ${r.model?`${inf(r.firstIng)} / ${inf(r.firstIngP90)}${r.firstFrom?' (záměr)':''}`:`${inf(r.first)} (${pc(r.never)})`} | ${ratio(r.ew)} | ${r.gapMin!=null?`${r1(r.gapMin)} / ${r1(r.gapMed)}`:'–'}${r.gapIntent!=null?`; záměr min ${r1(r.gapIntent)}`:''} | ${r.vRate} · ${r.vIntent} · ${r.vFirst} · ${r.vEW} · ${r.vDist} · ${r.vClass} | ${r.verdictIntent} / ${r.verdictClass} | ${r.baseFrom?'výskyt bez záměru ze skupiny s kapsou ze záměru; ':''}${r.note} |`);
   const TT=P.targets.tricks;
-  L.push('',`Brána (8 kousků mimo modely): zdravých ${X.gate.strict} (se záměrem NOT ASSESSED ${X.gate.lenient}) z ${X.gate.of}, potřeba ${X.gate.need}.`,
+  L.push('',`Brána (${X.gate.of} kousků mimo modely, platí ${X.gate.by==='class'?'podle tříd':'záměr u všech'}): záměr u všech zdravých ${X.gate.strict} (se záměrem NOT ASSESSED ${X.gate.lenient}), podle tříd (dovednost: expert / slabý ≥ ${TT.skillEW}×) ${X.gate.byClass}, z ${X.gate.of}, potřeba ${X.gate.need}. Čtvrť se počítá od ${TT.districtMin} letů s přísadami.`,
+   `**Postavit:** ${BUILD[X.gate.build.mode]}: ${[...X.gate.build.tricks.map(id=>X.rows.find(r=>r.id===id).name),...X.gate.build.models.map(id=>X.rows.find(r=>r.id===id).name)].join(', ')}.`,
+   `Korelace φ nad ${TT.corrList}: ${S.corrList?.length?S.corrList.map(c=>`${c.a} × ${c.b} ${c.phi.toFixed(2)} (${c.n})`).join(', '):'žádná'}.`,
    `Systém: 1. kousek mimo modely (medián průměrného) ${inf(S.firstTrick)} hodů (cíl ≤ ${TT.firstTrick}); nalezeno z 13 průměrný ${pc(S.found)} (cíl ${TT.found.map(pc).join('–')}), slabý ${pc(S.foundWeak)} (cíl ≥ ${pc(TT.foundWeak)}); nejvyšší korelace ${S.corrMax?`${S.corrMax.a} × ${S.corrMax.b} φ ${S.corrMax.phi.toFixed(2)} (${S.corrMax.n} letů)`:'–'}, nad ${TT.corr}: ${S.corrHigh.map(c=>`${c.a} × ${c.b}`).join(', ')||'žádná'}. Kousky nic nedávají, délku nemění (test \`progression-90\`).`);}
  L.push('',rep.targetSet&&rep.targetSet!=='default'?`## Cíle (sada ${rep.targetSet})`:'## Cíle 08 §10.2','','| Metrika | Hodnota | Cíl | |','|---|---|---|---|',...rep.checks.map(c=>`| ${c.name} | ${c.value} | ${c.goal} | ${c.ok==null?'–':c.ok==='na'?'NOT ASSESSED':c.ok?'OK':'FAIL'} |`));
  return L.join('\n')+'\n';
@@ -282,7 +307,7 @@ export const SENSITIVITY=[
 const sc=(a,k)=>a.map(x=>Math.round(x*k));
 function prices(k){return {workshop:{power:{prices:sc(P.workshop.power.prices,k)},folds:{prices:sc(P.workshop.folds.prices,k)},paper:{prices:sc(P.workshop.paper.prices,k)}},atlas:{prices:P.atlas.prices.map(a=>sc(a,k))},pockets:{prices:sc(P.pockets.prices,k)}};}
 
-function args(argv){const o={set:[]};for(let i=0;i<argv.length;i++){const a=argv[i];if(!a.startsWith('--'))continue;const k=a.slice(2),v=argv[i+1]&&!argv[i+1].startsWith('--')?argv[++i]:true;k==='set'?o.set.push(v):o[k]=v;}return o;}
+export function args(argv){const o={set:[]};for(let i=0;i<argv.length;i++){const a=argv[i];if(!a.startsWith('--'))continue;const k=a.slice(2),v=argv[i+1]&&!argv[i+1].startsWith('--')?argv[++i]:true;k==='set'?o.set.push(v):o[k]=v;}return o;}
 async function main(){
  const a=args(process.argv.slice(2)),list=(v,d)=>(v&&v!==true?String(v):d).split(',').filter(Boolean);
  let over={};if(a.profileset&&a.profileset!==true){if(!PROFILE_SETS[a.profileset])throw new Error('profileset '+a.profileset);over=merge(over,JSON.parse(JSON.stringify(PROFILE_SETS[a.profileset])));}
@@ -295,10 +320,12 @@ async function main(){
  const n=+(a.n??20),seed=+(a.seed??1),name=a.out??'run',probeN=+(a['probe-n']??60),workers=+(a.workers??Math.max(1,availableParallelism()-1));
  // kousky: --tricks = detekce ve všech skupinách, --intents = navíc skupiny s botem se záměrem (all = všechny kousky s pákou v simulátoru)
  const intents=a.intents?(a.intents===true||a.intents==='all'?intentTricks():list(a.intents,'')):[],tricks=!!(a.tricks||intents.length);
- const specs=profiles.flatMap(p=>strategies.flatMap(s=>pockets.flatMap(k=>models.flatMap(m=>[null,...intents].flatMap(i=>Array.from({length:n},(_,id)=>({profile:p,strategy:s,pockets:k,model:m,seed,id,
-  ...(tricks?{tricks:true}:{}),...(i?{intent:i}:{})})))))));
+ // kousky s kapsou ze záměru a vlastním botem dostanou i skupinu „kapsa bez záměru“ (`|i:<id>|base`, běžní boti)
+ const bases=intents.filter(i=>trickById[i]?.intent?.pocket&&INTENT_BOTS[i]).map(i=>i+'|base');
+ const specs=profiles.flatMap(p=>strategies.flatMap(s=>pockets.flatMap(k=>models.flatMap(m=>[null,...intents,...bases].flatMap(i=>Array.from({length:n},(_,id)=>({profile:p,strategy:s,pockets:k,model:m,seed,id,
+  ...(tricks?{tricks:true}:{}),...(i?{intent:i.split('|')[0],...(i.endsWith('|base')?{intentBase:true}:{})}:{})})))))));
  const t0=Date.now(),rs=await runCampaigns(specs,over,workers);setParams(over);
- const groups={};for(const r of rs)(groups[`${r.profile}|${r.strategy}|${r.pockets}|${r.model}${r.intent?'|i:'+r.intent:''}`]??=[]).push(r);
+ const groups={};for(const r of rs)(groups[`${r.profile}|${r.strategy}|${r.pockets}|${r.model}${r.intent?'|i:'+r.intent+(r.intentBase?'|base':''):''}`]??=[]).push(r);
  const G=Object.fromEntries(Object.entries(groups).map(([k,v])=>[k,summarize(v)]));
  const rep={name,date:new Date().toISOString(),n,seed,over,groups:G};if(a.targets&&a.targets!==true)rep.targetSet=a.targets;
  if(tricks)rep.tricks=trickTable(G);
