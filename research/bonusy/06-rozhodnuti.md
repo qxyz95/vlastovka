@@ -163,3 +163,7 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   - **Kampaň průměrného hráče ~90 min** do „Delivered.“, bez umělého natahování (nahrazuje cíl 2 h). Noční trasa se zatím nestaví.
   - Kousky (triky z kombinací) zatím nerozhodnuty: uživatel je nad nimi ještě nepřemýšlel, game designer připraví odlehčenou variantu s klady a riziky.
 - **Kousky (triky) (14. 10.):** uživatel souhlasí s názorem orchestrátora. Triky dávají smysl jako odpověď na „co dál jde dokázat s bonusy a eventy“, v **odlehčené verzi** (pojmenování šikovné kombinace, žádný seznam úkolů). **Před stavbou levně ověřit:** simulace změří, jak často kombinace nastanou samy; staví se jen, když nejsou ani vzácné, ani samozřejmé. Proti opakování událostí přednostně **varianty událostí podle čtvrti**.
+- **Plán obsahu na 90 minut (14. 10., `research/obsah/05-plan-90-minut.md`): vše podle doporučení.**
+  1. Zastávky v půlce místa jen ve čtvrtích 2–4 a jen pojmenováním budovy, která už je v katalogu (např. „Past the Grain Silo.“). Žádné nové 3D budovy.
+  2. Poštovní brašna (Mailbag) úr. III zůstává ve 4. čtvrti, ale cena se zlevní tak, aby se do finále vrátila (ověří simulace).
+  3. Pořadí dávek podle 05 §8: A fronta novinek a řádek rekordů → B varianty událostí podle čtvrti, Hejno, prachový vír → C zastávky → V ověření kousků v simulaci → D kousky (jen když ověření projde) → playtest.
