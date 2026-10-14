@@ -78,10 +78,10 @@ test('Atlas: písmo Bahnschrift + font-stretch:condensed jako style.css (rodina 
 
 // Výjimky (data, ne paleta): toon.js '#000' = nulová emise v emissiveMap oken, 0xffffff = násobitel emise budov (barvu nese mapa).
 const HEX_OK={'toon.js':["'#000'",'0xffffff']};
-test('strážní test: hex barvy jen v palette.js a mood.js, monospace nikde v kódu src/render3d',()=>{
- for(const n of files){if(n==='palette.js'||n==='mood.js')continue;
+test('strážní test: hex barvy jen v palette.js, mood.js a paper-mood.js, monospace nikde v kódu src/render3d',()=>{
+ for(const n of files){if(n==='palette.js'||n==='mood.js'||n==='paper-mood.js')continue;
   const found=src(n).match(/'#[0-9a-f]{3,8}'|"#[0-9a-f]{3,8}"|`#[0-9a-f]{3,8}`|#[0-9a-f]{6}\b|0x[0-9a-f]{6}\b/gi)??[];
   assert.deepEqual(found.filter(h=>!(HEX_OK[n]??[]).includes(h)),[],n);
   assert.ok(!/['"`][^'"`\n]*monospace/.test(src(n)),n+': monospace');}
- for(const n of ['palette.js','mood.js'])assert.ok(!/['"`][^'"`\n]*monospace/.test(src(n)),n);
+ for(const n of ['palette.js','mood.js','paper-mood.js'])assert.ok(!/['"`][^'"`\n]*monospace/.test(src(n)),n);
 });

@@ -7,7 +7,7 @@ import {ROUTE} from '../src/scenes.js';
 
 // Owned by R5 (camera). Moved from the prototype's life test.
 test('director: title and punch-in only at place boundaries, zoom bounded, plane stays put in frame',()=>{
- assert.equal(PLACE_EN.length,ROUTE.length);assert.deepEqual(placeTitle(1),{title:'Market under the Antennas',sub:'VIOLET SUBURBS · 2/4',district:0,first:false});
+ assert.equal(PLACE_EN.length,ROUTE.length);assert.deepEqual(placeTitle(1),{title:'Market under the Bunting',sub:'SUNRISE ROOFS · 2/4',district:0,first:false});
  assert.equal(titleAlpha(null),0);assert.equal(titleAlpha(1),1);assert.equal(titleAlpha(TITLE.fadeIn+TITLE.hold+TITLE.fadeOut+.01),0);
  assert.equal(punchZoom(null),1);assert.ok(punchZoom(.8)<.9);assert.equal(speedZoom(10),1);assert.ok(speedZoom(200)>1.4);
  const s=createDirector(),titles=[];let t=0;

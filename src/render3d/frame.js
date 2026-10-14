@@ -14,8 +14,13 @@ import {comicLook} from './comic.js';
 import {fxMap} from './fx-map.js';
 import {eventView} from './events-view.js';
 import {uiScale} from './ui-layer.js';
+import {initialQuality} from './quality.js';
 
 export const LOGICAL={w:640,h:360},ASPECT=16/9,REST={px:148,py:258};
+// Papírové město: vlaštovka na scéně užší než `width` CSS px o 15 % větší (rozhodnutí 14. 10., spec 06 kap. 6), jen vzhled, fyzika ani kamera beze změny.
+export const PLANE_NARROW=Object.freeze({width:500,scale:1.15});
+export const styleOf=visual=>visual?.style==='papir'?'papir':'cyber';
+export const planeScale=(style,cssWidth=640)=>style==='papir'&&cssWidth<PLANE_NARROW.width?PLANE_NARROW.scale:1;
 // Záběr Follow: šířka 120 m ve hloubce letu (k ≈ 2,5), úzký FOV a mírný pohled shora jako v prototypu. V klidu záběr Dílny z pose.js (k = 1,25).
 export const CAMERA={width:120,fov:20,pitch:6};
 // ── Projekce (stejná jako THREE.PerspectiveCamera.lookAt, up = +y, bez zoomu a posunu pohledu; náklon camera.roll ve ° jako camera.js).
@@ -64,6 +69,9 @@ const tilt=(t,anim,flying,reduced)=>({roll:.42+(flying&&!reduced?noise1(t*1.3,4)
 const cheerAge=f=>{let at=null;if(f)for(const e of f.events)if(e.result&&e.result!=='miss'&&e.result!=='interrupted'&&e.doneAt!=null)at=at==null?e.doneAt:Math.max(at,e.doneAt);return at==null?null:f.t-at;};
 
 export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}={}){
+ const style=styleOf(visual),paper=style==='papir',cssWidth=visual.cssWidth??640,scale=planeScale(style,cssWidth);
+ // Kvalita: ve výchozím stylu jako dřív (visual.quality ?? 2); v papíru výchozí z quality.js (pokles podle P95 drží volající přes nextQuality).
+ const quality=visual.quality??(paper?initialQuality({touch:!!visual.touch,cssWidth}):2);
  const flying=!!f&&!f.landed,t=flying?f.t:visual.clock??time,clock=visual.clock??time,reduced=!!visual.reduced,charge=f?0:visual.charge??0;
  state=state??visual.state??(f?(f.landed?'landed':'flight'):'aim');
  state=state==='result'?'landed':state;
@@ -76,13 +84,13 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  const camera={...director.camera,shake:calm?{x:0,y:0,roll:0,dx:0,dy:0}:fxv.shake??{x:0,y:0,roll:0,dx:0,dy:0}};if(calm)fxv.shake=camera.shake;
  // Póza z pose.js (R3). Tam je angle = rotation.z three.js (−úhel 2D); plan.plane.angle drží znaménko juice.flightAngle podle smlouvy.
  const anim=reduced?0:t,own=planePose({f:rest?null:f,fx:rest?null:visual.fx,charge,anim,clock,reduced});
- const plane={x:X+own.dx,y:Y+own.dy+(f?.landed?.6:0),z:0,angle:-own.angle,...tilt(t,anim,flying,reduced),squash:own.squash,model,look:null,visible:!rest};// v klidu drží vlaštovku workshop.js
+ const plane={x:X+own.dx,y:Y+own.dy+(f?.landed?.6:0),z:0,angle:-own.angle,...tilt(t,anim,flying,reduced),squash:own.squash,model,look:null,visible:!rest,scale};// v klidu drží vlaštovku workshop.js
  const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced}),visible:rest};
  const e=rest?null:activeEvent(f),events=e?[eventView(e,f.t)]:[];
  // „Zadržení dechu“: od varování QTE do 0,3 s po výsledku (qteLock) se pozadí tlumí; náběh i doznění přes damp (stav v prev.mood.hold).
  const goal=!rest&&qteLock(f)?1:0,hold=prev&&!rest?damp(prev.mood?.hold??0,goal,.12,Math.max(0,Math.min(.1,dirT-(prev.dirT??dirT)))):goal;
- const m=moodAt(X,t,{hold:hold<1e-3?0:hold}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
- const comic=comicLook(mood,visual.quality??2);
- return {t,state,view:v,hand:rest?{...own,model}:null,X,Y,camera,director,dirT,vx:f?.vx??0,carry:f?.carry??0,ev:e?{at:e.at,phase:e.phase}:null,plane,kid,places:placesFor(camera),mood,comic,events,fx:fxv,comp:companion(e,f?.t??0),cheer:cheerAge(f),
-  ui:{qte:visual.qte??null,aim:visual.aim??null,labels:events,charge,reduced,uiScale:uiScale(visual.cssWidth??640),palette:visual.palette},quality:visual.quality??2,reduced};
+ const m=moodAt(X,t,{hold:hold<1e-3?0:hold,style}),mood={...m,fog:{near:camera.dist+60,far:camera.dist+950,...m.fog}};
+ const comic=comicLook(mood,quality,style);
+ return {t,state,view:v,hand:rest?{...own,model,scale}:null,X,Y,camera,director,dirT,vx:f?.vx??0,carry:f?.carry??0,ev:e?{at:e.at,phase:e.phase}:null,plane,kid,places:placesFor(camera),mood,comic,events,fx:fxv,comp:companion(e,f?.t??0),cheer:cheerAge(f),
+  ui:{qte:visual.qte??null,aim:visual.aim??null,labels:events,charge,reduced,uiScale:uiScale(cssWidth),palette:visual.palette},quality,style,reduced};
 }
