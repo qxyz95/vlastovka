@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** celý report (verze 0.1.0, starý simulátor `simulation/run.mjs`); platí `simulation/progression/README.md` a `research/obsah/06-ladeni-90.md`. Skript, který ho zapisuje, se nespouští. Nečíst jako zadání.
+
 # Počáteční kontrola balancu
 
 Pravidla 0.1.0; 100 seedů na kombinaci; 3600 průchodů. Limit 100 pokusů. Seedy letu: seed průchodu × 1000 + počet dokončených pokusů.

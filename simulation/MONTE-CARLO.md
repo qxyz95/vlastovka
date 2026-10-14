@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** celý report (pravidla 0.6, starý simulátor `monte-carlo.mjs`, ekonomika 0.6.1); platí `simulation/progression/README.md` a `research/bonusy/08-navrh-kolo2.md`. Skript, který ho zapisuje, se nespouští. Nečíst jako zadání.
+
 # Monte Carlo simulace progrese hráče (verze 0.6)
 
 Pravidla 0.6.0 (arkádový let, sdílený strom, širší QTE), 13. 10. 2026. Skript je `simulation/monte-carlo.mjs`, agregovaná data jsou v `simulation/monte-carlo.json`.

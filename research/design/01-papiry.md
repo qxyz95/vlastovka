@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** komiksový vzhled papírů (3D komiksové město) a Neon Foil; platí `research/design/05-styl-papir.md` kap. 17 (papíry pro Papírové město, stříbrná fólie místo Neon Foil, světlý Kraft) a rozhodnutí 06 (14. 10., „Odemykatelný obsah“ bod 8). Pořadí a role papírů Copy → Kraft → Washi → fólie platí. Nečíst jako zadání vzhledu.
+
 # Design: čtyři druhy papíru (Copy → Kraft → Washi → Neon Foil)
 
 Autor: product-designer, 14. 10. 2026. Stav: **návrh k odsouhlasení**. Prototyp: `prototype-papers.html` + `prototype/papers/` (spuštění `npm start`, http://127.0.0.1:4173/prototype-papers.html, pro automat `?timer`).

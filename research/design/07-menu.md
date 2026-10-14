@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** zmínky o přepínači stylu a `?styl=` (jediný styl, přepínač smazán v U0), pozadí hlavního menu jako nejvzdálenější čtvrť (rozhodnutí 06, 14. 10., „Začátek hodu“ bod 2: za menu je podkrovní dílna) a vzhled na dnešních tokenech; platí `research/design/05-styl-papir.md`, `research/start/02-misto-odhodu-vzhled.md` a po plánu hratelnosti `research/plan-hratelnost/02-ux.md` s rozhodnutími 06 z 15. 10. Struktura obrazovek a toky platí. Nečíst jako zadání těchto částí.
+
 # Struktura obrazovek a menu: design spec
 
 **14. 10. 2026, product-designer.** Podklad: rozhodnutí 06 „Struktura menu jako ve hrách (14. 10.)“ (závazné), Atlas `research/atlas/01-navrh-atlasu.md` a `02-design-spec.md`, KB 07 (onboarding, UX), KB README P1–P15. Maketa: `prototype-menu.html` + `prototype/menu/` (falešná data, `src/` beze změny). Vzhled je jen hrubý na dnešních tokenech `style.css`, protože se mění na styl B „Papírové město“ (`04-nove-smery.md`, bible `05-styl-papir.md` vzniká). **Rozložení na stylu nezávisí:** prototyp přepne vzhled přes `?skin=paper` jen výměnou sémantických tokenů.

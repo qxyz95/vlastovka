@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** implementace pro Canvas 2D (640×360, paralaxa, 4 styly); hra je 3D (`src/render3d/`). Obecné techniky (easing, pružiny, šum, hitstop) platí jako podklad a jsou v `src/motion.js` a `src/juice.js`. Nečíst jako zadání.
+
 # Code-level animation & game-feel techniques for a vanilla Canvas 2D game ("Just Throw It")
 
 Context: 640×360 canvas (pixel theme 1×, smooth themes 2× = 1280×720), fixed physics step 1/60 s, rAF render, parallax (.035 / .28 / 1.0), today mostly `sin(t)` oscillations, modulo loops, fixed blinks. Research date: 2026-10-13. Formulas/pseudo-code in "Inferences" are my implementation suggestions derived from the cited sources.

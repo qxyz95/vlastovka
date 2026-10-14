@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** karta 5 (Dílna PAPER LAB) a model K4 `workshop`; nahradila je podkrovní dílna v řezu (`research/start/02-misto-odhodu-vzhled.md`, skupina G2b, rozhodnutí 06 „Začátek hodu“ bod 1). Ostatní karty a rozpočty platí. Nečíst jako zadání těchto částí.
+
 # Katalog modelů, čtvrť 1 „Střechy za úsvitu“: karty objektů (K2)
 
 > **Schváleno 14. 10. 2026 (dominanty a), drobnosti (a), praporky (a); viz 06-rozhodnuti.md.** Napsal art-director 14. 10. 2026 jako zadání pro game-deva (krok K3 v `10-katalog-modelu.md`). Závazné podklady: bible `05-styl-papir.md` (schválená), stíny `08-stiny.md` a rozhodnutí v `research/bonusy/06-rozhodnuti.md` (blok „Stíny, přechody a modely“: modely v kódu, **hodně detailu všude**, rozpočty na místo dál platí). Prohlížeč jsem nepoužil (okno sdílí uživatel), **vzhled v záběru hry je NOT ASSESSED**. Čísla rozložení jsou změřená z kódu (`cityChunk`, `placeCards`, `lifeCards`, `suburbLife`), trojúhelníky nových modelů jsou **odhad** podle vzorců v kap. 1.3.

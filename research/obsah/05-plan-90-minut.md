@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** kousky (triky, dávky V a D) jsou odložené po playtestu, razítka pryč, zastávky v půlce místa nahradilo vztyčení dominanty a Předpověď trasy je odložená (rozhodnutí 06, 15. 10., „Plán hratelnosti“ body 3–4); platí `research/plan-hratelnost/README.md` a `01-game-design.md`. Cíl ~90 min, obsah vlaštovek, Mailbag a dávky A–C platí. Nečíst jako zadání odložených částí.
+
 # Plán obsahu na 90 minut (game design)
 
 **Založeno 14. 10. 2026** jako plán na 2 hodiny (`05-plan-dvou-hodin.md`), **přepracováno 14. 10. 2026** na 90 minut podle rozhodnutí 06 „Cílová délka hry opravena na ~90 minut“ a „Kousky (triky)“. Uživatel: „Hra má dávat 90 minut dopamin a pak to máš dohrát.“

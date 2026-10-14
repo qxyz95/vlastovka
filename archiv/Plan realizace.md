@@ -1,8 +1,8 @@
 # Just Throw It — realizační checklist
 
-Revize podle internetové rešerše z 11. 10. 2026. Výzkumný základ, zdroje a omezení: [KB vlaštovky](<KB vlastovky.md>). Označení K1–K7 odkazují na poznatky v KB, H1–H3 na naše herní a technická rozhodnutí. Při rozporu s původním rozborem platí tento aktualizovaný plán a KB.
+Revize podle internetové rešerše z 11. 10. 2026. Výzkumný základ, zdroje a omezení: [KB vlaštovky](<../KB vlastovky.md>). Označení K1–K7 odkazují na poznatky v KB, H1–H3 na naše herní a technická rozhodnutí. Při rozporu s původním rozborem platí tento aktualizovaný plán a KB.
 
-**Stav k 11. 10. 2026:** Vytvořen první hratelný prototyp 0.1.0: jádro, dílna, talentový strom, QTE, výsledky a lokální ukládání. Proběhly automatické kontroly jádra a počáteční dávka 3 600 průchodů; viz [README](README.md) a [protokol](simulation/REPORT.md). Tempo zatím neodpovídá cíli, grafika je pracovní a skutečný telefon ani hráčské průchody nejsou ověřené. Nezaškrtnuté body níže zůstávají původním přijímacím checklistem, nikoli tvrzením o absenci implementace. „Dokončeno“ u etap označuje podmínku přijetí.
+**Stav k 11. 10. 2026:** Vytvořen první hratelný prototyp 0.1.0: jádro, dílna, talentový strom, QTE, výsledky a lokální ukládání. Proběhly automatické kontroly jádra a počáteční dávka 3 600 průchodů; viz [README](../README.md) a [protokol](../simulation/REPORT.md). Tempo zatím neodpovídá cíli, grafika je pracovní a skutečný telefon ani hráčské průchody nejsou ověřené. Nezaškrtnuté body níže zůstávají původním přijímacím checklistem, nikoli tvrzením o absenci implementace. „Dokončeno“ u etap označuje podmínku přijetí.
 
 ## Cíl a výchozí rozhodnutí
 

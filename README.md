@@ -1,6 +1,8 @@
+> **ZASTARALÉ (15. 10. 2026):** popis „první hratelný prototyp“, pravidla 0.1.0, pracovní grafika, `npm run simulate` a plán realizace; dnes je to 3D hra Papírové město (verze 0.6.x a dál) a `npm run simulate` se nespouští (přepisuje reporty); platí `CLAUDE.md`, `docs/stav.md` a `docs/architektura.md`, z README je užitečná jen historie verzí. Nečíst jako zadání.
+
 # Just Throw It — první hratelný prototyp
 
-Česká lokální webová hra bez instalačních závislostí. Implementace podle `Plan realizace.md` a fyzikálního kontraktu v KB. Pracovní grafika, pravidla 0.1.0.
+Česká lokální webová hra bez instalačních závislostí. Implementace podle `archiv/Plan realizace.md` a fyzikálního kontraktu v KB. Pracovní grafika, pravidla 0.1.0.
 
 ## Spuštění
 

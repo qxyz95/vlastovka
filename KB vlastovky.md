@@ -2,7 +2,7 @@
 
 Rešerše a přístup ke všem uvedeným zdrojům: **11. 10. 2026**. Stav: podklady pro vývoj; hra ani její fyzika dosud nejsou implementované a otestované.
 
-Zvolený směr je **fyzikou inspirovaná arkáda**, nikoli simulátor skutečného papírového modelu. Navazující úkoly obsahuje [Plán realizace](<Plan realizace.md>). Původní rozbor zůstává historickým podkladem; při rozporu se řídit touto KB a aktualizovaným checklistem.
+Zvolený směr je **fyzikou inspirovaná arkáda**, nikoli simulátor skutečného papírového modelu. Navazující úkoly obsahuje [Plán realizace](<archiv/Plan realizace.md>) (archiv). Původní rozbor zůstává historickým podkladem; při rozporu se řídit touto KB a aktualizovaným checklistem.
 
 ## Jak číst KB
 

@@ -22,10 +22,11 @@ Poslední úprava: 15. 10. 2026 (předání: plán hratelnosti po poznámkách t
 
 ## Rozpracované práce
 ### Papírové město, obsah a hratelnost (stav 15. 10. 2026)
-- **Ve hře (`?styl=papir`):** papírové město (P0, P1, P3, P4), kamera startu S1–S3 (šířka podle přebytku rychlosti, vlaštovka roste s oddálením), **místo odhodu S4** (podkrovní dílna v řezu, dítě 1,2 m, ruka 12 m, nižší domy za startem). Výchozí cyber styl drží starý vzdálený záběr Dílny. Katalog modelů G1, G2, G2b, G3 (`src/render3d/models/`, `prototype-katalog.html`).
+- **Ve hře (jediný styl, od U0 a R0 15. 10. 2026 bez přepínače a `?styl=`):** papírové město (P0, P1, P3, P4), kamera startu S1–S3 (šířka podle přebytku rychlosti, vlaštovka roste s oddálením), **místo odhodu S4** (podkrovní dílna v řezu, dítě 1,2 m, ruka 12 m, nižší domy za startem). Cyber větve a palety jsou z kódu pryč; 2D záloha `?render=2d` (`themes.js`, `render.js`) zatím zůstává. Katalog modelů G1, G2, G2b, G3 (`src/render3d/models/`, `prototype-katalog.html`).
 - **Simulátor** (`simulation/progression/`): vlaštovky za mince (`--modelset obsah01`), Mailbag, náhled z posledních 5 hodů, detektory kousků v2, cíle `--targets t90`. Výchozí rozbor 90 min: `research/obsah/06-ladeni-90.md` (hra dnes ~42–48 min, obsahu zhruba polovina).
 - **Rozhodnutí (06):** 5 vlaštovek za mince, Poštovní brašna, skiny za postup, cíl **~90 min** bez natahování, kousky jen zdravé po ověření; po poznámkách tvůrce 15. 10.: **jediný styl papír, hra přes celou obrazovku, výzva uprostřed, plastická papírová postavička, skoro každý hod novinka, QTE podle rychlosti a role událostí, balance-analyst až po schválení obsahu**.
-- **Čeká na uživatele:** 15 otázek z plánu hratelnosti, souhrn `research/plan-hratelnost/README.md` (návrhy 00 kreativní, 01 game design, 02 UX, 03 art). Pak dávky podle pořadí v README.
+- **Plán hratelnosti:** uživatel odpověděl na 15 otázek (06, 15. 10.). Souhrn `research/plan-hratelnost/README.md` (návrhy 00 kreativní, 01 game design, 02 UX, 03 art), dávky podle pořadí v README.
+- **Mapa dokumentů (15. 10. 2026):** `docs/zdroje.md` říká, který dokument je zadání, podklad nebo překonaný (hlavička `ZASTARALÉ`); mrtvé dokumenty jsou v `archiv/`.
 - **Nic neběží.** Dev server `npm start` byl zastaven kvůli paměti, spustit ručně. Necommitnuté screenshoty uživatele v kořeni repa (`Snímek obrazovky 2026-10-14 *.png`) jsou jeho, necommitovat.
 - Role a skilly: `.claude/rules/orchestrace.md` (nově creative-director, qa-tester, narrative-writer, audio-designer; skilly smoke-test, predani, novy-model, fun-check).
 
