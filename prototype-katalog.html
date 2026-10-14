@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Just Throw It · katalog 3D modelů</title>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
+<link rel="stylesheet" href="./prototype/katalog/katalog.css">
+</head>
+<body>
+<!-- Katalog modelů K1 (research/design/10-katalog-modelu.md): vývojářský nástroj, ne hráčská obrazovka. Modely ze src/render3d/models/. -->
+<header class="bar">
+ <h1>Katalog 3D modelů <small>Papírové město · 10-katalog-modelu.md</small></h1>
+ <label class="field">Objekt <select id="model"></select></label>
+ <div class="picks" role="group" aria-label="Pohled">
+  <button type="button" data-pick="view" data-value="close">Zblízka</button>
+  <button type="button" data-pick="view" data-value="game">V záběru hry</button>
+  <button type="button" data-pick="view" data-value="gray">Na 25 % v šedi</button>
+ </div>
+ <div class="picks" role="group" aria-label="Úroveň detailu">
+  <button type="button" data-pick="lod" data-value="0">LOD 0 ulice</button>
+  <button type="button" data-pick="lod" data-value="1">LOD 1 střed</button>
+  <button type="button" data-pick="lod" data-value="2">LOD 2 dálka</button>
+ </div>
+ <div class="picks" role="group" aria-label="Podstavec">
+  <button type="button" data-pick="spin" data-value="swing">Kývat ±60°</button>
+  <button type="button" data-pick="spin" data-value="round">Dokola</button>
+  <button type="button" data-pick="spin" data-value="still">Stát</button>
+ </div>
+ <label class="check"><input type="checkbox" id="figures" checked> Měřítko (člověk 1,7 m, vlaštovka 7,75 m)</label>
+ <div id="params" class="params" role="group" aria-label="Varianta"></div>
+</header>
+<main>
+ <div class="stage" id="stage"><canvas id="scene" aria-label="Náhled modelu"></canvas></div>
+ <aside class="info" aria-live="polite">
+  <h2 id="m-name"></h2>
+  <dl>
+   <dt>Předobraz</dt><dd id="m-proto"></dd>
+   <dt>Účel</dt><dd id="m-purpose"></dd>
+   <dt>Rozměry (výchozí varianta)</dt><dd id="m-size"></dd>
+   <dt>Tato varianta</dt><dd id="m-bounds"></dd>
+  </dl>
+  <table><caption>Trojúhelníky podle LOD (strop z registru)</caption><thead><tr><th>LOD</th><th>vrstva</th><th>△</th><th>strop</th></tr></thead><tbody id="m-lod"></tbody></table>
+  <table><caption>Snímek</caption><tbody>
+   <tr><th>draw calls (scéna + post)</th><td id="r-calls"></td></tr>
+   <tr><th>trojúhelníky ve scéně</th><td id="r-tris"></td></tr>
+   <tr><th>model: draw calls / △</th><td id="r-model"></td></tr>
+   <tr><th>geometrie / textury</th><td id="r-mem"></td></tr>
+  </tbody></table>
+  <p class="note">Karty dioramatu mají jen čelo, vršek a boky (záda a spodek se ve hře nevidí), proto „Dokola“ ukáže otevřená záda. Klávesy ←/→ otočí podstavec po 15°. Ladění: <code>__katalog.info()</code>, <code>__katalog.set({model,lod,view,spin,params})</code>.</p>
+ </aside>
+</main>
+<script type="module" src="./prototype/katalog/main.js"></script>
+</body>
+</html>
