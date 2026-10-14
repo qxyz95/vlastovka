@@ -18,8 +18,8 @@ test('U14: life3d, workshop a companion3d bez hex literálů, barvy jen z palett
  assert.match(src('companion3d.js'),/K=palette\.companion\b/);
 });
 
-test('U15: kouř z komínů, lokomotivy a tržnice i pára ventilace = steam, nejvýš 60 % svítivosti vlaštovky',()=>{
- assert.match(src('life3d.js'),/smoke=inst\([^;]*toon\(CYBER\.steam\)/);
+test('H0: life3d bez kouře, mraků, dronů, robota, reklamy a holuba; pára ventilace = steam, nejvýš 60 % svítivosti vlaštovky',()=>{
+ const s=src('life3d.js').replace(/^\s*\/\/.*$/gm,'');for(const w of ['smoke','clouds','drone','robot','pigeon','ADS','signTexture','puff','steam'])assert.ok(!s.includes(w),w);
  assert.match(src('companion3d.js'),/MeshToonMaterial\(\{color:K\.steam\b/);
  assert.equal(CYBER.companion.steam,STEAM);
  assert.ok(L(CYBER.steam)<=.6*L(CYBER.plane.fill)&&CYBER.plane.fill===PAPER);

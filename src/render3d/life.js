@@ -1,5 +1,5 @@
 // Živá čtvrť Violet Suburbs (místa 1–4 trasy): čisté funkce bez three.js a bez DOM.
-// Rozmístění (auta, vlak, lidé, komíny, prádlo, vlajky, okna, ptáci, balóny, drony), časování pohybu a plán reakcí.
+// Rozmístění (auta, vlak, lidé, komíny, prádlo, vlajky, okna, ptáci, balóny, mraky), časování pohybu a plán reakcí.
 // Vlastní D1 (Suburbs). Testy: tests/render3d-life.test.js. Kreslí je life3d.js.
 import {SCREEN_METERS,ROUTE,DISTRICTS} from '../scenes.js';
 import EN from '../locales/en.js';
@@ -12,8 +12,7 @@ import {CYBER} from './palette.js';
 export const SUBURBS={x0:0,x1:4*SCREEN_METERS,screens:[0,1,2,3]};
 // Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.2), zdroj je slovník src/locales/en.js.
 export const PLACE_EN=ROUTE.map(r=>EN['place.'+r.kind]),DISTRICT_EN=DISTRICTS.map(d=>EN['district.'+d.id]);
-// Hlášky z 08 §7.1 a §7.2 (Bolts, Cyber Pigeon, Market Vent).
-export const BOLTS=["Oh. A paper plane. I used to deliver parcels. Then they invented you.","I logged your flight as 'weather'. Nobody reads my logs anyway.","Past the railway already? Send me a postcard. I'll pretend it's for me."];
+// Hlášky z 08 §7.2 (Cyber Pigeon, Market Vent), čte je jen prototype/3d.
 export const EVENT_TEXT={bird:{name:'CYBER PIGEON',hit:'Coo. Carbs delivered.',miss:'The pigeon kept the baguette.'},gust:{name:'MARKET VENT',hit:'Smells like dumplings. Feels like lift.',miss:'Just steam and regret.'}};
 // Postavičky animované „on twos“ (12 snímků/s), kamera, auta a vlaštovka plynule.
 export const TWOS=12;
@@ -44,7 +43,7 @@ export function suburbLife({view=false}={}){
  const chunks=SUBURBS.screens.map(s=>({...cityChunk(s,{view:view&&s===0}),screen:s,dx:chunkOffset(s)})),tag=c=>b=>({...b,x:b.x+c.dx,screen:c.screen,kind:c.kind});// cityChunk je lokální, život ve světových m
  const near=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===0&&b.z<=-20&&b.z>-40).map(tag(c)));
  const mid=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===1&&b.z<=-100&&b.z>-130).map(tag(c)));
- const front=b=>b.z+b.d/2,L={cars:[],people:[],chimneys:[],tanks:[],antennas:[],laundry:[],bunting:[],pinwheels:[],windows:[],stalls:[],bulbs:[],flocks:[],balloons:[],drones:[],clouds:[],static:[]};
+ const front=b=>b.z+b.d/2,L={cars:[],people:[],chimneys:[],tanks:[],antennas:[],laundry:[],bunting:[],pinwheels:[],windows:[],stalls:[],bulbs:[],flocks:[],balloons:[],clouds:[],static:[]};
  // Auta ve dvou pruzích (opačné směry), rozestupy aspoň 20 m.
  for(const [li,lane] of LANES.entries())for(let x=CAR_RANGE[0];x<CAR_RANGE[1]-20;x+=R(22,60))L.cars.push({lane:li,z:lane.z,dir:lane.dir,x0:x,speed:R(9,14)*(li?1.1:1),color:pick(PASTEL),len:4.2});
  // Střechy: komíny, nádrže, lidé (otočí se, mávnou, ukážou, vyskočí), antény nad tržnicí.
@@ -71,15 +70,10 @@ export function suburbLife({view=false}={}){
  for(let i=0;i<10;i++)L.people.push({x:R(2*SCREEN_METERS+70,3*SCREEN_METERS-20),y:0,z:R(-15,-9.5),kind:pick(['wave','turn']),place:2,crowd:false,cloth:pick(CLOTHES),skin:pick(SKIN),seed:rng()});
  // Železnice: nástupiště za odstavenými vagony.
  for(let i=0;i<12;i++)L.people.push({x:R(1100,1168),y:.8,z:R(-12.4,-11.4),kind:pick(['wave','point','jump']),place:3,crowd:false,cloth:pick(CLOTHES),skin:pick(SKIN),seed:rng()});
- // Vzduch ve vrstvách: hejna (střed), drony s balíčkem (blízko), balóny (daleko), mraky (nebe).
+ // Vzduch ve vrstvách: hejna (střed), balóny (daleko), mraky (nebe; ve hře je nekreslí nic, jen paper-cards.lifeCards).
  for(let i=0;i<4;i++)L.flocks.push({x0:R(-100,1300),y:R(28,60),z:R(-70,-150),v:R(5,9)*(rng()<.7?1:-1),n:7+Math.floor(rng()*5),seed:rng()*9});
  for(let i=0;i<8;i++)L.balloons.push({x:R(0,1300),y:R(55,130),z:R(-170,-280),r:R(5,8),color:pick(PASTEL),v:R(.6,1.6),phase:rng()*6});
- for(let i=0;i<6;i++)L.drones.push({x0:R(0,1220),y:R(18,34),z:R(-34,-60),v:R(6,11),dir:rng()<.5?1:-1,phase:rng()});
  for(let i=0;i<14;i++)L.clouds.push({x:R(-200,1500),y:R(110,230),z:R(-520,-760),sx:R(12,26),sy:R(4,7),v:R(.5,1.5)});
- // Bolts zametá střechu tržnice (nejširší střecha místa 2).
- const roof=near.filter(b=>b.kind==='market').sort((a,b)=>b.w-a.w)[0];
- L.robot={x0:roof.x+1.5,x1:roof.x+roof.w-1.5,y:roof.h,z:front(roof)-2.2};
- const bb=near.filter(b=>b.kind==='market'&&b!==roof&&b.w>=10)[0];if(bb)L.billboard={x:bb.x+bb.w/2,y:bb.h+3.6,z:front(bb)-1.5,w:Math.min(12,bb.w-1),h:3,roof:bb.h};
  // Statické doplňky (kvádry pro mergeBlocks): komíny, nádrže, antény, stánky, koleje, tunel, nástupiště, sloupky větrníků.
  const S=(b,color)=>L.static.push({type:'box',y:0,...b,color});
  for(const c of L.chimneys)S({x:c.x-.5,w:c.big?1.6:1,z:c.z,d:c.big?1.6:1,h:c.h,y:c.y},K.chimney);
@@ -93,7 +87,6 @@ export function suburbLife({view=false}={}){
  L.static.push({type:'pyramid',x:TRACK.portal-20,w:36,z:TRACK.z-6,d:20,h:16,color:K.pyramid});
  S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z,d:3.2,h:.18},K.rail.bed);for(const dz of [-.75,.75])S({x:TRACK.portal-2,w:TRACK.end+300-TRACK.portal,z:TRACK.z+dz,d:.14,h:.32},K.rail.track);
  S({x:1094,w:78,z:-11.9,d:2.6,h:.8},K.platform);
- if(L.billboard){const B=L.billboard;for(const dx of [-B.w/2+.6,B.w/2-.6])S({x:B.x+dx-.15,w:.3,z:B.z-.2,d:.3,h:B.y-B.h/2-B.roof,y:B.roof},K.pole);}
  return L;
 }
 // ── Pohyb (čisté funkce času t v sekundách).
@@ -102,14 +95,10 @@ export const carX=(c,t)=>wrap(c.x0+c.dir*c.speed*t,CAR_RANGE[0],CAR_RANGE[1]);
 export const trainPeriod=()=>(TRACK.end-TRACK.portal+TRACK.cars*(TRACK.len+TRACK.gap))/TRACK.speed+TRACK.pause;
 export function trainHead(t){return TRACK.portal+TRACK.speed*wrap(t,0,trainPeriod());}
 export function trainCars(t){const h=trainHead(t);return Array.from({length:TRACK.cars},(_,i)=>{const x=h-(i+1)*(TRACK.len+TRACK.gap)+TRACK.gap;return x>TRACK.portal-TRACK.len&&x<TRACK.end?x:null;});}
-// Obláček kouře i z n: věk v cyklu `life` s, stoupá, unáší ho vítr, roste a na konci zmizí (scale → 0).
-export function puff(i,n,t,life=3.2,phase=0,windX=1.1){const age=wrap(t/life+i/n+phase,0,1)*life,s=(.55+age*.55)*smooth((life-age)/.6)*smooth(age/.15);
- return {age,dx:age*windX+Math.sin(age*1.7+i)*.3,dy:age*1.9,s};}
 // Hejno v klínu: vedoucí letí napříč čtvrtí, ostatní za ním; mávání křídel on twos.
 export function birdAt(fl,i,t){const lead=wrap(fl.x0+fl.v*t,-250,1500),side=i%2?1:-1,rank=Math.ceil(i/2),T=onTwos(t);
  return {x:lead-Math.sign(fl.v)*rank*2.4,y:fl.y+Math.sin(t*.35+fl.seed)*5+rank*.5,z:fl.z+side*rank*1.6,flap:Math.floor(T*TWOS/2+i)%2?1:-.5,dir:Math.sign(fl.v)};}
 export const balloonAt=(b,t)=>({x:wrap(b.x+b.v*t,-200,1500),y:b.y+Math.sin(t*.3+b.phase)*3,z:b.z});
-export const droneAt=(d,t)=>({x:wrap(d.x0+d.dir*d.v*t,-150,1400),y:d.y+Math.sin(t*1.3+d.phase*6)*.6,z:d.z,light:wrap(t*1.5+d.phase,0,1)<.18,yaw:d.dir>0?0:Math.PI});
 // ── Stopa vlaštovky: historie {t,x,y} (x roste) → kdy vlaštovka minula bod x (lineárně mezi vzorky), jinak null.
 export function createTrail(){return {t:[],x:[],y:[]};}
 export function pushTrail(h,t,x,y){const n=h.x.length;if(n&&x<=h.x[n-1])return h;h.t.push(t);h.x.push(x);h.y.push(y);return h;}
@@ -134,10 +123,6 @@ export function pose(kind,age,dx=0,seed=0){if(age==null||!(age>=0)||age>=REACT[k
  return {yaw:0,arm:env*(2.6+.4*Math.sin(a*16+seed*9)),hop:env*Math.abs(Math.sin(a*10+seed*6))*.7};}// cheer
 // Dav na tržnici zajásá po trefené události; silnější z obou póz vyhrává.
 export function crowdPose(p,age,dx,cheerAge){const a=pose(p.kind,age,dx,p.seed),c=pose('cheer',cheerAge,dx,p.seed);return c.arm>a.arm?c:a;}
-// Bolts: zametá tam a zpět, otočený do směru chůze, koště on twos. Když si všimne vlaštovky, zastaví, otočí se a mává.
-export function robotPose(r,t,age){const at=x=>r.x0+(r.x1-r.x0)*(.5-.5*Math.cos(x*.3)),busy=age!=null&&age>=0&&age<4.5,T=onTwos(t);
- const t0=busy?t-age:t,x=at(t0),dir=Math.sin(t0*.3)>=0?1:-1,env=busy?smooth(age/.3)*smooth((4.5-age)/.5):0;
- return {x,y:r.y,z:r.z,yaw:(1-env)*dir*1.3,broom:(1-env)*Math.sin(T*9)*.55,arm:env*(2+.5*Math.sin(onTwos(age??0)*12)),head:env*.35,talking:busy};}
 // Holub s bagetou (bird) a pára z tržnice (gust) kolem vlaštovky podle fáze události. Offset v metrech od vlaštovky.
 export function companion(e,ft){if(!e)return null;const age=ft-e.at;
  if(e.type==='bird'){if(e.phase==='warning')return {dx:34-age/TIMING.warning*24,dy:7-age*4,flap:true};

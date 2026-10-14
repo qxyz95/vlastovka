@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {suburbLife,windowPattern,facadeWindows,carX,trainCars,trainHead,trainPeriod,puff,birdAt,passTime,createTrail,pushTrail,wake,windowLight,pose,crowdPose,noticeAge,robotPose,companion,onTwos,wrap,SUBURBS,TRACK,CAR_RANGE,PLACE_EN,REACT} from '../src/render3d/life.js';
+import {suburbLife,windowPattern,facadeWindows,carX,trainCars,trainHead,trainPeriod,birdAt,passTime,createTrail,pushTrail,wake,windowLight,pose,crowdPose,noticeAge,companion,onTwos,wrap,SUBURBS,TRACK,CAR_RANGE,PLACE_EN,REACT} from '../src/render3d/life.js';
 import {autoInput} from './helpers/auto-input.js';
 import {cityChunk,chunkOffset,WINDOW_TILE} from '../src/render3d/geometry.js';
 import {ROUTE,SCREEN_METERS} from '../src/scenes.js';
@@ -17,14 +17,14 @@ test('window pattern drives the texture and the wake windows sit on dark cells o
 });
 test('suburb layout: deterministic, inside places 1–4, nothing between the camera and the plane',()=>{
  const L=suburbLife();assert.deepEqual(L,suburbLife());assert.equal(SUBURBS.x1,4*SCREEN_METERS);
- for(const k of ['cars','people','chimneys','windows','laundry','bunting','pinwheels','stalls','flocks','balloons','drones'])assert.ok(L[k].length>0,k);
+ for(const k of ['cars','people','chimneys','windows','laundry','bunting','pinwheels','stalls','flocks','balloons','clouds'])assert.ok(L[k].length>0,k);
+ for(const k of ['drones','robot','billboard'])assert.equal(L[k],undefined,`H0: ${k} pryč`);
  assert.ok(L.people.filter(p=>p.crowd).length>=50,'market crowd');assert.ok(L.people.some(p=>p.place===0)&&L.people.some(p=>p.place===3));
  for(const p of L.people){assert.ok(p.x>=-15&&p.x<=SUBURBS.x1+30&&p.z<-3,'person behind the plane');assert.ok(REACT[p.kind]);}
  for(const c of L.cars)assert.ok(c.z+.9<-3&&c.speed>0);
  for(const s of L.static)assert.ok(Number.isFinite(s.x+s.w+s.h+s.z+s.d)&&s.w>0&&s.h>0&&s.z+s.d/2<-3,'static decor behind the plane');
  const roofs=[0,1,2,3].flatMap(s=>cityChunk(s).blocks.map(b=>({...b,x:b.x+chunkOffset(s)})));// chunks are local, life is in world metres
  for(const p of L.people.filter(p=>p.y>1))assert.ok(roofs.some(b=>Math.abs(b.h-p.y)<1e-9&&p.x>=b.x&&p.x<=b.x+b.w),'roof people stand on a roof');
- assert.ok(L.robot.x1>L.robot.x0&&L.robot.y>5);
  const s1=L.stalls.every(s=>s.x>=SCREEN_METERS&&s.x+s.w<=2*SCREEN_METERS);assert.ok(s1,'stalls on the market');
 });
 test('traffic and train: continuous, wrap in range, train leaves the tunnel in order',()=>{
@@ -33,7 +33,6 @@ test('traffic and train: continuous, wrap in range, train leaves the tunnel in o
  assert.equal(trainHead(0),TRACK.portal);assert.ok(Math.abs(trainHead(trainPeriod()+1)-trainHead(1))<1e-9);
  assert.ok(trainCars(0).every(x=>x===null),'all inside the tunnel at t=0');
  const mid=trainCars(30);assert.ok(mid.filter(x=>x!==null).length===TRACK.cars);for(let i=1;i<mid.length;i++)assert.ok(Math.abs(mid[i-1]-mid[i]-(TRACK.len+TRACK.gap))<1e-9);
- const p=puff(0,5,0);for(let t=0;t<10;t+=.05){const q=puff(0,5,t);assert.ok(q.s>=0&&q.s<2&&q.dy>=0);}assert.ok(puff(0,1,3.19,3.2).s<.05,'fades out');
  const fl={x0:0,y:40,z:-100,v:6,n:9,seed:1};assert.equal(birdAt(fl,3,0).flap,birdAt(fl,3,.04).flap,'flap on twos');
 });
 test('trail: pass time is interpolated, unreached points return null; wake and window light envelopes',()=>{
@@ -49,8 +48,6 @@ test('reactions: notice 30 m ahead, poses on twos, wave raises the arm, crowd ch
  assert.deepEqual(pose('wave',null),{yaw:0,arm:0,hop:0});assert.deepEqual(pose('wave',REACT.wave+.1),{yaw:0,arm:0,hop:0});
  const a=pose('wave',1,20),b=pose('wave',1+1/30,20);assert.deepEqual(a,b,'held for 1/12 s');assert.ok(a.arm>1.5&&a.yaw>0);assert.ok(pose('turn',1,-20).yaw<0);
  assert.ok(pose('jump',.4).hop>0);const c={kind:'turn',seed:.5};assert.ok(crowdPose(c,null,0,.5).arm>2,'cheer');assert.equal(crowdPose(c,null,0,null).arm,0);
- const r={x0:10,x1:20,y:12,z:-25};for(let t=0;t<60;t+=.7){const o=robotPose(r,t,null);assert.ok(o.x>=10&&o.x<=20&&!o.talking);}
- const busy=robotPose(r,30,2);assert.ok(busy.talking&&busy.arm>1);assert.equal(busy.x,robotPose(r,28,null).x,'stops where it noticed the plane');
 });
 test('autopilot hits every event; companions follow the event phases',()=>{
  for(const model of ['dart','glider'])for(const seed of [1,2,3,7]){const f=createFlight(model,{power:3,paper:3,fold:3},seed);
