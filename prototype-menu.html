@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title data-i18n="meta.title">Just Throw It · menu prototype</title>
+<link rel="stylesheet" href="./prototype/menu/menu.css">
+</head>
+<body data-screen="menu">
+<!-- Prototyp struktury obrazovek (research/design/07-menu.md). Falešná data, src/ beze změny. -->
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="tap" aria-hidden="true"></div>
+
+<!-- Hlavní menu -->
+<section id="menu" class="screen menu" aria-labelledby="menu-title">
+ <p class="wallet menu-wallet" id="m-wallet"><span class="num" id="m-coins" aria-hidden="true">0</span><span aria-hidden="true">◈</span></p>
+ <h1 class="title" id="menu-title"><span>Just</span><span>Throw it</span></h1>
+ <div class="menu-body">
+  <div class="note" id="m-warning" role="status" hidden><p id="m-warning-text">Your save had a problem; a backup was kept.</p><button type="button" class="btn icon" id="m-warning-close" data-i18n-aria="menu.dismiss" aria-label="Close note">✕</button></div>
+  <nav class="menu-nav" id="m-nav" data-i18n-aria="menu.label" aria-label="Main menu">
+   <button type="button" class="btn primary big" id="m-play" disabled><span class="lbl" data-i18n="menu.play">Throw</span><span aria-hidden="true">↗</span></button>
+   <button type="button" class="btn" id="m-workshop" disabled><span class="lbl" data-i18n="menu.workshop">Workshop</span></button>
+   <button type="button" class="btn" id="m-atlas" disabled><span class="lbl" data-i18n="menu.atlas">Atlas</span><span class="dot" id="m-atlas-dot" aria-hidden="true" hidden></span></button>
+   <button type="button" class="btn" id="m-settings" disabled><span class="lbl" data-i18n="menu.settings">Settings</span><span aria-hidden="true">⚙</span></button>
+  </nav>
+  <p class="menu-delivered" id="m-delivered" data-i18n="menu.delivered" hidden>Route complete. Fly for fun.</p>
+  <p class="menu-status" id="m-status" role="status" data-i18n="menu.loading">Unfolding the city…</p>
+  <div class="menu-error" id="m-error" role="alert" hidden><p data-i18n="menu.loadError">The game didn't load. Reload the page; your progress is safe.</p><button type="button" class="btn primary" id="m-reload" data-i18n="menu.reload">Reload</button></div>
+ </div>
+ <noscript><p class="note">This game needs JavaScript. · Hra potřebuje JavaScript.</p></noscript>
+</section>
+
+<!-- Hra: míření a let -->
+<section id="hud" class="screen hud" hidden>
+ <h2 class="sr-only" id="hud-h">Just Throw It</h2>
+ <div class="hud-goal chip"><span class="sr-only" data-i18n="hud.distance">DISTANCE</span><b class="dist" id="h-dist">0 m</b><span class="next" id="h-next"></span></div>
+ <div class="hud-right">
+  <p class="wallet chip" id="h-wallet" style="margin:0"><span aria-hidden="true"><span class="num" id="h-coins">0</span> ◈</span><span class="plus num" id="h-plus" aria-hidden="true"></span></p>
+  <button type="button" class="btn icon chip" id="h-pause" data-i18n-aria="hud.pause" aria-label="Pause" aria-keyshortcuts="Escape">❚❚</button>
+ </div>
+ <div class="banner" id="banner" aria-hidden="true" hidden></div>
+ <p class="bubble" id="aim-hint" data-i18n="aim.hint" hidden>Drag to aim. Hold, then let go.</p>
+ <div class="corner-l" id="angle-ctl">
+  <button type="button" class="btn icon chip" id="a-down" data-i18n-aria="aim.angleDown" aria-label="Lower angle" aria-controls="a-val">▼</button>
+  <output class="chip" id="a-val" aria-live="off">15°</output>
+  <button type="button" class="btn icon chip" id="a-up" data-i18n-aria="aim.angleUp" aria-label="Higher angle" aria-controls="a-val">▲</button>
+ </div>
+ <div class="tbar" id="tbar" aria-hidden="true" hidden><span class="z ok" id="tb-ok"></span><span class="z pf" id="tb-pf"></span><span class="needle" id="tb-n"></span></div>
+ <button type="button" class="btn act" id="act" aria-describedby="act-keys"><span class="fill" aria-hidden="true"></span><span class="lbl" id="act-lbl">Hold</span><kbd aria-hidden="true">Space</kbd></button>
+ <p class="sr-only" id="act-keys" data-i18n="aim.keys">Arrows change the angle. Hold Space to charge, release to throw.</p>
+</section>
+
+<!-- Výsledek -->
+<section id="result" class="result" aria-labelledby="r-title" hidden>
+ <div class="result-scroll" id="r-scroll">
+  <div class="result-head"><h2 id="r-title">Throw complete!</h2><button type="button" class="btn icon" id="r-menu" data-i18n-aria="result.menu" aria-label="Main menu">⌂</button></div>
+  <p class="r-dist" id="r-dist">0 m</p>
+  <p class="r-sub" id="r-sub"></p>
+  <p class="r-coins"><b id="r-coins"></b><small id="r-break"></small></p>
+  <p class="r-line" id="r-hint"></p>
+  <p class="r-news" id="r-news" hidden></p>
+  <p class="r-next" id="r-next"></p>
+  <details class="r-details"><summary data-i18n="result.details">Throw details</summary>
+   <dl><dt data-i18n="result.time">Flight time</dt><dd id="r-time"></dd><dt data-i18n="result.power">Throw power</dt><dd id="r-power"></dd><dt data-i18n="result.angle">Angle</dt><dd id="r-angle"></dd><dt data-i18n="result.events">Events</dt><dd id="r-events"></dd></dl>
+  </details>
+ </div>
+ <div class="result-actions">
+  <button type="button" class="btn primary big" id="r-again"><span data-i18n="result.again">Throw again</span><span aria-hidden="true">↻</span></button>
+  <button type="button" class="btn" id="r-workshop" data-i18n="result.workshop">Workshop</button>
+  <button type="button" class="btn" id="r-atlas"><span data-i18n="result.atlas">Atlas</span><span class="dot" id="r-atlas-dot" aria-hidden="true" hidden></span></button>
+ </div>
+</section>
+
+<div class="sr-only" id="live" aria-live="polite"></div>
+<div class="status-chip" id="status-chip" role="status" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<!-- Panely -->
+<dialog id="pause" class="card" aria-labelledby="p-title">
+ <div class="card-body">
+  <h2 id="p-title" data-i18n="scene.paused">Paused</h2>
+  <p class="muted" id="p-away" data-i18n="pause.away" hidden>Paused while the game was hidden.</p>
+  <button type="button" class="btn primary big" id="p-resume" data-i18n="pause.resume">Continue</button>
+  <button type="button" class="btn" id="p-settings" data-i18n="menu.settings">Settings</button>
+  <button type="button" class="btn" id="p-menu" data-i18n="pause.menu">Main menu</button>
+  <p class="muted" id="p-leave"></p>
+ </div>
+</dialog>
+
+<dialog id="settings" class="panel narrow" aria-labelledby="s-title">
+ <div class="panel-head"><h2 id="s-title" data-i18n="settings.title">Settings</h2><button type="button" class="btn icon" id="s-close" data-i18n-aria="settings.close" aria-label="Close settings">✕</button></div>
+ <div class="panel-body">
+  <fieldset class="set-group"><legend data-i18n="settings.language">Language</legend>
+   <div class="seg" id="s-lang"><button type="button" class="btn" data-lang="en" lang="en" aria-pressed="true">English</button><button type="button" class="btn" data-lang="cs" lang="cs" aria-pressed="false">Čeština</button></div>
+  </fieldset>
+  <fieldset class="set-group" id="s-sound"><legend data-i18n="settings.sound">Sound</legend>
+   <label class="row-range"><span data-i18n="settings.music">Music</span><input type="range" id="s-music" min="0" max="100" step="5" value="60"><output id="s-music-v" class="num">60%</output></label>
+   <label class="row-range"><span data-i18n="settings.sfx">Sound effects</span><input type="range" id="s-sfx" min="0" max="100" step="5" value="80"><output id="s-sfx-v" class="num">80%</output></label>
+   <label class="row-check"><input type="checkbox" id="s-mute"><span data-i18n="settings.mute">Mute all</span></label>
+  </fieldset>
+  <fieldset class="set-group"><legend data-i18n="settings.motion">Motion</legend>
+   <div class="seg" id="s-motion"><button type="button" class="btn" data-motion="system" aria-pressed="true" data-i18n="settings.motionSystem">Like device</button><button type="button" class="btn" data-motion="reduce" aria-pressed="false" data-i18n="settings.motionReduce">Reduced</button><button type="button" class="btn" data-motion="full" aria-pressed="false" data-i18n="settings.motionFull">Full</button></div>
+   <p class="help" id="s-motion-now"></p>
+   <p class="help" data-i18n="settings.motionHelp">Fewer camera moves, no shake or parallax. Feedback stays.</p>
+  </fieldset>
+  <fieldset class="set-group"><legend data-i18n="settings.assist">Timing help</legend>
+   <label class="row-check"><input type="checkbox" id="s-tbar" aria-describedby="s-tbar-h"><span data-i18n="settings.timingBar">Timing bar under the scene</span></label>
+   <p class="help" id="s-tbar-h" data-i18n="settings.timingBarHelp">A second, larger view of each timing window.</p>
+   <label class="row-check" id="s-wide-row" hidden><input type="checkbox" id="s-wide" aria-describedby="s-wide-h"><span data-i18n="settings.wideWindows">Wider timing windows</span></label>
+   <p class="help" id="s-wide-h" data-i18n="settings.wideWindowsHelp" hidden>No penalty. Coins and places stay the same.</p>
+  </fieldset>
+  <fieldset class="set-group"><legend data-i18n="settings.progress">Progress</legend>
+   <div><button type="button" class="btn danger" id="s-reset"><span aria-hidden="true">⚠</span><span data-i18n="footer.reset">Reset progress</span></button></div>
+   <p class="help" data-i18n="settings.resetHelp">Coins, upgrades, places and best distance. Settings stay.</p>
+  </fieldset>
+  <p class="set-foot"><span id="s-version"></span> · <span data-i18n="settings.saved">Saved on this device.</span></p>
+ </div>
+</dialog>
+
+<dialog id="confirm" class="card" aria-labelledby="c-title" aria-describedby="c-body">
+ <div class="card-body">
+  <h2 id="c-title" data-i18n="confirm.title">Start over?</h2>
+  <p id="c-body" data-i18n="confirm.body">This deletes coins, upgrades, places and your best distance. It can't be undone.</p>
+  <button type="button" class="btn primary" id="c-keep" data-i18n="confirm.keep">Keep my progress</button>
+  <button type="button" class="btn danger solid" id="c-delete"><span aria-hidden="true">⚠</span><span data-i18n="confirm.delete">Delete progress</span></button>
+ </div>
+</dialog>
+
+<dialog id="workshop" class="panel" aria-labelledby="w-title">
+ <div class="panel-head"><button type="button" class="btn icon" id="w-close" data-i18n-aria="workshop.back" aria-label="Back">✕</button><h2 id="w-title" data-i18n="workshop.title">Your Workshop</h2><p class="wallet" style="margin:0"><span class="num" id="w-coins">0</span> ◈</p></div>
+ <div class="panel-body">
+  <div class="models" id="w-models"></div>
+  <p class="note" id="w-empty" hidden><span data-i18n="workshop.empty">No coins yet. Every throw earns some, even a short one.</span></p>
+  <h3 class="sr-only" data-i18n="workshop.upgrades">Upgrades · for both planes</h3>
+  <div class="branches" id="w-branches"></div>
+ </div>
+ <div class="panel-foot"><button type="button" class="btn primary big" id="w-throw" data-i18n="workshop.launch">Throw it ↗</button></div>
+</dialog>
+
+<dialog id="atlas" class="panel" aria-labelledby="at-title">
+ <div class="panel-head"><button type="button" class="btn icon" id="at-close" data-i18n-aria="workshop.back" aria-label="Back">✕</button><h2 id="at-title"><span data-i18n="atlas.title">Atlas</span> <small data-i18n="atlas.sub" style="font-size:.6em;opacity:.8">The route</small></h2><p class="wallet" style="margin:0"><span class="num" id="at-coins">0</span> ◈</p></div>
+ <div class="panel-body">
+  <p id="at-found" class="help"></p>
+  <div class="atlas-grid" id="at-grid"></div>
+  <p class="help" style="margin-top:16px" data-i18n="proto.atlasFull">Full Atlas: prototype-atlas.html</p>
+ </div>
+ <div class="panel-foot"><button type="button" class="btn" id="at-workshop"><span aria-hidden="true">←</span> <span data-i18n="menu.workshop">Workshop</span></button><button type="button" class="btn primary big" id="at-throw"><span data-i18n="menu.play">Throw</span> <span aria-hidden="true">↗</span></button></div>
+</dialog>
+
+<!-- Ovládání prototypu (není součást hry, česky) -->
+<details class="proto" id="proto" lang="cs">
+ <summary>Prototyp</summary>
+ <div class="pbody">
+  <fieldset><legend>Scénář (falešný save)</legend><select id="pc-scen" aria-label="Scénář"></select></fieldset>
+  <fieldset><legend>Vzhled</legend><label><input type="radio" name="skin" value="neon"> dnešní tokeny (P1)</label><label><input type="radio" name="skin" value="paper"> náznak stylu B</label></fieldset>
+  <fieldset><legend>B1 první spuštění</legend><label><input type="radio" name="first" value="reveal"> postupně (doporučeno)</label><label><input type="radio" name="first" value="all"> všechna tlačítka</label><label><input type="radio" name="first" value="direct"> rovnou míření</label></fieldset>
+  <fieldset><legend>B2 Menu za letu</legend><label><input type="radio" name="leave" value="count"> doletí a započte (doporučeno)</label><label><input type="radio" name="leave" value="discard"> zahodit</label><label><input type="radio" name="leave" value="hide"> Menu skryté</label></fieldset>
+  <fieldset><legend>B3 řádek cíle v HUD</legend><label><input type="radio" name="goal" value="1"> ano (doporučeno)</label><label><input type="radio" name="goal" value="0"> jen dolet</label></fieldset>
+  <fieldset><legend>B4 širší okna</legend><label><input type="checkbox" id="pc-assist"> ukázat volbu v Nastavení</label></fieldset>
+  <fieldset><legend>Stavy</legend><div class="prow"><button type="button" id="pc-lose">Ztráta WebGL</button><button type="button" id="pc-restore">Obnovit</button><button type="button" id="pc-warn">Varování save</button><button type="button" id="pc-hide">Simulovat skrytí karty</button></div></fieldset>
+  <p><code id="pc-url"></code></p>
+ </div>
+</details>
+
+<script type="module" src="./prototype/menu/main.js"></script>
+</body>
+</html>
