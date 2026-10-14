@@ -146,3 +146,11 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   6. **Klepnutí na vlastněnou vlaštovku ji rovnou dá do ruky, tlačítko „Letět s touhle“ se ruší**; u zamčené jen „Koupit“, dole vždy jedno „Hodit“.
   7. Skiny jen za postup (suvenýry čtvrtí, finále, podpisové za první trik modelu) + 7 razítek, bez počítadla. Skin = potisk přes papír, jeden skin pro všechny vlaštovky, stopa bez kosmetiky, lampionový skin ve čtvrti 4 jemně svítí. Viditelnost skinů za letu na telefonu se řeší až s telefonem na konci.
   8. Papíry přepracovat pro Papírové město (světlý Kraft, místo Neon Foil stříbrná fólie, grafitový obrys) a Neon Foil s 2. kapsou přeladit ve 3. kole.
+- **Začátek hodu, místo odhodu a kamera (14. 10., `research/start/01-zacatek-a-kamera.md`, `02-misto-odhodu-vzhled.md`): vše podle doporučení.**
+  1. Místo odhodu: **koncept 2, podkrovní dílna v řezu** (dítě na pavlači u půdních dveří, trám s kladkou pro hák Crane Lift, uvnitř stůl, role papíru a nástěnka pohlednic Atlasu). Nahrazuje Dílnu PAPER LAB z bible 05 kap. 9, karty 5 v 11 a model K4 `workshop`.
+  2. Za hlavním menu je tahle scéna (pokoj v podkroví), ne nejvzdálenější čtvrť (mění 07-menu §2.1). Menu, míření i Dílna = jedna boční kamera, přechod bez střihu.
+  3. Kamera: při míření záběr ~16 m, po výhozu oddálení do 1,2 s, pak šířka podle **přebytku rychlosti nad cestovní rychlostí výbavy** a tempa π (jeden vzorec), asymetrické tlumení, zámek při QTE, oddálení po zásahu jako odměna. Vlaštovka v ruce 0,5 m a při oddálení plynule roste na 7,75 m (na telefonu nejméně 24 px).
+  4. Jedno měřítko světa: dítě 1,2 m, skutečné dveře a zábradlí. Ruka i fyzika ve 12 m (délka letů beze změny).
+  5. Domy do 150 m za startem nejvýš 13 m (výhled na nebe a slunce).
+  6. Dítě: pláštěnka `#f2b65a` místo hořčicové, čepice z kraftového papíru místo bílé; zábradlí tmavomodré `#3d4f7a` místo grafitu.
+  7. Pořadí: S1 kamera letu → S3 velikost vlaštovky → S2 záběr míření a výhoz → modely podkroví do katalogu → S4 místo odhodu → S5 menu.
