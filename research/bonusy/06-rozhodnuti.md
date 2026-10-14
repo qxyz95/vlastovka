@@ -167,3 +167,6 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   1. Zastávky v půlce místa jen ve čtvrtích 2–4 a jen pojmenováním budovy, která už je v katalogu (např. „Past the Grain Silo.“). Žádné nové 3D budovy.
   2. Poštovní brašna (Mailbag) úr. III zůstává ve 4. čtvrti, ale cena se zlevní tak, aby se do finále vrátila (ověří simulace).
   3. Pořadí dávek podle 05 §8: A fronta novinek a řádek rekordů → B varianty událostí podle čtvrti, Hejno, prachový vír → C zastávky → V ověření kousků v simulaci → D kousky (jen když ověření projde) → playtest.
+- **Brána kousků (15. 10., `research/obsah/05-plan-90-minut.md` §4.6):**
+  1. Branou smí projít i kousek třídy „dovednost“ (hráč nic nevolí, jen přesně trefuje), když má zdravou četnost (2–20 % letů) a expert ho dělá aspoň 1,3× častěji než slabý hráč.
+  2. Když ověření dá jen 4–5 zdravých kousků z 8, postaví se jen zdravé spolu s 5 kousky modelů (aspoň jeden musí jít do čtvrti 2). Další náhrady se nehledají.
