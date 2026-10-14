@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Just Throw It · 3D prototyp</title>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js"}}</script>
+<style>
+ :root{color-scheme:dark;--bg:#0b0820;--panel:#151034;--text:#e8e6ff;--dim:#9a94c8;--accent:#ff4fc3;--cyan:#53e6ff}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,sans-serif;padding:16px}
+ h1{font-size:18px;margin:0 0 4px}
+ p.note{margin:0 0 12px;color:var(--dim);max-width:1280px}
+ #stage{position:relative;width:min(100%,1280px);aspect-ratio:16/9;background:#120e30;border:2px solid #2a2260;touch-action:none;user-select:none;overflow:hidden;cursor:pointer}
+ #stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+ #c2d{image-rendering:pixelated}
+ .overlay{position:absolute;pointer-events:none;white-space:pre;font:12px/1.35 ui-monospace,Consolas,monospace;background:#0b0820cc;padding:6px 8px;border-radius:4px}
+ #stats{left:8px;top:8px;color:#b8ffcf}
+ #flight{right:8px;top:8px;text-align:right}
+ #panel{width:min(100%,1280px);display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px 18px;margin-top:12px;background:var(--panel);padding:12px;border-radius:6px}
+ #panel label,#panel fieldset{display:flex;flex-direction:column;gap:4px;color:var(--dim);border:0;margin:0;padding:0}
+ #panel fieldset{flex-direction:row;flex-wrap:wrap;gap:4px 12px;align-items:center}
+ #panel legend{padding:0;margin-bottom:4px;width:100%}
+ #panel fieldset label{flex-direction:row;color:var(--text);align-items:center;gap:4px}
+ #panel output{color:var(--text)}
+ select,button{background:#221a4f;color:var(--text);border:1px solid #3a2f80;border-radius:4px;padding:4px 6px;font:inherit}
+ button{cursor:pointer}
+ input[type=range]{accent-color:var(--accent)}
+ kbd{background:#221a4f;border:1px solid #3a2f80;border-radius:3px;padding:0 4px;font-size:12px}
+ [hidden]{display:none!important}
+ #title{left:50%;top:9%;transform:translateX(-50%);text-align:center;pointer-events:none;position:absolute;white-space:nowrap}
+ #title b{display:block;font:900 clamp(18px,3.4vw,40px)/1.05 system-ui,sans-serif;color:#fff7fd;letter-spacing:.04em;text-shadow:0 0 6px #ff4fc3,0 0 18px #ff4fc3,3px 3px 0 #2a0f45}
+ #title small{display:block;margin-top:4px;font:700 clamp(10px,1.3vw,14px)/1 ui-monospace,Consolas,monospace;color:#ffe08a;letter-spacing:.2em;text-shadow:2px 2px 0 #2a0f45}
+ #bubble,#caption{position:absolute;pointer-events:none;transform:translate(-50%,-100%);max-width:260px;font:700 13px/1.25 'Comic Sans MS','Comic Neue',system-ui,sans-serif;border:2.5px solid #1a0b2e;border-radius:12px;padding:6px 9px;box-shadow:3px 3px 0 #1a0b2e}
+ #bubble{background:#fffdf4;color:#1a0b2e;margin-top:-10px}
+ #bubble::after{content:'';position:absolute;left:50%;bottom:-11px;border:6px solid transparent;border-top-color:#1a0b2e}
+ #caption{background:#ffe08a;color:#1a0b2e;white-space:nowrap;margin-top:-6px}
+ #caption.miss{background:#d8c8ff}
+ #bench{grid-column:1/-1;margin:0;white-space:pre;font:12px/1.4 ui-monospace,Consolas,monospace;color:#b8ffcf}
+</style>
+</head>
+<body>
+<h1>Just Throw It · 3D prototyp (three.js r170)</h1>
+<p class="note">Varianta (b) = <b>živá čtvrť Violet Suburbs</b> (místa 1–4: auta, vlak, lidé, Bolts, holub s bagetou, kouř, okna za vlaštovkou, prádlo ve víru). Autopilot hází a trefuje události sám, stačí se dívat. <kbd>L</kbd> life off/on. Skutečná fyzika letu ze <code>src/core.js</code>. <kbd>Mezerník</kbd> nebo klepnutí do scény = hod s nastavenou silou a úhlem, za letu reakce na poryv (klepni) a holuba (podrž a pusť). <kbd>R</kbd> zpět na start, <kbd>1</kbd>/<kbd>2</kbd> varianta. Rychlé tempo jen násobí zobrazenou vzdálenost, logika se nemění.</p>
+<div id="stage">
+ <canvas id="c2d" width="640" height="360" hidden></canvas>
+ <canvas id="gl"></canvas>
+ <div id="stats" class="overlay">…</div>
+ <div id="flight" class="overlay"></div>
+ <div id="title" hidden><b></b><small></small></div>
+ <div id="bubble" hidden></div>
+ <div id="caption" hidden></div>
+</div>
+<div id="panel">
+ <fieldset><legend>Varianta</legend>
+  <label><input type="radio" name="mode" value="a"> (a) 3D vlaštovka nad 2D</label>
+  <label><input type="radio" name="mode" value="b" checked> (b) 3D město (2,5D)</label>
+ </fieldset>
+ <label>Model <select id="model"><option value="dart">Šipka</option><option value="glider">Kluzák</option></select></label>
+ <label>Úhel hodu <output id="angle-v"></output><input id="angle" type="range" min="5" max="40" value="18"></label>
+ <label>Síla <output id="power-v"></output><input id="power" type="range" min="0" max="100" value="85"></label>
+ <label>Vylepšení (všechny větve) <output id="level-v"></output><input id="level" type="range" min="0" max="5" value="4"></label>
+ <label>Tempo (násobek zobrazené rychlosti) <select id="tempo"><option value="1">1× (dnešní hra)</option><option value="2" selected>2×</option><option value="3">3×</option><option value="4">4×</option><option value="8">8× (~90–160 m/s)</option><option value="12">12× (~130–240 m/s)</option></select></label>
+ <label id="width-row">Šířka záběru (b) <output id="width-v"></output><input id="width" type="range" min="60" max="305" step="5" value="120"></label>
+ <label>FOV (b) <output id="fov-v"></output><input id="fov" type="range" min="10" max="45" value="20"></label>
+ <label>Post-process <select id="post"><option value="0">vypnuto</option><option value="1">posterizace</option><option value="2">posterizace + půltón ve stínu</option></select></label>
+ <fieldset><legend>Pixel ratio</legend>
+  <label><input type="radio" name="dpr" value="1" checked> 1</label>
+  <label><input type="radio" name="dpr" value="2"> 2</label>
+  <label><input type="checkbox" id="shadows" checked> stíny (b)</label>
+ </fieldset>
+ <fieldset><legend>Živá čtvrť (b)</legend>
+  <label><input type="checkbox" id="life" checked> life (L)</label>
+  <label><input type="checkbox" id="auto" checked> autopilot</label>
+  <label><input type="checkbox" id="director" checked> režie kamery</label>
+ </fieldset>
+ <label>Start hodu <select id="start"><option value="0">1 Workshop &amp; First Roofs</option><option value="1">2 Market under the Antennas</option><option value="2">3 Gardens at the Edge</option><option value="3">4 Railway to the River</option></select></label>
+ <label>&nbsp;<button id="reset" type="button">Zpět na start (R)</button></label>
+ <label>&nbsp;<button id="bench-life" type="button">Benchmark life off / on</button></label>
+ <pre id="bench"></pre>
+</div>
+<script type="module" src="./prototype/3d/main.js"></script>
+</body>
+</html>
