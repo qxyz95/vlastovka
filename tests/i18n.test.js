@@ -60,9 +60,9 @@ test('i18n: switching the language at run time changes place, district and event
  const x=SCREEN_METERS*1.5;
  setLang('en');assert.equal(routeAt(x).name,'Market under the Bunting');assert.equal(districtAt(x).name,'SUNRISE ROOFS · 2/4 · Market under the Bunting');
  assert.equal(eventView({type:'gust',phase:'warning',at:0,result:null},.1).label,'! GET READY');
- setLang('cs');assert.equal(routeAt(x).name,'Trh pod praporky');assert.equal(routeAt(0).story,'Z okna dílny vyrážíš nad spící ulici.');
+ setLang('cs');assert.equal(routeAt(x).name,'Trh pod praporky');assert.equal(routeAt(0).story,'Z okna dílny vyrážíš nad probouzející se ulici.');
  assert.equal(districtAt(x).name,'STŘECHY ZA ÚSVITU · 2/4 · Trh pod praporky');
- assert.equal(eventView({type:'gust',phase:'interaction',at:0,result:null},1).label,'↓ KLEPNI');assert.equal(eventView('bird').title,'Papírový holub-kurýr');
+ assert.equal(eventView({type:'gust',phase:'interaction',at:0,result:null},1).label,'↓ KLEPNI');assert.equal(eventView('bird').title,'Papírový holub');
  setLang('en');
 });
 test('i18n: district and place names follow the Paper City bible, set C (decision 14. 10.)',()=>{
