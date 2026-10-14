@@ -1,0 +1,112 @@
+// Atlas content: ids, names and English texts, no tunable numbers (research/atlas/01-navrh-atlasu.md §6.2).
+// PROVISIONAL texts: the final set comes from the designer (research/atlas/03-texty.md). Ids are stable and match params.mjs.
+// Templates: {key} value, {key|fmt} formatted (pct, +pct, m, +m, s, x, times, count:word), {key?text} text only when value is truthy.
+export const RULE='Fly farther to find places. Every place gives your plane a bonus. Coins level it up.';
+
+export const DISTRICTS=[
+ {id:'violet',name:'Violet Suburbs',color:'pink',frame:'Violet Suburbs — sleepy roofs under a violet sky.',
+  character:{id:'bolts',name:'Bolts',role:'retired delivery robot',lines:[
+   "Oh. A paper plane. I used to deliver parcels. Then they invented you.",
+   "I logged your flight as 'weather'. Nobody reads my logs anyway.",
+   "Past the railway already? Send me a postcard. I'll pretend it's for me."]},
+  locals:{bird:'Cyber Pigeon',gust:'Market Vent'}},
+ {id:'moon',name:'Moon Docks',color:'azure',frame:'Moon Docks — somewhere past the railway.',
+  character:{id:'marge',name:'Marge',role:'crane operator, forty years in the cab',lines:[
+   "Mind the hooks, love. They don't mind you.",
+   "Forty years lifting containers. You're the first thing that ever lifted my mood.",
+   "That's the lighthouse. Past it, the sea stops being my problem."]},
+  locals:{bird:'Courier Gull',gust:'Funnel Draft'}},
+ {id:'sunset',name:'Red Horizon',color:'gold',frame:'Red Horizon — open country where the sun goes down.',
+  character:{id:'stella',name:'Stella',role:'astronomer at the observatory',lines:[
+   "Statistically, you're a comet. Emotionally, you're a sheet of A4.",
+   "I named a star after you. It's very small. You'll get along.",
+   "From up here the city looks like spilled sugar. Go on, it's not far now."]},
+  locals:{bird:'Stargazer Pigeon',gust:'Turbine Wake'}},
+ {id:'core',name:'Neon Core',color:'magenta',frame:'Neon Core — the lights you saw from the hills.',
+  character:{id:'zippy',name:'Zippy',role:'ad drone who would rather be a pigeon',lines:[
+   "BUY NOW! ...Sorry. Reflex. Hi.",
+   "I'm contractually a billboard. In my heart, I'm a pigeon.",
+   "Rooftop Harbor is right ahead. Fly well. Not for the sponsors. For you."]},
+  locals:{bird:'Drone Pigeon',gust:'AC Exhaust'}},
+];
+
+// index = position on the route (scenes.js ROUTE), district = index/4. Which place opens a paper is a number (atlas-numbers paper.openAtPlace).
+const P=(id,name,bonus,teaser,story)=>({id,name,bonus,teaser,story});
+export const PLACES=[
+ P('roofs','Workshop & First Roofs','glider','Clear the first roofs and the plane learns a new shape.','You leave the workshop window above a sleeping street.'),
+ P('market','Market under the Antennas','chain','Somebody down there is keeping score of your taps.','Past the houses, a square opens up with a night market.'),
+ P('gardens','Gardens at the Edge','pinwheel','The flower beds are full of little windmills. Why?','The roofs thin out and gardens stay under your wings.'),
+ P('railway','Railway to the River','steam','A train that puffs in twos. Count along.','You follow the tracks all the way to the first pier.'),
+ P('warehouses','Warehouses by the Water','tape','Crates, boxes and an awful lot of tape.','The city fades behind you among the harbour warehouses.'),
+ P('cranes','Crane Forest','crane','Someone up in a crane cab is waving at you.','You fly past cranes towering over the cargo ships.'),
+ P('bridge','Bridge over the Bay','skip','Flat water, long bridge. Ever skipped a stone?','Along the long bridge you cross open water.'),
+ P('lighthouse',"Lighthouse at the Pier's End",'gull','The gulls here know the way home.','The lighthouse beam points to the far shore.'),
+ P('fields','Fields beyond the Bay','momentum','Nothing in the way for miles. Let it roll.','The harbour gives way to long strips of fields.'),
+ P('ridge','Wind Ridge','thermal','Warm air shimmers above the turbines.','Wind turbines turn above the fields.'),
+ P('saddle','Mountain Saddle','echo','Do something perfect here and the hills answer.','The land rises into a rocky mountain saddle.'),
+ P('observatory','Observatory above the Valley','star','Someone up here counts falling stars.','Past the observatory, the lights of a distant city appear.'),
+ P('gates','Gates of the Metropolis','drone','The city gates have very chatty guards.','From the hills you reach the gates of the neon city.'),
+ P('terraces','Sky Terraces','paperCrane','Folded cranes hang from every terrace. One looks curious.','You fly between terraces and hanging gardens.'),
+ P('tower','Broadcast Tower','onAir','The whole city is tuned to this tower.','You pass the tallest tower, the brightest point of the trip.'),
+ P('harbor','Rooftop Harbor','encore','The last stop. Or is it?','Beyond the rooftop harbour, another road starts past the horizon.'),
+];
+
+// kind: model | event | event-mod | rescue | start | speed | wind | finale. line = one sentence without numbers (teaser, list).
+// effect = template filled from atlas-numbers values; null = no levels.
+const B=(name,kind,verb,tags,line,effect,extra={})=>({name,kind,verb,tags,line,effect,art:null,...extra});
+export const BONUSES={
+ glider:B('Glider','model','MODEL',['style'],'A second plane: slower, floatier, longer in the air.',null,{workshop:true}),
+ chain:B('Crowd Chain','event-mod','TAP',['combos'],'The crowd cheers every hit in a row.','Each combo step adds {step|+pct} push (max ×{max})'),
+ pinwheel:B('Pinwheel','wind','BEFORE THROW',['every'],'Spin the wind before you throw.','Spin the wind again {rerolls|times} per throw{noHeadwind?; never a headwind}'),
+ steam:B('Steam Hop','event','TAP-TAP',['every'],'A new event: tap both puffs of steam.','Tap both puffs for Full Steam{push?, {push|+pct} push}{burst?; two perfects add {burst|+pct} speed for {dur|s}}'),
+ tape:B('Packing Tape','rescue','PASSIVE',['misses'],'Missed events still help a little.','Misses still count {keep|pct}'),
+ crane:B('Crane Lift','start','BEFORE THROW',['every'],'Marge lifts you higher before the throw.','Start {lift|+m} higher'),
+ skip:B('Stone Skip','rescue','LANDING',['every'],'A fast landing skips you onward like a stone.','Skip on landing, keeping {keep|pct} speed, {bounces|count:bounce}'),
+ gull:B('Gull Escort','event-mod','HOLD',['every'],'Birds carry you longer and faster.','Birds carry you {carry|+pct} longer and push {push|+pct} more'),
+ momentum:B('Momentum','speed','PASSIVE',['long'],'Every place you pass speeds you up.','Each place you pass this flight adds {step|+pct} speed (up to {cap|+pct})'),
+ thermal:B('Thermal','event','TAP IN PLACE',['perfects'],'A new event: tap inside the warm column.','Tap in the core to spiral up{push?, {push|+pct} push}{second?; {second|pct} chance of a second column}'),
+ echo:B('Echo','event-mod','PASSIVE',['perfects'],'Every perfect hit echoes.','Every perfect echoes {delay|s} later at {share|pct} strength'),
+ star:B('Shooting Star','event','TAP',['perfects'],'Sometimes a golden star crosses the sky.','A shooting star crosses {chance|pct} of flights; tap it for {amp|+pct} speed over {dur|s}',{admits:true}),
+ drone:B('Ad Drone','event','TAP',['every'],'A new event: bounce off advertising drones.','Tap just before contact to bounce off{wider?; {wider|+pct} wider window}{pair?; {pair|pct} of drones come in pairs}'),
+ paperCrane:B('Paper Crane','rescue','PASSIVE',['misses'],'A small friend tugs you over the line.','Once a flight, tugs you over a place line up to {reach|m} away',{admits:true}),
+ onAir:B('On Air','speed','PASSIVE',['combos'],'Hold a combo and the city broadcasts you.','At combo ×{combo} you go on air: {beta|+pct} speed while it lasts'),
+ encore:B('Encore','finale','—',['style'],'The route has an ending. And an encore.',null),
+};
+
+export const TAGS={combos:'Combos',misses:'Helps when you miss',perfects:'Rewards perfects',every:'Every throw',long:'Long flights',style:'Your style'};
+
+export const SPECIALS={
+ cushion:{name:'Cushion',active:true,verb:'TAP',tradeoff:'Small but safe: a soft landing',hint:'CUSHION · Tap near the ground to float a little longer'},
+ sharp:{name:'Sharp Edge',active:false,verb:'PASSIVE',tradeoff:'Narrower windows, stronger hits',hint:'SHARP EDGE · Windows are narrower, hits push harder'},
+ dive:{name:'Dive',active:true,verb:'HOLD',tradeoff:'Trade height for speed',hint:'DIVE · Hold to dive, let go to pull up'},
+ calm:{name:'Calm Sky',active:false,verb:'PASSIVE',tradeoff:'Fewer events, each one stronger',hint:'CALM SKY · Fewer events, stronger pushes'},
+ whistle:{name:'Whistle',active:true,verb:'TAP',tradeoff:'Call the next event now, with a narrower window',hint:'WHISTLE · Tap to call the next event'},
+ rocket:{name:'Paper Rocket',active:true,verb:'TAP',tradeoff:'Raw push, but you choose when',hint:'PAPER ROCKET · Tap for a burst forward'},
+};
+
+export const PAPERS={copy:'Copy Paper',kraft:'Kraft Paper',washi:'Washi Paper',neon:'Neon Foil'};
+
+// Nodes not bound to a place (placeId optional). requires: 'finished' | {found:placeId} | null.
+export const NODES={
+ nightRoute:{name:'Night Route',line:'Fly the whole route again, after dark.',requires:'finished',placeId:'harbor'},
+ autoQte:{name:'Autopilot',line:'Events handle themselves with a plain hit. Perfects and combos stay yours.',requires:null,placeId:null},
+};
+
+// UI strings used by atlas-text.js (and later atlas-ui.js).
+export const TEXT={
+ title:'ATLAS · THE ROUTE',back:'← Workshop',throw:'Throw ↗',close:'Close',
+ next:'Next: {place} · {meters} past your best',delivered:'Delivered. The Workshop is yours.',
+ unknown:'???',isNew:'New',levelUp:'Level up · {price}',toGo:'{price} to go',maxLevel:'Max level',undo:'Undo · until your next throw',
+ comingSoon:'Coming soon',chooseInWorkshop:'Choose it in the Workshop →',alsoOpens:'Also opens: {paper} in the Workshop →',
+ encoreLocked:'Finish the route to open',admits:'Your results always say when it helped.',
+ pocket:'Pocket {n}',pocketLocked:'Pocket {n} · {price}',pocketLater:'Pocket {n} opens in {district}',pickSpecial:'Pick a special',
+ activeGroup:'Active',passiveGroup:'Passive',oneActive:'One active ability at a time',moreIn:'More in {district}',
+ reasons:{slot:'Open this pocket first',unknown:'Not found yet',later:'Found further along the route',
+  active:'One active ability at a time',exclusive:"{a} and {b} don't mix"},
+ found:'Found: {place} → {bonus}',foundPaper:'{paper} is in the Workshop',
+ district:'New district: {district}',districtPockets:'New in your pockets: {specials}',pocketOpen:'Pocket {n} is open',
+ paper:'{paper} is in the Workshop',line:'{name}: “{line}”',finale:'Delivered.',past:'Your past flights found {count|count:place}',
+ levelToast:'{bonus} · Level {level}',spend:'Spend what you earned flying.',
+ summary:{throws:'Throws to the end',longest:'Longest throw',mostPlaces:'Most places in one throw',bestCombo:'Best combo',done:'Done',keep:'Keep playing'},
+ districtCard:{keep:'Keep flying',open:'Open Atlas',done:'Done for now'},
+};

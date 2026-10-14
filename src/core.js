@@ -4,7 +4,8 @@ import {AIM_MIN,AIM_MAX,throwSettings} from './throw.js';
 export {random} from './random.js';
 import {createEvents,updateEvents,eventInput} from './events.js';
 export {activeEvent,eventInput} from './events.js';
-export function fresh() {return {version:3,coins:0,levels:{power:0,paper:0,fold:0},model:'dart',best:0,completed:false,attempts:0};}
+export function fresh() {return {version:4,coins:0,levels:{power:0,paper:0,fold:0},model:'dart',best:0,completed:false,attempts:0,
+  atlas:{levels:{},seen:[],pending:[],lines:{},pockets:{owned:0,slots:[null,null]},nodes:{nightRoute:false},finished:false,hintOpens:0,undo:null}};}
 // Upgrades are shared by both models; the glider only needs to be unlocked.
 export function buy(p, branch, level) {
   const levels=p.levels;
@@ -65,8 +66,8 @@ export function bestAngle(model,levels,power) {
  for(let a=AIM_MIN;a<=AIM_MAX;a++){const f=createFlight(model,levels,1,{x:0,y:0},throwSettings(a,power));f.events=[];while(!f.landed&&f.t<180)step(f);if(f.x>best.x)best={angle:a,x:f.x};}
  return best.angle;
 }
-// Short advice after a throw: within 3° counts as right, otherwise point steeper or flatter.
+// Short advice after a throw: within 3° counts as right, otherwise point steeper or flatter. Returns an i18n key (t() in ui.js).
 export function angleHint(angle,best) {
  const d=Math.round(angle)-best;
- return Math.abs(d)<=3?'Úhel sedí':d>0?(d>8?'Zkus mnohem plošeji':'Zkus o kus plošeji'):(d<-8?'Zkus mnohem strměji':'Zkus o kus strměji');
+ return 'angle.'+(Math.abs(d)<=3?'ok':d>0?(d>8?'muchFlatter':'flatter'):(d<-8?'muchSteeper':'steeper'));
 }
