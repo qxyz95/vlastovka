@@ -7,6 +7,8 @@
 - **§5 a §6.1 přepočtené na osu 90 min** (~167 hodů) podle `research/obsah/05-plan-90-minut.md` §2 a §7. Sloupce „kdy“ v §2.8 a §3.2 posunuté na novou osu.
 - **BLOCKED 1 a 4 (§7) překonané:** délku nese 3. kolo ekonomiky a hustota obsahu z plánu 05, pásma hodů jsou v 05 §7.2.
 - **Mailbag III** se bez noci musí zaplatit do finále (05 BLOCKED 2).
+- **Vítr v náhledu (§2.10 bod 7, 14. 10. večer):** hlavní odhad z přehrání s vlastním větrem hodů (`same`), známý vítr příštího hodu jen pro dráhy a řádek „This throw“ u Sail a Needle (rychlá volba při míření). Zadání simulace s režimem pro jeden hod.
+- **K10 Needle Thread:** podmínka „2 drony v jednom letu“ → „první perfektní dron“ (první měření 38 hodů s modelem, 05 §4.5).
 
 ## Změny 14. 10. (revize)
 - **Statistiky modelů znovu (06 bod 2, §2.1):** každý nový model je **o něco lepší celkově** (+3–5 % doletu bez událostí, Needle místo doletu +10 % mincí za minutu) a **výrazně lepší ve své specialitě** (+15–25 % jen v jeho situaci), s jednou slabinou, kde je horší než Dart nebo Glider. Statistiky se rozdělují podle páky z `04-ekonomika.md` §3.1: obecný přínos nesou `glide` a `cruise`, nikdy `speed` a `ideal`. **Hawk už nemá ideal 34°**, ale 18° jako Dart.
@@ -182,6 +184,12 @@ Podle 06 bod 5: **náhled dvou drah a odhad doletu, bez zkušebního hodu.**
 4. **Pravdivě i pro slabé:** pokud by model hráči podle jeho hodů dal méně, náhled to řekne („For your throws: ≈ −4 %“). U Hawka s automatikou „Auto-hits don't count as perfect.“
 5. **Smyčka 3 snímků** podpisového momentu (jako karty Atlasu): rozšíření, ne jádro.
 6. Hráč s méně než 5 hody s výbavou: odhad z dostupných hodů, při 0 hodech jen dráhy bez čísla.
+7. **Vítr v přehrání (rozhodnuto game designerem 14. 10., otázka game-deva):** hlavní číslo „For your throws: ≈ +6 %“ přehrává posledních 5 hodů **s jejich vlastním větrem** (`same`). Známý vítr příštího hodu (`next`) se použije jen na **dráhy** (bod 1, beze změny) a na **řádek „tenhle hod“** u modelů citlivých na vítr.
+   - **Proč `same` pro hlavní číslo:** číslo odpovídá na otázku „hodí se mi tahle vlaštovka?“ (koupě, model na delší dobu). S větrem příštího hodu by skákalo s každým hodem (Sail v zádech +25 %, proti větru −15 %) a hráč by kupoval podle jednoho poryvu. Se `same` je stabilní, pravdivé i pro slabé (bod 4) a nejde „vylovit“ opakovaným otevíráním Dílny.
+   - **Proč `next` pro řádek „tenhle hod“:** rychlá volba Sail při míření (06, odemykatelný obsah bod 5) potřebuje vědět, jestli se **teď** vyplatí. Řádek „This throw (tailwind): ≈ +22 %“ = stejné přehrání 5 hodů, jen s větrem příštího hodu. Ukazuje se jen u modelů s `windK` ≠ 1 (Sail, Needle) a jen když |vítr| ≥ 0,08; jinak řádek chybí. Tlačítko rychlé volby při míření ukáže stejné číslo. Nahrazuje obecný druhý řádek Sail z bodu 3 („In tailwind ≈ +20 %“), když je vítr známý; když není (vítr 0), zůstane obecný řádek.
+   - **Okraje:** Pinwheel přehodí vítr → řádek „tenhle hod“ se přepočítá (dráhy taky). Méně než 5 hodů → bod 6. Vítr pod prahem → jen hlavní číslo.
+   - **Zneužití:** žádné, náhled jen informuje, nic nedává a nemá zkušební hod.
+   - **Simulace (zadání pro game-dev a balance-analyst):** volba modelu `preview` = koupě a model v ruce podle `same`; navíc přepnutí na Sail (nebo Needle) **pro jeden hod**, když přehrání s `next` dává víc než model v ruce o ≥ 5 % (nový režim např. `bots.modelPick.wind:'both'`, game-dev). Změřit proti `same` a `next` (n 40, average a weak, obsah01, `--models preview`): podíl hodů a koupě Sail (v běhu `k-sim2-tricks` bez záměru Sail nekoupil nikdo, to je riziko čistého `same`), délku kampaně a let P90. Cíl: Sail koupí aspoň ~30 % průměrných hráčů a délka se proti `same` nezkrátí o víc než 3 %. Když se zkrátí víc, je přepínání pro jeden hod moc silné a řádek „tenhle hod“ se ukáže jen při |vítr| ≥ 0,12.
 
 ### 2.11 Karta E1 — Mailbag / Poštovní brašna (násobič mincí, nové)
 
@@ -256,7 +264,7 @@ Podle 06 bod 5: **náhled dvou drah a odhad doletu, bez zkušebního hodu.**
 | K7 | **Kite Tail** / Drakův ocas | první perfekt termiky s Kite, nebo výška 40 m s Kite | po koupi, D3 | kosočtverce, mašle |
 | K8 | **Skimmer Ripples** / Kruhy na vodě | první dvojitý odraz se Skimmerem | po koupi | soustředné kruhy |
 | K9 | **Sail Stripes** / Plachtové pruhy | první let se Sail v zadním větru ≥ +0,08 | po koupi, ~1 z 5 hodů | pruhy |
-| K10 | **Needle Thread** / Nit | první průlet Needle 2 drony v jednom letu | po koupi, D4 | steh, cihlová nit |
+| K10 | **Needle Thread** / Nit | první **perfektní dron** s Needle (dřív 2 drony v jednom letu: 38 hodů s modelem do 1. provedení, `k-sim2-tricks`; změna 14. 10., ověří `90m-tricks2`, 05 §4.5) | po koupi, D4 | steh, cihlová nit |
 | K11 | *(po finále)* **Night Mail** / Noční pošta | dokončená Night Route | po dohrání | souhvězdí |
 
 - **Suvenýry čtvrtí (K1–K3)** přicházejí s 3. hláškou postavy čtvrti (08 §7.1). Řádek na Kartě čtvrti „Souvenir from Sunrise Roofs: Sunrise Postcard“.

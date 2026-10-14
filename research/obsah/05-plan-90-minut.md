@@ -11,6 +11,7 @@
 - **Vyřazeno nebo odloženo** (kvůli kratší hře, §6): Husí klín (EV3), Přemet (BN1), Ladění píšťalky (BN3), zvěsti postav (CU1), rub pohlednice a nitě (CU2), kousky 5, 8, 13, 16 a Harbor Relay až po Hejnu.
 - **Pásma pro 08 §10.2 přepočtená** na 90 min (§7), zadání pro balance-analyst včetně ověření kousků.
 - **Pracnost** klesla z ~50–70 na **~25–33 agentodnů** (§8). Osa 90 min je promítnutá do `01-game-design.md` §5 a §6.1.
+- **Kousky po prvním měření (14. 10. večer, `out/k-sim2-tricks.md`, §4.5–4.7):** Pigeon Express a Drone Ping-Pong bez sekundových oken („hned další událost“, Drone s Gates úr. 3), Kettle Song přepsán na „se Sharp Edge“, Steam Organ vyřazen (tentýž čin jako Kettle Song), nový Whistle Stop, Wish kombo 5 → 3, Needle (K10) 1 perfektní dron. Třídy kousků (volba / dovednost / pestrost), zadání druhého běhu §4.6.2, upřímné hodnocení §4.6.3, mezistupeň §4.7, 2× BLOCKED v §9.
 
 **Podklady:** `06-rozhodnuti.md` (přednost), `01-game-design.md` (modely, Mailbag, skiny, razítka, polička), `08-navrh-kolo2.md` (Atlas, kapsy, události, §10.2), `12-ladeni2.md` (dnešní čísla), `13-rippleloop.md` (3. kolo), `04-svet-cile-sbirky.md` (zamítnuté), `research/atlas/01-navrh-atlasu.md`, bible `research/design/05-styl-papir.md`, KB P1–P15 (bloky 02, 03, 08).
 
@@ -195,9 +196,11 @@ Uživatel 14. 10. (06): triky **ano v odlehčené verzi**, pojmenování šikovn
 Kousek je **pojmenovaná šikovná kombinace v jednom letu**. Hra si všimne, že hráč udělal něco zajímavého, a řekne mu, jak se tomu říká. Nic se předem nezadává.
 
 Příklady:
-- **Pigeon Express / Holubí expres:** chytíš holuba perfektně, pustíš ho a hned do 1,5 s trefíš perfektně poryv. Ve výsledku: „Trick: Pigeon Express — caught a pigeon, then rode the gust.“
-- **Steam Organ / Parní varhany:** máš v kapse Echo, trefíš perfektně všechny tři obláčky páry a Echo je zopakuje. Bonus ze dvou různých čtvrtí hraje spolu.
+- **Pigeon Express / Holubí expres:** chytíš holuba perfektně a **hned další událost** je poryv, který trefíš perfektně. Ve výsledku: „Trick: Pigeon Express — caught a pigeon, then rode the gust.“
+- **Kettle Song / Píseň konvice:** máš v kapse Sharp Edge (užší okna, silnější zásah) a i tak trefíš oba obláčky páry perfektně. Volba kapsy a šikovnost hrají spolu.
 - **Over the Line / Přes čáru:** let by skončil kousek před hranicí místa, ale v poslední sekundě ho Boost tap nebo Paper Rocket přenese přes ni. Hra to pozná přepočtem (bez tahu by nedoletěl).
+
+*(Úprava 14. 10. po prvním měření, §4.6.1: Pigeon Express bez sekundového okna, Steam Organ vyřazen, Kettle Song přepsán.)*
 
 Podpisové skiny K6–K10 z 01 (např. „první let s Hawkem se 3 perfekty za sebou“) jsou **už schválené kousky modelů**. Odlehčená verze je jen zahrne pod stejné jméno a stejný řádek ve výsledku.
 
@@ -223,27 +226,47 @@ Podpisové skiny K6–K10 z 01 (např. „první let s Hawkem se 3 perfekty za s
 2. **Poprvé:** za letu krátký tušový štítek se jménem (0,6 s, let se nezastavuje, reduced motion jen text). Ve výsledku jeden řádek se jménem a jednou větou, co hráč udělal. Ve frontě novinek (FN1) je to **novinka A** s prioritou hned za kartou čtvrti a finále (je to hráčův výkon, P1).
 3. **Znovu:** jen štítek za letu, žádný řádek ve výsledku, **žádná odměna**.
 4. **Zápis:** v Atlasu na kartě bonusu (a v Dílně na kartě modelu) řádek „Tricks: Steam Organ“ jen s kousky, které hráč už udělal. Nesplněné se neukazují.
-5. **Nápověda „Pairs well with“ (CU3):** karta bonusu, speciálu a modelu jmenuje 1–2 partnery („Pairs well with: Echo“). Neříká, co z toho vznikne. Neznámý partner jako „???“ s ikonou čtvrti. Navazuje na „Loves:“ u modelů (01 §2.10).
+5. **Nápověda „Pairs well with“ (CU3):** karta bonusu, speciálu a modelu jmenuje 1–2 partnery („Pairs well with: Sharp Edge“). Neříká, co z toho vznikne. Neznámý partner jako „???“ s ikonou čtvrti. Navazuje na „Loves:“ u modelů (01 §2.10).
 6. **Nic neodemyká, není podmínkou postupu.** Výjimka: kousky modelů dál dávají podpisový skin K6–K10 (už schváleno v 01).
 7. **Automatika** dává jen běžný zásah, kousky s perfektem s ní nejdou. Karta to řekne („Needs perfect hits.“). „Širší okna časování“ perfekty umožní.
 8. **Save:** `p.tricks` (pole ID s číslem hodu prvního provedení), migrace s prázdným polem, poškozený save se neztrácí.
 
-### 4.5 Katalog: 8 kousků + 5 kousků modelů
-„Samo“ = odhad výskytu bez záměru v letech, kdy má hráč přísady (NOT ASSESSED, změří §4.6).
+### 4.5 Katalog: 8 kousků + 5 kousků modelů (verze 2, 14. 10. po prvním měření)
+„Samo“ = odhad výskytu bez záměru v letech, kdy má hráč přísady (NOT ASSESSED, změří §4.6.2). „1. běh“ = výsledek `out/k-sim2-tricks.md` (n 6, nestatistické, průměrný hráč). **Třída** říká, čím hráč kousek ovlivní (§4.6, kritérium „záměr“ podle třídy):
+- **volba** = hráč si vybere výbavu nebo okamžik (kapsa, model, výstřel). Simulátor má páku, měří se bot se záměrem.
+- **dovednost** = jen přesnost, hráč nic nevolí. Místo záměru se měří, že expert ho dělá častěji než slabý, ale ne jen on.
+- **pestrost** = ocení, že hráč zvládl všechny druhy událostí. Jen četnost.
 
-| # | Kousek (EN / CS) | Podmínka (jeden let) | Bonus / karta | Od | Samo |
-|---|---|---|---|---|---:|
-| 1 | **Pigeon Express** / Holubí expres | perfektní holub, pak perfektní poryv do 1,5 s po puštění | First Roofs | 1 | ~8 % |
-| 2 | **Kettle Song** / Píseň konvice | všechny obláčky páry perfektně | Railway | 4 | ~12 % |
-| 3 | **Over the Line** / Přes čáru | Boost tap nebo Paper Rocket v poslední sekundě přenese přes hranici místa (bez něj by let skončil před ní) | Gardens / Rocket | 1 | ~4 % |
-| 4 | **Tape Save** / Zalepeno | minutí zachráněné Packing Tape, další událost perfektně | Warehouses | 5 | ~6 % |
-| 5 | **Steam Organ** / Parní varhany | Echo zopakuje všechny 3 perfektní obláčky páry | Railway + Saddle | 11 | ~5 % |
-| 6 | **Wish** / Přání | chycená padající hvězda při kombu ≥ 5 | Observatory | 12 | ~3 % |
-| 7 | **Drone Ping-Pong** / Pinčes | dva perfektní drony do 2 s | Gates | 13 | ~4 % |
-| 8 | **All the Verbs** / Všechna slovesa | v jednom letu úspěšně tap, hold, tap-tap a tap in place | Encore | 13 | ~6 % |
-| M1–M5 | kousky modelů (= podmínky skinů K6–K10 v 01 §3.2) | Hawk 3 perfekty za sebou, Kite perfekt termiky, Skimmer dvojitý odraz, Sail zadní vítr, Needle 2 drony | karta modelu | po koupi | 01 §6.1 bod 15 |
+| # | Kousek (EN / CS) | Podmínka (jeden let) | Třída | Bonus / karta | Od | Samo | 1. běh → změna |
+|---|---|---|---|---|---|---:|---|
+| 1 | **Pigeon Express** / Holubí expres | perfektní holub a **hned další událost** (hvězda se nepočítá) je perfektní poryv | dovednost | First Roofs | 1 | ~8–15 % v D1, méně později | 0 %: okno 1,5 s nesplnitelné → **bez sekund** |
+| 2 | **Kettle Song** / Píseň konvice | **se Sharp Edge v kapse** oba obláčky páry perfektně | volba (kapsa) | Railway + Sharp Edge | 4 | ~12–18 % v letech se Sharp | 29 % samozřejmý → **přepsán** |
+| 3 | **Over the Line** / Přes čáru | Boost tap nebo Paper Rocket v poslední sekundě přenese přes hranici místa (bez něj by let skončil před ní) | volba (okamžik) | Gardens / Rocket | 1 (Boost tap), 9 (Rocket) | ~4 % | zdravý (3,9 % / záměr 10,9 %) → beze změny |
+| 4 | **Tape Save** / Zalepeno | minutí zachráněné Packing Tape, další událost perfektně | dovednost | Warehouses | 5 | ~3–6 % | zdravý (3,4 %) → beze změny |
+| 5 | **Whistle Stop** / Na zapískání *(nový, místo Steam Organ)* | po perfektním zásahu zapískáš, **jakmile to jde** (do 1 s od konce jeho účinku), a přivolanou událost (užší okno) trefíš perfektně | volba (okamžik) | Whistle | 9 | ~6–12 % v letech s Whistle | nový |
+| 6 | **Wish** / Přání | chycená padající hvězda při kombu **≥ 3** | dovednost | Observatory | 12 | ~3–6 % | 1,2 %, 83 % kampaní nikdy → **kombo 5 → 3** |
+| 7 | **Drone Ping-Pong** / Pinčes | **dva drony za sebou** (hned další událost), oba perfektně; přísada = **Gates úr. 3** (dvojice dronů) | dovednost | Gates úr. 3 | 13 | ~5–10 % v letech s úr. 3 | 0 %: okno 2 s nesplnitelné → **bez sekund, přísada úr. 3** |
+| 8 | **All the Verbs** / Všechna slovesa | v jednom letu úspěšně tap, hold, tap-tap a tap in place | pestrost | Encore | 13 | ~10 % | zdravý (11,9 %) → beze změny |
+| M1–M5 | kousky modelů (= podmínky skinů K6–K10 v 01 §3.2) | Hawk 3 perfekty za sebou, Kite perfekt termiky nebo 40 m, Skimmer dvojitý odraz, Sail zadní vítr, **Needle perfektní dron** (dřív 2 drony) | volba (model) | karta modelu | po koupi | 01 §6.1 bod 15 | Needle 2 drony: 38 hodů do 1. provedení → **1 perfektní dron** |
 
-**Rezerva** (až po své události, stejné ověření): Harbor Relay (celé Hejno perfektně s Gull Escort), Dust Devil Dive (vír na rychlost a hned Dive), Skylark Climb (skřivan + termika nad 30 m), Whistle Storm (3 přivolané události perfektně).
+**Vyřazeno:**
+- **Steam Organ** (Echo zopakuje perfektní páru). V měření φ = 1,00 s Kettle Song: Echo je pasivní bonus Atlasu, opakuje **každý** perfekt sám, hráč nic neudělá. Kousek by byl „Kettle Song, když už máš Echo“, tedy tentýž čin (§4.6 pravidlo korelace). Pára má navíc 2 obláčky, ne 3.
+- **Kettle Song v původní podobě** (všechny obláčky perfektně). Byla to jen nejvyšší známka jedné události, ne kombinace. Perfekt páry už hra oceňuje sama (kombo +2, úr. 3 výtrysk). Proto 29 %.
+
+**Proč takhle (u každé změny):**
+- **Pigeon Express, Drone Ping-Pong „hned další událost“:** rozvrh událostí (08) dává mezi koncem jedné a začátkem další aspoň `effectMin` 1 s + `gapMin` 4 s, holub navíc nese 0,8–1,1 s. Sekundové okno pod ~3 s tedy nejde splnit nikdy, ani se Whistle. „Hned další“ zachová smysl (dva kusy navazují, hráč drží rytmus) a nezávisí na číslech rozvrhu, která se ještě budou ladit. Pro hráče je to i srozumitelnější než sekundy. Riziko: v D1 jsou jen poryv a holub, takže dvojice holub → poryv je častá. Proto horní hranice „samozřejmý“ > 25 % hlídat **po čtvrtích**, ne jen v průměru (§4.6.2).
+- **Drone Ping-Pong s přísadou Gates úr. 3:** dvojici dronů za sebou vytváří úroveň 3 (`pairChance`). Bez ní jdou dva drony za sebou jen náhodou z rozvrhu (váha 1 ze 7), kousek by byl vzácný a nešlo by ho hledat. S úr. 3 je to „co umí moje nová úroveň“. Riziko: úr. 3 v D4 koupí jen část hráčů → kousek může být „nikdy“ u > 50 % kampaní. Pak vyřadit (ne uvolňovat dál).
+- **Kettle Song se Sharp Edge:** páka je volba kapsy. Sharp Edge zužuje okna (×0,75) a zesiluje zásah, je to „risk za odměnu“ (01 §1, typ hráče expert). Kousek říká „zvládl jsi tap-tap i s ostrou hranou“ a dává důvod Sharp Edge vyzkoušet (horizontální růst, KB 03 N6). Výskyt se počítá jen v letech se Sharp Edge, takže ho nezvedá to, že pára je běžná.
+- **Whistle Stop místo Steam Organ:** potřebujeme kousek, kde hráč **volí okamžik** (ne jen trefuje). Whistle přivolá další událost hned, ale s užším oknem (06, 14. 10.: risk za odměnu). Zapískat hned po perfektu = vsadit kombo. Simulátor páku má (bot se záměrem píská po perfektu). Rezervní „Whistle Storm“ (3 přivolané události) je s Whistle 1× za let nesplnitelný, proto vypadl.
+- **Wish kombo 5 → 3:** hvězda přichází po 1.–3. události letu (`slotMin`/`slotMax`). Kombo 5 vyžaduje aspoň 3 zásahy předtím, často i perfekty, takže se skoro nestane. Kombo 3 = „chytil jsi hvězdu v rozjeté řadě“ (perfekt + zásah, nebo 3 zásahy bez minutí). Strop výskytu ale dává sama hvězda (šance 8–16 %), běh ji musí změřit (§4.6.2). Když se hvězda objeví v méně než ~10 % letů, Wish nemůže být zdravý a vyřadí se.
+- **Needle perfektní dron:** Needle se kupuje pozdě (~hod 143–148) a dva drony v jednom letu jsou vzácné (váha 1 ze 7). Podpisový moment Needle je dron bez zdvihu s tlakem ×1,5 vpřed, ten stačí jeden. Kritérium 01 §6.1 bod 15 (medián ≤ 5 hodů s modelem) tím projde. Změna podmínky K10 v 01 §3.2.
+
+**Proč ne další kandidáti (prověřeno a zamítnuto):**
+- *Dive do události* (nízký průlet a hned událost): nejde, události nezačínají pod 8 m a nízký průlet je 2–7 m.
+- *Gull Escort + perfektní holub*, *Echo + cokoli*, *Momentum*, *On Air*: pasivní bonusy, hráč nic nevolí, byl by to jen „perfekt, když máš bonus X“ (stejná chyba jako Steam Organ).
+- *Kettle Song zpřísněný kombem* („obě páry perfektně při kombu ≥ 4“): korelovaný s Wish i Hawk, nic nového neříká.
+
+**Rezerva** (až po své události, stejné ověření): Harbor Relay (celé Hejno perfektně s Gull Escort), Dust Devil Dive (vír na rychlost a hned Dive), Skylark Climb (skřivan + termika nad 30 m). Whistle Storm vyřazen (viz výše). Rezerva dnes nepomůže projít branou: Hejno, vír ani skřivan v simulátoru nejsou (NOT ASSESSED).
 
 **Cíl:** průměrný hráč do finále najde **40–75 %** z 13, ne všechny. Kdo chce, má co hledat, kdo ne, o nic nepřijde.
 
@@ -259,9 +282,13 @@ Podpisové skiny K6–K10 z 01 (např. „první let s Hawkem se 3 perfekty za s
 | Metrika | **Vzácné** (vyřadit nebo uvolnit) | **Zdravé** | **Samozřejmé** (zpřísnit nebo vyřadit) |
 |---|---|---|---|
 | Výskyt bez záměru, průměrný hráč | < 1 % letů | **2–20 %** | > 25 % letů |
-| Výskyt se záměrem, průměrný hráč | < 8 % | **≥ 8 %** a ≥ 1,5× výskytu bez záměru | záměr nic nemění (< 1,2×) = náhoda, ne dovednost |
+| Výskyt se záměrem, průměrný hráč (**jen třída volba**) | < 8 % | **≥ 8 %** a ≥ 1,5× výskytu bez záměru | záměr nic nemění (< 1,2×) = náhoda, ne dovednost |
 | Hodů od získání přísad do 1. provedení bez záměru (medián) | > 40 nebo nenastane do finále u > 50 % kampaní | **3–25** | ≤ 1 (stane se hned při prvním letu) |
-| Poměr výskytu expert / slabý | > 5× (jen test perfektnosti) | **≤ 4×** | – |
+| Poměr výskytu expert / slabý (všechny třídy) | > 5× (jen test perfektnosti) | **≤ 4×** | – |
+| Poměr výskytu expert / slabý (**třída dovednost**, náhrada záměru, doplněno 14. 10.) | – | **≥ 1,3×** (šikovnost je znát) | < 1,0× (slabý ho dělá častěji = náhoda rozvrhu, ne dovednost) |
+| Výskyt po čtvrtích (doplněno 14. 10.) | – | v žádné čtvrti s přísadami > 25 % | v některé čtvrti > 25 % (např. Pigeon Express v D1) |
+
+**Třídy (doplněno 14. 10., viz §4.5):** u kousků bez páky (dovednost, pestrost) simulátor záměr změřit nemůže a ani nemá co: hráč si minutí ani pořadí událostí nevybírá. Místo „záměr ≥ 1,5×“ se u třídy dovednost bere poměr expert / slabý ≥ 1,3× (kousek odměňuje přesnost, ne štěstí). Třída pestrost (All the Verbs) se hodnotí jen četností a 1. provedením. **Prahy četnosti („vzácné / samozřejmé“, rozhodnutí 06) se nemění pro žádnou třídu.** Jestli to brána smí takhle počítat, je otevřená volba (§9, BLOCKED kousky 1).
 
 **Za celý systém:**
 - 1. kousek (kromě kousků modelů) do 15. hodu v mediánu průměrného hráče (aby se hráč naučil, že hra pojmenovává).
@@ -269,9 +296,66 @@ Podpisové skiny K6–K10 z 01 (např. „první let s Hawkem se 3 perfekty za s
 - Dva kousky s korelací výskytu > 0,8 jsou tentýž čin, jeden se vyřadí.
 - Kontrola, že kousky nemění délku (v odlehčené verzi nic nedávají, má vyjít 0 %; jinak chyba v měření).
 
-**Brána:** systém se staví, když **aspoň 6 z 8** kousků vyjde zdravě (případně po jedné úpravě podmínky, např. okno 1,5 s → 2 s). Kousky mimo pásmo se nestaví. Pokud méně než 6, platí §4.7.
+**Brána:** systém se staví, když **aspoň 6 z 8** kousků vyjde zdravě (případně po jedné úpravě podmínky, např. okno 1,5 s → 2 s). Kousky mimo pásmo se nestaví. Pokud méně než 6, platí §4.7. *(14. 10.: úpravou podmínky se rozumí i náhrada kousku z prověřených kandidátů v §4.5, jedna úprava na kousek; druhá úprava se už nedělá, kousek se vyřadí. „Zdravě“ podle třídy, viz výše.)*
 
 **Odhad práce:** game-dev ~1–2 dny (záznam letu a detektory v simulátoru), balance-analyst ~1 den (běhy a tabulka). Výstup `simulation/progression/out/90m-tricks.{md,json}`.
+
+### 4.6.1 První měření (`out/k-sim2-tricks.md`, 14. 10., n 6, nestatistické)
+| Kousek | Výsledek | Proč | Co s tím (§4.5) |
+|---|---|---|---|
+| Pigeon Express | 0 % | okno 1,5 s kratší než nejkratší možný interval (2,9 s i se Whistle) | „hned další událost“ |
+| Kettle Song | 29 % (samozřejmý) | nejvyšší známka jedné události, ne kombinace | přepis: se Sharp Edge |
+| Over the Line | 3,9 %, záměr 10,9 % (2,8×) | zdravý | beze změny |
+| Tape Save | 3,4 %, E/S 2,6× | zdravý, záměr bez páky | beze změny (dovednost) |
+| Steam Organ | 26 %, φ 1,00 s Kettle Song | Echo je pasivní, tentýž čin | vyřazen → Whistle Stop |
+| Wish | 1,2 %, 83 % kampaní nikdy | kombo 5 skoro nejde před 1.–3. událostí | kombo 3, změřit četnost hvězdy |
+| Drone Ping-Pong | 0 % | okno 2 s kratší než ~2,8 s | „hned další“ + Gates úr. 3 |
+| All the Verbs | 11,9 %, E/S 0,48× | zdravý | beze změny (pestrost) |
+| 1. kousek | medián 27. hod (cíl ≤ 15) | jediný kousek D1 (Pigeon Express) nešel | po opravě Pigeon Express čekám ≤ 15 |
+
+**Pozor na délku kampaně:** běh měl ~80 hodů / ~42 min se starou ekonomikou, ne 90 min. Četnosti **na let** (výskyt, záměr, E/S) platí. Metriky **na kampaň** („nikdy do finále“, „nalezeno z 13“, 1. kousek v hodech) jsou do přeladění ekonomiky na 90 min jen orientační: v delší hře bude víc letů s přísadami, „nikdy“ klesne a „nalezeno“ stoupne.
+
+### 4.6.2 Zadání druhého běhu (pro game-dev a balance-analyst)
+**Krok 1, game-dev (`simulation/progression/tricks.mjs`, `abilities.mjs`, `params.mjs` jen klíče `tricks.*`, test v `tests/progression-90.test.js`):**
+1. Pigeon Express: beze změny kódu, okno vypnout `tricks.pigeonWindow` = 99 (detektor už bere sousední běžné události, hvězdu přeskočí). Diagnostiku intervalu nechat.
+2. Drone Ping-Pong: detektor = dvojice sousedních běžných událostí dron → dron, obě perfekt (stejně jako `pairGap`), přísada `lv(kit,'drone') >= tricks.droneLevel` (nový klíč, zástupně 3). Okno `droneWindow` = 99.
+3. Kettle Song: přísada pára > 0 **a** `sharp` v kapsách, detektor beze změny (pára perfekt). Záměr `{pocket:'sharp'}` (Sharp Edge místo výchozí druhé kapsy, Calm se vylučuje).
+4. Steam Organ: vyřadit z `TRICKS` (nebo `off:true`, aby šel výstup porovnat se starým během).
+5. Whistle Stop (nový, `whistleStop`): přísada `whistle` v kapsách; detektor = existuje událost s `whistled` a výsledkem perfekt, **předchozí běžná událost byla perfekt** a pískání proběhlo do `tricks.whistleGap` (zástupně 1,0 s) **od konce jejího účinku** (`doneAt`), ne od vyhodnocení: během účinku (`effect`, aspoň `effectMin` 1 s, u holuba nesení) pískat nejde, okno od vyhodnocení by byla stejná past jako sekundová okna Pigeon Express. Potřebuje záznam času pískání, např. `e.whistledAt`. Záměr `{pocket:'whistle'}` s botem, který píská hned po **jakémkoli** perfektu (zobecnit `whistleAfter`). Bez záměru = dnešní bot Whistle (píská při kombu ≥ 2).
+6. Wish: beze změny kódu, `tricks.wishCombo` = 3. Do tabulky přidat **podíl letů s hvězdou** (strop výskytu Wish).
+7. Needle: beze změny kódu, `tricks.needleDrones` = 1 (počítá zásah i perfekt; na K10 „perfektní dron“ stačí jako přiblížení, odchylku zapsat).
+8. Tabulka kousků: sloupec **třída** (volba / dovednost / pestrost) a verdikt podle tříd z §4.6, **výskyt po čtvrtích** (D1–D4) a max přes čtvrti, φ pro všechny dvojice nad 0,5 (ne jen nejvyšší).
+
+**Krok 2, balance-analyst (jen běhy a čtení výstupů, nic v `src/`):**
+```
+node simulation/progression/run.mjs --modelset obsah01 --mailbag --targets t90 --profiles weak,average,expert --strategies realistic --models preview --tricks --intents all --n 100 --no-probes --set tricks.pigeonWindow=99 --set tricks.droneWindow=99 --set tricks.wishCombo=3 --set tricks.needleDrones=1 --out 90m-tricks2
+```
+(Když `--set` nejde opakovat, stejné hodnoty přes `--params`.) `--intents all` = Over the Line, Kettle Song, Whistle Stop a kousky modelů. **n 100** na skupinu: v prvním běhu měl Drone Ping-Pong jen ~61 letů s přísadami na skupinu při n 6; na rozlišení 2 % od 1 % je potřeba aspoň ~1 500 letů s přísadami na kousek. Když Drone Ping-Pong (úr. 3) nebo Wish nedosáhne 1 000 letů s přísadami, uvést NOT ASSESSED, ne verdikt.
+
+**Malé zametání (n 40, stejný příkaz, `--out 90m-tricks2-<klíč>`):**
+- `tricks.wishCombo` 2 / 3 / 4: hledáme nejvyšší hodnotu se zdravým výskytem.
+- `tricks.whistleGap` 0,5 / 1,0 / 99 (99 = jen „po perfektu a přivolaná perfektně“, bez času): když je Whistle Stop bez záměru > 20 %, zpřísnit kratším oknem; když je pod 2 %, povolit 99.
+- `tricks.droneLevel` 2 / 3: kolik kampaní kousek vůbec potká.
+
+**Co má běh odpovědět (výstup `out/90m-tricks2.md`, souhrn 5–10 řádků v `runs/`):**
+1. Verdikt každého z 8 kousků podle tříd a počet zdravých (brána).
+2. Pigeon Express po čtvrtích (v D1 nesmí přes 25 %).
+3. 1. kousek mimo modely, medián průměrného (cíl ≤ 15. hod).
+4. Podíl letů s hvězdou a s Gates úr. 3 (stropy pro Wish a Drone Ping-Pong).
+5. Korelace: Kettle Song × Hawk, Pigeon Express × Hawk, Whistle Stop × Hawk (všechny stojí na perfektech za sebou; nad 0,8 = tentýž čin).
+6. Kousky modelů podle 01 §6.1 bod 15, zvlášť Needle s 1 dronem.
+7. Kontrola, že kousky nemění délku (0 %).
+
+**Co běh nerozhodne:** metriky na kampaň do přeladění ekonomiky na 90 min (§4.6.1). O stavbě rozhodnout až z běhu na 90min ekonomice, nebo z tohoto běhu, pokud brána vyjde jasně (≥ 7 z 8 nebo ≤ 4 z 8).
+
+**Odhad práce:** game-dev ~0,5–1 den (body 2–5, 8 a testy), balance-analyst ~0,5 dne.
+
+### 4.6.3 Upřímně: mají kousky v téhle hře šanci?
+**Ano, ale menší, než jsem čekal, a jen díky třídě volba.** Důvod je ve stavbě letu: události jdou **jedna po druhé s mezerou 4–7 s**, nikdy dvě naráz. „Kombinace“ jsou tedy jen **pořadí** událostí a to určuje rozvrh, ne hráč. Skutečné páky má hráč jen čtyři: kapsy, model, výstřel Rocketu a pískání. Z 8 kousků jsou 3 volba (Over the Line, Kettle Song, Whistle Stop), 4 dovednost a 1 pestrost.
+
+Očekávání (NOT ASSESSED): volba 2–3 zdravé, dovednost 2–3 (Pigeon Express a Tape Save spíš ano, Wish a Drone Ping-Pong na hraně kvůli stropu hvězdy a úr. 3), pestrost 1. **Celkem 5–7 z 8.** Brána 6 z 8 tedy projde jen tehdy, když se u kousků dovednosti smí místo záměru počítat poměr expert / slabý (BLOCKED kousky 1). Když ne, maximum jsou 3–4 zdravé a platí §4.7.
+
+Co by šanci zvedlo, ale **nedoporučuji teď:** nová páka v letu (např. „podrž poryv“), Hejno a vír jako dvojité události. To je nová mechanika, ne odlehčená verze.
 
 **Co simulace neověří (jen playtest, P4):** jestli si hráči pojmenování všimnou a jestli je potěší. Levný test v playtestu: hráče se po hře zeptat „Pamatuješ si nějaký kousek, který hra pojmenovala? Zkoušel jsi ho znovu?“ (skill `playtest`).
 
@@ -281,6 +365,10 @@ Podpisové skiny K6–K10 z 01 (např. „první let s Hawkem se 3 perfekty za s
 - **Varianty událostí a Hejno (§3):** novost v letu.
 - **„Loves:“ a „Pairs well with“** na kartách jako nápověda k sestavám bez jmen kousků.
 - Ztráta: hra neocení konkrétní kombinaci jménem a slabší důvod experimentovat s kapsami.
+
+**Mezistupeň (doplněno 14. 10., BLOCKED kousky 2):** když projde 4–5 z 8, lze postavit **jen zdravé** kousky (bez vyřazených, žádné dorovnávání slabými) spolu s 5 kousky modelů, pokud mezi nimi je aspoň jeden do D2 (aby se hráč brzy naučil, že hra pojmenovává; dnes jen Pigeon Express nebo Kettle Song). Pracnost je skoro stejná jako u 8 kousků (detekce, štítek, řádek ve výsledku a v Atlasu jsou společné), ušetří se jen texty a testy vyřazených. Pod 4 zdravé to nemá smysl: kousek by se stal jednou za desítky hodů a hráč by systém nepoznal.
+
+**Doporučená varianta bez kousků (když brána neprojde ani na mezistupeň):** podpisové skiny K6–K10 dál pojmenují první trik modelu (tím hra aspoň u modelů řekne „tohle jsi zvládl“), RK1 přidá řádek „Longest perfect run ×N“ a „Pairs well with“ zůstane jako tichá nápověda. Odhad úspory proti kouskům: ~3–4 dny (TL0, 8 detektorů, texty EN/CS, Atlas řádek, save `p.tricks`).
 
 ---
 
@@ -425,6 +513,12 @@ Spouštět jen `node simulation/progression/run.mjs ... --out 90m-<jméno>`. **N
 
 Vyřešeno v 06 (14. 10.): struktura (90 min bez noci, dřív BLOCKED 1), kousky ano v odlehčené verzi po ověření (dřív BLOCKED 2 a 3), cíl noci (dřív BLOCKED 4, noc se nestaví).
 
-BLOCKED: **Zastávky v půlce místa: jak moc je stavět?** Zastávka je pojmenovaná budova v půlce cesty mezi dvěma místy, aby hráč cítil postup i mezi nimi (příklad: „Past the Grain Silo.“ ve výsledku). (a) 16 nových dominant ve 3D (nejvíc práce, 3D M–L); (b) **jen D2–D4 a pojmenovat budovu, která už v katalogu čtvrti je** (3D S–M); (c) žádné zastávky, jen řádek těsnosti „37 m short of …“. **Doporučení: (b).** D1 je hustá sama, a pojmenovat existující budovu je skoro zadarmo; (c) by D3–D4 nechalo s mezerami ~10 hodů mezi místy.
+*Následující dvě volby (zastávky, Mailbag III) uživatel rozhodl 14. 10. podle doporučení (06, „Plán obsahu na 90 minut“, body 1 a 2). Nové otevřené volby ke kouskům jsou na konci.*
 
-BLOCKED: **Poštovní brašna (Mailbag) III bez noci.** Třetí úroveň se otevírá na místě 13 a měla se zaplatit i v noci. Bez noci má na návratnost jen ~40 hodů do finále (příklad: stojí 900 ◈, vrátí se třeba až za 45 hodů, tedy po konci hry, a koupit ji by byla past). (a) **nechat a zlevnit tak, aby se vrátila do finále** (simulace ověří); (b) jen 2 úrovně (D2 a D3); (c) posunout III do D3. **Doporučení: (a)**, zachová „velký okamžik“ karty D4 a hráč, který ji koupí, nebude potrestán.
+BLOCKED (vyřešeno): **Zastávky v půlce místa: jak moc je stavět?** Zastávka je pojmenovaná budova v půlce cesty mezi dvěma místy, aby hráč cítil postup i mezi nimi (příklad: „Past the Grain Silo.“ ve výsledku). (a) 16 nových dominant ve 3D (nejvíc práce, 3D M–L); (b) **jen D2–D4 a pojmenovat budovu, která už v katalogu čtvrti je** (3D S–M); (c) žádné zastávky, jen řádek těsnosti „37 m short of …“. **Doporučení: (b).** D1 je hustá sama, a pojmenovat existující budovu je skoro zadarmo; (c) by D3–D4 nechalo s mezerami ~10 hodů mezi místy.
+
+BLOCKED (vyřešeno): **Poštovní brašna (Mailbag) III bez noci.** Třetí úroveň se otevírá na místě 13 a měla se zaplatit i v noci. Bez noci má na návratnost jen ~40 hodů do finále (příklad: stojí 900 ◈, vrátí se třeba až za 45 hodů, tedy po konci hry, a koupit ji by byla past). (a) **nechat a zlevnit tak, aby se vrátila do finále** (simulace ověří); (b) jen 2 úrovně (D2 a D3); (c) posunout III do D3. **Doporučení: (a)**, zachová „velký okamžik“ karty D4 a hráč, který ji koupí, nebude potrestán.
+
+BLOCKED (kousky 1): **Smí projít branou kousek, ve kterém hráč nic nevolí, jen přesně trefuje?** Příklad: Tape Save (minutí zachrání páska a další událost trefíš perfektně). Simulace u něj nemůže změřit „zkoušel to schválně“, protože minutí si nikdo nevybírá. (a) **ano, když má zdravou četnost (2–20 % letů) a expert ho dělá aspoň 1,3× častěji než slabý** (odměňuje přesnost, ne štěstí); (b) ne, branou projdou jen kousky, kde hráč volí výbavu nebo okamžik (dnes 3 z 8, brána by nevyšla a platí §4.7); (c) ano bez dalšího testu, stačí četnost. **Doporučení: (a).** Prahy „vzácné / samozřejmé“ z 06 zůstávají stejné pro všechny; (b) by zahodilo i kousky, které hráče potěší nejvíc (záchrana po chybě), (c) by pustilo kousky, které jsou jen štěstí rozvrhu.
+
+BLOCKED (kousky 2): **Když ověření dá jen 4–5 zdravých kousků z 8, stavět je?** Příklad: projdou Over the Line, Kettle Song, Tape Save a All the Verbs, ostatní ne. (a) **postavit jen ty zdravé spolu s 5 kousky modelů, pokud je aspoň jeden do čtvrti 2** (§4.7 mezistupeň); (b) nestavět nic, jen podpisové skiny modelů (§4.7); (c) hledat náhrady dál, dokud jich nebude 6 (riziko: podmínky šité na míru simulaci, ne hráči). **Doporučení: (a).** Práce je skoro stejná a hra pořád ocení hráčův kousek jménem; (c) nedoporučuji, druhá úprava podmínky už bývá ladění na číslo.
