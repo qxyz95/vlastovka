@@ -22,20 +22,12 @@ Poslední úprava: 15. 10. 2026 (předání: plán hratelnosti po poznámkách t
 
 ## Rozpracované práce
 ### Papírové město, obsah a hratelnost (stav 15. 10. 2026)
-- **Ve hře ():** papírové město (P0, P1, P3, P4), kamera startu S1–S3 (šířka podle přebytku rychlosti, vlaštovka roste s oddálením), **místo odhodu S4** (podkrovní dílna v řezu, dítě 1,2 m, ruka 12 m, nižší domy za startem). Výchozí cyber styl drží starý vzdálený záběr Dílny. Katalog modelů G1, G2, G2b, G3 (, ).
-- **Simulátor** (): vlaštovky za mince (), Mailbag, náhled z posledních 5 hodů, detektory kousků v2, cíle . Výchozí rozbor 90 min:  (hra dnes ~42–48 min, obsahu zhruba polovina).
+- **Ve hře (`?styl=papir`):** papírové město (P0, P1, P3, P4), kamera startu S1–S3 (šířka podle přebytku rychlosti, vlaštovka roste s oddálením), **místo odhodu S4** (podkrovní dílna v řezu, dítě 1,2 m, ruka 12 m, nižší domy za startem). Výchozí cyber styl drží starý vzdálený záběr Dílny. Katalog modelů G1, G2, G2b, G3 (`src/render3d/models/`, `prototype-katalog.html`).
+- **Simulátor** (`simulation/progression/`): vlaštovky za mince (`--modelset obsah01`), Mailbag, náhled z posledních 5 hodů, detektory kousků v2, cíle `--targets t90`. Výchozí rozbor 90 min: `research/obsah/06-ladeni-90.md` (hra dnes ~42–48 min, obsahu zhruba polovina).
 - **Rozhodnutí (06):** 5 vlaštovek za mince, Poštovní brašna, skiny za postup, cíl **~90 min** bez natahování, kousky jen zdravé po ověření; po poznámkách tvůrce 15. 10.: **jediný styl papír, hra přes celou obrazovku, výzva uprostřed, plastická papírová postavička, skoro každý hod novinka, QTE podle rychlosti a role událostí, balance-analyst až po schválení obsahu**.
-- **Čeká na uživatele:** 15 otázek z plánu hratelnosti, souhrn  (návrhy 00 kreativní, 01 game design, 02 UX, 03 art). Pak dávky podle pořadí v README.
-- **Nic neběží.** Dev server Unknown command: "start"
-
-
-Did you mean one of these?
-  npm star # Mark your favorite packages
-  npm stars # View packages marked as favorites
-  npm start # Start a package
-To see a list of supported npm commands, run:
-  npm help byl zastaven kvůli paměti, spustit ručně. Necommitnuté screenshoty uživatele v kořeni repa () jsou jeho, necommitovat.
-- Role a skilly:  (nově creative-director, qa-tester, narrative-writer, audio-designer; skilly smoke-test, predani, novy-model, fun-check).
+- **Čeká na uživatele:** 15 otázek z plánu hratelnosti, souhrn `research/plan-hratelnost/README.md` (návrhy 00 kreativní, 01 game design, 02 UX, 03 art). Pak dávky podle pořadí v README.
+- **Nic neběží.** Dev server `npm start` byl zastaven kvůli paměti, spustit ručně. Necommitnuté screenshoty uživatele v kořeni repa (`Snímek obrazovky 2026-10-14 *.png`) jsou jeho, necommitovat.
+- Role a skilly: `.claude/rules/orchestrace.md` (nově creative-director, qa-tester, narrative-writer, audio-designer; skilly smoke-test, predani, novy-model, fun-check).
 
 ### Progrese a simulátor (F5)
 - Simulátor nového systému `simulation/progression/`, nový systém zatím **není ve hře**.
