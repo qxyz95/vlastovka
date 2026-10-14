@@ -6,6 +6,7 @@ Platí pro hlavní konverzaci i všechny subagenty (zavedeno 14. 10. 2026).
 - **Hlavní konverzace = orchestrátor.** Rozděluje práci, předává rozhodnutí uživateli a zapisuje je do `research/bonusy/06-rozhodnuti.md`, integruje výsledky a commituje.
 - **Subagent** pracuje jen na zadaných souborech. **S uživatelem nemluví a nic za něj nerozhoduje.** Když potřebuje rozhodnutí, napíše do reportu řádek `BLOCKED: <otázka s příkladem a doporučením>` a skončí. Orchestrátor otázku předá uživateli a odpověď pošle zpět přes SendMessage.
 - Vlastní agenti: `.claude/agents/creative-director.md`, `game-designer.md`, `product-designer.md`, `art-director.md`, `game-dev.md`, `balance-analyst.md`, `qa-tester.md`, `narrative-writer.md`, `audio-designer.md`. Skilly: `smoke-test` (po každém sloučení), `predani` (před koncem sezení), `novy-model`, `fun-check`, `playtest`, `art-review`, `a11y-audit`, `perf-check`, `balance-check`, `release`.
+- **Co agent čte:** jen dokumenty ze zadání, `docs/stav.md` a rozhodnutí `research/bonusy/06-rozhodnuti.md`. Dokument s hlavičkou `ZASTARALÉ` ani podklad podle `docs/zdroje.md` nepoužívá jako zadání. Při rozporu napíše `BLOCKED`.
 - **Balance-analyst se spouští až tehdy, když je uživatel spokojený s obsahem a mechanikami** (rozhodnutí 06, 15. 10.). Dokud se obsah nebo jádro hry mění, čísla se neladí.
 
 ## Odolnost proti přerušení (limit, pád)
@@ -38,6 +39,9 @@ Selhání levnějších modelů (typ práce → přidělit Opusu): zatím žádn
 ## Git
 - Commit po každé dokončené a ověřené fázi (prošlé `npm test`), malý a tematický. Formát: `<oblast>: <co>`, autor viz `CLAUDE.md`.
 - Push a merge do `main` jen na pokyn uživatele (skill `/release`).
+
+- Dokument, který přestane platit, dostane hlavičku `ZASTARALÉ (datum): co neplatí; platí <odkaz>` a řádek v `docs/zdroje.md`. Úplně mrtvý se přesune `git mv` do `archiv/`, pokud na něj neodkazuje kód nebo test.
+- Zkušenost se Sonnetem: úklid dokumentů 15. 10. prošel kontrolou bez oprav.
 
 ## Report subagenta
 Krátce: změněné soubory, co je hotové, výsledek testů, co bylo ověřeno a co ne (neověřené označ „NOT ASSESSED“, neodhaduj), otevřené body a případně řádky `BLOCKED:`.
