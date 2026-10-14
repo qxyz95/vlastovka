@@ -5,7 +5,7 @@ import {MODELS,modelById,buildModel,defaults,bounds,nearestLod,SCALE,LOD_LAYER} 
 import {cardTriangles,groundCards,PLACE_W} from '../../src/render3d/paper-cards.js';
 import {cameraFor} from '../../src/render3d/frame.js';
 import {planeShape} from '../../src/render3d/geometry.js';
-import {PAPIR,PAPER_ROLE,PAPER_TOKENS as T} from '../../src/render3d/palette.js';
+import {PAPER_ROLE,PAPER_TOKENS as T} from '../../src/render3d/palette.js';
 import {paperMaterial,postPass,skyTexture,cardGeometry,lin} from './paper.js';
 
 const $=s=>document.querySelector(s),q=new URLSearchParams(location.search);
@@ -26,8 +26,8 @@ let modelMesh=null,pedestal=null,ground=null,sky=null,list=[],box=null,dirty=tru
 
 // Podstavec: kraftový válec (vršek dostane světlý řez z papírového shaderu), barva vrcholů pro shader.
 function colored(g,hex){const c=lin(hex),n=g.attributes.position.count,C=new Float32Array(n*3);for(let i=0;i<n;i++)C.set([c.r,c.g,c.b],i*3);g.setAttribute('color',new THREE.BufferAttribute(C,3));return g;}
-// Měřítko: člověk 1,7 m (tělo + hlava jako v lifeCards) a vlaštovka v herním měřítku (planeShape × 7,75 = plane.js PLANE_SCALE, poloha jako za letu).
-const P=PAPIR.life.people,person=new THREE.Mesh(cardGeometry([{shape:'box',x:-.25,w:.5,y:0,h:1.32,z:0,d:.35,color:P.cloth[2]},{shape:'disc',x:0,y:SCALE.person-.19,r:.19,n:10,z:0,d:.3,color:P.skin[0]}]),mat);
+// Měřítko: člověk 1,7 m (model person z katalogu, K4) a vlaštovka v herním měřítku (planeShape × 7,75 = plane.js PLANE_SCALE, poloha jako za letu).
+const person=new THREE.Mesh(cardGeometry(buildModel('person',0,{cloth:2})),mat);
 const plane=(()=>{const s=planeShape('dart'),g=new THREE.BufferGeometry(),n=s.positions.length/3,C=new Float32Array(n*3);
  for(let i=0;i<n;i++){const c=lin(s.normals[i*3+1]>.3?PAPER_ROLE.planeFill:PAPER_ROLE.planeUnder);C.set([c.r,c.g,c.b],i*3);}
  g.setAttribute('position',new THREE.Float32BufferAttribute(s.positions,3));g.setAttribute('color',new THREE.BufferAttribute(C,3));g.computeBoundingBox();

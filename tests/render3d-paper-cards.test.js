@@ -75,6 +75,15 @@ test('tenké karty: panel 2 △, lista 4 △, box ≤ 0,15 m sám jako panel / l
  const e=cardVertices([{shape:'eave',x:0,w:4,y:0,h:2,z:0,d:4,color:'#e8735a',roof:'#3d4f7a'}]);assert.ok(e.n[1]>0&&e.n[2]>0&&e.n[19]>0&&e.n[20]<0);
  const cross=(P,i)=>(P[i+3]-P[i])*(P[i+7]-P[i+1])-(P[i+6]-P[i])*(P[i+4]-P[i+1]),pv=cardVertices([{shape:'poly',x:0,w:2,y:0,h:2,z:0,d:.1,pts:[[1,0],[2,0],[2,1],[1,2],[0,1],[0,0]],color:'#e8735a'}]);
  for(let i=0;i<pv.p.length;i+=9)assert.ok(cross(pv.p,i)>0,'CCW');
+ // Hranol věžičky (K4): šestiboký 3 stěny + víko = 10 △, bez víka 6, jehlan 3; stěny míří ven a ke kameře, víko nahoru, pořadí vrcholů sedí na normálu.
+ const pr={shape:'prism',x:-2,w:4,y:15,h:6,z:-1,d:4*Math.sin(Math.PI/3),n:6,color:'#3d4f7a'};
+ for(const [c,n] of [[pr,10],[{...pr,top:false},6],[{...pr,apex:true},3],[{...pr,n:8},14]]){assert.equal(cardTriangles([c]),n,JSON.stringify(c));assert.equal(tri([c]),n);
+  const v=cardVertices([c]),P=v.p;
+  for(let i=0;i<P.length;i+=9){const u=[P[i+3]-P[i],P[i+4]-P[i+1],P[i+5]-P[i+2]],w=[P[i+6]-P[i],P[i+7]-P[i+1],P[i+8]-P[i+2]],x=[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]];
+   const nn=[v.n[i],v.n[i+1],v.n[i+2]];assert.ok(x[0]*nn[0]+x[1]*nn[1]+x[2]*nn[2]>0,'CCW zvenku');assert.ok(nn[2]>=-1e-9||nn[1]>.99,'stěny ke kameře');
+   const mx=(P[i]+P[i+3]+P[i+6])/3-0,mz=(P[i+2]+P[i+5]+P[i+8])/3-pr.z;if(nn[1]<.99)assert.ok(mx*nn[0]+mz*nn[2]>0,'normála ven');}
+  for(let i=0;i<P.length;i+=3){assert.ok(P[i]>=c.x-1e-9&&P[i]<=c.x+c.w+1e-9&&P[i+2]>=c.z-c.d/2-1e-9&&P[i+2]<=c.z+c.d/2+1e-9,'uvnitř obalu');}}
+ const fr=cardVertices([pr]);assert.ok(fr.n.some((x,i)=>i%3===2&&Math.abs(x-1)<1e-9),'čelní stěna plochou ke kameře');
  // Hra: tenké karty ubraly trojúhelníky města, ne čela (okna, prádlo, šňůry, větrníky)
  const list=[...placeCards(cityChunk(1)),...lifeCards().cards];assert.ok(cardTriangles(list)<cardTriangles(list,{thin:false}));
 });
