@@ -1,9 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {drawUi,drawQte,drawAim,uiScale,uiFrame,withShake} from '../src/render3d/ui-layer.js';
-import {shakeCamera,flashAlpha,speedLineCount,speedLines,particleScreen,toScreen,fxMap,MAX_ROLL} from '../src/render3d/fx-map.js';
+import {drawUi,drawQte,drawAim,drawLabel,drawPopups,uiScale,uiFrame,withShake,QTE_BASE} from '../src/render3d/ui-layer.js';
+import {shakeCamera,flashAlpha,speedLineCount,speedLines,speedLineY,particleScreen,toScreen,fxMap,MAX_ROLL,SPEED_GAP,SPEED_Y} from '../src/render3d/fx-map.js';
 import {EVENT_VIEWS,eventView,GENERIC} from '../src/render3d/events-view.js';
-import {palette,CYBER} from '../src/render3d/palette.js';
+import {palette,CYBER,INK,DISPLAY} from '../src/render3d/palette.js';
+import {readFileSync} from 'node:fs';
 import {createFx,fxEvent,stepFx,STRIDE} from '../src/juice.js';
 import {createEvents} from '../src/events.js';
 
@@ -131,4 +132,33 @@ test('drawAim: arrow from the projected plane, panel and power bar; uiScale and 
  const idle=fakeCtx();drawAim(idle,{angle:15,held:false,charge:.9},{px:148,py:258});assert.equal(idle.ops.find(o=>o.name==='fillRect'&&o.style.fillStyle===CYBER.aim.bar).args[2],0);
  assert.equal(uiScale(1280),1);assert.equal(uiScale(640),1);assert.ok(uiScale(360)>1.5&&uiScale(360)<=2);assert.equal(uiScale(100),2);assert.equal(uiScale(0),1);
  assert.equal(palette('nope'),CYBER);assert.equal(CYBER.plane.fill,'#ffffff');assert.deepEqual(CYBER.trail,['#3c91ab','#913a90']);
+});
+
+test('U5: speed lines skip a ±24 px band around the plane (ink shadow and stroke width included), count unchanged',()=>{
+ assert.equal(SPEED_GAP,24);
+ for(const py of [-40,0,12,30,90,180,200,258,330,348,400])for(let f=0;f<6;f+=.25)for(const vx of [41,95,150]){
+  const lines=speedLines(vx,f,{},py);assert.equal(lines.length,speedLineCount(vx));
+  for(const [,y] of lines){assert.ok(y>=SPEED_Y[0]&&y<=SPEED_Y[1],'y in range');
+   for(const yy of [y-1,y+1,y+3-.5,y+3+.5])assert.ok(yy<py-SPEED_GAP||yy>py+SPEED_GAP,`line ${yy} crosses the plane band at ${py}`);}}
+ assert.deepEqual(speedLines(150,1,{},undefined),speedLines(150,1),'without a plane: old layout');
+ assert.equal(speedLineY(0,200),SPEED_Y[0]);assert.ok(speedLineY(.999,200)<=SPEED_Y[1]);
+ const m=fxMap(createFx(),{...view,py:180},{vx:150,flying:true,frame:1});assert.equal(m.speedLines.length,24);
+ for(const [,y] of m.speedLines)assert.ok(y<180-SPEED_GAP-1||y>180+SPEED_GAP,'fxMap passes view.py');
+});
+
+test('U6: dark ink base (60 % alpha) under the QTE ring, as an annulus so the plane in the middle stays bright',()=>{
+ for(const q of [{type:'gust',phase:'interaction',progress:.3,zones},{type:'gust',phase:'warning',progress:0,zones},{type:'bird',phase:'effect',result:'perfect',progress:1,zones}]){
+  const c=fakeCtx();drawQte(c,q,view,0,false);const i=c.ops.findIndex(o=>o.name==='fill'),f=c.ops[i];
+  assert.ok(f,'base drawn '+q.phase);assert.equal(f.style.fillStyle,INK);assert.equal(CYBER.qte.disc,INK);assert.ok(near(f.style.globalAlpha,.6));
+  const arcs=c.ops.slice(0,i).filter(o=>o.name==='arc').slice(-2);assert.deepEqual(arcs.map(o=>o.args[2]),[30+QTE_BASE,30-QTE_BASE]);assert.equal(arcs[1].args[5],true,'hole = reverse arc');
+  assert.ok(c.ops.findIndex(o=>o.name==='stroke')>i,'base under the ring');assert.ok(QTE_BASE>=7/2+3,'covers the 7 px track with a margin');
+  assert.equal(c.ops.find(o=>o.name==='stroke').style.globalAlpha<1,q.phase==='warning','alpha restored after the base');}
+ const none=fakeCtx();drawQte(none,{type:'gust',phase:'interaction'},view);assert.ok(!none.ops.some(o=>o.name==='fill'),'no ring, no base');
+});
+
+test('U18: canvas UI text without monospace (labels, aim panel, popups use the display stack)',()=>{
+ const fonts=[];for(const draw of [c=>drawLabel(c,{label:'↓ TAP',age:0},view),c=>drawAim(c,{angle:15},view),c=>drawPopups(c,[{text:'★',style:'perfect',i:0,alpha:1,scale:1,rise:0}],view)]){
+  const c=fakeCtx();draw(c);for(const o of c.ops)if(o.name==='fillText')fonts.push(o.style.font);}
+ assert.equal(fonts.length,3);for(const f of fonts){assert.ok(!/monospace/.test(f),f);assert.ok(f.endsWith(DISPLAY),f);}
+ assert.ok(!/monospace/.test(readFileSync(new URL('../src/render3d/ui-layer.js',import.meta.url),'utf8')));
 });

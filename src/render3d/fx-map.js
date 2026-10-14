@@ -17,10 +17,13 @@ export const flashAlpha=(fx,reduced=false,settings={})=>reduced||!fx||fx.flash<=
 export function speedLineCount(vx,settings={}){
  if(settings.reduced||!amount(settings.speedLines))return 0;const k=clamp01(((vx??0)-SPEED_FROM)/SPEED_SPAN);return k?Math.round(6+k*18):0;
 }
-// Čáry [x,y,délka] v logických px, stabilní pro jednu kresbu (frame = čas „on twos“), jako themes-verse.js.
-export function speedLines(vx,frame=0,settings={}){
+// Pás bez čar kolem vlaštovky (bible kap. 6: ±24 logických px); čáry jsou mezi SPEED_Y, tušová linka leží o 3 px níž, tahy mají tloušťku ≤ 2 px.
+export const SPEED_GAP=24,SPEED_Y=[12,348];
+export function speedLineY(r,py){const [a,b]=SPEED_Y;if(!Number.isFinite(py))return a+r*(b-a);const lo=Math.max(a,py-SPEED_GAP-4),cut=Math.max(0,Math.min(b,py+SPEED_GAP+1)-lo),y=a+r*(b-a-cut);return y>=lo?y+cut:y;}
+// Čáry [x,y,délka] v logických px, stabilní pro jednu kresbu (frame = čas „on twos“), jako themes-verse.js; py = výška vlaštovky (vynechá se pás kolem ní).
+export function speedLines(vx,frame=0,settings={},py){
  const n=speedLineCount(vx,settings);if(!n)return [];const k=clamp01((vx-SPEED_FROM)/SPEED_SPAN),seed=Math.floor(frame*12);
- return Array.from({length:n},(_,i)=>{const r=noise(seed*31+i*7.3);return [noise(seed*13+i)*700-30,12+noise(i*17.1+seed*.37)*336,(50+r*110)*(.5+k)];});
+ return Array.from({length:n},(_,i)=>{const r=noise(seed*31+i*7.3);return [noise(seed*13+i)*700-30,speedLineY(noise(i*17.1+seed*.37),py),(50+r*110)*(.5+k)];});
 }
 // Světové px (juice.js) → logické px obrazovky podle view {cam,px,py,k}.
 export function particleScreen(view,wx,y){const k=view.k??1;return [view.px+(wx-view.cam-view.px)*k,view.py+(y-view.py)*k];}
@@ -43,6 +46,6 @@ export const popups=(fx,reduced=false)=>(fx?.popups??[]).map((p,i)=>{const k=p.a
 export function fxMap(fx,view,opts={}){
  const {reduced=false,clock=0,settings={},metersPerPx=1/2.1,vx=0,frame=0,flying=false}=opts;
  return {shake:shakeCamera(fx,clock,reduced,metersPerPx,settings),flash:flashAlpha(fx,reduced,settings),
-  speedLines:flying&&!reduced?speedLines(vx,onTwos(frame),settings):[],particles:particles(fx,view),popups:popups(fx,reduced),
+  speedLines:flying&&!reduced?speedLines(vx,onTwos(frame),settings,view?.py):[],particles:particles(fx,view),popups:popups(fx,reduced),
   trail:(fx?.trail??[]).map(([wx,y])=>particleScreen(view,wx,y))};
 }
