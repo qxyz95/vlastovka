@@ -1,6 +1,6 @@
 // Papírové karty (čisté, ?styl=papir): bloky cityChunk a život čtvrti → tenké karty dioramatu a jejich vrcholy (stíny na zem: paper-shadow.js).
 // Přeneseno z prototype/styly/papir-data.js (bible research/design/05-styl-papir.md kap. 3), barvy z palette(style).city / .life, ne napevno.
-// Karta: {shape:'box'|'panel'|'lista'|'gable'|'eave'|'pyr'|'disc'|'flag'|'poly', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?, pts?}, metry.
+// Karta: {shape:'box'|'panel'|'lista'|'gable'|'eave'|'pyr'|'disc'|'flag'|'poly'|'prism', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?, pts?}, metry.
 import {SCREEN_METERS} from '../scenes.js';
 import {chunkOffset} from './geometry.js';
 import {suburbLife,carX,TRACK} from './life.js';
@@ -81,6 +81,8 @@ export function lifeCards(life=suburbLife(),style='papir'){
 // box tenčí než THIN se kreslí sám jako panel (díly ze seznamu LISTA jako lista), disc s d ≤ THIN_DISC jen čelem (n − 2 △): boky jsou v záběru pod 1 px.
 // Další tvary katalogu: gable {eaves:false} bez lemů okapu (5 △), 'eave' střecha okapem ke kameře (hřeben v půli hloubky, 2 sklony + 2 boční
 // štíty; back:false bez zadního sklonu, 4 △), 'poly' vystřižené čelo {pts:[[x,y]…] CCW, vějíř z pts[0], hvězdicový k pts[0]; x,w,y,h = obal}.
+// 'prism' (K4, věžička): n-boký hranol {x,w,y,h,z,d, n=6}, jen přivrácená polovina plášťů (n/2 ploch k +z, plochou stěnou ke kameře) a víko
+// (n − 2 △, top:false bez víka); apex:true = jehlan nad toutéž podstavou (n/2 △). x,w,z,d = obal podstavy (elipsa vepsaná do w × d).
 // opts.thin=false nakreslí panel, lista a tenký disc jako plnou kartu (porovnání se stavem před K3).
 export const THIN=.15,THIN_DISC=.1,LISTA=Object.freeze(new Set(['sill','cornice','stringcourse','plinth','step','canopy','flowerbox','lintel','balcony','counter','coping']));
 export const cardKind=(b,thin=true)=>b.shape==='panel'||b.shape==='lista'?(thin?b.shape:'box'):b.shape==='box'&&thin&&b.d<=THIN?(LISTA.has(b.part)?'lista':'panel'):b.shape==='disc'&&thin&&b.d<=THIN_DISC?'plate':b.shape;
@@ -103,6 +105,11 @@ export function cardVertices(list,{thin=true}={}){
    quad(o,[x0,y0,z1],[x1,y0,z1],[x1,y1,zm],[x0,y1,zm],[0,(z1-zm)/f,b.h/f],b.roof);
    if(b.back!==false)quad(o,[x1,y0,z0],[x0,y0,z0],[x0,y1,zm],[x1,y1,zm],[0,(zm-z0)/f,-b.h/f],b.roof);
    tri(o,[x0,y0,z0],[x0,y0,z1],[x0,y1,zm],[-1,0,0],b.color);tri(o,[x1,y0,z1],[x1,y0,z0],[x1,y1,zm],[1,0,0],b.color);}
+  else if(k==='prism'){const n=b.n??6,h=n>>1,cx=b.x+b.w/2,y0=b.y,y1=b.y+b.h,sm=Math.max(...Array.from({length:h+1},(_,i)=>Math.sin(i/n*Math.PI*2))),P=(i,y)=>[cx+Math.cos(i/n*Math.PI*2)*b.w/2,y,b.z+Math.sin(i/n*Math.PI*2)/sm*b.d/2];
+   const N=(a,c,e)=>{const u=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],v=[e[0]-a[0],e[1]-a[1],e[2]-a[2]],m=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],l=Math.hypot(...m);return m.map(x=>x/l);};
+   if(b.apex){const t=[cx,y1,b.z];for(let i=0;i<h;i++){const a=P(i+1,y0),c=P(i,y0);tri(o,a,c,t,N(a,c,t),b.color);}continue;}
+   for(let i=0;i<h;i++){const a=P(i+1,y0),c=P(i,y0),e=P(i,y1),f=P(i+1,y1);quad(o,a,c,e,f,N(a,c,e),b.color);}
+   if(b.top!==false)for(let i=1;i<n-1;i++)tri(o,P(0,y1),P(i+1,y1),P(i,y1),[0,1,0],b.color);}
   else if(k==='poly'){const P=b.pts,v=([x,y])=>[x,y,z1];for(let i=1;i<P.length-1;i++)tri(o,v(P[0]),v(P[i]),v(P[i+1]),[0,0,1],b.color);}
   else if(k==='pyr'||k==='flag'){const x0=b.x,x1=b.x+b.w,xm=(x0+x1)/2,flag=k==='flag',ya=flag?b.y+b.h:b.y,yb=flag?b.y:b.y+b.h;
    const tr=flag?[[x0,ya,z1],[xm,yb,z1],[x1,ya,z1]]:[[x0,ya,z1],[x1,ya,z1],[xm,yb,z1]];for(const v of tr){o.p.push(...v);o.n.push(0,0,1);o.c.push(b.color);}
@@ -116,6 +123,8 @@ export function cardVertices(list,{thin=true}={}){
 }
 // Trojúhelníky karet bez sestavení vrcholů (rozpočet): box 8, panel 2, lista 4, gable 9 (bez lemů 5), eave 6 (bez zad 4), pyr 5, flag 1, poly body − 2,
 // disc 3 × n, tenký disc n − 2 (mnohoúhelník čelem).
+// prism n/2 · 2 + víko n − 2 (šestiboký 10, bez víka 6), jehlan prism n/2.
 const TRIS={box:8,panel:2,lista:4,pyr:5,flag:1};
+const prismTris=b=>{const n=b.n??6;return b.apex?n>>1:(n>>1)*2+(b.top===false?0:n-2);};
 export const cardTriangles=(list,{thin=true}={})=>list.reduce((s,b)=>{const k=cardKind(b,thin);
- return s+(TRIS[k]??(k==='gable'?(b.eaves===false?5:9):k==='eave'?(b.back===false?4:6):k==='poly'?b.pts.length-2:k==='plate'?(b.n??18)-2:3*(b.n??18)));},0);
+ return s+(TRIS[k]??(k==='gable'?(b.eaves===false?5:9):k==='eave'?(b.back===false?4:6):k==='poly'?b.pts.length-2:k==='plate'?(b.n??18)-2:k==='prism'?prismTris(b):3*(b.n??18)));},0);

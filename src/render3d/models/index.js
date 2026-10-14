@@ -2,18 +2,24 @@
 // Rozhraní objektu (jeden soubor na objekt, export default):
 //  {id, name, district, layers, prototype:'skutečný předobraz', purpose, params:{klíč:{values,default}}, size:{w,h,d} výchozí varianty v m,
 //   tris:[max0,max1,max2] strop trojúhelníků na LOD pro nejbohatší variantu (0 = v té vrstvě se nekreslí, lod vrací []),
-//   trisScope? {param: max} rozsah variant, pro který strop platí, lod:[fn0,fn1,fn2], shadow?(params) stínový proxy ≤ 7 △ (11 kap. 1.3)}
+//   trisScope? {param: max} rozsah variant, pro který strop platí, ground? výška přízemí v m (výchozí SCALE.floor; okna pater po 3 m nad ním),
+//   lod:[fn0,fn1,fn2], shadow?(params) stínový proxy ≤ 7 △ (11 kap. 1.3)}
 //  lod[i](params) → karty ve formátu paper-cards (cardVertices, cardTriangles); LOD 0 ulice, 1 střed, 2 dálka (scale.js LOD_LAYER).
 // Generátor místa (K5) vezme karty přes buildModel a posune je parts.place do místa a vrstvy.
 import houseRow from './house-row.js';
 import houseGable from './house-gable.js';
 import farSkyline from './far-skyline.js';
 import chimney from './chimney.js';
+import workshop from './workshop.js';
+import cornerTurret from './corner-turret.js';
+import person from './person.js';
+import streetLamp from './street-lamp.js';
 import {cardTriangles} from '../paper-cards.js';
 
 export {SCALE,LOD_LAYER,CARD_DEPTH} from './scale.js';
 export {place,bounds} from './parts.js';
-export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney]);
+// G1 hmota města (K3), G2 start hodu (K4).
+export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney,workshop,cornerTurret,person,streetLamp]);
 export const modelById=id=>MODELS.find(m=>m.id===id)??null;
 export const defaults=m=>Object.fromEntries(Object.entries(m.params).map(([k,v])=>[k,v.default]));
 // Karty modelu v daném LOD; neznámé parametry se ignorují, chybějící doplní výchozí.
