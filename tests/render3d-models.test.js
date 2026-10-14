@@ -13,6 +13,11 @@ import {gableHeight} from '../src/render3d/models/house-gable.js';
 import {TURRET} from '../src/render3d/models/corner-turret.js';
 import {PERSON} from '../src/render3d/models/person.js';
 import {LAMP} from '../src/render3d/models/street-lamp.js';
+import {STALL} from '../src/render3d/models/stall.js';
+import {BUNTING,buntingColors} from '../src/render3d/models/bunting.js';
+import {HALL,VENT} from '../src/render3d/models/market-hall.js';
+import {ANTENNA} from '../src/render3d/models/antenna.js';
+import {LAUNDRY,laundryItems} from '../src/render3d/models/laundry.js';
 import {cardVertices,cardTriangles,CARD_D} from '../src/render3d/paper-cards.js';
 import {CARD_DEPTH} from '../src/render3d/models/scale.js';
 import {palette,PAPIR,PAPER_TOKENS as PT,mix} from '../src/render3d/palette.js';
@@ -28,9 +33,9 @@ const sample=(m,n=60)=>{const all=variants(m);return all.length<=n?all:Array.fro
 // Prostor variant K1 (2–4 patra × 2–3 osy × seed 1–5, ostatní výchozí) a průměr △ před K3 (11 kap. 1.3: LOD 0 ⌀ 488, LOD 1 ⌀ 85).
 const K1_SPACE=[2,3,4].flatMap(floors=>[2,3].flatMap(bays=>[1,2,3,4,5].map(seed=>({floors,bays,seed}))));
 
-test('registr: G1, G2 a G2b objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy; K4 workshop po S4 odstraněn',()=>{
+test('registr: G1, G2, G2b a G3 objekty, povinná pole, jednoznačné id, 3 LOD, volitelný stínový proxy; K4 workshop po S4 odstraněn',()=>{
  assert.deepEqual(MODELS.map(m=>m.id),['house-row','house-gable','far-skyline','chimney','corner-turret','person','street-lamp',
-  'kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam','retaining-wall']);
+  'kid','workshop-attic','workshop-interior','loft-balcony','hoist-beam','retaining-wall','stall','bunting','market-hall','antenna','laundry']);
  assert.equal(modelById('workshop'),null,'K4 workshop nahrazen G2b a ve hře zapojen (S4)');assert.deepEqual(ACTIVE_MODELS,MODELS);
  assert.deepEqual(MODELS.filter(m=>m.hero).map(m=>m.id),G2B,'G2b = LOD H (hrdina)');
  assert.equal(new Set(MODELS.map(m=>m.id)).size,MODELS.length);assert.deepEqual([...LOD_LAYER],['near','mid','far']);
@@ -337,4 +342,91 @@ test('G2b dioráma: rozvržení, determinismus, stínový proxy H2 + H6 ≤ 11 �
  const box=id=>bounds(a.filter(c=>c.model===id));assert.ok(near(box('workshop-attic').y0,LAUNCH.wall)&&near(box('workshop-interior').y0,LAUNCH.floor));
  assert.ok(box('workshop-interior').x0>=LAUNCH.house.x0&&box('workshop-interior').x1<=LAUNCH.house.x1,'dílna uvnitř domu');
  assert.ok(box('workshop-attic').x1<LAUNCH.hand.x&&box('retaining-wall').x0<LAUNCH.house.x0);
+});
+
+// ── G3 (trh, 11-katalog-ctvrt1.md karty 9–13): stánek, girlanda, tržní hala, anténa, prádlo.
+const G3=['stall','bunting','market-hall','antenna','laundry'];
+test('G3 stropy △ (11 kap. 4.3) po LOD ve všech variantách, pokles mezi LOD, nekreslený LOD prázdný, stín ≤ 7 △',t=>{
+ const CAP={stall:[60,20,6],bunting:[150,75,0],'market-hall':[550,150,25],antenna:[14,6,0],laundry:[40,15,0]};
+ for(const id of G3){const m=modelById(id),all=variants(m,{all:true});assert.deepEqual([...m.tris],CAP[id],id);
+  const max=[0,1,2].map(l=>Math.max(...all.map(p=>modelTriangles(m,l,p))));max.forEach((v,l)=>assert.ok(v<=CAP[id][l],`${id} LOD ${l}: ${v}`));
+  for(let l=0;l<3;l++)if(!CAP[id][l])assert.equal(max[l],0,`${id} LOD ${l} se nekreslí`);
+  for(const p of all){const n=[0,1,2].map(l=>modelTriangles(m,l,p)),L=drawnLods(m);for(let i=1;i<L.length;i++)assert.ok(n[L[i-1]]>n[L[i]],`${id} pokles ${n}`);}
+  t.diagnostic(`${id}: max △ ${max.join(' / ')} (strop ${CAP[id].join(' / ')}), výchozí ${[0,1,2].map(l=>modelTriangles(m,l)).join(' / ')}, stín ${cardTriangles(buildShadow(m))}`);}
+ // girlanda na 200 m přesně na stropu (5 rozpětí × (4 + 26)), dominanta hluboko pod stropem (rezerva místa 2)
+ assert.equal(modelTriangles('bunting',0,{length:200}),150);assert.equal(modelTriangles('bunting',1,{length:200}),75);assert.ok(modelTriangles('market-hall',0)<=400);
+ assert.equal(cardTriangles(buildShadow('stall')),4);assert.ok(cardTriangles(buildShadow('market-hall'))<=7);for(const id of ['bunting','antenna','laundry'])assert.equal(buildShadow(id).length,0,`${id} bez stínu`);
+});
+
+test('G3 stánek: trojice 3 × 2,3 m, pult 0,95 m, sloupky 2,4 m, markýza 0,5 m s lambrekýnem 0,3 m (9 zoubků), bedny a kopečky zboží, varianty',()=>{
+ const m=modelById('stall'),l=buildModel(m,0),by=part=>l.filter(c=>c.part===part),D=D1(),S=palette('papir').life.stall;
+ const ct=by('counter')[0];assert.ok(near(ct.w,6.9)&&near(ct.h,.95)&&ct.y===0&&ct.shape==='box');
+ const posts=by('post');assert.equal(posts.length,4);assert.ok(posts.every(c=>near(c.h,2.4)&&c.y===0));assert.ok(near(posts[1].x+posts[1].w/2-posts[0].x,STALL.unit,.1));
+ const aw=by('awning');assert.equal(aw.length,6);assert.ok(aw.every(c=>near(c.y,2.4)&&near(c.h,.5)&&c.z+c.d/2>ct.z+ct.d/2),'markýza přesahuje pult');
+ const val=by('valance');assert.equal(val.length,9);assert.ok(val.every(c=>c.shape==='flag'&&near(c.h,.3)&&near(c.y+c.h,2.4)));
+ assert.equal(by('crate').length,3);assert.equal(by('goods').length,3);assert.ok(by('goods').every(g=>g.y>=.95+.3-1e-9),'zboží v bednách na pultu');assert.equal(by('tag').length,1);
+ assert.ok(near(bounds(l).y1,2.9)&&near(bounds(l).w,7.2));assert.ok(SCALE.person<2.4-.3,'pod markýzou projde člověk');
+ // barvy: pult life.stall.base, sloupky life.stall.post, pruhy střídavě barva a krém, lambrekýn rovné markýzy v barvě pruhů
+ assert.equal(ct.color,S.base);assert.ok(posts.every(c=>c.color===S.post));
+ for(const stripes of [0,1,2,3]){const a=buildModel(m,0,{stripes}).filter(c=>c.part==='awning');assert.deepEqual(a.map(c=>c.color),a.map((_,i)=>i%2?S.stripe:S.stripes[stripes]));}
+ const goods={fruit:[PT.tomato,D.trees[2],D.near[6]],flowers:[D.near[4],D.near[5],D.near[1]],bread:[PT.kraft,D.near[6],tones(PT.kraft).trim]};
+ for(const [g,c] of Object.entries(goods))assert.deepEqual(buildModel(m,0,{goods:g}).filter(x=>x.part==='goods').map(x=>x.color),c,g);
+ const st=buildModel(m,0,{awning:'straight'}).filter(c=>c.part==='valance');assert.ok(st.length===3&&st.every(c=>c.shape==='panel'),'rovná markýza');
+ assert.ok(!l.some(c=>c.sway),'stánek stojí');
+});
+
+test('G3 girlanda: praporky 0,8 m po ~1,5 m, provázek s průvěsem 0,8 m mezi podpěrami po 40 m, LOD 1 každý druhý, barvy bez hořčicové',()=>{
+ const m=modelById('bunting'),ccw=pts=>pts.reduce((s,[a,b],i)=>{const [u,v]=pts[(i+1)%pts.length];return s+a*v-u*b;},0)>0;
+ for(const length of m.params.length.values)for(const y of m.params.y.values){const l=buildModel(m,0,{length,y}),fl=l.filter(c=>c.part==='pennant'),st=l.filter(c=>c.part==='string');
+  assert.equal(st.length,length/BUNTING.span);assert.equal(fl.length,st.length*BUNTING.perSpan);assert.ok(near(bounds(l).w,length,1e-9)&&near(bounds(st).y1,y+BUNTING.line/2,1e-9),'provázek u podpěr ve výšce y');
+  assert.ok(fl.every(c=>near(c.w,.8)&&near(c.h,.8)&&c.shape==='flag'&&c.sway),'praporek 0,8 m kmitá');
+  const xs=fl.map(c=>c.x+c.w/2);xs.slice(1).forEach((x,i)=>assert.ok(x-xs[i]>1.4&&x-xs[i]<1.6,`rozestup ${x-xs[i]}`));
+  assert.ok(near(y-Math.min(...st.flatMap(c=>c.pts.map(p=>p[1]))),BUNTING.sag+BUNTING.line/2,1e-9),'průvěs 0,8 m');
+  // praporek visí na provázku: horní hrana přesně pod provázkem v místě praporku
+  for(const c of fl){const u=((c.x+c.w/2+length/2)%BUNTING.span)/BUNTING.span;assert.ok(near(c.y+c.h,y-BUNTING.sag*(1-Math.abs(2*u-1))-BUNTING.line/2,1e-9));}
+  const l1=buildModel(m,1,{length,y});assert.equal(l1.filter(c=>c.part==='pennant').length,fl.length/2);
+  for(const c of [...st,...l1.filter(c=>c.part==='string')])assert.ok(ccw(c.pts),'provázek CCW');
+  assert.ok(Math.max(...l.map(c=>c.y+c.h))<=8.5,'pod pásem letu');}
+ const cols=buntingColors(),P=palette('papir');assert.ok(!cols.includes(PT.mustard)&&cols.includes('#f2b65a'),'#f2b65a místo hořčicové (06)');
+ assert.deepEqual(cols,P.life.bunting.map(c=>c===PT.mustard?'#f2b65a':c));
+ const fl=buildModel(m,0,{length:200}).filter(c=>c.part==='pennant');assert.ok(fl.every((c,i)=>c.color===cols[i%cols.length]));assert.ok(fl.slice(1).every((c,i)=>c.color!==fl[i].color),'sousední praporky jinou barvou');
+});
+
+test('G3 tržní hala: čelo 30 m, štít 7 m s půlkruhovým oknem, vjezd 5 × 4,5 m, lucerna 8 × 2,5 m nad hřebenem s lamelami, výdech páry, cihla a krém',()=>{
+ const m=modelById('market-hall'),l=buildModel(m,0),by=part=>l.filter(c=>c.part===part),D=D1();
+ const wall=by('wall')[0],roof=by('roof')[0];assert.ok(near(wall.w,30)&&near(wall.h,7)&&wall.color===D.near[3]);
+ assert.ok(roof.shape==='gable'&&near(roof.h,7)&&near(roof.y,7)&&roof.color===D.roof[1]&&roof.roof===D.roof[1],'cihlový štít 7 m');
+ const arch=bounds(by('arch').filter(c=>c.color===tones(D.near[3]).door));assert.ok(near(arch.w,5)&&near(arch.h,4.5)&&arch.y0===0,'vjezd 5 × 4,5 m');
+ const lun=by('lunette').filter(c=>c.color===tones(D.roof[1]).pane);assert.equal(lun.length,1);const lb=bounds(lun);assert.ok(near(lb.w,2*HALL.lunette.r)&&lb.y0>7&&lb.y1<14,'půlkruhové okno ve štítu');
+ assert.equal(by('lunette').filter(c=>c.pts.length===4).length,HALL.lunette.spokes,'paprskové příčky');
+ const lt=by('lantern').find(c=>c.shape==='box');assert.ok(near(lt.w,8)&&near(lt.y+lt.h-14,2.5)&&lt.color===D.roof[0],'lucerna nad hřebenem');assert.equal(by('louvre').length,4);
+ assert.ok(by('louvre').every(c=>c.y>14&&c.y+c.h<16.5),'lamely nad hřebenem');assert.ok(near(VENT.y,bounds(l).y1)&&near(VENT.x,0)&&VENT.z<0,'pára z lucerny');
+ assert.equal(l.filter(c=>c.part==='window').length,13);assert.equal(l.filter(c=>c.part==='door').length,1);
+ assert.ok(by('sign').some(c=>c.shape==='disc'&&c.color===PT.tomato),'cedule bez textu, piktogram jablka');assert.equal(by('crate').length,4);
+ const inner=l.filter(c=>c.part==='counter'||c.part==='awning');assert.ok(inner.length&&inner.every(c=>c.x>=-2.5&&c.x+c.w<=2.5),'stánky uvnitř vjezdu');
+ // LOD 2 silueta: tělo, štít, lucerna se stříškou; LOD 1 bez rámů a lamel
+ assert.deepEqual(buildModel(m,2).map(c=>c.part),['wall','roof','lantern','roof']);assert.ok(!buildModel(m,1).some(c=>c.part==='louvre'||c.part==='crate'));
+});
+
+test('G3 anténa: stožár 0,25 m (D-1), ráhno 2,4 m, 4 prvky 1,6 → 1,0 m, lanko; tužka, kratší než 1/3 vlaštovky (P1)',()=>{
+ const m=modelById('antenna');
+ for(const h of m.params.h.values){const l=buildModel(m,0,{h}),by=part=>l.filter(c=>c.part===part);
+  assert.ok(near(by('mast')[0].w,ANTENNA.mast)&&near(ANTENNA.mast,.25)&&near(by('mast')[0].h,h));const boom=by('boom')[0];assert.ok(near(boom.w,2.4)&&boom.y<h);
+  const el=by('element');assert.deepEqual(el.map(c=>c.h),[1.6,1.4,1.2,1]);assert.ok(el.every(c=>c.x>=boom.x-1e-9&&c.x+c.w<=boom.x+boom.w+1e-9&&near(c.y+c.h/2,boom.y+boom.h/2)),'prvky na ráhnu');
+  assert.equal(by('guy').length,1);assert.ok(near(bounds(by('guy')).y0,0,.05),'lanko ke střeše');
+  assert.ok(Math.max(boom.w,...el.map(c=>c.h))<=SCALE.plane/3,'1/3 vlaštovky');assert.ok(l.every(c=>c.color===PT.pencil));
+  assert.deepEqual(buildModel(m,1,{h}).map(c=>c.part),['mast','boom','element']);}
+});
+
+test('G3 prádlo: šňůra ve výšce parapetu na dvou konzolách, kusy visí pod ní nad patrem, sousední jiná barva, ponožky jen LOD 0, kmitá',()=>{
+ const m=modelById('laundry'),cloth=palette('papir').life.people.cloth;
+ for(const p of variants(m,{all:true})){const l=buildModel(m,0,p),by=part=>l.filter(c=>c.part===part),line=by('line')[0];
+  assert.ok(near(line.w,p.span)&&near(line.y+line.h/2,SCALE.sill)&&near(line.h,.06),'šňůra = délka, parapet 0,9 m');assert.equal(by('bracket').length,2);
+  const items=laundryItems(p.span,p.seed);assert.ok(items.length>=1);assert.ok(items.every(it=>it.x>=-p.span/2&&it.x+it.w<=p.span/2&&cloth.includes(it.color)));
+  items.slice(1).forEach((it,i)=>assert.ok(it.color!==items[i].color&&it.x>=items[i].x+items[i].w+LAUNDRY.gap-1e-9,'jiná barva, mezera'));
+  const cl=by('cloth');assert.ok(cl.every(c=>c.sway&&c.y>0&&near(c.y+c.h,line.y,1e-9)),'visí ze šňůry, nad podlahou patra');assert.ok(l.every(c=>c.color!==PT.graphite));
+  const l1=buildModel(m,1,p);assert.ok(!l1.some(c=>c.part==='bracket'));
+  assert.equal(l1.filter(c=>c.part==='cloth').length,Math.min(LAUNDRY.lod1,items.filter(it=>it.kind!=='socks').length),'LOD 1 bez ponožek');}
+ assert.ok(laundryItems(7.2,1).length>=5&&laundryItems(7.2,1).length<=8,'výchozí šňůra 5–8 kusů (karta)');
+ assert.equal(new Set(m.params.seed.values.map(seed=>JSON.stringify(laundryItems(7.2,seed)))).size,5,'seed mění sestavu');
 });
