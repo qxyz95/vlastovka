@@ -2,6 +2,12 @@
 
 **Založeno 14. 10. 2026** (game designer), **revize 14. 10. 2026** podle rozhodnutí uživatele (06, „Odemykatelný obsah…“, body 1–8). Odpověď na zadání uživatele: „rozšířit naší dílnu o další vlaštovky které budou zamčené a půjdou odemknout za mince. A zároveň by to chtělo vymyslet další kontent ve hře aby ve hře bylo dostatek odemykatelnýho kontentu a různé skiny vlaštovek které by byly odemykatelné za progress ve hře.“
 
+## Změny 14. 10. (osa 90 min)
+- **Cílová délka ~90 min** do „Delivered.“ (06 „Cílová délka hry opravena na ~90 minut“), bez umělého natahování. Nahrazuje cíl ~60 min níže. **Noční trasa se nestaví**, Night Owl (M6), K11 a obsah po finále jsou odložené.
+- **§5 a §6.1 přepočtené na osu 90 min** (~167 hodů) podle `research/obsah/05-plan-90-minut.md` §2 a §7. Sloupce „kdy“ v §2.8 a §3.2 posunuté na novou osu.
+- **BLOCKED 1 a 4 (§7) překonané:** délku nese 3. kolo ekonomiky a hustota obsahu z plánu 05, pásma hodů jsou v 05 §7.2.
+- **Mailbag III** se bez noci musí zaplatit do finále (05 BLOCKED 2).
+
 ## Změny 14. 10. (revize)
 - **Statistiky modelů znovu (06 bod 2, §2.1):** každý nový model je **o něco lepší celkově** (+3–5 % doletu bez událostí, Needle místo doletu +10 % mincí za minutu) a **výrazně lepší ve své specialitě** (+15–25 % jen v jeho situaci), s jednou slabinou, kde je horší než Dart nebo Glider. Statistiky se rozdělují podle páky z `04-ekonomika.md` §3.1: obecný přínos nesou `glide` a `cruise`, nikdy `speed` a `ideal`. **Hawk už nemá ideal 34°**, ale 18° jako Dart.
 - **Ceny dražší a pravidlem** `cena = k × R(místo)`, k roste s pořadím 4 → 6 (Hawk 450, Kite 770, Skimmer 1 100, Sail 1 560, Needle 2 190 ◈, celkem ~6 100 ◈). Nové pravidlo „dražší smí být o něco lepší, ale nikdy ve všech situacích“ nahrazuje 04 §3.3 bod 8.
@@ -26,7 +32,7 @@
 4. **Mailbag / Poštovní brašna:** jediná koupená investice do mincí, +10 / +20 / +30 % z každého hodu, úroveň se otevře s každou novou čtvrtí (D2–D4). Ukazuje „teď → po koupi“ a návratnost v hodech. Strop všech „+X % mincí“ je +50 %.
 5. **Skiny = potisk přes papír**, jeden skin pro všechny vlaštovky, jen za postup: 4 suvenýry (K1–K4), finále (K5), 5 podpisových za první trik modelu (K6–K10) a 7 razítek. Bez počítadla. Stopa bez kosmetiky.
 6. **Další obsah:** Polička suvenýrů, Rádio (po hudbě), obsah po finále (Night Owl, Night Mail).
-7. **Cílová délka ~60 min** (dnes SKILLS 52 min, x2 61 min). Ceny modelů, které hráči vrátí, co stály, kampaň samy neprodlouží. Kde vzít zbytek, je BLOCKED 1.
+7. **Cílová délka ~90 min** (dnes SKILLS 52 min, x2 61 min; 06 „opraveno na ~90 minut“). Ceny modelů, které hráči vrátí, co stály, kampaň samy neprodlouží. Délku nese 3. kolo ekonomiky, hustotu novinek plán `05-plan-90-minut.md`.
 
 ---
 
@@ -127,7 +133,7 @@
 - **Cíl:** důvod hrát Night Route jinak než ve dne. **Až po finále** (06 bod 4).
 - **Pravidlo (náčrt):** jen pro Night Route, delší varování událostí, světlo luceren dává malý vztlak. Detaily s návrhem Night Route.
 - **Odemčení:** uzel Night Route v Atlasu, model za mince po prvním nočním letu. Cena po finále (z nekoupeného katalogu, 04 §1.4).
-- **Priorita:** později. **Pracnost:** M–L.
+- **Priorita:** později. **Pracnost:** M–L. **Odloženo 14. 10.:** noční trasa se zatím nestaví (06, cíl 90 min).
 
 ### 2.8 Pořadí, ceny a viditelnost
 
@@ -137,11 +143,11 @@
 |---|---|---:|---:|---:|---:|---|---|
 | – | Dart | od začátku | – | – | 0 | – | – |
 | – | Glider | 100 m (A01), zdarma | – | – | 0 | ~2. hod | Calm Sky |
-| 1 | Hawk | 4 | 112 | 4 | **450** | ~hod 28–32 (začátek D2) | Crowd Chain, Sharp Edge, Whistle |
-| 2 | Kite | 6 | 171 | 4,5 | **770** | ~hod 42–46 | Crane Lift, Thermal, Calm Sky |
-| 3 | Skimmer | 8 | 220 | 5 | **1 100** | ~hod 57–62 (začátek D3) | Stone Skip, Cushion, Dive, Packing Tape |
-| 4 | Sail | 10 | 284 | 5,5 | **1 560** | ~hod 70–74 | Pinwheel |
-| 5 | Needle | 14 | 365 | 6 | **2 190** | ~hod 95–99 | Ad Drone, Paper Rocket |
+| 1 | Hawk | 4 | 112 | 4 | **450** | ~hod 40–46 (začátek D2) | Crowd Chain, Sharp Edge, Whistle |
+| 2 | Kite | 6 | 171 | 4,5 | **770** | ~hod 58–62 | Crane Lift, Thermal, Calm Sky |
+| 3 | Skimmer | 8 | 220 | 5 | **1 100** | ~hod 80–86 (začátek D3) | Stone Skip, Cushion, Dive, Packing Tape |
+| 4 | Sail | 10 | 284 | 5,5 | **1 560** | ~hod 100–105 | Pinwheel |
+| 5 | Needle | 14 | 365 | 6 | **2 190** | ~hod 143–148 | Ad Drone, Paper Rocket |
 | | **celkem** | | | | **~6 070** | ≈ 24 hodů příjmu | |
 
 - **Pravidlo ceny:** `cena = round10(k × R(místo))`, R = medián příjmu za hod průměrného hráče, když má rekord na místě odemčení, **měřený bez modelů a bez Mailbagu** (04 §2.4, utlumení zpětné vazby). Ve 3. kole (násobitel čtvrti) se R přepočte a ceny s ním, ne ručně.
@@ -241,11 +247,11 @@ Podle 06 bod 5: **náhled dvou drah a odhad doletu, bez zkušebního hodu.**
 | # | Skin (EN / CS) | Odemkne | Kdy (cílová osa §5) | Motiv (03 §3) |
 |---|---|---|---|---|
 | K0 | **Plain** / Čistý | od začátku | – | bez potisku |
-| K1 | **Sunrise Postcard** / Pohled ze střech | první přelet do 2. čtvrti | ~hod 31, 14 min | střechy a komíny, postava čtvrti 1 |
-| K2 | **Harbor Chart** / Přístavní mapa | první přelet do 3. čtvrti | ~hod 59, 28 min | vrstevnice, kotva |
-| K3 | **Field Almanac** / Polní kalendář | první přelet do 4. čtvrti | ~hod 85, 44 min | klasy, větrník, hvězdičky |
-| K4 | **Lantern Night** / Lampionová noc | finále („Delivered.“) | ~hod 110, 60 min | lampiony; **ve čtvrti 4 jemně svítí** (06 bod 7) |
-| K5 | **Airmail Delivered** / Doručeno | finále, ohlásí se po dalším hodu | ~hod 111 | šipky letecké pošty, razítko |
+| K1 | **Sunrise Postcard** / Pohled ze střech | první přelet do 2. čtvrti | ~hod 40, 17 min | střechy a komíny, postava čtvrti 1 |
+| K2 | **Harbor Chart** / Přístavní mapa | první přelet do 3. čtvrti | ~hod 82, 38 min | vrstevnice, kotva |
+| K3 | **Field Almanac** / Polní kalendář | první přelet do 4. čtvrti | ~hod 125, 62 min | klasy, větrník, hvězdičky |
+| K4 | **Lantern Night** / Lampionová noc | finále („Delivered.“) | ~hod 167, 88 min | lampiony; **ve čtvrti 4 jemně svítí** (06 bod 7) |
+| K5 | **Airmail Delivered** / Doručeno | finále, ohlásí se po dalším hodu | ~hod 168 | šipky letecké pošty, razítko |
 | K6 | **Hawk Feather** / Sokolí pero | první let s Hawkem s 3 perfekty za sebou | pár hodů po koupi | tahy per |
 | K7 | **Kite Tail** / Drakův ocas | první perfekt termiky s Kite, nebo výška 40 m s Kite | po koupi, D3 | kosočtverce, mašle |
 | K8 | **Skimmer Ripples** / Kruhy na vodě | první dvojitý odraz se Skimmerem | po koupi | soustředné kruhy |
@@ -299,45 +305,45 @@ Nové věci tady **nepřidávají sílu** (to je Atlas, Dílna, modely a Mailbag
 - **Pracnost:** S. **Priorita:** později (po hudbě).
 
 ### 4.3 Karta C3 — Obsah po finále (Night Route)
-- Night Owl (M6), skin Night Mail (K11), noční varianty razítek. Mailbag III a nekoupený katalog dávají mincím smysl i po finále. **Priorita:** později.
+- Night Owl (M6), skin Night Mail (K11), noční varianty razítek. Mailbag III a nekoupený katalog dávají mincím smysl i po finále. **Priorita:** později. **Odloženo 14. 10.:** noc se nestaví (06), Mailbag III se musí zaplatit do finále.
 
 ### 4.4 Co záměrně nenavrhuji
 Další zdroje mincí, výzvy, zakázky, známky, dopisy (zamítnuto). Kosmetika stopy (06 bod 7). Kosmetika za mince. Sezónní a denní věci (P13). Výdělek offline (RippleLoop: nepřevzít). Letka jen jako pozdní bonus Atlasu (06).
 
 ---
 
-## 5. Křivka obsahu (cílová osa 60 min)
+## 5. Křivka obsahu (cílová osa 90 min)
 
-**Osa:** **cíl** průměrného hráče, sada SKILLS, realistický nákup, s modely a Mailbagem: D1 30 hodů / 13,5 min, D2 28 / 15, D3 26 / 15,5, D4 26 / 16, celkem **~110 hodů / ~60 min**. Dnes (04 §1.2) SKILLS 96 hodů / 52 min, x2 113 / 61. Hody po místech jsou rovnoměrné rozdělení uvnitř čtvrti, **ne měření** (NOT ASSESSED). Osa platí, až simulace potvrdí cíl. Tučně obsah z tohoto návrhu.
+**Osa:** **cíl** průměrného hráče, sada SKILLS, realistický nákup, s modely, Mailbagem, Throw again a 3. kolem ekonomiky: D1 ~40 hodů / 17 min, D2 ~42 / 21, D3 ~43 / 24, D4 ~42 / 26, finále **~167 hodů / ~88 min**, se souhrnem **~90 min**. Dnes (04 §1.2) SKILLS 96 hodů / 52 min, x2 113 / 61. Hody po místech jsou rozvržení, **ne měření** (NOT ASSESSED). Osa platí, až simulace potvrdí cíl (05-plan-90-minut §7). Tučně obsah z tohoto návrhu. Nový obsah z plánu 05 (varianty událostí, Hejno, zastávky, kousky) je v `05-plan-90-minut.md` §2, tady jen modely, Mailbag a kosmetika.
 
 | Místo | ~hod / min | Atlas a Dílna (existující) | Nový obsah |
 |---|---|---|---|
 | 1 Workshop & First Roofs | 1–5 / 0–2 | Power 1, Paper 1, Glider (100 m) | razítka Gust, Pigeon (tiše, po odemčení Dílny) |
-| 2 Market | ~8 / 3,5 | Crowd Chain | karty Hawk a Kite v Dílně (2 nejbližší) |
-| 3 Gardens | ~15 / 6,5 | Pinwheel, světlý Kraft | – |
-| 4 Railway | ~23 / 10 | Steam Hop | **Hawk k prodeji (450 ◈)**, razítko Steam |
-| 5 Warehouses (D2) | ~31 / 13,5 | Karta čtvrti, Packing Tape, Dive, Calm Sky, 1. kapsa | **skin K1, polička: větrník, Mailbag I (500 ◈)**, koupě Hawka (~hod 30) |
-| 6 Crane Forest | ~38 / 17 | Crane Lift | **Kite k prodeji (770 ◈)** |
-| 7 Bridge | ~45 / 21 | Stone Skip, Washi | koupě Kite (~hod 44) |
-| 8 Lighthouse | ~52 / 24,5 | Gull Escort | **Skimmer k prodeji (1 100 ◈)**, podpisové K6–K7 |
-| 9 Fields (D3) | ~59 / 28,5 | Karta čtvrti, Momentum, Whistle, Rocket, 2. kapsa | **skin K2, polička: maják, Mailbag II (800 ◈)**, koupě Skimmeru (~hod 60) |
-| 10 Wind Ridge | ~65 / 32 | Thermal | **Sail k prodeji (1 560 ◈)**, razítko Thermal, K8 |
-| 11 Saddle | ~72 / 36 | Echo, stříbrná fólie | koupě Sailu (~hod 72) |
-| 12 Observatory | ~78 / 40 | Shooting Star | razítko Star, K9 |
-| 13 Gates (D4) | ~85 / 44 | Karta čtvrti, Ad Drone | **skin K3, polička: klasy, Mailbag III (900 ◈)**, razítko Drone |
-| 14 Sky Terraces | ~91 / 48 | Paper Crane | **Needle k prodeji (2 190 ◈)** |
-| 15 Broadcast Tower | ~98 / 52 | On Air | koupě Needle (~hod 97), K10 |
-| 16 Rooftop Harbor | ~104 / 56 | Encore | – |
-| Finále | ~110 / 60 | „Delivered.“, souhrn, uzel Night Route | **skin K4 + K5, razítko Delivered, polička: lampion a schránka** |
-| Po dohrání | – | Night Route (za ◈) | Night Owl, Night Mail, Mailbag III se vrací |
+| 2 Market | ~7 / 2,5 | Crowd Chain | karty Hawk a Kite v Dílně (2 nejbližší) |
+| 3 Gardens | ~16 / 6,5 | Pinwheel, světlý Kraft | – |
+| 4 Railway | ~27 / 11,5 | Steam Hop | **Hawk k prodeji (450 ◈)**, razítko Steam |
+| 5 Warehouses (D2) | ~40 / 17 | Karta čtvrti, Packing Tape, Dive, Calm Sky, 1. kapsa | **skin K1, polička: větrník, Mailbag I (500 ◈)**, koupě Hawka (~hod 40–46) |
+| 6 Crane Forest | ~50 / 22 | Crane Lift | **Kite k prodeji (770 ◈)** |
+| 7 Bridge | ~61 / 27,5 | Stone Skip, Washi | koupě Kite (~hod 58–62) |
+| 8 Lighthouse | ~71 / 32,5 | Gull Escort | **Skimmer k prodeji (1 100 ◈)**, podpisové K6–K7 |
+| 9 Fields (D3) | ~82 / 38 | Karta čtvrti, Momentum, Whistle, Rocket, 2. kapsa | **skin K2, polička: maják, Mailbag II (800 ◈)**, koupě Skimmeru (~hod 80–86) |
+| 10 Wind Ridge | ~93 / 44 | Thermal | **Sail k prodeji (1 560 ◈)**, razítko Thermal, K8 |
+| 11 Saddle | ~104 / 50 | Echo, stříbrná fólie | koupě Sailu (~hod 100–105) |
+| 12 Observatory | ~115 / 56 | Shooting Star | razítko Star, K9 |
+| 13 Gates (D4) | ~125 / 62 | Karta čtvrti, Ad Drone | **skin K3, polička: klasy, Mailbag III (cena tak, aby se vrátila do finále, 05 BLOCKED 2)**, razítko Drone |
+| 14 Sky Terraces | ~135 / 68 | Paper Crane | **Needle k prodeji (2 190 ◈)** |
+| 15 Broadcast Tower | ~146 / 75 | On Air | koupě Needle (~hod 143–148), K10 |
+| 16 Rooftop Harbor | ~156 / 81 | Encore | – |
+| Finále | ~167 / 88 | „Delivered.“, souhrn po dohrání | **skin K4 + K5, razítko Delivered, polička: lampion a schránka** |
+| Po dohrání | – | volné létání; Night Route se zatím nestaví (06) | Night Owl, Night Mail odloženy |
 
 **Čtení:**
-- **Koupě padají mezi místa** (cíl na mince mezi místy, jako 1. kapsa). Odemčení je na místě, koupě o 4–6 hodů později, takže sucho P90 (dnes 9–11, cíl ≤ 8) přeruší koupě, ne další ohlášení.
-- **Každá čtvrť D2–D4 dostane jednu úroveň Mailbagu a jeden suvenýr na svém prvním místě.** Karta čtvrti je tak „velký okamžik“: nový skin, nová úroveň brašny, nové bonusy. Pravidlo jedné novinky za hod: skin s kartou, Mailbag jen řádkem na kartě („Also opens“), ne vlastním ohlášením.
-- **D1 zůstává bez koupě nového obsahu**: Hawk je k prodeji na místě 4, ale koupí se až kolem přechodu do D2 (x2 má v D1 rezervu 1 hod).
-- **D2 má dva modely a Mailbag I**, ale Skimmer se kupuje až v D3. Útrata D2 ≈ Hawk + Kite + Mailbag I ≈ 1 720 ◈ ≈ 9 hodů příjmu. Kvůli tomu má D2 na cílové ose 28 hodů, ne 23.
-- **D3 je nejbohatší na koupě** (Skimmer, Sail, Mailbag II ≈ 3 460 ◈), přesně tam, kde bylo nejvíc sucha (04 §2.5).
-- **D4** má Needle a Mailbag III jako skutečnou volbu (rychlejší lety teď, nebo investice na Night Route).
+- **Koupě padají mezi místa** (cíl na mince mezi místy, jako 1. kapsa). Odemčení je na místě, koupě o 4–10 hodů později. Na ose 90 min je mezi místy ~10 hodů, takže koupě vlaštovky vyplní střed úseku (spolu se zastávkami z 05 v D2–D4).
+- **Každá čtvrť D2–D4 dostane jednu úroveň Mailbagu a jeden suvenýr na svém prvním místě.** Fronta novinek (05 FN1) je ohlásí v dalších hodech po jednom, ne naráz s kartou čtvrti.
+- **D1 zůstává bez koupě nového obsahu**: Hawk je k prodeji na místě 4, koupí se kolem přechodu do D2.
+- **D2 má dva modely a Mailbag I**, Skimmer se kupuje až v D3.
+- **D3 je nejbohatší na koupě** (Skimmer, Sail, Mailbag II), tam, kde bylo nejvíc sucha (04 §2.5).
+- **D4** má Needle a Mailbag III. Bez noci musí obě koupě dávat smysl do finále (rychlejší lety teď; Mailbag III jen s návratností do konce hry).
 
 ---
 
@@ -353,9 +359,9 @@ Další zdroje mincí, výzvy, zakázky, známky, dopisy (zamítnuto). Kosmetika
 
 | # | Metrika | Cíl |
 |---|---|---|
-| 1 | Délka kampaně SKILLS průměrný | **57–63 min** (cíl 60) |
-| 2 | Délka x2 průměrný | ≤ 72 min, každá čtvrť ≤ 20 min |
-| 3 | Hody po čtvrtích SKILLS | D1 25–35, D2–D4 22–32 (pásmo 08 posunuté pro 60 min, viz BLOCKED 4) |
+| 1 | Délka kampaně SKILLS průměrný | **82–98 min** (cíl 90), ~150–185 hodů |
+| 2 | Délka x2 průměrný | ≤ 105 min, každá čtvrť ≤ 30 min |
+| 3 | Hody po čtvrtích SKILLS | D1 34–46, D2 36–48, D3 37–49, D4 36–48 (05-plan-90-minut §7.2) |
 | 4 | Obecný přínos (sonda, pevná výbava, průměr větru) | Hawk +3, Kite +3, Skimmer +4, Sail +5 % (±1,5 p. b.); Needle dolet 0 až −3 %, ◈/min +8–12 % |
 | 5 | Specialita v její situaci | +15–25 %, nikdy > +30 %; situace v 20–40 % hodů |
 | 6 | Slabina | každý model aspoň v 1 běžné situaci ≤ −5 % |
@@ -368,16 +374,17 @@ Další zdroje mincí, výzvy, zakázky, známky, dopisy (zamítnuto). Kosmetika
 | 13 | Hawk | `auto` s Hawkem horší než s Dartem; strop E: podíl letů, kdy by push s `perfectK` přesáhl strop ×1,6, ≤ 20 % |
 | 14 | Synergie | Sail + Pinwheel 3 není nejlepší sestava u všech profilů; Skimmer + Cushion + Stone Skip + Packing Tape: nejdelší let, podíl doletu pod 6 m |
 | 15 | Podpisové skiny K6–K10 | medián ≤ 5, P90 ≤ 15 hodů s modelem po koupi |
-| 16 | Sucho P90 | ≤ 8 (koupě modelu a úrovně Mailbagu jako novinka) |
+| 16 | Sucho | bez novinky (A) P90 ≤ 6, bez nákupu ani novinky P90 ≤ 5; koupě modelu je novinka, úroveň Mailbagu nákup (05 §7.1) |
+| 17 | Mailbag III bez noci | návratnost do finále (≤ 70 % zbývajících hodů D4) |
 
-**C. Pořadí pák při ladění k 60 min** (od první):
+**C. Pořadí pák při ladění k 90 min** (od první):
 1. **Statistiky na rozpočet §2.1** (body 4–7), na pevné výbavě, bez kampaně. Specialitu měnit až poslední.
 2. **Mailbag:** `H` a `ΔM` tak, aby splnil bod 10.
 3. **k modelů** (jedno měřítko pro všech 5) tak, aby platil bod 9.
-4. **Délka:** pokud po 1–3 kampaň nevychází na 57–63 min, **zbytek se bere podle odpovědi na BLOCKED 1** (doporučení: měřítko cen katalogu Dílny a Atlasu `economy.priceScale`, odhad ×1,10–1,15, rovnoměrně po čtvrtích; ve 3. kole nahradí násobek čtvrti).
+4. **Délka:** zbytek do 82–98 min nese **3. kolo ekonomiky** (násobek čtvrti, strom, ceny v tisících, 06). Dokud není v simulátoru, jedno měřítko cen Dílny a Atlasu `economy.priceScale` (odhad ×1,6–1,9, NOT ASSESSED). Podmínka: zdražení jen tolik, kolik unese hustota novinek; když sucho (bod 16) nevyjde, přidává se obsah podle 05, ne levnější ceny.
 5. **Citlivost:** k ×0,75 / ×1,25, `ΔM` 0,07 / 0,13, `windK` 2 / 3, `liftK` 1,3 / 1,7, `perfectK` 1,4 / 1,7, `ground.glide` 1,4 / 1,8.
 
-**D. Hrubý odhad (NOT ASSESSED, jen pro orientaci):** modely ~6 070 ◈ ≈ 24 hodů příjmu; pokud se vrátí (bod 9), délka se nezmění. Mailbag čistě ~+1 900 ◈ do finále ≈ −6 až −9 hodů. Bez páky 4 by tedy kampaň SKILLS vyšla spíš **kolem 50 min** než 60. Malý běh game-deva (n 4) se starými čísly: 83 hodů / 45,5 min proti 87 bez modelů, tedy stejný směr.
+**D. Hrubý odhad (NOT ASSESSED, jen pro orientaci):** modely ~6 070 ◈ ≈ 24 hodů příjmu; pokud se vrátí (bod 9), délka se nezmění. Mailbag čistě ~+1 900 ◈ do finále ≈ −6 až −9 hodů. Bez páky 4 by tedy kampaň SKILLS vyšla spíš **kolem 50 min**, tedy ~40 min a ~70 hodů pod cílem 90 min. Ty musí přijít z 3. kola. Malý běh game-deva (n 4) se starými čísly: 83 hodů / 45,5 min proti 87 bez modelů, tedy stejný směr.
 
 ### 6.2 Co potřebuje UX (product-designer)
 - Dílna podle 06 body 5–6: vlastněné modely a **2 nejbližší zamčené plně s cenou a místem**, další jako silueta. **Klepnutí na vlastněnou vlaštovku ji dá do ruky**, tlačítko „Letět s touhle“ (`planes.use`, `result.useIt`) se ruší. U zamčené jen „Koupit“, dole vždy jedno „Hodit“. Koupě s potvrzením, koupený model rovnou do ruky. Cíl nákupu „Hawk · 120 ◈ to go“ (E09).
@@ -401,13 +408,13 @@ Další zdroje mincí, výzvy, zakázky, známky, dopisy (zamítnuto). Kosmetika
 
 **Vyřešeno 14. 10. (06 „Odemykatelný obsah“):** skiny za postup bez počítadla (bod 7), skin = potisk (bod 7), Glider zdarma (bod 4), zkušební hod ne (bod 5), rychlá volba Sail ano (bod 5).
 
-BLOCKED: **Odkud vzít ~8–11 minut navíc do 60 min?** Modely jsou dražší, ale aby se vyplatily, musí hráči čas vrátit. Kampaň proto samy neprodlouží (odhad i s Mailbagem spíš ~50 min). Možnosti: (a) **mírně zdražit Dílnu a Atlas rovnoměrně** (např. ×1,12), do 3. kola, kde to převezme násobek čtvrti s cenami v tisících; (b) nechat modely kampaň prodlužovat: hráč, který je koupí, dohraje o pár minut později než ten, kdo je nekoupí; (c) delší hru nechat až na 3. kolo a teď cílit jen na „ne kratší než dnes“. **Doporučení: (a)**, protože koupě modelu má být radost, ne daň, a čísla se ve 3. kole stejně přepočítají.
+*Překonáno 14. 10. (cíl 90 min, délku nese 3. kolo a hustota obsahu z 05, §6.1 C bod 4):* **Odkud vzít ~8–11 minut navíc do 60 min?** Modely jsou dražší, ale aby se vyplatily, musí hráči čas vrátit. Kampaň proto samy neprodlouží (odhad i s Mailbagem spíš ~50 min). Možnosti: (a) **mírně zdražit Dílnu a Atlas rovnoměrně** (např. ×1,12), do 3. kola, kde to převezme násobek čtvrti s cenami v tisících; (b) nechat modely kampaň prodlužovat: hráč, který je koupí, dohraje o pár minut později než ten, kdo je nekoupí; (c) delší hru nechat až na 3. kolo a teď cílit jen na „ne kratší než dnes“. **Doporučení: (a)**, protože koupě modelu má být radost, ne daň, a čísla se ve 3. kole stejně přepočítají.
 
 BLOCKED: **Kde se kupuje násobič mincí?** (a) **Dílna**, řádek Mailbag vedle Power a Paper, úroveň se otevře s každou novou čtvrtí; (b) Atlas, uzel u Karty čtvrti (např. „Postman's Bag“ u místa 5, 9, 13); (c) obojí (Dílna 3 úrovně + drobné uzly v Atlasu, společný strop +50 %). **Doporučení: (a)** teď, (c) zvážit ve 3. kole. Dílna je místo pro „sílu za mince“, Atlas pro bonusy letu a událostí, a jeden řádek je nejsrozumitelnější.
 
 BLOCKED: **Needle „celkově lepší“ v čase, ne v doletu?** Needle letí stejně daleko jako Dart, ale o pětinu kratší dobu (víc mincí za minutu). Kdyby měl i delší dolet, byl by nejlepší skoro všude a hru zkracoval. (a) Ano, Needle je lepší v čase; (b) Needle i +3 % doletu a delší let (méně „rychlý“); (c) Needle jen situační, bez obecného přínosu. **Doporučení: (a).**
 
-BLOCKED: **Pásmo hodů po čtvrtích pro 60 min.** Dnes je cíl 20–30 hodů na čtvrť (D1 25–35), což při 60 min a delších pozdních letech nevychází. Návrh: D2–D4 22–32 hodů, minuty beze změny (celkem 50–75). (a) Posunout takhle; (b) nechat 20–30 a 60 min hledat delšími lety; (c) rozhodnout po prvním měření. **Doporučení: (a)**, hlavní cíl jsou minuty.
+*Překonáno 14. 10. (pásma pro 90 min v 05-plan-90-minut §7.2):* **Pásmo hodů po čtvrtích pro 60 min.** Dnes je cíl 20–30 hodů na čtvrť (D1 25–35), což při 60 min a delších pozdních letech nevychází. Návrh: D2–D4 22–32 hodů, minuty beze změny (celkem 50–75). (a) Posunout takhle; (b) nechat 20–30 a 60 min hledat delšími lety; (c) rozhodnout po prvním měření. **Doporučení: (a)**, hlavní cíl jsou minuty.
 
 ---
 
