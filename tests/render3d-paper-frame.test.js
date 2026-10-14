@@ -64,6 +64,6 @@ test('vlaštovka na úzké scéně o 15 % větší jen v papíru (let i Dílna),
  assert.equal(planeScale('papir',390),1.15);assert.equal(planeScale('papir',499),1.15);assert.equal(planeScale('papir',500),1);assert.equal(planeScale('cyber',390),1);
  const f=flight(),fl=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:375}}),wide=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:1280}});
  const W=fl.camera.width;assert.equal(fl.plane.scale,planeLength(W,375)/PLANE_SIZE.max*1.15);assert.equal(wide.plane.scale,planeLength(W,1280)/PLANE_SIZE.max);assert.equal(fl.plane.x,wide.plane.x);assert.deepEqual(fl.view,wide.view);
- const rest=planFrame({visual:{clock:1,state:'workshop',style:'papir',cssWidth:375}});assert.equal(rest.hand.scale,planeSizeScale(rest.camera.width,'papir',375));assert.deepEqual(rest.view,planFrame({visual:{clock:1,state:'workshop'}}).view);
+ const rest=planFrame({visual:{clock:1,state:'workshop',style:'papir',cssWidth:375}});assert.equal(rest.hand.scale,planeSizeScale(rest.camera.width,'papir',375));const rw=planFrame({visual:{clock:1,state:'workshop'}}).view;assert.ok(Math.abs(rest.view.px-rw.px)<1e-6&&Math.abs(rest.view.py-rw.py)<1e-6,'ruka na (148, 258) i na telefonu');assert.ok(rest.view.k>rw.k*1.5,'telefon 7 m, výchozí 640 px 11,9 m');
  const rc=planFrame({visual:{clock:1,state:'workshop',cssWidth:375}});assert.equal(rc.hand.scale,planeSizeScale(rc.camera.width,'cyber',375));
 });

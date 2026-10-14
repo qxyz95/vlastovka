@@ -16,7 +16,7 @@
 //   px,py  = poloha vlaštovky na obrazovce (logické px); ground = y čáry země (logické px)
 //   k      = poměr měřítka: kolik logických px má 1 „světový px“ (2,1 px/m) v hloubce letu z=0 (1 = záběr 2D, < 1 oddálení)
 //   částice a stopa z juice.js (světové px wx,wy) kreslí UI vrstva jako sx = px + (wx − cam − px)·k (y obdobně kolem py)
-//   view(null) = {px:148, py:258} ±2 px (Dílna a míření; mířicí overlay v ui.js má pevné 148,258)
+//   view(null) = {px:148, py:258} ±2 px (Dílna a míření; mířicí overlay v ui.js má pevné 148,258); k podle záběru míření (16 m, telefon 7 m)
 //   view nemutuje f a nezávisí na čase ani na stavu rendereru (determinismus fyziky).
 //
 // ── Tvar plan = planFrame(...) (frame.js, R1) ───────────────────────────────────────────────────────────────
@@ -68,7 +68,8 @@ import {createFlight,step,eventInput} from '../core.js';
 const MAX_DPR=2,SLOW=1000/30-2,WARM=[2,3,4,5];
 let R=null;
 // Za letu stejný krok režiséra, jaký udělá render(f) (planFrame s prev = poslední plán); po dopadu kamera posledního snímku.
-export function view(f){const p=R?.plan;if(!f||!p||p.state==='aim'||p.state==='workshop')return viewOf(f);
+// V klidu view(null) z posledního klidového plánu (šířka záběru podle CSS šířky a nabití); px, py jsou vždy (148, 258).
+export function view(f){const p=R?.plan;if(!f&&(p?.state==='aim'||p?.state==='workshop'))return p.view;if(!f||!p||p.state==='aim'||p.state==='workshop')return viewOf(f);
  const [X,Y]=planeWorld(f);return cameraView(f.landed?p.camera:directorFor({f,prev:p,time:f.t,visual:R.last?.visual}).camera,X,Y);}
 const dprNow=()=>Math.min(MAX_DPR,globalThis.devicePixelRatio||1);
 const query=k=>new URLSearchParams(globalThis.location?.search).get(k);

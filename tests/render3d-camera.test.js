@@ -19,6 +19,7 @@ test('director: title and punch-in only at place boundaries, zoom bounded, plane
 });
 
 // ── Režisér c2 (R5): zámek QTE, bez skoků, District, Calm, rotace, determinismus, project = view ──
+import {LAUNCH} from '../src/render3d/camera.js';
 import {createDirector as mk,direct as dir,project,cameraView,nextDirector,qteLock,nextEventIn,DISTRICT,MAX_ROT,LOCK_AFTER,REST,HAND} from '../src/render3d/camera.js';
 import {PLANE_OFFSET,tempoZoom} from '../src/render3d/geometry.js';
 import {restCamera,REST as POSE_REST} from '../src/render3d/pose.js';
@@ -39,7 +40,7 @@ function run(seed,{calm=false,flat=false,tempo=t=>1+.4*Math.min(1,t/10),levels={
 }
 test('camera: view(null) at the kid hand (148, 258) ±2 px; project of the plane = view = director target',()=>{
  const s=mk();dir(s,{x:PLANE_OFFSET,v:0,t:0,dt:DT,flying:false,y:HAND.y});const v=cameraView(s.camera,PLANE_OFFSET,HAND.y);
- assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2,`rest ${v.px},${v.py}`);const rc=restCamera(16/9);assert.ok(Math.abs(v.k-POSE_REST.k)<.02,'k = REST.k');assert.ok(Math.abs(s.camera.width-rc.width)<1e-9);
+ assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2,`rest ${v.px},${v.py}`);const rc=restCamera(16/9);assert.ok(Math.abs(v.k/POSE_REST.k-1)<.02,'k = REST.k');assert.ok(Math.abs(s.camera.width-rc.width)<1e-9);
  for(let i=0;i<3;i++)assert.ok(Math.abs(s.camera.position[i]-rc.position[i])<.05&&Math.abs(s.camera.target[i]-rc.target[i])<.05,'same as pose.restCamera');
  assert.ok(Math.abs(v.cam-(PLANE_OFFSET*2.1-v.px))<1e-9);
  const {frames}=run(3);
@@ -57,7 +58,9 @@ test('camera: QTE lock — from warning to 0.3 s after the result the zoom stays
 test('camera: never cuts — bounded width and px change per frame, plane moves continuously on screen',()=>{
  for(const seed of [1,4,7]){const {frames}=run(seed);
   for(let i=1;i<frames.length;i++){const a=frames[i-1],b=frames[i];
-   assert.ok(Math.abs(Math.log(b.cam.width/a.cam.width))<=.021,`seed ${seed} frame ${i}: width jump`);
+   // výhoz (S2): ease-out z polodetailu na šířku letu za LAUNCH.dur, rychlejší než strop letu, ale bez skoku a jen ven
+   const launch=b.state!=='rest'&&b.ft<=LAUNCH.dur&&!b.cam.lock,dw=Math.log(b.cam.width/a.cam.width);
+   assert.ok(launch?dw>=-1e-9&&dw<=.1:Math.abs(dw)<=.021,`seed ${seed} frame ${i}: width jump ${dw}`);
    assert.ok(Math.abs(b.view.px-a.view.px)<=.51,`px jump ${b.view.px-a.view.px}`);assert.ok(Math.abs(b.view.py-a.view.py)<=4,`py jump ${b.view.py-a.view.py}`);}
   assert.ok(new Set(frames.map(fr=>fr.state)).has('vista'),'vista appears in calm gliding');assert.ok(frames.some(fr=>fr.state==='landing'));}
 });

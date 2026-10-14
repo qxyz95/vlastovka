@@ -23,7 +23,7 @@ export const EASE={out:{hl:.25,rate:.8},in:{hl:1.2,rate:.25}};
 export const DISTRICT={dur:1.5,out:.5,min:.4},VISTA={calm:2.5,ahead:1.5,leave:1.2,out:1.1,px:-20,minPx:110},LANDING={dur:.85,zoom:.85},LAUNCH={dur:1.2,roll:1.5};
 // Zámek QTE a meze: zoom (ln šířky) nejvýš ZOOM_RATE/s na složku, px nejvýš PX_RATE px/s, natočení nejvýš MAX_ROT °. MARGIN = rezerva před událostí.
 export const LOCK_AFTER=.3,MARGIN=.2,ZOOM_RATE=.8,PX_RATE=30,MAX_ROT=3,REST={px:148,py:258};
-// Ruka dítěte a záběr v klidu z pose.js (R3): HAND (16 m) promítne restCamera na (148, 258); režisér v klidu drží šířku REST.width.
+// Ruka dítěte a záběr v klidu z pose.js (R3): HAND (16 m) je v klidu na (148, 258); režisér v klidu drží šířku aimW (pose.aimWidth, přisunutí při nabíjení).
 export {HAND};
 export const titleAlpha=age=>age==null||age<0?0:age<TITLE.fadeIn?smooth(age/TITLE.fadeIn):age<TITLE.fadeIn+TITLE.hold?1:1-smooth((age-TITLE.fadeIn-TITLE.hold)/TITLE.fadeOut);
 // Přiblížení na hranici místa: šířka záběru × (1 − depth·sin), hladký nástup i návrat.
@@ -116,7 +116,7 @@ export function shoot(s,X,Y,{calm=false,flat=false,shake,width}={}){
  const cam={position:c.position,target:addS(c.position,fw,1),fov,roll:s.roll,aspect:o.aspect},ty=followPy(Y,w)+s.dy;
  // posun v rovině x/y světa (hloubka zůstane, jako pose.restCamera); kvůli sklonu pár iterací, konverguje na < 1e-9 px
  let P=cam.position,T=cam.target;const th=Math.tan(fov*Math.PI/360);
- for(let i=0;i<6;i++){const p=project({...cam,position:P,target:T},[X,Y,0]),dx=(p.px-s.px)*p.depth*th*o.aspect/320,dy=(ty-p.py)*p.depth*th/180*Math.cos(pitch*Math.PI/180);
+ for(let i=0;i<10;i++){const p=project({...cam,position:P,target:T},[X,Y,0]),dx=(p.px-s.px)*p.depth*th*o.aspect/320,dy=(ty-p.py)*p.depth*th/180*Math.cos(pitch*Math.PI/180);
   P=[P[0]+dx,P[1]+dy,P[2]];T=[T[0]+dx,T[1]+dy,T[2]];}
  return {cx:v.cx,cy:v.cy,width:w,height:w/o.aspect,lift:v.lift,position:P,target:T,fov,pitch,yaw:s.yaw,roll:s.roll,aspect:o.aspect,dist:c.dist,
   zoom:o.width/w,lock:s.lock,state:s.state,cut:s.cut,shake:calm||!shake?[0,0]:[shake[0],shake[1]],px:s.px,py:ty,flat:calm&&flat,title:s.title,alpha:s.alpha};

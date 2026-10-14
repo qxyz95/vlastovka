@@ -51,7 +51,7 @@ test('after the throw the director eases from the workshop shot to Follow withou
  const f=createFlight('dart',undefined,2),r=planFrame({f:null,state:'aim'});let prev=r,last=r.camera;
  for(let i=0;i<150;i++){step(f);const p=planFrame({f,prev,time:f.t}),c=p.camera;
   if(!i)near(c.width,r.camera.width,4,'starts at the rest shot');
-  assert.ok(Math.abs(Math.log(c.width/last.width))<=.021,'width eases');near(p.view.px,prev.view.px,.51,'px eases');
+  const dw=Math.log(c.width/last.width);assert.ok(f.t<=1.2?dw>=-1e-9&&dw<=.1:Math.abs(dw)<=.021,'width eases (launch pull-out ≤ 1,2 s only outwards)');near(p.view.px,prev.view.px,.51,'px eases');
   near(viewOf(f,c).py,p.view.py,1e-9,'view(f, plan.camera) = plan.view');last=c;prev=p;}
  assert.ok(last.width>=CAMERA.width*.8-1e-9&&last.width<=CAMERA.width*1.5+1e-9,`Follow after the transition: ${last.width}`);
  assert.ok(prev.director.state!=='rest');
