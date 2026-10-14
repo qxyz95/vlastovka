@@ -4,38 +4,41 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Just Throw It · Workshop prototype</title>
-<!-- Maketa Dílny (vlaštovky za mince a postup, Vzhled). Spec: research/obsah/02-ux-dilna.md. Falešná data, nesahá do src/. -->
+<!-- Maketa Dílny, kolo 2 (vlaštovky za mince s dvojím klíčem, klepnutí = do ruky, Vzhled = potisk + razítko, čip Sail při míření).
+     Spec: research/obsah/02-ux-dilna.md. Falešná data, nesahá do src/. -->
 <style>
 :root{
  /* 1 primitivní (bible 05-styl-papir kap. 2.1) */
  --paper-0:#ffffff;--cream-50:#fbf6ec;--card-100:#f4ecdc;--graphite-900:#2a2622;--pencil-500:#6b6158;--pencil-700:#4a4038;
  --desk-300:#d9c4a0;--tape-200:#efe0a8;--tomato-500:#d9472b;--tomato-600:#c43f25;--tomato-700:#a8341e;--teal-600:#13807d;
- --mustard-400:#e2a43a;--mustard-800:#8a5a00;--cobalt-600:#2456c9;--warm-grey-400:#8c8379;--shade:#3b3560;
+ --mustard-400:#e2a43a;--mustard-800:#8a5a00;--cobalt-600:#2456c9;
  /* 2 role */
  --ink:var(--graphite-900);--text:var(--graphite-900);--dim:var(--pencil-500);--dim-on-desk:var(--pencil-700);
  --card:var(--cream-50);--card-2:var(--card-100);--desk:var(--desk-300);--tape:var(--tape-200);
  --color-reward:var(--mustard-400);--color-reward-text:var(--mustard-800);--color-success:var(--teal-600);
  --color-new:var(--tape-200);--color-locked:var(--pencil-500);--focus:var(--cobalt-600);
- --display:"Trebuchet MS","Segoe UI Semibold","Avenir Next",sans-serif;--body:"Segoe UI","Avenir Next",system-ui,sans-serif;--hand:"Segoe Print","Bradley Hand",cursive;
+ --display:"Trebuchet MS","Segoe UI Semibold","Avenir Next",sans-serif;--body:"Segoe UI","Avenir Next",system-ui,sans-serif;
  --lift:0 2px 0 rgb(40 25 10/.12),0 6px 14px rgb(59 53 96/.18);--lift-hi:0 3px 0 rgb(40 25 10/.14),0 10px 22px rgb(59 53 96/.24);
  --r:4px;--t-fast:120ms;--t-mid:240ms;
  /* 3 komponenty */
  --btn-primary-bg:var(--tomato-600);--btn-primary-fg:var(--cream-50);--btn-primary-edge:var(--tomato-700);
  --btn-bg:var(--cream-50);--btn-fg:var(--ink);--btn-edge:#cbbfa8;--btn-disabled-bg:#e9e1d1;--btn-disabled-fg:#6b6158;
  --wk-card-w:120px;--wk-card-h:132px;--wk-card-bg:var(--card);--wk-card-held-border:3px solid var(--ink);--wk-card-picked-border:2px dashed var(--ink);
- --wk-sketch-stroke:var(--color-locked);--wk-tag-new-bg:var(--color-new);--wk-tag-new-fg:var(--ink);--wk-price-fg:var(--color-reward-text);
+ --wk-sketch-stroke:var(--color-locked);--wk-tag-new-bg:var(--color-new);--wk-tag-new-fg:var(--ink);--wk-tag-hand-bg:var(--tape);--wk-price-fg:var(--color-reward-text);
  --wk-stat-fill:var(--ink);--wk-stat-track:var(--desk);--wk-path-now:var(--dim);--wk-path-new:var(--ink);--wk-tab-mark:var(--tape);
  --wk-preview-h:clamp(140px,30dvh,260px);--wk-action-h:56px;
+ --aim-chip-bg:var(--card);--aim-chip-edge:var(--ink);
 }
 @media (max-width:340px){:root{--wk-card-w:104px;--wk-card-h:124px}}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--desk);color:var(--text);font:16px/1.4 var(--body);-webkit-text-size-adjust:100%}
+body{background:var(--desk);color:var(--text);font:16px/1.4 var(--body);-webkit-text-size-adjust:100%;overflow-x:hidden}
 button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .num{font-variant-numeric:tabular-nums}
 .coin{display:inline-block;width:.9em;height:.9em;border-radius:50%;background:var(--color-reward);border:2px solid var(--ink);vertical-align:-.1em;margin-left:.2em}
+[hidden]{display:none!important}
 
 /* panel Dílny */
 .wk{display:flex;flex-direction:column;height:100dvh;background:var(--card);max-width:100%}
@@ -46,72 +49,84 @@ button{font:inherit;color:inherit}
 .wk-body{flex:1;display:flex;flex-direction:column;min-height:0}
 .preview{position:relative;height:var(--wk-preview-h);flex:none;background:linear-gradient(#a6d0e8,#d8e9ea 60%,#fce4c6);overflow:hidden}
 .preview svg{width:100%;height:100%;display:block}
-.preview .pv-cap{position:absolute;left:12px;bottom:8px;background:var(--card);padding:2px 8px;border-radius:var(--r);font:600 14px var(--display);box-shadow:var(--lift);transform:rotate(-1.5deg)}
+.pv-cap{position:absolute;left:12px;bottom:8px;background:var(--card);padding:2px 8px;border-radius:var(--r);font:600 14px var(--display);box-shadow:var(--lift);transform:rotate(-1.5deg);max-width:calc(100% - 24px)}
+.pv-only{position:absolute;right:12px;top:8px;background:var(--tape);padding:2px 8px;border-radius:2px;font:700 13px var(--display);transform:rotate(2deg)}
 .preview .chip{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream-50);padding:4px 10px;border-radius:var(--r);font-size:14px}
 .preview.lost svg .pv-plane{opacity:.35}
 .pv-plane{transform-origin:50% 50%;transform-box:fill-box}
 .refold .pv-plane{animation:refold 750ms ease-out}
 .refold-quick .pv-plane{animation:refold 300ms ease-out}
-@keyframes refold{0%{transform:scale(1) rotate(0)}35%{transform:scale(.2,1) rotate(-8deg);opacity:.6}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes refold{0%{transform:scale(1)}35%{transform:scale(.2,1) rotate(-8deg);opacity:.6}100%{transform:scale(1);opacity:1}}
 .wk-main{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
 .tabs{display:flex;border-bottom:1px solid var(--btn-edge);flex:none}
-.tabs[hidden]{display:none}
 .tab{flex:1;min-height:48px;border:0;background:none;color:var(--dim);font:600 16px var(--display);cursor:pointer;position:relative;padding:0 6px}
 .tab[aria-selected=true]{color:var(--text);font-weight:700}
 .tab[aria-selected=true]::after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:4px;background:var(--wk-tab-mark);border-top:1px solid #c9b46a}
-.tab:hover{color:var(--text)}
+@media (pointer:fine){.tab:hover{color:var(--text)}}
 .tag-new{display:inline-block;background:var(--wk-tag-new-bg);color:var(--wk-tag-new-fg);font:700 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:3px 5px;border-radius:2px;transform:rotate(-2deg);box-shadow:0 1px 0 rgb(40 25 10/.15);margin-left:4px;vertical-align:2px}
 .panel{flex:1;overflow-y:auto;padding:12px 16px 16px;scroll-padding-bottom:calc(var(--wk-action-h) + 16px)}
 .panel.enter{animation:enter 200ms ease-out}
 @keyframes enter{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
-.note{font-size:14px;color:var(--dim);margin:4px 0 12px}
+.note{font-size:14px;color:var(--dim-on-desk);margin:4px 0 12px}
+h3.sec{font:700 13px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--dim-on-desk);margin:12px 0 6px}
 
-/* karty modelů */
-.cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 10px;margin:0 -16px;list-style:none;overscroll-behavior-x:contain}
+/* karty */
+.cards{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px 16px 10px;margin:0 -16px;list-style:none;overscroll-behavior-x:contain}
 .cards li{flex:none;scroll-snap-align:start}
-.card{width:var(--wk-card-w);height:var(--wk-card-h);border:2px solid transparent;border-radius:var(--r);background:var(--wk-card-bg);box-shadow:var(--lift);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 6px 8px;cursor:pointer;transition:transform var(--t-fast) ease-out,box-shadow var(--t-fast) ease-out;text-align:center}
+.card{position:relative;width:var(--wk-card-w);height:var(--wk-card-h);border:2px solid transparent;border-radius:var(--r);background:var(--wk-card-bg);box-shadow:var(--lift);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px 6px 8px;cursor:pointer;transition:transform var(--t-fast) ease-out,box-shadow var(--t-fast) ease-out;text-align:center}
 .card svg{width:100%;height:58px}
 .card .nm{font:700 15px/1.15 var(--display);overflow-wrap:anywhere}
-.card .st{font-size:13px;color:var(--dim);line-height:1.2}
+.card .st{font-size:13px;color:var(--dim-on-desk);line-height:1.2;display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap}
 .card .price{color:var(--wk-price-fg);font:700 14px var(--display)}
 @media (pointer:fine){.card:hover{box-shadow:var(--lift-hi);transform:translateY(-2px)}}
 .card:active{transform:translateY(2px);box-shadow:0 1px 0 rgb(40 25 10/.2)}
-.card[aria-pressed=true]{border:var(--wk-card-picked-border)}
+.card.inspect{border:var(--wk-card-picked-border)}
 .card.held{border:var(--wk-card-held-border)}
 .card.hidden-m .nm{color:var(--dim)}
-.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;list-style:none;padding:0;margin:0 0 12px}
+.tag-hand{position:absolute;top:-10px;left:50%;translate:-50% 0;background:var(--wk-tag-hand-bg);color:var(--ink);font:700 12px/1 var(--display);padding:4px 6px;border-radius:2px;transform:rotate(-2deg);box-shadow:0 1px 0 rgb(40 25 10/.18);white-space:nowrap}
+.tag-hand.drop{animation:tagdrop 150ms ease-out}
+@keyframes tagdrop{from{transform:scale(.9) rotate(-6deg);opacity:0}to{transform:rotate(-2deg);opacity:1}}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:12px 8px;list-style:none;padding:8px 0 0;margin:0 0 8px}
 .swatches .card{width:100%;height:auto;min-height:92px}
 .swatches .card svg{height:46px}
 .swatches .card .nm{font-size:13px}
+.swatches.stamps{grid-template-columns:repeat(auto-fill,minmax(64px,1fr))}
+.swatches.stamps .card{min-height:76px}
+.swatches.stamps .card svg{height:30px}
 
 /* detail */
 .detail h2{font:700 clamp(20px,5vw,24px)/1.15 var(--display);margin:8px 0 2px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;justify-content:space-between}
 .detail h2 .price{color:var(--wk-price-fg);font-size:18px}
+.detail h2 .hand{font:600 15px var(--display)}
 .detail p{margin:4px 0}
-.why{font-size:14px;color:var(--color-reward-text);font-weight:600}
+.loves{font-weight:600}
+.why{font-size:14px;color:var(--text);font-weight:600;margin:0}
 .stats{display:grid;grid-template-columns:minmax(96px,auto) 1fr auto;gap:6px 10px;align-items:center;margin:10px 0;font-size:15px}
 .bar{height:10px;background:var(--wk-stat-track);border-radius:2px;position:relative;overflow:hidden;min-width:60px}
-.bar i{position:absolute;inset:0 auto 0 0;background:var(--wk-stat-fill);transform-origin:left;transition:transform var(--t-mid) ease-out}
+.bar i{position:absolute;inset:0 auto 0 0;width:100%;background:var(--wk-stat-fill);transform-origin:left;transition:transform var(--t-mid) ease-out}
 .bar b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--tomato-600)}
 .delta{font:700 14px var(--display);white-space:nowrap}
 .chart{width:100%;height:96px;display:block;background:var(--card-2);border-radius:var(--r);margin:6px 0 2px}
-.legend{font-size:13px;color:var(--dim);display:flex;gap:12px;flex-wrap:wrap}
+.legend{font-size:13px;color:var(--dim-on-desk);display:flex;gap:12px;flex-wrap:wrap}
 .legend span::before{content:"";display:inline-block;width:22px;height:0;border-top:2px dashed var(--wk-path-now);vertical-align:middle;margin-right:4px}
 .legend span.new::before{border-top:3px solid var(--wk-path-new)}
 .est{font:700 17px var(--display);margin-top:8px}
-.locked-how{background:var(--card-2);padding:8px 10px;border-radius:var(--r);margin:8px 0}
+.locked-how{background:var(--card-2);padding:8px 10px;border-radius:var(--r);margin:8px 0;display:flex;gap:6px;align-items:flex-start}
 .retro{background:var(--tape);padding:8px 10px;border-radius:var(--r);margin:0 0 12px;transform:rotate(-.5deg)}
-.counter{font:700 14px var(--display);color:var(--dim)}
+.layers{background:var(--card-2);border-radius:var(--r);padding:8px 10px;margin:0 0 4px;font-size:14px}
+.layers strong{display:block;font:700 14px var(--display);margin-bottom:2px}
+.layers ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.linkish{background:none;border:0;padding:0 2px;min-height:44px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+.layers li{min-height:24px;display:flex;align-items:center}
 
 /* stub stromu */
 .branch{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap}
 .branch strong{min-width:84px;font-family:var(--display)}
-.node{min-width:48px;min-height:48px;border:2px solid var(--btn-edge);border-radius:var(--r);background:var(--card);font:700 14px var(--display)}
+.node{min-width:48px;min-height:48px;border:2px solid var(--btn-edge);border-radius:var(--r);background:var(--card);font:700 14px var(--display);display:inline-grid;place-items:center}
 .node.own{background:var(--ink);color:var(--cream-50)}
 
 /* pás akce */
 .action{flex:none;display:flex;flex-direction:column;gap:8px;padding:8px 16px;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--btn-edge);background:var(--card)}
-.action .why{margin:0}
 .btn{min-height:48px;border-radius:var(--r);border:2px solid var(--btn-edge);border-bottom-width:4px;background:var(--btn-bg);color:var(--btn-fg);font:700 17px var(--display);padding:0 16px;cursor:pointer;transition:transform var(--t-fast) ease-out}
 .btn.primary{min-height:56px;background:var(--btn-primary-bg);color:var(--btn-primary-fg);border-color:var(--btn-primary-edge)}
 @media (pointer:fine){.btn.primary:hover{background:var(--tomato-500)}.btn:not(.primary):hover{background:#fff}}
@@ -126,16 +141,34 @@ dialog[open]{animation:sheet 280ms ease-out}
 @keyframes sheet{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 dialog::before{content:"";position:absolute;top:-8px;left:50%;width:84px;height:18px;margin-left:-42px;background:var(--tape);opacity:.85;transform:rotate(-2deg)}
 dialog h2{font:700 22px/1.2 var(--display);margin:0 0 8px}
+dialog p{margin:4px 0}
 dialog .err{display:flex;gap:6px;background:#f7e1da;color:var(--text);padding:8px;border-radius:var(--r);margin:8px 0;font-size:15px}
 dialog .stack{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .res-dist{font:700 clamp(36px,10vw,52px)/1 var(--display)}
-.news{display:flex;align-items:center;gap:10px;border-left:4px solid var(--ink);padding:6px 0 6px 10px;margin:12px 0 4px}
+.news{display:flex;align-items:center;gap:10px;border-left:4px solid var(--ink);padding:6px 0 6px 10px;margin:12px 0 4px;flex-wrap:wrap}
 .news.drop{animation:drop 250ms ease-out}
 @keyframes drop{from{transform:scale(.96) rotate(-1.5deg);opacity:0}to{transform:none;opacity:1}}
 .news svg{width:40px;height:40px;flex:none}
-.news .t{flex:1;font:700 16px/1.2 var(--display);background:none;border:0;text-align:left;padding:0;cursor:pointer;min-height:44px}
+.news .t{flex:1 1 140px;font:700 16px/1.2 var(--display);background:none;border:0;text-align:left;padding:0;cursor:pointer;min-height:44px;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .news .btn{min-height:44px;font-size:15px}
-.more{font-size:14px;color:var(--dim);margin:0 0 8px}
+
+/* obrazovka míření (§8) */
+.aim{position:fixed;inset:0;background:linear-gradient(#9fcbe6,#d7eaee 55%,#f6dfbf 80%,#d9c4a0 80%);overflow:hidden;z-index:5}
+.aim-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px;padding-top:max(12px,env(safe-area-inset-top))}
+.aim-goal{display:flex;flex-direction:column;gap:6px;align-items:flex-start;max-width:min(100% - 120px,340px)}
+.hud-card{background:var(--card);border-radius:var(--r);box-shadow:var(--lift);padding:6px 10px;font:700 15px/1.25 var(--display)}
+.hud-card small{display:block;font:600 13px var(--body);color:var(--dim-on-desk)}
+.aim-right{display:flex;gap:8px;align-items:center}
+.sail-chip{display:flex;align-items:center;gap:8px;min-height:44px;max-width:min(100vw - 24px,320px);background:var(--aim-chip-bg);border:2px solid var(--aim-chip-edge);border-radius:var(--r);box-shadow:var(--lift);padding:4px 10px 4px 6px;text-align:left;cursor:pointer;transition:opacity 200ms ease-out,transform var(--t-fast) ease-out}
+.sail-chip svg{width:40px;height:28px;flex:none}
+.sail-chip b{display:block;font:700 16px/1.15 var(--display)}
+.sail-chip span.g{display:block;font:600 14px/1.2 var(--body)}
+@media (pointer:fine){.sail-chip:hover{box-shadow:var(--lift-hi)}}
+.sail-chip:active{transform:translateY(2px)}
+.aim-kid{position:absolute;left:8%;bottom:14%;width:min(46vw,260px)}
+.aim-touch{position:absolute;bottom:12px;padding:10px 12px;border:2px dashed rgb(42 38 34/.35);border-radius:var(--r);font-size:13px;color:var(--pencil-700);background:rgb(251 246 236/.6)}
+.aim-touch.l{left:12px}.aim-touch.r{right:12px}
+.aim-hint{position:absolute;left:50%;top:46%;translate:-50% 0;font:600 15px var(--display);color:var(--pencil-700);text-align:center;max-width:80vw}
 
 /* panel makety */
 .proto{position:fixed;left:8px;bottom:8px;z-index:50;background:#fff;border:2px dashed var(--ink);border-radius:var(--r);font:13px/1.3 system-ui;max-width:calc(100vw - 16px)}
@@ -147,16 +180,15 @@ dialog .stack{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 /* desktop */
 @media (min-width:1024px) and (min-height:600px){
  body{display:grid;place-items:center;padding:24px}
- .wk{height:min(760px,calc(100dvh - 48px));width:min(1080px,100%);border-radius:var(--r);box-shadow:var(--lift-hi);overflow:hidden}
+ .wk{height:min(780px,calc(100dvh - 48px));width:min(1080px,100%);border-radius:var(--r);box-shadow:var(--lift-hi);overflow:hidden}
  .wk-body{flex-direction:row}
  .preview{height:auto;width:40%}
- .cards{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;margin:0;padding:4px 0 10px}
+ .cards{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;margin:0;padding:12px 0 10px}
  .cards .card{width:100%}
  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;align-items:start}
  .action{flex-direction:row;align-items:center;flex-wrap:wrap}.action .why{flex-basis:100%}
  .action .btn{flex:1}
 }
-/* na šířku, nízká výška */
 @media (max-height:500px) and (orientation:landscape){
  .wk-body{flex-direction:row}
  .preview{height:auto;width:35%}
@@ -164,29 +196,45 @@ dialog .stack{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 @media (max-height:640px) and (orientation:portrait){:root{--wk-preview-h:22dvh}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}}
 [data-motion=reduce] *,[data-motion=reduce] *::before,[data-motion=reduce] *::after{animation-duration:1ms!important;transition-duration:1ms!important}
-@media (forced-colors:active){.card[aria-pressed=true],.card.held{outline:2px solid CanvasText}.tag-new{border:1px solid CanvasText}}
+@media (forced-colors:active){.card.inspect,.card.held{outline:2px solid CanvasText}.tag-new,.tag-hand{border:1px solid CanvasText}}
 </style>
 </head>
 <body>
-<section class="wk" aria-labelledby="wk-title">
+<section class="wk" id="wk" aria-labelledby="wk-title">
  <header class="wk-head">
   <button class="icon" id="close" type="button"><span aria-hidden="true">✕</span><span class="sr" data-k="workshop.back"></span></button>
   <h1 id="wk-title" data-k="workshop.title"></h1>
   <span class="wallet num" id="wallet"></span>
  </header>
  <div class="wk-body">
-  <div class="preview" id="preview" aria-hidden="true"><svg id="pv" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet"></svg><span class="pv-cap" id="pv-cap" aria-hidden="true"></span></div>
+  <div class="preview" id="preview" aria-hidden="true"><svg id="pv" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet"></svg><span class="pv-cap" id="pv-cap"></span><span class="pv-only" id="pv-only" hidden></span></div>
   <div class="wk-main">
    <div class="tabs" role="tablist" id="tabs"></div>
-   <div class="panel" id="panel" role="tabpanel" tabindex="0"></div>
+   <div class="panel" id="panel" tabindex="0"></div>
    <div class="action" id="action"></div>
   </div>
  </div>
 </section>
 
+<section class="aim" id="aim" hidden aria-labelledby="aim-title">
+ <h1 class="sr" id="aim-title">Aim</h1>
+ <div class="aim-top">
+  <div class="aim-goal">
+   <div class="hud-card num" id="aim-next"></div>
+   <div class="hud-card" id="aim-wind"></div>
+   <div id="aim-chip-slot"></div>
+  </div>
+  <div class="aim-right"><span class="hud-card wallet num" id="aim-coins"></span><button class="icon" type="button" id="aim-pause"><span aria-hidden="true">II</span><span class="sr" data-k="aim.pause"></span></button></div>
+ </div>
+ <svg class="aim-kid" id="aim-kid" viewBox="0 0 320 180" aria-hidden="true"></svg>
+ <p class="aim-hint" id="aim-hint" aria-hidden="true"></p>
+ <span class="aim-touch l" aria-hidden="true" data-k="aim.touch"></span><span class="aim-touch r" aria-hidden="true" data-k="aim.touch"></span>
+</section>
+
 <dialog id="buy" aria-labelledby="buy-title">
  <h2 id="buy-title"></h2>
  <p class="num" id="buy-coins"></p>
+ <p id="buy-hand"></p>
  <div id="buy-err" role="alert"></div>
  <div class="stack">
   <button class="btn primary" id="buy-ok" type="button"></button>
@@ -212,244 +260,267 @@ dialog .stack{display:flex;flex-direction:column;gap:8px;margin-top:12px}
  <div class="pbody">
   <label>Scénář <select id="p-scenario"><option>start</option><option>early</option><option>mid</option><option>broke</option><option>late</option><option>delivered</option></select></label>
   <label>Jazyk <select id="p-lang"><option>en</option><option>cs</option></select></label>
-  <label>B3 zamčené modely <select id="p-reveal"><option value="near">near (doporučeno)</option><option value="all">all</option><option value="next">next</option></select></label>
-  <label>B4 potvrzení koupě <select id="p-confirm"><option value="1">ano (doporučeno)</option><option value="0">ne</option></select></label>
-  <label>B6 po koupi do ruky <select id="p-autouse"><option value="1">ano (doporučeno)</option><option value="0">ne</option></select></label>
-  <label>B1 počítadlo vzhledů <select id="p-counter"><option value="0">ne (doporučeno)</option><option value="1">ano</option></select></label>
+  <label>Obrazovka <select id="p-view"><option value="workshop">Dílna</option><option value="aim">Míření (čip Sail)</option></select></label>
+  <label>Vítr (míření) <select id="p-wind"><option value="tail">do zad</option><option value="calm">klid</option><option value="head">proti</option></select></label>
   <label>Pohyb <select id="p-motion"><option value="system">podle systému</option><option value="reduce">omezený</option></select></label>
+  <label>Chyba uložení při koupi <select id="p-fail"><option value="0">ne</option><option value="1">ano</option></select></label>
   <button type="button" id="p-result">Ukázat Výsledek s novinkou</button>
   <button type="button" id="p-lost">Ztráta / obnova WebGL (náhled)</button>
-  <label>Chyba uložení při koupi <select id="p-fail"><option value="0">ne</option><option value="1">ano</option></select></label>
-  <span>Čísla, jména a podmínky jsou zástupné. Spec: research/obsah/02-ux-dilna.md</span>
+  <span>Čip Sail: scénář late + vítr do zad, scénář delivered + vítr proti.<br>Čísla, jména a podmínky jsou zástupné. Spec: research/obsah/02-ux-dilna.md</span>
  </div>
 </details>
 
 <script>
 'use strict';
 const q=new URLSearchParams(location.search);
-const opt={scenario:q.get('scenario')||'mid',lang:q.get('lang')==='cs'?'cs':'en',reveal:['all','near','next'].includes(q.get('reveal'))?q.get('reveal'):'near',
- confirm:q.get('confirm')!=='0',autouse:q.get('autouse')!=='0',counter:q.get('counter')==='1',motion:q.get('motion')==='reduce'?'reduce':'system',fail:q.get('savefail')==='1'};
-let lang=opt.lang;
+const opt={scenario:q.get('scenario')||'mid',lang:q.get('lang')==='cs'?'cs':'en',view:q.get('view')==='aim'?'aim':'workshop',
+ wind:['tail','calm','head'].includes(q.get('wind'))?q.get('wind'):'tail',motion:q.get('motion')==='reduce'?'reduce':'system',fail:q.get('savefail')==='1',hand:q.get('hand')};
+const lang=opt.lang;
 document.documentElement.lang=lang;
 if(opt.motion==='reduce')document.body.dataset.motion='reduce';
 const reduced=()=>opt.motion==='reduce'||matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- texty (klíče ze spec §14 + zástupná jména) ---------- */
+/* ---------- texty (klíče ze spec §15 + zástupná jména z 01) ---------- */
 const STR={
 en:{
-'workshop.title':'Workshop','workshop.back':'Back','workshop.launch':'Throw it ↗','workshop.tabsLabel':'Workshop sections',
+'workshop.title':'Your Workshop','workshop.back':'Back','workshop.launch':'Throw it ↗','workshop.tabsLabel':'Workshop sections',
 'workshop.tabPlanes':'Planes','workshop.tabUpgrades':'Upgrades','workshop.tabLooks':'Looks','workshop.newTag':'New','workshop.tabNewAria':'{tab}, something new inside',
-'workshop.previewAria':'Your plane in the kid\'s hand','workshop.empty':'No coins yet. Every throw earns some, even a short one.',
+'workshop.previewOnly':'Preview','workshop.empty':'No coins yet. Every throw earns some, even a short one.',
 'menu.coins':{one:'{count} coin',other:'{count} coins'},
-'planes.listLabel':'Planes','planes.inHand':'In hand','planes.ready':'Ready','planes.use':'Fly with this one','planes.buy':'Buy for {price} ◈',
-'planes.lockedPlace':'Opens at {place}','planes.lockedShort':'On the route','planes.lockedLater':'Opens later on the route','planes.hiddenName':'Unknown plane',
+'planes.listLabel':'Planes','planes.tapHint':'Tap a plane you own to take it.','planes.inHand':'In hand','planes.owned':'Yours','planes.buy':'Buy for {price} ◈',
+'planes.needPlace':'Fly to {place} first, then you can buy it.','planes.freeAt':'Free when you reach {place}.','planes.freeShort':'Free',
+'planes.lockedShort':'On the route','planes.lockedLater':'Opens later on the route.','planes.hiddenName':'Unknown plane',
 'planes.cardAria':'{name}, {status}','planes.statSpeed':'Launch speed','planes.statGlide':'Glide','planes.statEvents':'Event boost','planes.statAngle':'Best angle',
 'planes.angleNow':'{angle} (now {current})','planes.up':'{value} more','planes.down':'{value} less','planes.same':'same',
-'planes.aimHigher':'Aim a little higher with this one.','planes.aimLower':'Aim a little lower with this one.',
+'planes.aimHigher':'Aim higher with this one.','planes.aimLower':'Aim lower with this one.',
 'planes.estimate':'Calm throw with your upgrades: ~{now} → ~{after}','planes.estimateOwn':'Calm throw with your upgrades: ~{now}',
-'planes.estimateNote':'Estimate: full power, best angle, no wind or events.','planes.previewLabel':'Flight path: {current} dashed, {other} solid',
-'planes.shared':'Your upgrades and paper work for every plane.','planes.inHandDone':'{name} is in your hand.',
+'planes.estimateNote':'Estimate: full power, best angle, no wind or events. Its special trick isn\'t counted.',
+'planes.previewLabel':'Flight path: {current} dashed, {other} solid','planes.previewLabelPrev':'Flight path: {other} solid, before it {current} dashed',
+'planes.shared':'Your upgrades and paper work for every plane.','planes.inHandDone':'{name} is in your hand.','planes.autoNote':'Auto-hits don\'t count as perfect.',
 'detail.missing':{one:'{count} coin short.',other:'{count} coins short.'},
-'buy.title':'Buy the {name}?','buy.coins':'Coins: {now} → {after}','buy.confirm':'Buy for {price} ◈','buy.cancel':'Not now',
+'buy.title':'Buy the {name}?','buy.coins':'Coins: {now} → {after}','buy.toHand':'It goes straight into your hand.','buy.confirm':'Buy for {price} ◈','buy.cancel':'Not now',
 'buy.failed':'The purchase couldn\'t be saved, so no coins were spent. Try again.',
-'looks.listLabel':'Looks','looks.note':'Looks change only how the plane looks, never how it flies.','looks.fitsAll':'Fits every plane.',
-'looks.wearing':'Wearing','looks.wear':'Wear','looks.woreDone':'Wearing: {name}','looks.lockedAria':'{name}, not yet. {how}','looks.how':'How to get it: {how}',
-'looks.howPlace':'Fly to {place}.','looks.howDistrict':'Reach {district}.','looks.howRoute':'Deliver at the end of the route.','looks.howPlane':'Throw the {plane} once.',
-'looks.howPerfect':'Get a perfect on the {event} event.','looks.howDistance':'Fly {distance} in one throw.',
-'looks.retro':{one:'You already earned {count} look on the way.',other:'You already earned {count} looks on the way.'},
+'looks.note':'Tap to wear. Prints and stamps never change how the plane flies.','looks.layersTitle':'On your plane',
+'looks.layerPlane':'Plane: {name}','looks.layerPaper':'Paper: {name} (Upgrades)','looks.layerPrint':'Print: {name}','looks.layerStamp':'Stamp: {name}',
+'looks.prints':'Prints','looks.stamps':'Stamps','looks.fitsAll':'Fits every plane.','looks.wearing':'Wearing','looks.woreDone':'Wearing: {name}',
+'looks.lockedAria':'{name}, not yet. {how}','looks.how':'How to get it: {how}','looks.howDistrict':'Reach {district}.','looks.howRoute':'Deliver at the end of the route.',
+'looks.retro':{one:'You already earned {count} print on the way.',other:'You already earned {count} prints on the way.'},
+'stamps.none':'No stamp','stamps.howPerfect':'First perfect {event}.','stamps.howStar':'Catch a shooting star.',
 'result.titleRecord':'New best!','result.again':'Throw again','result.coinsLabel':{one:'+{count} coin earned',other:'+{count} coins earned'},
-'result.newPlane':'New plane: {name}','result.planeInShop':'{name} is now in the Workshop','result.newLook':'New look: {name}','result.wear':'Wear it','result.worn':'Wearing ✓','result.useIt':'Fly with it',
-'result.alsoNew':{one:'+{count} more new thing in the Workshop',other:'+{count} more new things in the Workshop'},
+'result.newPlane':'New plane: {name}','result.planeForSale':'You can now buy the {name} in the Workshop','result.newLook':'New print: {name}','result.newStamp':'New stamp: {name}',
+'result.wear':'Wear it','result.worn':'✓ Wearing','result.takeIt':'Take it','result.taken':'✓ In hand',
+'aim.swap':'{name} in hand','aim.swapGain':'≈ {value} in this wind','aim.swapAria':'Take the {name}. In this wind about {value}.',
+'aim.pause':'Pause','aim.touch':'hold to throw','aim.next':'Next: {place}','aim.nextDist':'{distance} to go',
+'aim.wind.tail':'Tailwind ≈ +4 %','aim.wind.calm':'Calm','aim.wind.head':'Headwind ≈ −4 %','aim.hint':'(mockup) Hold anywhere else to throw.','aim.thrown':'(mockup) A throw would start here.',
 'status.glLost':'Redrawing the city…','status.glBack':'The city is back.',
 'upg.stub':'The upgrade tree stays as designed in the Atlas and menu specs. Shown here only as a stub.','upg.power':'Power','upg.paper':'Paper','upg.folds':'Folds',
-'event.pigeon':'Pigeon',
-'model.dart':'Dart','model.dart.desc':'Quick start, flatter throw. Power helps it most.',
-'model.glider':'Glider','model.glider.desc':'Slower start, long glide. Gets more out of gusts and pigeons.',
-'model.needle':'Needle','model.needle.desc':'Fast and flat. Hates hanging around.',
-'model.broadwing':'Broadwing','model.broadwing.desc':'Wide wings, lazy and long. Best with a high throw.',
-'model.kite':'Kite','model.kite.desc':'Rides every gust like it was waiting for it.',
-'model.comet':'Comet','model.comet.desc':'Very fast, very sure of itself.',
-'look.plain':'Plain Paper','look.plain.desc':'Just the paper and a good fold.',
-'look.notebook':'Notebook','look.notebook.desc':'Torn from the back of a maths book.',
-'look.airmail':'Airmail','look.airmail.desc':'Red-and-blue edge and a stamp on the wing.',
-'look.blueprint':'Blueprint','look.blueprint.desc':'White lines on blue. Someone measured this.',
-'look.harbor':'Harbor Stripes','look.harbor.desc':'Sailor stripes, slightly salty.',
-'look.lighthouse':'Lighthouse','look.lighthouse.desc':'A red band and a little light on the nose.',
-'look.pigeonpost':'Pigeon Post','look.pigeonpost.desc':'A grey feather tucked into the fold.',
-'look.wheat':'Wheat','look.wheat.desc':'Golden ears printed along the wings.',
-'look.windmill':'Pinwheel','look.windmill.desc':'Four colours, like a toy that wants wind.',
-'look.stars':'Star Chart','look.stars.desc':'Constellations, roughly where they should be.',
-'look.lantern':'Lantern','look.lantern.desc':'Tissue paper that glows a little.',
-'look.clock':'Clockwork','look.clock.desc':'Tiny gears drawn in pencil.',
-'look.delivered':'Delivered','look.delivered.desc':'A postmark from the end of the route.',
-'look.needle':'Chrome Tip','look.needle.desc':'For planes that like to be first.',
-'look.longhaul':'Long Haul','look.longhaul.desc':'A thin line for every kilometre.',
+'paper.copy':'Copy','paper.kraft':'Kraft','paper.washi':'Washi','paper.foil':'Silver Foil',
+'event.gust':'gust','event.pigeon':'pigeon','event.steam':'Steam Hop','event.thermal':'thermal','event.drone':'Ad Drone',
+'model.dart':'Dart','model.dart.desc':'Quick start, flatter throw. Power helps it most.','model.dart.loves':'Loves: a strong, flat throw.',
+'model.glider':'Glider','model.glider.desc':'Slower start, long glide. Gets more out of gusts and pigeons.','model.glider.loves':'Loves: gusts and pigeons.',
+'model.hawk':'Hawk','model.hawk.desc':'Sharp and quick to react.','model.hawk.loves':'Loves: perfect hits. Misses cost speed.',
+'model.kite':'Kite','model.kite.desc':'Rides every updraft. Slow, high, scenic.','model.kite.loves':'Loves: steam, thermals and gusts that lift.',
+'model.skimmer':'Skimmer','model.skimmer.desc':'Flat and blunt, happiest just above the roofs.','model.skimmer.loves':'Loves: flying low. Skips one more time.',
+'model.sail':'Sail','model.sail.desc':'A tall fold that catches the wind.','model.sail.loves':'Loves: wind. It matters twice as much, both ways.',
+'model.needle':'Needle','model.needle.desc':'Short, sharp flights.','model.needle.loves':'Loves: drones. Ignores the wind.',
+'look.plain':'Plain','look.plain.desc':'Just the paper and a good fold.',
+'look.sunrise':'Sunrise Postcard','look.sunrise.desc':'Rooftops in pencil and a peach sun.',
+'look.harbor':'Harbor Chart','look.harbor.desc':'Depth lines and a small anchor.',
+'look.field':'Field Almanac','look.field.desc':'Wheat ears, a windmill and a few stars.',
+'look.lantern':'Lantern Night','look.lantern.desc':'Lantern ribs and a warm tail. In Lantern City it glows a little.',
+'look.airmail':'Airmail Delivered','look.airmail.desc':'Airmail chevrons and a round postmark.',
+'look.hawkf':'Hawk Feather','look.hawkf.desc':'Pencil feathers and brown wingtips.','look.hawkf.how':'Three perfects in a row with the Hawk.',
+'look.kitetail':'Kite Tail','look.kitetail.desc':'Pastel diamonds and three bows on the tail.','look.kitetail.how':'First perfect thermal with the Kite.',
+'look.ripples':'Skimmer Ripples','look.ripples.desc':'Rings on water.','look.ripples.how':'First double skip with the Skimmer.',
+'look.stripes':'Sail Stripes','look.stripes.desc':'Navy sailor stripes.','look.stripes.how':'Fly the Sail in a full tailwind.',
+'look.thread':'Needle Thread','look.thread.desc':'A brick-red stitch along the fold.','look.thread.how':'Fly the Needle through two drones in one flight.',
+'stamp.gust':'Gust','stamp.pigeon':'Pigeon','stamp.steam':'Steam','stamp.thermal':'Thermal','stamp.drone':'Drone','stamp.star':'Shooting Star','stamp.delivered':'Delivered',
 'district.0':'Sunrise Roofs','district.1':'Bright Harbor','district.2':'Golden Fields','district.3':'Lantern City'
 },
 cs:{
-'workshop.title':'Dílna','workshop.back':'Zpět','workshop.launch':'Hodit ↗','workshop.tabsLabel':'Části Dílny',
+'workshop.title':'Tvoje dílna','workshop.back':'Zpět','workshop.launch':'Hodit vlaštovku ↗','workshop.tabsLabel':'Části Dílny',
 'workshop.tabPlanes':'Vlaštovky','workshop.tabUpgrades':'Vylepšení','workshop.tabLooks':'Vzhled','workshop.newTag':'Nové','workshop.tabNewAria':'{tab}, je tu něco nového',
-'workshop.previewAria':'Tvoje vlaštovka v ruce dítěte','workshop.empty':'Zatím žádné mince. Každý hod nějaké přinese, i ten krátký.',
+'workshop.previewOnly':'Náhled','workshop.empty':'Zatím žádné mince. Každý hod nějaké přinese, i ten krátký.',
 'menu.coins':{one:'{count} mince',few:'{count} mince',many:'{count} mince',other:'{count} mincí'},
-'planes.listLabel':'Vlaštovky','planes.inHand':'V ruce','planes.ready':'Připravená','planes.use':'Letět s touhle','planes.buy':'Koupit za {price} ◈',
-'planes.lockedPlace':'Otevře se u místa {place}','planes.lockedShort':'Na trase','planes.lockedLater':'Otevře se dál na trase','planes.hiddenName':'Neznámá vlaštovka',
+'planes.listLabel':'Vlaštovky','planes.tapHint':'Klepnutím vezmeš svou vlaštovku do ruky.','planes.inHand':'V ruce','planes.owned':'Tvoje','planes.buy':'Koupit za {price} ◈',
+'planes.needPlace':'Nejdřív doleť k místu {place}, pak ji koupíš.','planes.freeAt':'Zdarma, až doletíš k místu {place}.','planes.freeShort':'Zdarma',
+'planes.lockedShort':'Na trase','planes.lockedLater':'Otevře se dál na trase.','planes.hiddenName':'Neznámá vlaštovka',
 'planes.cardAria':'{name}, {status}','planes.statSpeed':'Rychlost výhozu','planes.statGlide':'Klouzavost','planes.statEvents':'Síla událostí','planes.statAngle':'Nejlepší úhel',
 'planes.angleNow':'{angle} (teď {current})','planes.up':'o {value} víc','planes.down':'o {value} míň','planes.same':'stejné',
-'planes.aimHigher':'S touhle miř o kousek výš.','planes.aimLower':'S touhle miř o kousek níž.',
+'planes.aimHigher':'S touhle miř výš.','planes.aimLower':'S touhle miř níž.',
 'planes.estimate':'Klidný hod s tvými vylepšeními: ~{now} → ~{after}','planes.estimateOwn':'Klidný hod s tvými vylepšeními: ~{now}',
-'planes.estimateNote':'Odhad: plná síla, nejlepší úhel, bez větru a událostí.','planes.previewLabel':'Dráha letu: {current} čárkovaně, {other} plnou čarou',
-'planes.shared':'Vylepšení i papír platí pro každou vlaštovku.','planes.inHandDone':'Vlaštovka {name} je v ruce.',
+'planes.estimateNote':'Odhad: plná síla, nejlepší úhel, bez větru a událostí. Specialita vlaštovky v něm není.',
+'planes.previewLabel':'Dráha letu: {current} čárkovaně, {other} plnou čarou','planes.previewLabelPrev':'Dráha letu: {other} plnou čarou, předtím {current} čárkovaně',
+'planes.shared':'Vylepšení i papír platí pro každou vlaštovku.','planes.inHandDone':'{name} je v ruce.','planes.autoNote':'Automatický zásah se nepočítá jako perfektní.',
 'detail.missing':{one:'Chybí {count} mince.',few:'Chybí {count} mince.',many:'Chybí {count} mince.',other:'Chybí {count} mincí.'},
-'buy.title':'Koupit vlaštovku {name}?','buy.coins':'Mince: {now} → {after}','buy.confirm':'Koupit za {price} ◈','buy.cancel':'Teď ne',
+'buy.title':'Koupit vlaštovku {name}?','buy.coins':'Mince: {now} → {after}','buy.toHand':'Půjde rovnou do ruky.','buy.confirm':'Koupit za {price} ◈','buy.cancel':'Teď ne',
 'buy.failed':'Nákup se nepodařilo uložit, mince zůstaly. Zkus to znovu.',
-'looks.listLabel':'Vzhledy','looks.note':'Vzhled mění jen to, jak vlaštovka vypadá, ne jak letí.','looks.fitsAll':'Sedí na každou vlaštovku.',
-'looks.wearing':'Nasazeno','looks.wear':'Nasadit','looks.woreDone':'Nasazeno: {name}','looks.lockedAria':'{name}, zatím ne. {how}','looks.how':'Jak ho získat: {how}',
-'looks.howPlace':'Doleť k místu {place}.','looks.howDistrict':'Doleť do čtvrti {district}.','looks.howRoute':'Doruč zásilku na konec trasy.','looks.howPlane':'Hoď jednou vlaštovkou {plane}.',
-'looks.howPerfect':'Zvládni perfektně událost {event}.','looks.howDistance':'Doleť {distance} jedním hodem.',
-'looks.retro':{one:'Cestou už máš {count} vzhled.',few:'Cestou už máš {count} vzhledy.',many:'Cestou už máš {count} vzhledů.',other:'Cestou už máš {count} vzhledů.'},
+'looks.note':'Klepnutím nasadíš. Potisk ani razítko nemění, jak vlaštovka letí.','looks.layersTitle':'Na tvé vlaštovce',
+'looks.layerPlane':'Vlaštovka: {name}','looks.layerPaper':'Papír: {name} (Vylepšení)','looks.layerPrint':'Potisk: {name}','looks.layerStamp':'Razítko: {name}',
+'looks.prints':'Potisky','looks.stamps':'Razítka','looks.fitsAll':'Sedí na každou vlaštovku.','looks.wearing':'Nasazeno','looks.woreDone':'Nasazeno: {name}',
+'looks.lockedAria':'{name}, zatím ne. {how}','looks.how':'Jak ho získat: {how}','looks.howDistrict':'Doleť do čtvrti {district}.','looks.howRoute':'Doruč zásilku na konec trasy.',
+'looks.retro':{one:'Cestou už máš {count} potisk.',few:'Cestou už máš {count} potisky.',many:'Cestou už máš {count} potisků.',other:'Cestou už máš {count} potisků.'},
+'stamps.none':'Bez razítka','stamps.howPerfect':'První perfektní {event}.','stamps.howStar':'Chyť padající hvězdu.',
 'result.titleRecord':'Nový rekord!','result.again':'Hodit znovu','result.coinsLabel':{one:'získána {count} mince',few:'získány {count} mince',many:'získáno {count} mince',other:'získáno {count} mincí'},
-'result.newPlane':'Nová vlaštovka: {name}','result.planeInShop':'Vlaštovka {name} je teď v Dílně','result.newLook':'Nový vzhled: {name}','result.wear':'Nasadit','result.worn':'Nasazeno ✓','result.useIt':'Letět s ní',
-'result.alsoNew':{one:'+{count} další novinka v Dílně',few:'+{count} další novinky v Dílně',many:'+{count} dalších novinek v Dílně',other:'+{count} dalších novinek v Dílně'},
+'result.newPlane':'Nová vlaštovka: {name}','result.planeForSale':'Vlaštovku {name} teď koupíš v Dílně','result.newLook':'Nový potisk: {name}','result.newStamp':'Nové razítko: {name}',
+'result.wear':'Nasadit','result.worn':'✓ Nasazeno','result.takeIt':'Vzít do ruky','result.taken':'✓ V ruce',
+'aim.swap':'{name} do ruky','aim.swapGain':'≈ {value} v tomhle větru','aim.swapAria':'Vzít do ruky {name}. V tomhle větru asi {value}.',
+'aim.pause':'Pauza','aim.touch':'drž a hoď','aim.next':'Další: {place}','aim.nextDist':'zbývá {distance}',
+'aim.wind.tail':'Vítr do zad ≈ +4 %','aim.wind.calm':'Bezvětří','aim.wind.head':'Vítr proti ≈ −4 %','aim.hint':'(maketa) Drž kdekoli jinde a hoď.','aim.thrown':'(maketa) Tady by začal hod.',
 'status.glLost':'Překresluji město…','status.glBack':'Město je zpět.',
 'upg.stub':'Strom vylepšení zůstává podle specifikace Atlasu a menu. Tady je jen naznačený.','upg.power':'Síla','upg.paper':'Papír','upg.folds':'Přehyby',
-'event.pigeon':'Holub',
-'model.dart':'Šipka','model.dart.desc':'Rychlý start, plošší hod. Nejvíc jí pomáhá Síla.',
-'model.glider':'Kluzák','model.glider.desc':'Pomalejší start, dlouhé klouzání. Víc vytěží z poryvů a holubů.',
-'model.needle':'Needle','model.needle.desc':'Rychlá a plochá. Nerada se zdržuje.',
-'model.broadwing':'Broadwing','model.broadwing.desc':'Široká křídla, líná a dlouhá. Nejlíp s vysokým hodem.',
-'model.kite':'Kite','model.kite.desc':'Každý poryv bere, jako by na něj čekala.',
-'model.comet':'Comet','model.comet.desc':'Hodně rychlá a hodně si věří.',
-'look.plain':'Čistý papír','look.plain.desc':'Jen papír a dobrý přehyb.',
-'look.notebook':'Sešit','look.notebook.desc':'Vytržené ze zadních stránek matiky.',
-'look.airmail':'Letecká pošta','look.airmail.desc':'Červenomodrý lem a známka na křídle.',
-'look.blueprint':'Výkres','look.blueprint.desc':'Bílé čáry na modré. Někdo to měřil.',
-'look.harbor':'Námořnické pruhy','look.harbor.desc':'Pruhy jako na tričku, trochu slané.',
-'look.lighthouse':'Maják','look.lighthouse.desc':'Červený pruh a malé světlo na špičce.',
-'look.pigeonpost':'Holubí pošta','look.pigeonpost.desc':'Šedé pírko zastrčené v přehybu.',
-'look.wheat':'Klasy','look.wheat.desc':'Zlaté klasy natištěné po křídlech.',
-'look.windmill':'Větrník','look.windmill.desc':'Čtyři barvy jako hračka, co chce vítr.',
-'look.stars':'Hvězdná mapa','look.stars.desc':'Souhvězdí, zhruba tam, kde mají být.',
-'look.lantern':'Lampion','look.lantern.desc':'Hedvábný papír, který trochu svítí.',
-'look.clock':'Hodinový strojek','look.clock.desc':'Drobná ozubená kola tužkou.',
-'look.delivered':'Doručeno','look.delivered.desc':'Razítko z konce trasy.',
-'look.needle':'Chromová špička','look.needle.desc':'Pro vlaštovky, které chtějí být první.',
-'look.longhaul':'Dálková','look.longhaul.desc':'Tenká čárka za každý kilometr.',
+'paper.copy':'Kancelářský','paper.kraft':'Kraft','paper.washi':'Washi','paper.foil':'Stříbrná fólie',
+'event.gust':'poryv','event.pigeon':'holub','event.steam':'Steam Hop','event.thermal':'termika','event.drone':'Ad Drone',
+'model.dart':'Šipka','model.dart.desc':'Rychlý start, plošší hod. Nejvíc jí dá síla.','model.dart.loves':'Má ráda: silný plochý hod.',
+'model.glider':'Kluzák','model.glider.desc':'Pomalejší start, dlouhé klouzání. Víc vytěží z poryvů a holubů.','model.glider.loves':'Má ráda: poryvy a holuby.',
+'model.hawk':'Sokol','model.hawk.desc':'Ostrá a rychle reaguje.','model.hawk.loves':'Má ráda: perfektní zásahy. Minutí ji zpomalí.',
+'model.kite':'Drak','model.kite.desc':'Chytí každý vztlak. Pomalá, vysoká, s výhledem.','model.kite.loves':'Má ráda: páru, termiku a poryvy, co zvedají.',
+'model.skimmer':'Žabka','model.skimmer.desc':'Plochá a tupá, nejradši těsně nad střechami.','model.skimmer.loves':'Má ráda: nízký let. Odrazí se o jednou víc.',
+'model.sail':'Plachta','model.sail.desc':'Vysoký přehyb, který chytá vítr.','model.sail.loves':'Má ráda: vítr. Působí na ni dvakrát víc, oběma směry.',
+'model.needle':'Jehla','model.needle.desc':'Krátké ostré lety.','model.needle.loves':'Má ráda: drony. Vítr ji skoro nebere.',
+'look.plain':'Čistý','look.plain.desc':'Jen papír a dobrý přehyb.',
+'look.sunrise':'Pohled ze střech','look.sunrise.desc':'Střechy tužkou a broskvové slunce.',
+'look.harbor':'Přístavní mapa','look.harbor.desc':'Vrstevnice hloubky a malá kotva.',
+'look.field':'Polní kalendář','look.field.desc':'Klasy, větrník a pár hvězd.',
+'look.lantern':'Lampionová noc','look.lantern.desc':'Žebra lampionu a teplý ocas. Ve Městě lampionů jemně svítí.',
+'look.airmail':'Doručeno','look.airmail.desc':'Šipky letecké pošty a kulaté razítko.',
+'look.hawkf':'Sokolí pero','look.hawkf.desc':'Pera tužkou a hnědé konce křídel.','look.hawkf.how':'Tři perfektní zásahy za sebou se Sokolem.',
+'look.kitetail':'Drakův ocas','look.kitetail.desc':'Pastelové kosočtverce a tři mašle na ocase.','look.kitetail.how':'První perfektní termika s Drakem.',
+'look.ripples':'Kruhy na vodě','look.ripples.desc':'Kruhy na hladině.','look.ripples.how':'První dvojitý odraz se Žabkou.',
+'look.stripes':'Plachtové pruhy','look.stripes.desc':'Námořnické pruhy.','look.stripes.how':'Let s Plachtou v plném větru do zad.',
+'look.thread':'Nit','look.thread.desc':'Cihlový steh podél přehybu.','look.thread.how':'Proleť s Jehlou dvěma drony v jednom letu.',
+'stamp.gust':'Poryv','stamp.pigeon':'Holub','stamp.steam':'Pára','stamp.thermal':'Termika','stamp.drone':'Dron','stamp.star':'Padající hvězda','stamp.delivered':'Doručeno',
 'district.0':'Střechy za úsvitu','district.1':'Slunný přístav','district.2':'Zlatá pole','district.3':'Město lampionů'
 }};
-const PLACES={en:['Workshop & First Roofs','Market under the Bunting','Gardens at the Edge','Railway to the River','Warehouses by the Water','Crane Forest','Bridge over the Bay','Lighthouse at the Pier\'s End','Fields beyond the Bay','Windmill Ridge','Mountain Saddle','Observatory above the Valley','Gates of the Lantern City','Sky Terraces','Clock Tower','Rooftop Harbor'],
+const PLACES={en:['Workshop & First Roofs','Market under the Bunting','Gardens at the Edge','Railway to the River','Warehouses by the Water','Crane Forest','Bridge over the Bay','Lighthouse at the Pier\'s End','Fields beyond the Bay','Wind Ridge','Mountain Saddle','Observatory above the Valley','Gates of the Lantern City','Sky Terraces','Clock Tower','Rooftop Harbor'],
  cs:['Dílna a první střechy','Trh pod praporky','Zahrady na okraji','Železnice k řece','Skladiště u vody','Les přístavních jeřábů','Most přes záliv','Maják na konci mola','Pole za zálivem','Hřeben větrníků','Horské sedlo','Observatoř nad údolím','Brány Města lampionů','Zahrady ve výškách','Hodinová věž','Střešní přístav']};
 const PLACE_AT=[0,100,250,420,640,900,1200,1500,1850,2200,2600,3000,3400,3800,4300,4876]; // zástupné
 const placeName=i=>PLACES[lang][i];
 function t(k,p={}){let s=STR[lang][k]??STR.en[k]??k;if(typeof s==='object'){const r=new Intl.PluralRules(lang).select(p.count??0);s=s[r]??s.other;}return s.replace(/\{(\w+)\}/g,(_,n)=>{const v=p[n];return v==null?'':typeof v==='number'?num(v):v;});}
-const nf=()=>new Intl.NumberFormat(lang==='cs'?'cs-CZ':'en-US');
-const num=x=>nf().format(x);
-const mtr=x=>num(Math.round(x))+' m';
-const pct=x=>new Intl.NumberFormat(lang==='cs'?'cs-CZ':'en-US',{style:'percent',maximumFractionDigits:0}).format(x);
+const loc=lang==='cs'?'cs-CZ':'en-US';
+const num=x=>new Intl.NumberFormat(loc).format(x);
+const mtr=x=>num(Math.round(x))+' m';
+const pct=x=>new Intl.NumberFormat(loc,{style:'percent',maximumFractionDigits:0}).format(x);
+const spct=x=>(x>=0?'+':'−')+pct(Math.abs(x));
 
-/* ---------- data (zástupná) ---------- */
-// shape: span = rozpětí, len = délka, notch = zářez ocasu
+/* ---------- data (zástupná, 01 §2) ---------- */
+// shape: span = rozpětí, len = délka, notch = zářez ocasu, fin = plachta nahoru, keel = kýl dolů
 const MODELS=[
- {id:'dart',speed:15,glide:4.4,events:1.0,angle:25,shape:{span:.55,len:1,notch:.15},unlock:{type:'start'}},
- {id:'glider',speed:13,glide:5.4,events:1.15,angle:28,shape:{span:.9,len:.85,notch:.3},unlock:{type:'place',place:1}},
- {id:'needle',speed:17.5,glide:4.0,events:1.0,angle:22,shape:{span:.4,len:1.1,notch:.08},unlock:{type:'coins',price:2400,shownAt:150}},
- {id:'broadwing',speed:14,glide:6.2,events:1.1,angle:30,shape:{span:1,len:.8,notch:.4},unlock:{type:'coins',price:9000,shownAt:640}},
- {id:'kite',speed:13.5,glide:5.8,events:1.35,angle:27,shape:{span:.8,len:.9,notch:.5},unlock:{type:'place',place:6}},
- {id:'comet',speed:19,glide:5.0,events:1.05,angle:24,shape:{span:.6,len:1.15,notch:.2},unlock:{type:'coins',price:60000,shownAt:2600}}
+ {id:'dart',speed:20,glide:3.2,events:1.0,angle:18,shape:{span:.55,len:1,notch:.15,keel:.42},unlock:{type:'start'}},
+ {id:'glider',speed:14,glide:4.0,events:1.15,angle:30,shape:{span:.9,len:.9,notch:.3,keel:.3},unlock:{type:'free',place:1}},
+ {id:'hawk',speed:19,glide:3.6,events:1.0,angle:30,shape:{span:1,len:1,notch:.45,keel:.2},unlock:{type:'coins',place:3,price:400},auto:true},
+ {id:'kite',speed:14,glide:5.0,events:1.1,angle:40,shape:{span:1.15,len:.85,notch:.1,keel:.15},unlock:{type:'coins',place:5,price:700}},
+ {id:'skimmer',speed:22,glide:3.3,events:.9,angle:10,shape:{span:.75,len:.9,notch:.05,keel:0},unlock:{type:'coins',place:7,price:1000}},
+ {id:'sail',speed:17,glide:4.5,events:.9,angle:26,shape:{span:.55,len:1,notch:.15,keel:.1,fin:.55},unlock:{type:'coins',place:9,price:1400}},
+ {id:'needle',speed:25,glide:3.2,events:.9,angle:12,shape:{span:.3,len:1.05,notch:.05,keel:.12},unlock:{type:'coins',place:13,price:2000}}
 ];
-// accent: barevné prvky potisku (art-director je nahradí)
-const LOOKS=[
+// potisky K0–K10 (03 §3), barvy jen z palety skinů (03 §2.3, bez tomato/mustard/teal/cobalt)
+const PRINTS=[
  {id:'plain',how:{type:'start'},acc:{}},
- {id:'notebook',how:{type:'place',place:1},acc:{lines:'#7f9ed6',edge:'#d9472b'}},
- {id:'airmail',how:{type:'place',place:2},acc:{edge:'stripes',stamp:'#d9472b'}},
- {id:'blueprint',how:{type:'place',place:3},acc:{fill:'#2456c9',lines:'#ffffff'}},
- {id:'harbor',how:{type:'district',d:1},acc:{bands:'#2c6e9b'}},
- {id:'pigeonpost',how:{type:'perfect',event:'pigeon'},acc:{stamp:'#8c8379'}},
- {id:'needle',how:{type:'plane',plane:'needle'},acc:{tip:'#8c8379'}},
- {id:'lighthouse',how:{type:'place',place:7},acc:{bands:'#d9472b',tip:'#f2b65a'}},
- {id:'wheat',how:{type:'district',d:2},acc:{lines:'#e2a43a'}},
- {id:'windmill',how:{type:'place',place:9},acc:{quarters:['#e8735a','#5aa6a0','#f2b65a','#7f9ed6']}},
- {id:'longhaul',how:{type:'distance',v:1000},acc:{lines:'#2a2622'}},
- {id:'stars',how:{type:'place',place:11},acc:{fill:'#1d2b4d',dots:'#fff8e8'}},
- {id:'lantern',how:{type:'district',d:3},acc:{fill:'#f2c14e',edge:'#d9472b'}},
- {id:'clock',how:{type:'place',place:14},acc:{dots:'#6b6158'}},
- {id:'delivered',how:{type:'route'},acc:{stamp:'#c43f25',edge:'#c43f25'}}
+ {id:'sunrise',how:{type:'district',d:1},acc:{lines:'#6b6158',sun:'#f0a27a'}},
+ {id:'harbor',how:{type:'district',d:2},acc:{rings:'#5b8fb0'}},
+ {id:'field',how:{type:'district',d:3},acc:{lines:'#c98a4a'}},
+ {id:'lantern',how:{type:'route'},acc:{bands:'#e0a060',tip:'#f0a27a'}},
+ {id:'airmail',how:{type:'route'},acc:{edge:'stripes'}},
+ {id:'hawkf',how:{type:'flag',flag:'hawk'},acc:{lines:'#6b6158',tip:'#9c7a55'}},
+ {id:'kitetail',how:{type:'flag',flag:'kite'},acc:{dots:['#e98fa0','#7f9ed6','#9cc3a6']}},
+ {id:'ripples',how:{type:'flag',flag:'skimmer'},acc:{rings:'#5aa6a0'}},
+ {id:'stripes',how:{type:'flag',flag:'sail'},acc:{bands:'#22355e'}},
+ {id:'thread',how:{type:'flag',flag:'needle'},acc:{lines:'#b5503c',dash:true}}
 ];
+// razítka R1–R7 (01 §3.3), ikony rozlišené tvarem (03 §3.1)
+const STAMPS=[
+ {id:'gust',how:{type:'perfect',event:'gust'},d:'M4 8q4-3 8 0t8 0M4 12q4-3 8 0t8 0M4 16q4-3 8 0t8 0'},
+ {id:'pigeon',how:{type:'perfect',event:'pigeon'},d:'M3 14l7-2 3-7 2 7 6 2-7 2-3 5-2-5z'},
+ {id:'steam',how:{type:'perfect',event:'steam'},d:'M6 16a3 3 0 1 1 3-3M12 12a3 3 0 1 1 3-3M17 17a3 3 0 1 1 3-3'},
+ {id:'thermal',how:{type:'perfect',event:'thermal'},d:'M12 12a1 1 0 1 1 2 0a3 3 0 1 1-6 0a5 5 0 1 1 10 0a7 7 0 1 1-14 0'},
+ {id:'drone',how:{type:'perfect',event:'drone'},d:'M12 3l6 8-6 8-6-8zM12 19q-2 2 0 3'},
+ {id:'star',how:{type:'star'},d:'M12 3l2 7 7 2-7 2-2 7-2-7-7-2 7-2z'},
+ {id:'delivered',how:{type:'route'},d:'M3 7h18v11H3zM3 7l9 6 9-6'}
+];
+const PAPER_TONE={copy:'#ffffff',kraft:'#ead7b5',washi:'#fbe8cc',foil:'#e9edf2'};
 const SCEN={
- start:{best:40,coins:30,lv:0,bought:[],inHand:'dart',look:'plain',flags:{},seen:[],retro:0,news:[]},
- early:{best:180,coins:1150,lv:1,bought:[],inHand:'glider',look:'plain',flags:{},seen:[],retro:0,news:[{type:'look',id:'notebook'},{type:'plane',id:'glider'}]},
- mid:{best:1300,coins:9240,lv:4,bought:['needle'],inHand:'needle',look:'airmail',flags:{perfect:false,needle:true},seen:['notebook','airmail','blueprint','harbor'],retro:0,news:[{type:'look',id:'needle'}]},
- broke:{best:1300,coins:0,lv:4,bought:['needle'],inHand:'needle',look:'airmail',flags:{needle:true},seen:['notebook','airmail','blueprint','harbor','needle'],retro:0,news:[{type:'shop',id:'broadwing'}]},
- late:{best:3500,coins:41000,lv:9,bought:['needle','broadwing'],inHand:'broadwing',look:'harbor',flags:{perfect:true,needle:true},seen:[],retro:4,news:[{type:'look',id:'stars'},{type:'shop',id:'comet'}]},
- delivered:{best:4876,coins:98765,lv:12,bought:['needle','broadwing'],inHand:'kite',look:'delivered',flags:{perfect:true,needle:true},seen:['notebook','airmail','blueprint','harbor','pigeonpost','needle','lighthouse','wheat','windmill','longhaul','stars','lantern','clock'],retro:0,news:[{type:'look',id:'delivered'}]}
+ start:{best:40,coins:30,lv:0,paper:'copy',bought:[],hand:'dart',prev:null,print:'plain',stamp:null,flags:{},seen:[],retro:0,news:[]},
+ early:{best:180,coins:380,lv:1,paper:'copy',bought:[],hand:'dart',prev:null,print:'plain',stamp:null,flags:{gust:true},seen:[],retro:0,news:[{type:'plane',id:'glider'},{type:'stamp',id:'gust'}]},
+ mid:{best:1000,coins:1240,lv:4,paper:'kraft',bought:['hawk'],hand:'hawk',prev:'dart',print:'sunrise',stamp:'gust',flags:{gust:true,pigeon:true,hawk:true},seen:['sunrise','gust','pigeon'],retro:0,news:[{type:'forSale',id:'kite'},{type:'look',id:'hawkf'}]},
+ broke:{best:1000,coins:0,lv:4,paper:'kraft',bought:['hawk'],hand:'hawk',prev:'dart',print:'sunrise',stamp:'gust',flags:{gust:true,pigeon:true,hawk:true},seen:['sunrise','gust','pigeon','hawkf'],retro:0,news:[]},
+ late:{best:2600,coins:1650,lv:8,paper:'washi',bought:['hawk','kite','skimmer','sail'],hand:'skimmer',prev:'kite',print:'harbor',stamp:'pigeon',flags:{gust:true,pigeon:true,steam:true,thermal:true,hawk:true,kite:true,skimmer:true},seen:[],retro:2,news:[{type:'look',id:'ripples'}]},
+ delivered:{best:4876,coins:3120,lv:12,paper:'foil',bought:['hawk','kite','skimmer','sail'],hand:'sail',prev:'kite',print:'airmail',stamp:'delivered',flags:{gust:true,pigeon:true,steam:true,thermal:true,drone:true,star:true,hawk:true,kite:true,skimmer:true,sail:true},seen:['sunrise','harbor','field','airmail','hawkf','kitetail','ripples','stripes','gust','pigeon','steam','thermal','drone','star','delivered'],retro:0,news:[{type:'look',id:'lantern'}]}
 };
 const S=JSON.parse(JSON.stringify(SCEN[opt.scenario]||SCEN.mid));
 
 /* ---------- stav ---------- */
 const placeAt=i=>PLACE_AT[i];
-function owns(m){const u=m.unlock;return u.type==='start'||(u.type==='place'&&S.best>=placeAt(u.place))||S.bought.includes(m.id);}
-function lookOpen(l){const h=l.how;switch(h.type){case 'start':return true;case 'place':return S.best>=placeAt(h.place);case 'district':return S.best>=placeAt(h.d*4);
- case 'route':return S.best>=4876;case 'perfect':return !!S.flags.perfect;case 'plane':return !!S.flags[h.plane];case 'distance':return S.best>=h.v;}return false;}
-function threshold(m){const u=m.unlock;return u.type==='coins'?u.shownAt:u.type==='place'?placeAt(u.place):0;}
-// vrací {m, vis:'full'|'hidden'} podle B3
-function visibleModels(){
- const own=MODELS.filter(owns),rest=MODELS.filter(m=>!owns(m)).sort((a,b)=>threshold(a)-threshold(b));
- const eligible=rest.filter(m=>m.unlock.type!=='coins'||S.best>=m.unlock.shownAt);
- const out=own.map(m=>({m,vis:'full'}));
- if(opt.reveal==='all')return out.concat(rest.map(m=>({m,vis:'full'})));
- const n=opt.reveal==='near'?2:1,full=eligible.slice(0,n);
- for(const m of rest){if(full.includes(m))out.push({m,vis:'full'});else if(opt.reveal==='near')out.push({m,vis:'hidden'});}
- return out;
-}
-const shopOpen=()=>MODELS.some(m=>m.unlock.type==='coins'&&S.best>=m.unlock.shownAt);
-const tabsVisible=()=>({planes:MODELS.filter(owns).length>=2||shopOpen(),looks:LOOKS.some(l=>l.id!=='plain'&&lookOpen(l))});
-const unseenLooks=()=>LOOKS.filter(l=>l.id!=='plain'&&lookOpen(l)&&!S.seen.includes(l.id));
-const M=id=>MODELS.find(m=>m.id===id),L=id=>LOOKS.find(l=>l.id===id);
-let tab=tabsVisible().planes?'planes':'upgrades',pickM=S.inHand,pickL=S.look,lost=false;
+const M=id=>MODELS.find(m=>m.id===id),P=id=>PRINTS.find(l=>l.id===id),ST=id=>STAMPS.find(s=>s.id===id);
+function owns(m){const u=m.unlock;return u.type==='start'||(u.type==='free'&&S.best>=placeAt(u.place))||S.bought.includes(m.id);}
+if(opt.hand&&M(opt.hand)&&owns(M(opt.hand))){if(opt.hand!==S.hand)S.prev=S.hand;S.hand=opt.hand;}
+const placeReached=m=>S.best>=placeAt(m.unlock.place);
+function condOpen(h){switch(h.type){case 'start':return true;case 'district':return S.best>=placeAt(h.d*4);case 'route':return S.best>=4876;
+ case 'flag':return !!S.flags[h.flag];case 'perfect':return !!S.flags[h.event];case 'star':return !!S.flags.star;}return false;}
+// stav modelu: hand | owned | forSale | needPlace | free | hidden (spec §2.1); Night Owl v datech není (do finále se neukazuje)
+function planeStates(){const out=[];let near=0;
+ for(const m of MODELS){if(owns(m)){out.push({m,st:m.id===S.hand?'hand':'owned'});continue;}
+  if(near<2){near++;out.push({m,st:m.unlock.type==='free'?'free':placeReached(m)?'forSale':'needPlace'});}else out.push({m,st:'hidden'});}
+ return out;}
+const stOf=id=>planeStates().find(x=>x.m.id===id);
+const ownedCount=()=>MODELS.filter(owns).length;
+const anyCosmetic=()=>PRINTS.some(l=>l.id!=='plain'&&condOpen(l.how))||STAMPS.some(s=>condOpen(s.how));
+const tabsVisible=()=>({planes:ownedCount()>=2,looks:anyCosmetic()});
+const unseen=()=>[...PRINTS.filter(l=>l.id!=='plain'&&condOpen(l.how)),...STAMPS.filter(s=>condOpen(s.how))].map(x=>x.id).filter(id=>!S.seen.includes(id));
+let tab=tabsVisible().planes?'planes':'upgrades',inspect=null,inspectL=null,sessionPrev=null,lost=false;
 
-/* ---------- kresba vlaštovky (SVG) ---------- */
-function planeSVG(shape,acc,{sketch=false,w=320,h=180,cx=w/2,cy=h/2,sc=Math.min(w,h)*.42}={}){
- const L=sc*shape.len,Sp=sc*shape.span,n=sc*shape.notch;
- const nose=[cx+L*.6,cy],tailT=[cx-L*.55,cy-Sp*.55],tailB=[cx-L*.55,cy+Sp*.25],notch=[cx-L*.55+n,cy],keel=[cx-L*.35,cy+Sp*.42];
- const P=a=>a.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ');
- const ink=sketch?'var(--wk-sketch-stroke)':'#2a2622',sw=sketch?1.6:2.6,dash=sketch?'4 3':'';
- const fillTop=sketch?'none':(acc.fill||'#ffffff'),fillLow=sketch?'none':'#cdd3e3';
- let deco='';
+/* ---------- kresba vlaštovky (SVG, zástupná silueta) ---------- */
+function stampMark(id,x,y,r){const s=ST(id);if(!s)return '';const k=(r*1.5/24).toFixed(3);
+ return `<g><circle cx="${x}" cy="${y}" r="${r}" fill="#fbf6ec" stroke="#6b6158" stroke-width="1"/><path d="${s.d}" transform="translate(${(x-12*k).toFixed(1)} ${(y-12*k).toFixed(1)}) scale(${k})" fill="none" stroke="#6b6158" stroke-width="${(1.6/k).toFixed(1)}"/></g>`;}
+function planeSVG(shape,{acc={},paper='#ffffff',stamp=null,mode='full',w=320,h=180,cx=w/2,cy=h/2,sc=Math.min(w,h)*.42}={}){
+ const L=sc*shape.len,Sp=sc*shape.span,n=sc*shape.notch,f=v=>v.toFixed(1);
+ const nose=[cx+L*.6,cy],tailT=[cx-L*.55,cy-Sp*.55],tailB=[cx-L*.55,cy+Sp*.25],notch=[cx-L*.55+n,cy],keel=[cx-L*.35,cy+Math.max(sc*.04,Sp*shape.keel*1.2)];
+ const pts=a=>a.map(p=>f(p[0])+','+f(p[1])).join(' ');
+ if(mode==='silhouette')return `<g class="pv-plane"><polygon points="${pts([tailT,nose,notch])}" fill="rgb(107 97 88/.4)"/><polygon points="${pts([tailB,keel,nose,notch])}" fill="rgb(107 97 88/.4)"/></g>`;
+ const sketch=mode==='sketch',ink=sketch?'var(--wk-sketch-stroke)':'#2a2622',sw=sketch?1.6:2.6,dash=sketch?'4 3':'none';
+ const top=sketch?'none':paper,low=sketch?'none':'#cdd3e3';
+ const lerp=(a,b,k)=>[a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k];
+ let deco='',fin='';
+ if(shape.fin){const a=lerp(notch,nose,.2),b=lerp(notch,nose,.75),c=[cx-L*.05,cy-sc*shape.fin];fin=`<polygon points="${pts([a,c,b])}" fill="${top}" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`;}
  if(!sketch){
-  if(acc.lines)for(let i=1;i<=3;i++){const f=i/4;deco+=`<line x1="${(tailT[0]+(nose[0]-tailT[0])*f*.2).toFixed(1)}" y1="${(tailT[1]+(cy-tailT[1])*f).toFixed(1)}" x2="${(nose[0]-L*.25*(1-f)).toFixed(1)}" y2="${(cy-Sp*.05*(1-f)).toFixed(1)}" stroke="${acc.lines}" stroke-width="1.6"/>`;}
-  if(acc.edge==='stripes'){for(let i=0;i<6;i++){const f=i/6,x=tailT[0]+(nose[0]-tailT[0])*f,y=tailT[1]+(nose[1]-tailT[1])*f;deco+=`<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${(x+8).toFixed(1)}" y2="${(y+2).toFixed(1)}" stroke="${i%2?'#2456c9':'#d9472b'}" stroke-width="4"/>`;}}
-  else if(acc.edge)deco+=`<line x1="${tailT[0]}" y1="${tailT[1]}" x2="${nose[0]}" y2="${nose[1]}" stroke="${acc.edge}" stroke-width="4" stroke-linecap="round"/>`;
-  if(acc.bands)for(const f of [.35,.6])deco+=`<line x1="${(tailT[0]+(nose[0]-tailT[0])*f).toFixed(1)}" y1="${(tailT[1]+(nose[1]-tailT[1])*f).toFixed(1)}" x2="${(notch[0]+(nose[0]-notch[0])*f).toFixed(1)}" y2="${cy}" stroke="${acc.bands}" stroke-width="5"/>`;
-  if(acc.stamp){const sx=cx-L*.1,sy=cy-Sp*.2;deco+=`<rect x="${(sx-7).toFixed(1)}" y="${(sy-6).toFixed(1)}" width="14" height="12" fill="none" stroke="${acc.stamp}" stroke-width="1.6" stroke-dasharray="2 1.5"/><circle cx="${(sx+9).toFixed(1)}" cy="${(sy+4).toFixed(1)}" r="5" fill="none" stroke="${acc.stamp}" stroke-width="1.2"/>`;}
-  if(acc.tip)deco+=`<circle cx="${(nose[0]-6).toFixed(1)}" cy="${cy-1}" r="4" fill="${acc.tip}" stroke="#2a2622" stroke-width="1"/>`;
-  if(acc.dots)for(let i=0;i<7;i++){const f=(i*37%100)/100,g=(i*61%100)/100;deco+=`<circle cx="${(tailT[0]+L*.9*f+6).toFixed(1)}" cy="${(tailT[1]+Sp*.45*g+3).toFixed(1)}" r="1.6" fill="${acc.dots}"/>`;}
-  if(acc.quarters){acc.quarters.forEach((c,i)=>{const f=.2+i*.17;deco+=`<circle cx="${(tailT[0]+(nose[0]-tailT[0])*f).toFixed(1)}" cy="${(tailT[1]+(cy-tailT[1])*f*1.1+4).toFixed(1)}" r="4" fill="${c}"/>`;});}
+  if(acc.lines)for(let i=1;i<=3;i++){const k=i/4,a=lerp(tailT,notch,k),b=lerp(tailT,nose,.15+k*.6);deco+=`<line x1="${f(a[0]+6)}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1]+3)}" stroke="${acc.lines}" stroke-width="1.4"${acc.dash?' stroke-dasharray="3 2"':''}/>`;}
+  if(acc.sun){const p=lerp(tailT,nose,.35);deco+=`<circle cx="${f(p[0])}" cy="${f(p[1]+Sp*.18)}" r="${f(sc*.07)}" fill="${acc.sun}"/>`;}
+  if(acc.rings){const p=lerp(lerp(tailT,nose,.45),notch,.3);for(const r of [.05,.1,.15])deco+=`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${f(sc*r)}" fill="none" stroke="${acc.rings}" stroke-width="1.2"/>`;}
+  if(acc.edge==='stripes')for(let i=0;i<6;i++){const a=lerp(tailT,nose,.1+i*.12);deco+=`<line x1="${f(a[0])}" y1="${f(a[1]+3)}" x2="${f(a[0]+6)}" y2="${f(a[1]+5)}" stroke="${i%2?'#3d4f7a':'#b5503c'}" stroke-width="3"/>`;}
+  if(acc.bands)for(const k of [.35,.6]){const a=lerp(tailT,nose,k),b=lerp(notch,nose,k);deco+=`<line x1="${f(a[0])}" y1="${f(a[1]+3)}" x2="${f(b[0])}" y2="${f(b[1]-2)}" stroke="${acc.bands}" stroke-width="5"/>`;}
+  if(acc.tip){const a=lerp(tailT,notch,.5);deco+=`<circle cx="${f(a[0]+4)}" cy="${f(a[1])}" r="${f(sc*.05)}" fill="${acc.tip}"/>`;}
+  if(acc.dots)acc.dots.forEach((c,i)=>{const a=lerp(lerp(tailT,nose,.25+i*.18),notch,.35),r=sc*.04;deco+=`<polygon points="${pts([[a[0],a[1]-r],[a[0]+r,a[1]],[a[0],a[1]+r],[a[0]-r,a[1]]])}" fill="${c}"/>`;});
+  if(stamp){const a=lerp(lerp(tailT,nose,.55),notch,.45);deco+=stampMark(stamp,+f(a[0]),+f(a[1]),Math.max(5,sc*.09));}
  }
- return `<g class="pv-plane"><polygon points="${P([tailB,keel,nose,notch])}" fill="${fillLow}" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`+
-  `<polygon points="${P([tailT,nose,notch])}" fill="${fillTop}" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`+
-  `<g>${deco}</g><polygon points="${P([tailT,nose,notch])}" fill="none" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`+
-  `<line x1="${notch[0]}" y1="${cy}" x2="${nose[0]}" y2="${cy}" stroke="${ink}" stroke-width="${sketch?1.2:1.4}" stroke-dasharray="${dash}"/></g>`;
+ return `<g class="pv-plane">${fin}<polygon points="${pts([tailB,keel,nose,notch])}" fill="${low}" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`+
+  `<polygon points="${pts([tailT,nose,notch])}" fill="${top}"/><g>${deco}</g><polygon points="${pts([tailT,nose,notch])}" fill="none" stroke="${ink}" stroke-width="${sw}" stroke-linejoin="round" stroke-dasharray="${dash}"/>`+
+  `<line x1="${f(notch[0])}" y1="${f(cy)}" x2="${f(nose[0])}" y2="${f(cy)}" stroke="${ink}" stroke-width="${sketch?1.2:1.4}" stroke-dasharray="${dash}"/></g>`;
 }
-function silhouetteSVG(){return `<g class="pv-plane"><polygon points="40,40 110,30 60,22" fill="none" stroke="var(--wk-sketch-stroke)" stroke-width="1.6" stroke-dasharray="3 3"/><text x="70" y="40" font-size="18" text-anchor="middle" fill="var(--wk-sketch-stroke)" font-family="Trebuchet MS">?</text></g>`;}
+const handPlane=(m,o={})=>planeSVG(m.shape,{acc:P(S.print).acc,paper:PAPER_TONE[S.paper],stamp:S.stamp,...o});
 const flag=`<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 13V2h8l-2 3 2 3H3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
 const lock=`<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const kidSVG=`<rect x="0" y="150" width="320" height="30" fill="#dcc29b"/><rect x="30" y="98" width="64" height="52" fill="#fbf6ec" stroke="#cbbfa8"/><polygon points="26,98 62,74 98,98" fill="#b5503c"/>`;
 
 /* ---------- výpočty náhledu (hrubé, zástupné) ---------- */
 const est=m=>m.speed*m.glide*2.6*(1+S.lv*.35);
 function path(m){const D=est(m),H=m.speed*Math.sin(m.angle*Math.PI/180)*4.2,xp=D*.22,pts=[];for(let i=0;i<=40;i++){const x=D*i/40;const y=x<xp?H*(1-(1-x/xp)**2):H*Math.pow(Math.max(0,1-(x-xp)/(D-xp)),1.15);pts.push([x,y]);}return pts;}
 const maxOf=k=>Math.max(...MODELS.map(m=>m[k]));
+const WIND={tail:.08,calm:0,head:-.08};
+const windK=id=>id==='sail'?2.5:id==='needle'?.4:1;
+const windEst=(m,w)=>est(m)*(1+w*1.2*windK(m.id)); // hrubý odhad pro čip, ne fyzika
 
 /* ---------- render ---------- */
 const $=id=>document.getElementById(id);
 function live(msg){$('live').textContent='';setTimeout(()=>$('live').textContent=msg,30);}
-function staticTexts(){for(const el of document.querySelectorAll('[data-k]'))el.textContent=t(el.dataset.k);
- $('tabs').setAttribute('aria-label',t('workshop.tabsLabel'));}
-function wallet(v=S.coins){$('wallet').innerHTML=`<span aria-hidden="true">${num(v)}<span class="coin"></span></span><span class="sr">${t('menu.coins',{count:v})}</span>`;}
+function staticTexts(){for(const el of document.querySelectorAll('[data-k]'))el.textContent=t(el.dataset.k);$('tabs').setAttribute('aria-label',t('workshop.tabsLabel'));}
+function walletHTML(v){return `<span aria-hidden="true">${num(v)}<span class="coin"></span></span><span class="sr">${t('menu.coins',{count:v})}</span>`;}
+function wallet(v=S.coins){$('wallet').innerHTML=walletHTML(v);}
 function renderTabs(){
  const v=tabsVisible(),list=['planes','upgrades','looks'].filter(k=>k==='upgrades'||v[k]);
  const el=$('tabs');el.hidden=list.length<2;el.innerHTML='';
  if(!list.includes(tab))tab='upgrades';
  for(const k of list){const b=document.createElement('button');b.type='button';b.className='tab';b.setAttribute('role','tab');b.id='tab-'+k;b.setAttribute('aria-controls','panel');
-  const name=t('workshop.tab'+k[0].toUpperCase()+k.slice(1)),isNew=k==='looks'&&unseenLooks().length>0;
+  const name=t('workshop.tab'+k[0].toUpperCase()+k.slice(1)),isNew=k==='looks'&&tab!=='looks'&&unseen().length>0;
   b.innerHTML=name+(isNew?`<span class="tag-new" aria-hidden="true">${t('workshop.newTag')}</span>`:'');
   if(isNew)b.setAttribute('aria-label',t('workshop.tabNewAria',{tab:name}));
   b.setAttribute('aria-selected',k===tab);b.tabIndex=k===tab?0:-1;
@@ -458,8 +529,8 @@ function renderTabs(){
   el.append(b);}
  const pn=$('panel');if(list.length>1){pn.setAttribute('role','tabpanel');pn.setAttribute('aria-labelledby','tab-'+tab);}else{pn.removeAttribute('role');pn.removeAttribute('aria-labelledby');}
 }
-function switchTab(k){if(tab==='looks'&&k!=='looks')markSeen();tab=k;render(true);}
-function markSeen(){for(const l of unseenLooks())S.seen.push(l.id);}
+function switchTab(k){if(tab==='looks'&&k!=='looks')markSeen();tab=k;inspect=null;inspectL=null;render(true);}
+function markSeen(){for(const id of unseen())S.seen.push(id);}
 function render(anim=false){
  staticTexts();wallet();renderTabs();
  const p=$('panel');p.innerHTML='';
@@ -468,97 +539,132 @@ function render(anim=false){
  renderPreview();renderAction();
 }
 function renderPreview(){
- const svg=$('pv');let body='';
- const m=M(tab==='planes'?pickM:S.inHand),look=L(tab==='looks'?pickL:S.look);
- const hiddenSel=tab==='planes'&&visibleModels().find(x=>x.m.id===pickM)?.vis==='hidden';
- const sketchL=tab==='looks'&&!lookOpen(look);
- const sketchM=tab==='planes'&&!owns(m)&&m.unlock.type!=='coins';
- // ruka dítěte (náznak)
- body+=`<rect x="0" y="150" width="320" height="30" fill="#dcc29b"/><rect x="30" y="98" width="64" height="52" fill="#fbf6ec" stroke="#cbbfa8"/><polygon points="26,98 62,74 98,98" fill="#d9472b"/>`;
- body+=hiddenSel?`<g transform="translate(110 50) scale(1.6)">${silhouetteSVG()}</g>`:planeSVG(m.shape,sketchM?{}:look.acc,{sketch:sketchL||sketchM,cx:190,cy:88});
- svg.innerHTML=body;
- $('pv-cap').textContent=hiddenSel?t('planes.hiddenName'):t('model.'+m.id)+(tab==='looks'?' · '+t('look.'+look.id):'');
+ const hand=M(S.hand);let plane,cap,only=false;
+ if(tab==='planes'&&inspect){const x=stOf(inspect),m=x.m;only=true;
+  if(x.st==='hidden'){plane=planeSVG(m.shape,{mode:'silhouette',cx:190,cy:88});cap=t('planes.hiddenName');}
+  else{plane=planeSVG(m.shape,{mode:x.st==='forSale'?'full':'sketch',cx:190,cy:88});cap=t('model.'+m.id);}}
+ else if(tab==='looks'&&inspectL&&!inspectL.open){only=true;
+  plane=planeSVG(hand.shape,{mode:'sketch',cx:190,cy:88});cap=t(inspectL.kind==='print'?'look.'+inspectL.id:'stamp.'+inspectL.id);}
+ else{plane=handPlane(hand,{cx:190,cy:88});cap=t('model.'+hand.id)+(tab==='looks'?' · '+t('look.'+S.print):'');}
+ $('pv').innerHTML=kidSVG+plane;$('pv-cap').textContent=cap;
+ $('pv-only').hidden=!only;$('pv-only').textContent=t('workshop.previewOnly');
  $('preview').classList.toggle('lost',lost);
- let chip=$('preview').querySelector('.chip');if(lost&&!chip){chip=document.createElement('span');chip.className='chip';chip.setAttribute('role','status');$('preview').append(chip);}if(chip)chip.textContent=lost?t('status.glLost'):'';if(!lost&&chip)chip.remove();
+ let chip=$('preview').querySelector('.chip');
+ if(lost){if(!chip){chip=document.createElement('span');chip.className='chip';$('preview').append(chip);}chip.textContent=t('status.glLost');}else if(chip)chip.remove();
 }
-function cardStatus(m,vis){
- if(vis==='hidden')return t('planes.lockedLater');
- if(m.id===S.inHand)return t('planes.inHand');if(owns(m))return t('planes.ready');
- if(m.unlock.type==='coins')return num(m.unlock.price)+' ◈';
- return t('planes.lockedPlace',{place:placeName(m.unlock.place)});
-}
+function statusText(x){const m=x.m;switch(x.st){case 'hand':return t('planes.inHand');case 'owned':return t('planes.owned');
+ case 'forSale':return t('menu.coins',{count:m.unlock.price});case 'needPlace':return t('menu.coins',{count:m.unlock.price})+', '+t('planes.needPlace',{place:placeName(m.unlock.place)});
+ case 'free':return t('planes.freeAt',{place:placeName(m.unlock.place)});default:return t('planes.lockedLater');}}
 function renderPlanes(p){
+ p.insertAdjacentHTML('beforeend',`<p class="note">${t('planes.tapHint')}</p>`);
  const ul=document.createElement('ul');ul.className='cards';ul.setAttribute('aria-label',t('planes.listLabel'));
- const vis=visibleModels();if(!vis.find(x=>x.m.id===pickM))pickM=S.inHand;
- vis.forEach(({m,vis:v},i)=>{const li=document.createElement('li');const b=document.createElement('button');b.type='button';
-  b.className='card'+(m.id===S.inHand?' held':'')+(v==='hidden'?' hidden-m':'');b.setAttribute('aria-pressed',m.id===pickM);b.tabIndex=m.id===pickM?0:-1;
-  const name=v==='hidden'?t('planes.hiddenName'):t('model.'+m.id),own=owns(m);
-  let st;if(v==='hidden')st=`<span class="st">${flag} ${t('planes.lockedShort')}</span>`;else if(m.id===S.inHand)st=`<span class="st">✓ ${t('planes.inHand')}</span>`;else if(own)st=`<span class="st">${t('planes.ready')}</span>`;
-  else if(m.unlock.type==='coins')st=`<span class="price num">${num(m.unlock.price)}<span class="coin" aria-hidden="true"></span></span>`;else st=`<span class="st">${flag} ${t('planes.lockedShort')}</span>`;
-  const art=v==='hidden'?`<svg viewBox="0 0 150 60" aria-hidden="true">${silhouetteSVG()}</svg>`:`<svg viewBox="0 0 150 60" aria-hidden="true">${planeSVG(m.shape,own?L(S.look).acc:{},{sketch:!own&&m.unlock.type!=='coins',w:150,h:60,sc:52})}</svg>`;
-  b.innerHTML=art+`<span class="nm">${name}</span>`+st;
-  b.setAttribute('aria-label',t('planes.cardAria',{name,status:cardStatus(m,v)}));
-  b.onclick=()=>{pickM=m.id;render();$('panel').querySelector('.card[aria-pressed=true]')?.focus();};
+ const states=planeStates();if(inspect&&!states.find(x=>x.m.id===inspect&&!['hand','owned'].includes(x.st)))inspect=null;
+ for(const x of states){const m=x.m,li=document.createElement('li'),b=document.createElement('button');b.type='button';b.dataset.id=m.id;
+  const ownd=x.st==='hand'||x.st==='owned';
+  b.className='card'+(x.st==='hand'?' held':'')+(inspect===m.id?' inspect':'')+(x.st==='hidden'?' hidden-m':'');
+  if(ownd)b.setAttribute('aria-pressed',x.st==='hand');else b.setAttribute('aria-controls','detail');
+  b.tabIndex=(inspect?inspect===m.id:x.st==='hand')?0:-1;
+  const name=x.st==='hidden'?t('planes.hiddenName'):t('model.'+m.id);
+  const mode=x.st==='hidden'?'silhouette':x.st==='needPlace'||x.st==='free'?'sketch':'full';
+  const art=`<svg viewBox="0 0 150 60" aria-hidden="true">${ownd?handPlane(m,{w:150,h:60,sc:50}):planeSVG(m.shape,{mode,w:150,h:60,sc:50})}</svg>`;
+  const priceH=`<span class="price num">${num(m.unlock.price||0)}<span class="coin" aria-hidden="true"></span></span>`;
+  let st;switch(x.st){case 'hand':st='';break;case 'owned':st=`<span class="st">${t('planes.owned')}</span>`;break;case 'forSale':st=priceH;break;
+   case 'needPlace':st=`<span class="st">${priceH}<span>${flag} ${t('planes.lockedShort')}</span></span>`;break;case 'free':st=`<span class="st">${flag} ${t('planes.freeShort')}</span>`;break;
+   default:st=`<span class="st">${flag} ${t('planes.lockedShort')}</span>`;}
+  b.innerHTML=(x.st==='hand'?`<span class="tag-hand${justTook===m.id&&!reduced()?' drop':''}" aria-hidden="true">✓ ${t('planes.inHand')}</span>`:'')+art+`<span class="nm">${name}</span>`+st;
+  b.setAttribute('aria-label',t('planes.cardAria',{name,status:statusText(x)}));
+  b.onclick=()=>{if(x.st==='owned')take(m.id,'card');else{inspect=x.st==='hand'?null:m.id;render();focusCard(m.id);}};
   b.onkeydown=e=>roving(e,ul);
-  li.append(b);ul.append(li);});
+  li.append(b);ul.append(li);}
+ justTook=null;
  p.append(ul);
- const sel=vis.find(x=>x.m.id===pickM),m=sel.m,cur=M(S.inHand),d=document.createElement('div');d.className='detail';d.setAttribute('aria-live','polite');
- if(sel.vis==='hidden'){d.innerHTML=`<h2>${t('planes.hiddenName')}</h2><p class="locked-how">${flag} ${t('planes.lockedLater')}</p>`;p.append(d);return;}
- const price=m.unlock.type==='coins'&&!owns(m)?`<span class="price num">${num(m.unlock.price)}<span class="coin" aria-hidden="true"></span></span>`:'';
- let html=`<h2><span>${t('model.'+m.id)}</span>${price}</h2><p>${t('model.'+m.id+'.desc')}</p>`;
- if(!owns(m)&&m.unlock.type==='place')html+=`<p class="locked-how">${flag} ${t('planes.lockedPlace',{place:placeName(m.unlock.place)})}</p>`;
- const cmp=m.id!==cur.id;
- const row=(label,k)=>{const v=m[k],c=cur[k],r=v/c-1,w=v/maxOf(k);let delta='';
-  if(cmp){delta=Math.abs(r)<.005?t('planes.same'):(r>0?'▲ ':'▼ ')+(r>0?'+':'−')+pct(Math.abs(r));}
-  const aria=cmp&&Math.abs(r)>=.005?t(r>0?'planes.up':'planes.down',{value:pct(Math.abs(r))}):'';
-  return `<span>${label}</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(${w.toFixed(3)})"></i>${cmp?`<b style="left:calc(${(c/maxOf(k)*100).toFixed(1)}% - 1px)"></b>`:''}</span><span class="delta num">${delta}${aria?`<span class="sr"> (${aria})</span>`:''}</span>`;};
- let stats=`<div class="stats">${row(t('planes.statSpeed'),'speed')}${row(t('planes.statGlide'),'glide')}${row(t('planes.statEvents'),'events')}`+
-  `<span>${t('planes.statAngle')}</span><span class="num" style="grid-column:span 2">${cmp?t('planes.angleNow',{angle:m.angle+'°',current:cur.angle+'°'}):m.angle+'°'}</span></div>`;
- if(cmp&&m.angle!==cur.angle)stats+=`<p class="note">${t(m.angle>cur.angle?'planes.aimHigher':'planes.aimLower')}</p>`;
- // graf drah
- const A=path(cur),B=path(m),Dx=Math.max(A.at(-1)[0],B.at(-1)[0])*1.05,Hy=Math.max(...A.map(p=>p[1]),...B.map(p=>p[1]))*1.15;
- const X=x=>(8+x/Dx*304).toFixed(1),Y=y=>(88-y/Hy*78).toFixed(1),line=pts=>pts.map((p,i)=>(i?'L':'M')+X(p[0])+' '+Y(p[1])).join(' ');
- const nextPlace=PLACE_AT.findIndex(a=>a>S.best),np=nextPlace>=0&&PLACE_AT[nextPlace]<Dx?`<line x1="${X(PLACE_AT[nextPlace])}" y1="10" x2="${X(PLACE_AT[nextPlace])}" y2="88" stroke="#c9b46a" stroke-width="2"/><text x="${(+X(PLACE_AT[nextPlace])+4).toFixed(1)}" y="20" font-size="10" fill="#4a4038">${placeName(nextPlace)}</text>`:'';
- const label=cmp?t('planes.previewLabel',{current:t('model.'+cur.id),other:t('model.'+m.id)}):t('model.'+m.id);
- const chart=`<svg class="chart" viewBox="0 0 320 96" role="img" aria-label="${label}">${np}<line x1="8" y1="88" x2="312" y2="88" stroke="#cbbfa8"/>`+
-  (cmp?`<path d="${line(A)}" fill="none" stroke="var(--wk-path-now)" stroke-width="1.5" stroke-dasharray="5 4"/>`:'')+
-  `<path id="newpath" d="${line(B)}" fill="none" stroke="var(--wk-path-new)" stroke-width="2.6"/><g id="mini"><polygon points="-6,-3 6,0 -6,3 -3,0" fill="#fff" stroke="#2a2622" stroke-width="1.2"/></g></svg>`;
- const legend=cmp?`<div class="legend" aria-hidden="true"><span>${t('model.'+cur.id)}</span><span class="new">${t('model.'+m.id)}</span></div>`:'';
- const estTxt=cmp?t('planes.estimate',{now:mtr(est(cur)),after:mtr(est(m))}):t('planes.estimateOwn',{now:mtr(est(m))});
- html+=`<div class="detail-grid"><div>${stats}</div><div>${chart}${legend}<p class="est num">${estTxt}</p><p class="note">${t('planes.estimateNote')}</p><p class="note">${t('planes.shared')}</p></div></div>`;
- d.innerHTML=html;p.append(d);
- flyMini(B,X,Y);
+ const d=document.createElement('div');d.className='detail';d.id='detail';d.setAttribute('aria-live','polite');
+ const hand=M(S.hand);
+ if(!inspect){ // profil vlaštovky v ruce
+  const prev=sessionPrev&&sessionPrev!==hand.id?M(sessionPrev):null;
+  d.innerHTML=`<h2><span>${t('model.'+hand.id)}</span><span class="hand">✓ ${t('planes.inHand')}</span></h2><p>${t('model.'+hand.id+'.desc')}</p><p class="loves">${t('model.'+hand.id+'.loves')}</p>`+
+   (hand.auto?`<p class="note">${t('planes.autoNote')}</p>`:'')+compare(hand,prev,true);
+  p.append(d);flyMini();return;}
+ const x=stOf(inspect),m=x.m;
+ if(x.st==='hidden'){d.innerHTML=`<h2>${t('planes.hiddenName')}</h2><p class="locked-how">${flag} ${t('planes.lockedLater')}</p>`;p.append(d);return;}
+ const price=x.st==='forSale'||x.st==='needPlace'?`<span class="price num">${num(m.unlock.price)}<span class="coin" aria-hidden="true"></span></span>`:'';
+ let html=`<h2><span>${t('model.'+m.id)}</span>${price}</h2><p>${t('model.'+m.id+'.desc')}</p><p class="loves">${t('model.'+m.id+'.loves')}</p>`;
+ if(m.auto)html+=`<p class="note">${t('planes.autoNote')}</p>`;
+ if(x.st==='needPlace')html+=`<p class="locked-how">${flag}<span>${t('planes.needPlace',{place:placeName(m.unlock.place)})}</span></p>`;
+ if(x.st==='free')html+=`<p class="locked-how">${flag}<span>${t('planes.freeAt',{place:placeName(m.unlock.place)})}</span></p>`;
+ d.innerHTML=html+compare(m,hand,false);p.append(d);flyMini();
 }
-let flyRaf=0;
-function flyMini(pts,X,Y){cancelAnimationFrame(flyRaf);const g=document.getElementById('mini');if(!g)return;const place=f=>{const i=Math.min(39,Math.floor(f*40)),a=pts[i],b=pts[i+1],k=f*40-i;const x=+X(a[0]+(b[0]-a[0])*k),y=+Y(a[1]+(b[1]-a[1])*k);const ang=Math.atan2(+Y(b[1])-+Y(a[1]),+X(b[0])-+X(a[0]))*180/Math.PI;g.setAttribute('transform',`translate(${x} ${y}) rotate(${ang.toFixed(1)})`);};
+// srovnání m proti ref (ref = v ruce u zamčené; ref = předchozí u profilu v ruce)
+function compare(m,ref,isHand){
+ const row=(label,k)=>{const v=m[k],w=v/maxOf(k);let delta='',aria='';
+  if(ref&&!isHand){const r=v/ref[k]-1;delta=Math.abs(r)<.005?t('planes.same'):(r>0?'▲ ':'▼ ')+spct(r);if(Math.abs(r)>=.005)aria=t(r>0?'planes.up':'planes.down',{value:pct(Math.abs(r))});}
+  return `<span>${label}</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(${w.toFixed(3)})"></i>${ref&&!isHand?`<b style="left:calc(${(ref[k]/maxOf(k)*100).toFixed(1)}% - 1px)"></b>`:''}</span><span class="delta num">${delta}${aria?`<span class="sr"> (${aria})</span>`:''}</span>`;};
+ let stats=`<div class="stats">${row(t('planes.statSpeed'),'speed')}${row(t('planes.statGlide'),'glide')}${row(t('planes.statEvents'),'events')}`+
+  `<span>${t('planes.statAngle')}</span><span class="num" style="grid-column:span 2">${ref&&!isHand?t('planes.angleNow',{angle:m.angle+'°',current:ref.angle+'°'}):m.angle+'°'}</span></div>`;
+ if(ref&&!isHand&&m.angle!==ref.angle)stats+=`<p class="note">${t(m.angle>ref.angle?'planes.aimHigher':'planes.aimLower')}</p>`;
+ const A=ref?path(ref):null,B=path(m),all=A?A.concat(B):B,Dx=Math.max(...all.map(p=>p[0]))*1.05,Hy=Math.max(...all.map(p=>p[1]))*1.15;
+ const X=x=>(8+x/Dx*304).toFixed(1),Y=y=>(88-y/Hy*78).toFixed(1),line=pts=>pts.map((p,i)=>(i?'L':'M')+X(p[0])+' '+Y(p[1])).join(' ');
+ const ni=PLACE_AT.findIndex(a=>a>S.best),np=ni>=0&&PLACE_AT[ni]<Dx?`<line x1="${X(PLACE_AT[ni])}" y1="10" x2="${X(PLACE_AT[ni])}" y2="88" stroke="#c9b46a" stroke-width="2"/><text x="${(+X(PLACE_AT[ni])+4).toFixed(1)}" y="20" font-size="10" fill="#4a4038">${placeName(ni)}</text>`:'';
+ const label=ref?t(isHand?'planes.previewLabelPrev':'planes.previewLabel',{current:t('model.'+ref.id),other:t('model.'+m.id)}):t('model.'+m.id);
+ const chart=`<svg class="chart" viewBox="0 0 320 96" role="img" aria-label="${label}">${np}<line x1="8" y1="88" x2="312" y2="88" stroke="#cbbfa8"/>`+
+  (A?`<path d="${line(A)}" fill="none" stroke="var(--wk-path-now)" stroke-width="1.5" stroke-dasharray="5 4"/>`:'')+
+  `<path d="${line(B)}" fill="none" stroke="var(--wk-path-new)" stroke-width="2.6"/><g id="mini"><polygon points="-6,-3 6,0 -6,3 -3,0" fill="#fff" stroke="#2a2622" stroke-width="1.2"/></g></svg>`;
+ miniPath={pts:B,X,Y};
+ const legend=ref?`<div class="legend" aria-hidden="true"><span>${t('model.'+ref.id)}</span><span class="new">${t('model.'+m.id)}</span></div>`:'';
+ const estTxt=ref?t('planes.estimate',{now:mtr(est(ref)),after:mtr(est(m))}):t('planes.estimateOwn',{now:mtr(est(m))});
+ return `<div class="detail-grid"><div>${stats}</div><div>${chart}${legend}<p class="est num">${estTxt}</p><p class="note">${t('planes.estimateNote')}</p><p class="note">${t('planes.shared')}</p></div></div>`;
+}
+let flyRaf=0,miniPath=null,justTook=null;
+function flyMini(){cancelAnimationFrame(flyRaf);const g=document.getElementById('mini');if(!g||!miniPath)return;const {pts,X,Y}=miniPath;
+ const place=f=>{const n=pts.length-1,i=Math.max(0,Math.min(n-1,Math.floor(f*n))),a=pts[i],b=pts[i+1]??a,k=f*n-i;const x=+X(a[0]+(b[0]-a[0])*k),y=+Y(a[1]+(b[1]-a[1])*k);const ang=Math.atan2(+Y(b[1])-+Y(a[1]),+X(b[0])-+X(a[0]))*180/Math.PI;g.setAttribute('transform',`translate(${x} ${y}) rotate(${ang.toFixed(1)})`);};
  if(reduced()){place(.999);return;}const t0=performance.now();const step=now=>{const f=Math.min(1,(now-t0)/600),e=1-(1-f)**3;place(Math.min(.999,e));if(f<1)flyRaf=requestAnimationFrame(step);};flyRaf=requestAnimationFrame(step);}
+// šipky jen přesouvají fokus (spec §12 bod 2), Enter / mezerník = klepnutí
 function roving(e,list){const btns=[...list.querySelectorAll('.card')],i=btns.indexOf(e.currentTarget);let j=null;
  if(e.key==='ArrowRight'||e.key==='ArrowDown')j=Math.min(btns.length-1,i+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')j=Math.max(0,i-1);if(e.key==='Home')j=0;if(e.key==='End')j=btns.length-1;
- if(j!==null){e.preventDefault();btns[j].click();}}
-function howText(h){switch(h.type){case 'place':return t('looks.howPlace',{place:placeName(h.place)});case 'district':return t('looks.howDistrict',{district:t('district.'+h.d)});
- case 'route':return t('looks.howRoute');case 'perfect':return t('looks.howPerfect',{event:t('event.'+h.event)});case 'plane':return t('looks.howPlane',{plane:t('model.'+h.plane)});case 'distance':return t('looks.howDistance',{distance:mtr(h.v)});}return '';}
-function lookOrder(){const open=LOOKS.filter(lookOpen),locked=LOOKS.filter(l=>!lookOpen(l));
- const cur=open.filter(l=>l.id===S.look),others=open.filter(l=>l.id!==S.look).reverse();return cur.concat(others,locked);}
+ if(j!==null){e.preventDefault();btns[i].tabIndex=-1;btns[j].tabIndex=0;btns[j].focus();btns[j].scrollIntoView({block:'nearest',inline:'nearest'});}}
+const focusCard=id=>$('panel').querySelector(`.card[data-id="${id}"]`)?.focus();
+function howText(h,isStamp){switch(h.type){case 'district':return t('looks.howDistrict',{district:t('district.'+h.d)});case 'route':return t('looks.howRoute');
+ case 'perfect':return t('stamps.howPerfect',{event:t('event.'+h.event)});case 'star':return t('stamps.howStar');}return '';}
+const howOf=(kind,x)=>kind==='print'&&x.how.type==='flag'?t('look.'+x.id+'.how'):howText(x.how);
+function orderItems(list,cur){const open=list.filter(x=>condOpen(x.how)),locked=list.filter(x=>!condOpen(x.how));
+ return open.filter(x=>x.id===cur).concat(open.filter(x=>x.id!==cur&&x.id!=='plain').reverse(),open.filter(x=>x.id==='plain'&&x.id!==cur),locked);}
 function renderLooks(p){
- let top=`<p class="note">${t('looks.note')}</p>`;
- if(S.retro){top=`<p class="retro" role="status">${t('looks.retro',{count:S.retro})}</p>`+top;S.retro=0;}
- if(opt.counter)top+=`<p class="counter num">${LOOKS.filter(lookOpen).length} / ${LOOKS.length}</p>`;
+ let top='';
+ if(S.retro){top+=`<p class="retro" role="status">${t('looks.retro',{count:S.retro})}</p>`;S.retro=0;}
+ top+=`<p class="note">${t('looks.note')}</p>`;
+ const hand=M(S.hand);
+ top+=`<div class="layers"><strong>${t('looks.layersTitle')}</strong><ul><li>${t('looks.layerPlane',{name:t('model.'+hand.id)})}</li>`+
+  `<li><button type="button" class="linkish" id="to-upg">${t('looks.layerPaper',{name:t('paper.'+S.paper)})}</button></li>`+
+  `<li>${t('looks.layerPrint',{name:t('look.'+S.print)})}</li><li>${t('looks.layerStamp',{name:S.stamp?t('stamp.'+S.stamp):t('stamps.none')})}</li></ul></div>`;
  p.insertAdjacentHTML('beforeend',top);
- const ul=document.createElement('ul');ul.className='swatches';ul.setAttribute('aria-label',t('looks.listLabel'));
- const m=M(S.inHand);
- for(const l of lookOrder()){const li=document.createElement('li'),b=document.createElement('button'),open=lookOpen(l),isNew=open&&l.id!=='plain'&&!S.seen.includes(l.id);
-  b.type='button';b.className='card'+(l.id===S.look?' held':'');b.setAttribute('aria-pressed',l.id===pickL);b.tabIndex=l.id===pickL?0:-1;
-  const name=t('look.'+l.id);
-  b.innerHTML=`<svg viewBox="0 0 120 50" aria-hidden="true">${planeSVG(m.shape,l.acc,{sketch:!open,w:120,h:50,sc:44})}</svg><span class="nm">${name}${isNew?`<span class="tag-new" aria-hidden="true">${t('workshop.newTag')}</span>`:''}</span>`+
-   (l.id===S.look?`<span class="st">✓ ${t('looks.wearing')}</span>`:open?'':`<span class="st">${lock}</span>`);
-  b.setAttribute('aria-label',open?name+(l.id===S.look?', '+t('looks.wearing'):'')+(isNew?', '+t('workshop.newTag'):''):t('looks.lockedAria',{name,how:howText(l.how)}));
-  b.onclick=()=>{pickL=l.id;render();$('panel').querySelector('.card[aria-pressed=true]')?.focus();};
-  b.onkeydown=e=>roving(e,ul);li.append(b);ul.append(li);}
- p.append(ul);
- const l=L(pickL),open=lookOpen(l),d=document.createElement('div');d.className='detail';d.setAttribute('aria-live','polite');
- d.innerHTML=`<h2><span>${t('look.'+l.id)}</span>${open?'':lock}</h2><p>${t('look.'+l.id+'.desc')}</p>`+(open?`<p class="note">${t('looks.fitsAll')}</p>`:`<p class="locked-how">${t('looks.how',{how:howText(l.how)})}</p>`);
+ $('to-upg').onclick=()=>switchTab('upgrades');
+ const grid=(kind,items,cur)=>{const h=document.createElement('h3');h.className='sec';h.id='sec-'+kind;h.textContent=t(kind==='print'?'looks.prints':'looks.stamps');p.append(h);
+  const ul=document.createElement('ul');ul.className='swatches'+(kind==='stamp'?' stamps':'');ul.setAttribute('aria-labelledby','sec-'+kind);
+  for(const x of items){const li=document.createElement('li'),b=document.createElement('button'),id=x?x.id:null,open=x?condOpen(x.how):true,worn=id===cur,isNew=open&&id&&id!=='plain'&&!S.seen.includes(id);
+   b.type='button';b.dataset.id=kind+':'+id;b.className='card'+(worn?' held':'')+(inspectL&&inspectL.kind===kind&&inspectL.id===id&&!worn?' inspect':'');
+   if(open)b.setAttribute('aria-pressed',worn);else b.setAttribute('aria-controls','detail');
+   b.tabIndex=worn?0:-1;
+   const name=x?t((kind==='print'?'look.':'stamp.')+id):t('stamps.none');
+   const art=kind==='print'?planeSVG(hand.shape,{acc:x.acc,paper:PAPER_TONE[S.paper],mode:open?'full':'sketch',w:120,h:50,sc:44})
+    :(x?`<path d="${x.d}" fill="none" stroke="${open?'#2a2622':'var(--wk-sketch-stroke)'}" stroke-width="1.6"${open?'':' stroke-dasharray="3 2"'}/>`:`<circle cx="12" cy="12" r="8" fill="none" stroke="#cbbfa8" stroke-width="1.6" stroke-dasharray="2 2"/>`);
+   b.innerHTML=`<svg viewBox="${kind==='print'?'0 0 120 50':'0 0 24 24'}" aria-hidden="true">${art}</svg><span class="nm">${name}${isNew?`<span class="tag-new" aria-hidden="true">${t('workshop.newTag')}</span>`:''}</span>`+
+    (worn?`<span class="st">✓ ${t('looks.wearing')}</span>`:open?'':`<span class="st">${lock}</span>`);
+   b.setAttribute('aria-label',open?name+(worn?', '+t('looks.wearing'):'')+(isNew?', '+t('workshop.newTag'):''):t('looks.lockedAria',{name,how:howOf(kind,x)}));
+   b.onclick=()=>{if(open){wear(kind,id);}else{inspectL={kind,id,open:false};render();}focusSw(kind,id);};
+   b.onkeydown=e=>roving(e,ul);li.append(b);ul.append(li);}
+  if(!ul.querySelector('[tabindex="0"]'))ul.querySelector('.card').tabIndex=0;
+  p.append(ul);};
+ grid('print',orderItems(PRINTS,S.print),S.print);
+ grid('stamp',[null,...orderItems(STAMPS,S.stamp)],S.stamp);
+ // detail naposledy klepnuté položky (výchozí = nasazený potisk)
+ const sel=inspectL||{kind:'print',id:S.print,open:true},list=sel.kind==='print'?PRINTS:STAMPS,x=sel.id?list.find(i=>i.id===sel.id):null;
+ const d=document.createElement('div');d.className='detail';d.id='detail';d.setAttribute('aria-live','polite');
+ const name=x?t((sel.kind==='print'?'look.':'stamp.')+x.id):t('stamps.none');
+ if(x&&!condOpen(x.how))d.innerHTML=`<h2><span>${name}</span>${lock}</h2>${sel.kind==='print'?`<p>${t('look.'+x.id+'.desc')}</p>`:''}<p class="locked-how">${t('looks.how',{how:howOf(sel.kind,x)})}</p>`;
+ else d.innerHTML=`<h2><span>${name}</span></h2>${sel.kind==='print'&&x?`<p>${t('look.'+x.id+'.desc')}</p>`:''}<p class="note">${t('looks.fitsAll')}</p>`;
  p.append(d);
 }
+const focusSw=(kind,id)=>$('panel').querySelector(`.card[data-id="${kind}:${id}"]`)?.focus();
 function renderUpgrades(p){
  const lv=S.lv,br=[['power',Math.min(3,Math.ceil(lv/4))],['paper',lv],['folds',Math.min(3,Math.floor(lv/4))]];
  let h=S.coins===0?`<p class="note">${t('workshop.empty')}</p>`:'';
@@ -566,70 +672,107 @@ function renderUpgrades(p){
  for(const [b,n] of br){h+=`<div class="branch"><strong>${t('upg.'+b)}</strong>`;const max=b==='paper'?12:3;for(let i=1;i<=Math.min(max,6);i++)h+=`<span class="node${i<=n?' own':''}" aria-hidden="true">${i<=n?'✓':i}</span>`;h+='</div>';}
  p.insertAdjacentHTML('beforeend',h);
 }
+// pás akce: u zamčené k prodeji / s nedosaženým místem jen „Koupit“ + vždy jedno „Hodit“ (06 obsah 6)
 function renderAction(){
  const a=$('action');a.innerHTML='';let main=null,why='';
- const throwBtn=document.createElement('button');throwBtn.type='button';throwBtn.className='btn';throwBtn.textContent=t('workshop.launch');throwBtn.onclick=()=>live('(maketa) '+(lang==='cs'?'Tady by začal hod.':'A throw would start here.'));
- if(tab==='planes'){const v=visibleModels().find(x=>x.m.id===pickM),m=v.m;
-  if(v.vis==='full'&&m.id!==S.inHand&&owns(m)){main=mk(t('planes.use'),()=>use(m.id));}
-  else if(v.vis==='full'&&!owns(m)&&m.unlock.type==='coins'){const pr=m.unlock.price,short=S.coins<pr;main=mk(t('planes.buy',{price:num(pr)}),()=>{if(!short)askBuy(m);});
-   if(short){main.setAttribute('aria-disabled','true');why=t('detail.missing',{count:pr-S.coins});main.setAttribute('aria-describedby','why');}}
- }else if(tab==='looks'){const l=L(pickL);if(lookOpen(l)&&l.id!==S.look)main=mk(t('looks.wear'),()=>wear(l.id));}
+ const throwBtn=mk(t('workshop.launch'),()=>live(t('aim.thrown')));
+ if(tab==='planes'&&inspect){const x=stOf(inspect),m=x.m;
+  if(x.st==='forSale'||x.st==='needPlace'){const pr=m.unlock.price;
+   if(x.st==='needPlace')why=t('planes.needPlace',{place:placeName(m.unlock.place)});else if(S.coins<pr)why=t('detail.missing',{count:pr-S.coins});
+   main=mk(t('planes.buy',{price:num(pr)}),()=>{if(!why)askBuy(m);});
+   if(why){main.setAttribute('aria-disabled','true');main.setAttribute('aria-describedby','why');}}}
  if(why)a.insertAdjacentHTML('beforeend',`<p class="why num" id="why">${why}</p>`);
- if(main){main.classList.add('primary');a.append(main);a.append(throwBtn);}else{throwBtn.classList.add('primary');a.append(throwBtn);}
+ if(main){main.classList.add('primary');a.append(main,throwBtn);}else{throwBtn.classList.add('primary');a.append(throwBtn);}
 }
 function mk(text,fn){const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=text;b.onclick=fn;return b;}
 function refold(quick){if(reduced())return;const pv=$('preview');pv.classList.remove('refold','refold-quick');void pv.offsetWidth;pv.classList.add(quick?'refold-quick':'refold');}
-function use(id){S.inHand=id;pickM=id;render();refold(true);live(t('planes.inHandDone',{name:t('model.'+id)}));$('action').querySelector('.btn.primary')?.focus();}
-function wear(id){S.look=id;pickL=id;render();refold(true);live(t('looks.woreDone',{name:t('look.'+id)}));$('action').querySelector('.btn.primary')?.focus();}
+function take(id,from){if(id===S.hand)return;sessionPrev=S.hand;S.prev=S.hand;S.hand=id;inspect=null;justTook=id;
+ if(from==='card'){render();refold(true);focusCard(id);}
+ live(t('planes.inHandDone',{name:t('model.'+id)}));}
+function wear(kind,id){if(kind==='print'){if(S.print===id)return;S.print=id;}else{if(S.stamp===id)return;S.stamp=id;}
+ inspectL={kind,id,open:true};render();refold(true);live(t('looks.woreDone',{name:id?t((kind==='print'?'look.':'stamp.')+id):t('stamps.none')}));}
 let buying=null;
-function askBuy(m){if(!opt.confirm){doBuy(m);return;}buying=m;const pr=m.unlock.price;
+function askBuy(m){buying=m;const pr=m.unlock.price;
  $('buy-title').textContent=t('buy.title',{name:t('model.'+m.id)});$('buy-coins').textContent=t('buy.coins',{now:num(S.coins),after:num(S.coins-pr)});
- $('buy-ok').textContent=t('buy.confirm',{price:num(pr)});$('buy-no').textContent=t('buy.cancel');$('buy-err').innerHTML='';
+ $('buy-hand').textContent=t('buy.toHand');$('buy-ok').textContent=t('buy.confirm',{price:num(pr)});$('buy-no').textContent=t('buy.cancel');$('buy-err').innerHTML='';
  $('buy').showModal();$('buy-no').focus();}
 $('buy-no').onclick=()=>$('buy').close();
 $('buy').addEventListener('close',()=>{if(buying){buying=null;$('action').querySelector('.btn.primary')?.focus();}});
 $('buy-ok').onclick=()=>{const m=buying;if(!m)return;if(opt.fail||$('p-fail').value==='1'){$('buy-err').innerHTML=`<span class="err"><span aria-hidden="true">⚠</span>${t('buy.failed')}</span>`;return;}buying=null;$('buy').close();doBuy(m);};
-function doBuy(m){if(S.bought.includes(m.id)||S.coins<m.unlock.price)return;const from=S.coins;S.coins-=m.unlock.price;S.bought.push(m.id);
- if(opt.autouse)S.inHand=m.id;pickM=m.id;render();countCoins(from,S.coins);refold(false);
- live(opt.autouse?t('planes.inHandDone',{name:t('model.'+m.id)}):t('model.'+m.id)+' ✓');$('action').querySelector('.btn.primary')?.focus();}
+function doBuy(m){if(S.bought.includes(m.id)||S.coins<m.unlock.price||!placeReached(m))return;const from=S.coins;S.coins-=m.unlock.price;S.bought.push(m.id);
+ sessionPrev=S.hand;S.prev=S.hand;S.hand=m.id;inspect=null;justTook=m.id;render();countCoins(from,S.coins);refold(false);
+ live(t('planes.inHandDone',{name:t('model.'+m.id)}));$('action').querySelector('.btn.primary')?.focus();}
 function countCoins(a,b){if(reduced()){wallet(b);return;}const t0=performance.now();const step=now=>{const f=Math.min(1,(now-t0)/300);wallet(Math.round(a+(b-a)*f));if(f<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
 
-/* ---------- výsledek s novinkou (§7) ---------- */
-const PRIO={place:1,paper:2,plane:3,shop:4,look:5};
+/* ---------- výsledek s novinkou (§7): jedna novinka za hod ---------- */
+const PRIO={place:1,paper:2,plane:3,forSale:4,look:5,stamp:6};
 function showResult(){
  const news=[...S.news].sort((a,b)=>PRIO[a.type]-PRIO[b.type]);
  $('res-dist').textContent=mtr(S.best);$('res-coins').textContent=t('result.coinsLabel',{count:Math.round(10+S.best/10)});
  const box=$('res-news');box.innerHTML='';
  if(news.length){const n=news[0];let label,art,act=null;
-  if(n.type==='look'){const l=L(n.id);label=t('result.newLook',{name:t('look.'+n.id)});art=planeSVG(M(S.inHand).shape,l.acc,{w:40,h:40,sc:30});act=S.look===n.id?null:'wear';}
-  else if(n.type==='plane'){const m=M(n.id);label=t('result.newPlane',{name:t('model.'+n.id)});art=planeSVG(m.shape,{}, {w:40,h:40,sc:30});act=S.inHand===n.id?null:'use';}
-  else{const m=M(n.id);label=t('result.planeInShop',{name:t('model.'+n.id)});art=planeSVG(m.shape,{},{w:40,h:40,sc:30});}
+  if(n.type==='look'){label=t('result.newLook',{name:t('look.'+n.id)});art=handPlane(M(S.hand),{acc:P(n.id).acc,w:40,h:40,sc:30});act=S.print===n.id?null:'wear';}
+  else if(n.type==='stamp'){label=t('result.newStamp',{name:t('stamp.'+n.id)});art=`<g transform="translate(8 8)"><path d="${ST(n.id).d}" fill="none" stroke="#2a2622" stroke-width="1.6"/></g>`;act=S.stamp===n.id?null:'wearStamp';}
+  else if(n.type==='plane'){label=t('result.newPlane',{name:t('model.'+n.id)});art=planeSVG(M(n.id).shape,{w:40,h:40,sc:30});act=S.hand===n.id?null:'take';}
+  else{label=t('result.planeForSale',{name:t('model.'+n.id)});art=planeSVG(M(n.id).shape,{w:40,h:40,sc:30});}
   const row=document.createElement('div');row.className='news'+(reduced()?'':' drop');
   row.innerHTML=`<svg viewBox="0 0 40 40" aria-hidden="true">${art}</svg>`;
   const tb=document.createElement('button');tb.type='button';tb.className='t';tb.textContent=label;
-  tb.onclick=()=>{$('result').close();tab=n.type==='look'?'looks':'planes';if(n.type==='look')pickL=n.id;else pickM=n.id;render(true);};
+  tb.onclick=()=>{$('result').close();showView('workshop');
+   if(n.type==='look'||n.type==='stamp'){tab='looks';inspectL={kind:n.type==='look'?'print':'stamp',id:n.id,open:true};}else{tab='planes';inspect=owns(M(n.id))?null:n.id;}
+   render(true);};
   row.append(tb);
-  if(act){const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=act==='wear'?t('result.wear'):t('result.useIt');
-   b.onclick=()=>{if(act==='wear'){S.look=n.id;pickL=n.id;}else{S.inHand=n.id;pickM=n.id;}b.textContent=t('result.worn');b.setAttribute('aria-disabled','true');b.onclick=null;render();live(b.textContent);};row.append(b);}
+  if(act){const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=act==='take'?t('result.takeIt'):t('result.wear');
+   b.onclick=()=>{if(b.getAttribute('aria-disabled'))return;if(act==='wear')S.print=n.id;else if(act==='wearStamp')S.stamp=n.id;else{S.prev=S.hand;S.hand=n.id;}
+    b.textContent=act==='take'?t('result.taken'):t('result.worn');b.setAttribute('aria-disabled','true');render();live(act==='take'?t('planes.inHandDone',{name:t('model.'+n.id)}):b.textContent);};row.append(b);}
   box.append(row);
-  if(news.length>1)box.insertAdjacentHTML('beforeend',`<p class="more">${t('result.alsoNew',{count:news.length-1})}</p>`);
  }
  $('result').showModal();$('res-again').focus();
 }
 $('res-again').onclick=()=>$('result').close();
-$('res-wk').onclick=()=>{$('result').close();tab='upgrades';render(true);};
+$('res-wk').onclick=()=>{$('result').close();showView('workshop');tab='upgrades';render(true);};
 $('res-atlas').onclick=()=>{$('result').close();live('(maketa) Atlas');};
-$('close').onclick=()=>{markSeen();live('(maketa) '+(lang==='cs'?'Dílna by se zavřela.':'The Workshop would close.'));render();};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))$('close').click();});
+$('close').onclick=()=>{markSeen();inspect=null;inspectL=null;sessionPrev=null;live('(maketa) '+(lang==='cs'?'Dílna by se zavřela.':'The Workshop would close.'));render();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]')&&!$('wk').hidden)$('close').click();});
+
+/* ---------- obrazovka míření s čipem Sail (§8) ---------- */
+let aimSwap=null; // {from,to} po klepnutí: čip nabízí návrat
+function chipOffer(){const w=WIND[opt.wind],hand=M(S.hand),sail=M('sail');
+ if(aimSwap)return {to:aimSwap.from};
+ if(!owns(sail))return null;
+ if(S.hand!=='sail'&&w>=.04)return {to:'sail'};
+ if(S.hand==='sail'&&w<=-.04&&S.prev&&S.prev!=='sail')return {to:S.prev};
+ return null;}
+function renderAim(){
+ const w=WIND[opt.wind],hand=M(S.hand),ni=PLACE_AT.findIndex(a=>a>S.best);
+ $('aim-next').innerHTML=ni>=0?`${t('aim.next',{place:placeName(ni)})}<small>${t('aim.nextDist',{distance:mtr(PLACE_AT[ni]-S.best)})}</small>`:'';
+ $('aim-wind').innerHTML=`<span aria-hidden="true">${w>0?'⇢':w<0?'⇠':'·'}</span> ${t('aim.wind.'+opt.wind)}`;
+ $('aim-coins').innerHTML=walletHTML(S.coins);
+ $('aim-kid').innerHTML=kidSVG+handPlane(hand,{cx:190,cy:88});
+ $('aim-hint').textContent=t('aim.hint');
+ const slot=$('aim-chip-slot');slot.innerHTML='';const o=chipOffer();
+ if(o){const to=M(o.to),gain=windEst(to,w)/windEst(hand,w)-1;
+  if(aimSwap||Math.abs(gain)>=.02){const b=document.createElement('button');b.type='button';b.className='sail-chip';b.id='sail-chip';
+   b.innerHTML=`<svg viewBox="0 0 60 40" aria-hidden="true">${planeSVG(to.shape,{w:60,h:40,sc:26})}</svg><span><b>${t('aim.swap',{name:t('model.'+to.id)})}</b><span class="g num">${t('aim.swapGain',{value:spct(gain)})}</span></span>`;
+   b.setAttribute('aria-label',t('aim.swapAria',{name:t('model.'+to.id),value:spct(gain)}));
+   b.addEventListener('pointerdown',e=>e.stopPropagation());
+   b.onclick=e=>{e.stopPropagation();const from=S.hand;S.prev=from;S.hand=to.id;aimSwap=aimSwap?null:{from};renderAim();refoldAim();$('sail-chip')?.focus();live(t('planes.inHandDone',{name:t('model.'+to.id)}));};
+   slot.append(b);}}
+}
+function refoldAim(){if(reduced())return;const k=$('aim-kid');k.classList.remove('refold-quick');void k.getBoundingClientRect();k.classList.add('refold-quick');}
+$('aim').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;live(t('aim.thrown'));});
+document.addEventListener('keydown',e=>{if($('aim').hidden)return;if(e.key===' '&&!e.target.closest('button,select,summary')){e.preventDefault();live(t('aim.thrown'));}});
+function showView(v){$('aim').hidden=v!=='aim';$('wk').hidden=v==='aim';if(v==='aim'){staticTexts();renderAim();}}
 
 /* ---------- panel makety ---------- */
-const sel={scenario:'p-scenario',lang:'p-lang',reveal:'p-reveal',confirm:'p-confirm',autouse:'p-autouse',counter:'p-counter',motion:'p-motion'};
-$('p-scenario').value=opt.scenario in SCEN?opt.scenario:'mid';$('p-lang').value=lang;$('p-reveal').value=opt.reveal;$('p-confirm').value=opt.confirm?'1':'0';$('p-autouse').value=opt.autouse?'1':'0';$('p-counter').value=opt.counter?'1':'0';$('p-motion').value=opt.motion;$('p-fail').value=opt.fail?'1':'0';
+const sel={scenario:'p-scenario',lang:'p-lang',view:'p-view',wind:'p-wind',motion:'p-motion'};
+$('p-scenario').value=opt.scenario in SCEN?opt.scenario:'mid';$('p-lang').value=lang;$('p-view').value=opt.view;$('p-wind').value=opt.wind;$('p-motion').value=opt.motion;$('p-fail').value=opt.fail?'1':'0';
 for(const [k,id] of Object.entries(sel))$(id).onchange=()=>{const u=new URLSearchParams(location.search);u.set(k,$(id).value);location.search=u.toString();};
 $('p-result').onclick=showResult;
 $('p-lost').onclick=()=>{lost=!lost;renderPreview();live(lost?t('status.glLost'):t('status.glBack'));};
 
 render();
+showView(opt.view);
 </script>
 </body>
 </html>

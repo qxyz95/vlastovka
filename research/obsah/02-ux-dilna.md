@@ -1,40 +1,59 @@
-# Dílna: vlaštovky za mince a za postup, Vzhled (skiny) — UX a toky
+# Dílna: vlaštovky za mince, Vzhled (potisky a razítka), rychlá volba Sail — UX a toky
 
-**14. 10. 2026, product-designer.** Stav: **návrh k odsouhlasení** (otevřené volby v §16 jako `BLOCKED`). Maketa: `prototype-dilna.html` (jeden soubor, falešná data, `src/` beze změny, v prohlížeči **NOT ASSESSED**).
+**14. 10. 2026, product-designer, kolo 2.** Stav: **upraveno podle rozhodnutí uživatele** (06, 14. 10., „Odemykatelný obsah: vlaštovky za mince a skiny“, body 1–8). Otevřené volby B1–B6 z kola 1 jsou rozhodnuté (§16). Maketa: `prototype-dilna.html` (jeden soubor, falešná data, `src/` beze změny, v prohlížeči **NOT ASSESSED**).
 
 Zadání uživatele: „rozšířit naší dílnu o další vlaštovky které budou zamčené a půjdou odemknout za mince … a různé skiny vlaštovek které by byly odemykatelné za progress ve hře.“
 
-Tento dokument řeší **UX a toky obecně pro N modelů a M vzhledů**. Konkrétní modely a vzhledy navrhuje game designer (`research/obsah/01-game-design.md`), vzhled art-director (`03`), ceny a podmínky balance-analyst (`04`). Kde tu stojí jméno, cena nebo podmínka, je **zástupná** (6 modelů, 15 vzhledů, ceny v tisících podle 06 „Mince rostou rychleji než lineárně“). Čísla ladí `simulation/progression/`, do kódu se nepíšou napevno.
+Tento dokument řeší **UX a toky**. Modely a podmínky navrhuje game designer (`research/obsah/01-game-design.md`), vzhled art-director (`03-vzhled-modelu-a-skinu.md`), ceny balance-analyst (`04-ekonomika.md`). Jména, ceny a podmínky tady jsou **zástupné** (převzaté z 01, ceny 400–2 000 ◈). Čísla ladí `simulation/progression/`, do kódu se nepíšou napevno.
 
-Odkazy: `06` = `research/bonusy/06-rozhodnuti.md` (závazné), `07-menu` = `research/design/07-menu.md`, `bible` = `research/design/05-styl-papir.md`, `papíry` = `research/design/01-papiry.md`, `P1–P15` = `research/kb/README.md`, `02 §…` / `07 N…` / `08 N…` = bloky KB.
+Odkazy: `06` = `research/bonusy/06-rozhodnuti.md` (závazné; „06 obsah N“ = bod N rozhodnutí 14. 10. o odemykatelném obsahu), `07-menu` = `research/design/07-menu.md`, `bible` = `research/design/05-styl-papir.md`, `papíry` = `research/design/01-papiry.md`, `03` = `research/obsah/03-vzhled-modelu-a-skinu.md`, `P1–P15` = `research/kb/README.md`, `02 §…` / `07 N…` / `08 N…` = bloky KB.
+
+### Co se změnilo proti kolu 1
+| Bylo | Je | Proč |
+|---|---|---|
+| Klepnutí na kartu = jen náhled, pak tlačítko „Letět s touhle“ (`planes.use`) | **Klepnutí na vlastněnou vlaštovku ji rovnou dá do ruky.** `planes.use` zrušeno | 06 obsah 6: uživatel nechápal rozdíl mezi „Letět s touhle“ a „Hodit“ |
+| Vzhled: klepnutí = zkouška, pak „Nasadit“ | **Klepnutí na odemčený potisk / razítko ho rovnou nasadí** (stejný princip) | 06 obsah 6 platí obecně: jedna akce pro jednu věc, změna je zdarma a vratná |
+| 6 zástupných modelů s cenami v tisících | 7 modelů z 01: Dart, Glider (zdarma, 100 m), Hawk, Kite, Skimmer, Sail, Needle, **dvojí klíč** (dolet na místo, pak mince) | 06 obsah 1, 4 |
+| 3 vrstvy (model, papír, vzhled) | **Vrstvy podle 03 §2.1:** model, papír, potisk (+ ozdoba), razítko; obrys, stín a stopa beze změny | 06 obsah 7, 03 |
+| Vzhled přes papír = volba B2 | **Potisk přes papír**, jeden pro všechny vlaštovky | 06 obsah 7 |
+| Rychlá volba Sail = BLOCKED v 01 | **Specifikace prvku na obrazovce míření** (§8) | 06 obsah 5 |
+| B1–B6 otevřené | rozhodnuté, přepínače z makety odstraněné | 06 obsah 5, 7 |
 
 ---
 
 ## 0. Shrnutí
 
-1. **Tři vrstvy vlaštovky, každá s jednou rolí:** *model* (tvar a let, mění čísla), *papír* (žebřík rychlosti z větve Paper, mění čísla, 06 kolo 2 bod 3) a *vzhled* (jen podoba, **nikdy nemění čísla**). Hráč tak vždy ví, co mu přidává dolet (P7). Jak se vzhled kreslí přes papír, je volba B2.
-2. **Dílna dostane tři záložky: Vlaštovky · Vylepšení · Vzhled.** Záložky se odkrývají postupně (06 menu B1, 07 N5): Vylepšení hned, Vlaštovky s druhým modelem, Vzhled s prvním odemčeným vzhledem. Hlavní menu zůstává se čtyřmi tlačítky (06 „Struktura menu“).
-3. **Přínos je vidět předem:** detail modelu ukazuje srovnání „v ruce → tenhle“ (rychlost, klouzavost, události, nejlepší úhel se šipkou a textem), dvě dráhy letu v malém grafu (čárkovaně teď, plně nový) a odhad klidného hodu „~412 m → ~468 m“, výslovně označený jako odhad.
-4. **Koupě modelu má jeden potvrzovací list** s „Mince: 9 240 → 840“ (koupě je drahá a nevratná, mobil = nechtěné klepnutí). Po koupi jde model rovnou do ruky a vlaštovka se „přeloží“ (stejná animace jako u papíru, 06 papíry bod 4).
-5. **Vzhledy se nesbírají, nosí se.** Žádné počítadlo „7/15“, žádná odměna za kompletaci (06 13. 10. „sběratelství ne“, 08 N7–N8). Zamčený vzhled je **tužková skica** (sedí do bible: jediná nakreslená věc je vlaštovka) s podmínkou napsanou přímo, bez otazníků a odpočtů.
-6. **Podmínky vzhledů = běžná cesta hrou** (místa, čtvrti, finále, pár dovednostních okamžiků). Žádné řady „hoď 500×“ (02 §2.8 grinding, 08 N8). Pomoc s časováním v Nastavení odemykání nikdy neblokuje.
-7. **Na Výsledku nejvýš jeden řádek novinky** se jménem, malým náhledem a tlačítkem „Nasadit“ (06 menu bod 3, zadání „nejvýš jeden banner“). Víc novinek najednou = jeden řádek + „+1 další novinka v Dílně“. Dílna v menu **tečku nemá** (07-menu §2.1, P13).
+1. **Jedna akce pro jednu věc.** Klepnutí na vlastněnou vlaštovku = je v ruce. Klepnutí na zamčenou = ukáže srovnání a jediné tlačítko „Koupit“. Dole je vždy jedno „Hodit“. Totéž ve Vzhledu: klepnutí na odemčený potisk = nasazený. Nikde neexistují dvě tlačítka, která by dělala „vezmi a leť“ (06 obsah 6).
+2. **Vrstvy vlaštovky** (03 §2.1): *model* (tvar a let, mění čísla) → *papír* (žebřík rychlosti z Vylepšení, mění čísla) → *potisk* se svou ozdobou (jen podoba) → *razítko* (jen podoba). Obrys, stín, velikost a stopa se kosmetikou nemění nikdy. Hráč tak vždy ví, co mu přidává dolet (P7).
+3. **Dílna má tři záložky: Vlaštovky · Vylepšení · Vzhled**, odkrývají se postupně (06 menu B1, 07 N5). Hlavní menu zůstává se čtyřmi tlačítky.
+4. **Vlaštovky:** vlastněné + **2 nejbližší zamčené plně s cenou**, další jako **silueta** „Otevře se dál na trase“ (06 obsah 5). Zamčená má **dvojí klíč**: nejdřív doletět na místo, pak koupit (06 obsah 1). Glider je zdarma na 100 m, Night Owl se do finále neukazuje vůbec (06 obsah 4).
+5. **Přínos je vidět předem:** srovnání „v ruce → tahle“ (pruhy se šipkou a textem), **dvě dráhy** v malém grafu a **odhad doletu**, bez zkušebního hodu (06 obsah 5).
+6. **Koupě s potvrzovacím listem** „Mince: 1 240 → 540“; koupená vlaštovka jde **rovnou do ruky** s animací přeložení (06 obsah 5).
+7. **Vzhled = potisk přes papír, jeden pro všechny vlaštovky, plus jedno razítko nebo žádné.** Bez počítadla, bez odměny za sadu (06 obsah 7). Zamčený kus je tužková skica s podmínkou napsanou celou.
+8. **Rychlá volba Sail při míření:** malý čip u ukazatele větru, jen když fouká do zad a Sail je koupená (06 obsah 5, §8).
+9. **Na Výsledku nejvýš jeden řádek novinky**, Dílna v menu tečku nemá (07-menu §2.1, P13).
 
 ---
 
-## 1. Pojmy a vrstvy
+## 1. Vrstvy vlaštovky
 
-| Vrstva | Co mění | Jak se získá | Kde se volí | Mění dolet? |
-|---|---|---|---|---|
-| **Model** (Dart, Glider, …) | tvar vlaštovky, fyzika (`MODELS`: rychlost, klouzavost, odpor, nejlepší úhel, síla událostí) | od začátku / za postup (Glider u 1. místa, 08 Atlas) / **za mince** (nové) | Dílna › Vlaštovky | **ano**, srovnání povinné |
-| **Papír** (Copy → Kraft → Washi → …) | materiál, obrys, tvar stopy, rychlost (žebřík) | úrovně větve Paper za mince, druh se otevře na 3. místě čtvrti (06) | Dílna › Vylepšení (větev Paper) | ano, „teď → po koupi“ už je (07-menu §2.7) |
-| **Vzhled** (skin) | jen podoba: potisk, barevné akcenty, ozdoba stopy (volba B2) | **jen za postup** ve hře, nikdy za mince | Dílna › Vzhled | **nikdy**, píše se to v UI |
+Sjednoceno s 03 §2.1 a 01 §3.1.
+
+| # | Vrstva | Co mění | Jak se získá | Kde se volí | Mění dolet? |
+|---|---|---|---|---|---|
+| 1 | **Model** (Dart, Glider, Hawk, …) | silueta, přehyby, let (`MODELS`) | Dart od začátku, Glider zdarma na 100 m, ostatní dolet na místo + mince | Dílna › Vlaštovky, rychlá volba Sail při míření | **ano**, srovnání povinné |
+| 2 | **Papír** (Copy → Kraft → Washi → stříbrná fólie) | tón listu, vlákna, tvar stopy, rychlost | úrovně větve Paper za mince | Dílna › Vylepšení (automaticky nejvyšší druh) | ano, „teď → po koupi“ (07-menu §2.7) |
+| 3 | **Potisk** (skin) + jeho **ozdoba** | kresba přes papír (≤ 30 % plochy), jedna drobnost (mašle, barva přehybu, lem) | jen postup: suvenýry čtvrtí, finále, podpisové za první trik modelu | Dílna › Vzhled › Potisky | **nikdy** |
+| 4 | **Razítko** | malá nálepka na pravém křídle | první perfekt typu události, hvězda, finále (7 kusů) | Dílna › Vzhled › Razítka (jedno nebo žádné) | **nikdy** |
+| — | Obrys, stín, velikost, **stopa** | — | — | nikde | — |
 
 Pravidla:
-- **Vylepšení i papír platí pro všechny modely** (dnešní `core.js`: „Upgrades are shared by both models“). Koupě modelu tedy nikdy nezahodí předchozí investici. Ukazuje se to větou `planes.shared` v detailu (P7, 02 §2.7 bod 2 „přestat nic nestojí“).
-- **Vzhled je nezávislý na modelu** (doporučení B5 A): jedna volba platí na každý model. Art-director musí každý vzhled navrhnout tak, aby seděl na všechny siluety (potisk přes společné UV, papíry §2 „UV vlaštovky“).
-- **Vzhled nesmí rozbít čitelnost letu:** obrys vlaštovky ≥ 2,6 px a nejsilnější, dvojí hrana ≥ 3 : 1 v každé čtvrti, nic bílého s grafitem ve stopě navíc (bible kap. 6 a 13). Kontrolu dělá art-director, UX jen hlídá, že žádný vzhled není výhoda ani nevýhoda.
-- **Proč vzhled ne za mince:** zadání („za progress“), a mince mají jasnou roli síly (P12 „mince jako důsledek výkonu“). Druhý odbyt mincí na kosmetiku by mince rozdělil na „sílu nebo parádu“ a vytvořil tlak volby, který hra nepotřebuje (02 §4.3 bod 6).
+- **Vylepšení i papír platí pro všechny modely** (`core.js`: „Upgrades are shared“). Koupě modelu nikdy nezahodí předchozí investici; říká to `planes.shared` (P7, 02 §2.7 bod 2).
+- **Potisk a razítko platí pro všechny vlaštovky** (06 obsah 7). Změna modelu je nesundá. Art-director kreslí potisk do UV půdorysu listu, který mají všechny modely (03 §4.2).
+- **Potisk leží na papíru, papír nenahrazuje** (06 obsah 7). Tón papíru (rychlost) je vidět i pod potiskem; v Dílně to říká blok „Na tvé vlaštovce“ (§6.1).
+- **Stopa je bez kosmetiky** (06 obsah 7, 03 §2.4). Barvu dává čtvrť, tvar papír.
+- **Lampionový potisk ve čtvrti 4 jemně svítí** (06 obsah 7, 03 S6). V UI se to neoznačuje jako výhoda; popis potisku to zmíní jen jako vlastnost („In Lantern City it glows a little.“).
+- **Proč kosmetika ne za mince:** zadání („za progress“), 06 obsah 7, mince mají jasnou roli síly (P12). Druhý odbyt mincí by vytvořil tlak volby „síla nebo paráda“ (02 §4.3 bod 6).
 
 ---
 
@@ -43,54 +62,63 @@ Pravidla:
 ### 2.1 Model (vlaštovka)
 
 ```
-  skrytý ──(přiblíží se podmínka)──► zamčený: postup ──(splněno)──► vlastněný ──(Letět s ní)──► V RUCE
-     │                                                                ▲    ▲                         │
-     └──(je v nabídce)──► zamčený: mince ──(Koupit + potvrdit)────────┘    └──────(jiný model do ruky)┘
-                            ├─ na mince nestačí  („chybí 1 150 ◈“)
-                            └─ stačí             (tlačítko Koupit aktivní)
+ silueta ──(stane se jednou ze 2 nejbližších)──► zamčená: místo nedosažené ──(doletí na místo)──► zamčená: k prodeji
+                                                                                                    │
+                                              ┌──────────────(Koupit + potvrdit)────────────────────┘
+                                              ▼
+                                         V RUCE ◄──(klepnutí na kartu)── vlastněná
+                                              └──(klepnutí na jinou vlastněnou / volba Sail při míření)──► vlastněná
+ Glider: zamčená „Zdarma u místa …“ ──(100 m)──► vlastněná (do ruky ne automaticky, viz §7)
 ```
 
-| Stav | Karta (vizuál) | Text | Tlačítko v detailu |
+| Stav | Karta (vizuál) | Text na kartě | Klepnutí na kartu | Pás akce dole |
+|---|---|---|---|---|
+| **V ruce** | plný náhled (model + potisk na tónu papíru), rám grafit 3 px, páskový štítek „✓ V ruce“ nahoře | `planes.inHand` | nic se nemění (detail ukáže profil) | [Hodit] |
+| **Vlastněná** | plný náhled, bez rámu | `planes.owned` „Tvoje“ | **vezme ji do ruky** (přeložení 300 ms, `planes.inHandDone`) | [Hodit] |
+| **Zamčená: k prodeji** (místo dosažené) | plný náhled bez potisku (čistý papír), cena hořčicovou ikonou + `mustard-800` | `{price} ◈` | ukáže srovnání a odhad | [Koupit za {price} ◈] + [Hodit]; když mince nestačí, Koupit zakázané + „Chybí 160 mincí.“ |
+| **Zamčená: místo nedosažené** | tužková skica (jen přehyby, bez výplně, 03 M7), cena + praporek | `{price} ◈` a ⚑ `planes.lockedShort` | ukáže srovnání a odhad | [Koupit…] **zakázané** + „Nejdřív doleť k místu Crane Forest, pak ji koupíš.“ (`planes.needPlace`) + [Hodit] |
+| **Silueta** (třetí a další zamčená) | plná šedá silueta bez detailu (`pencil` 40 %), bez jména a ceny | `planes.hiddenName`, ⚑ `planes.lockedShort` | ukáže jednu větu `planes.lockedLater` | [Hodit] |
+| **Glider před 100 m** | tužková skica | ⚑ `planes.freeShort` „Zdarma“ | ukáže srovnání, `planes.freeAt` | [Hodit] (nic ke koupi) |
+| **Night Owl** do finále | **karta neexistuje** | – | – | – |
+
+- **Cena se ukazuje stejně, ať mince stačí, nebo ne.** Žádné „můžeš koupit!“, žádný puls (02 §4.3 bod 6, 06 Atlas bod 4).
+- **Dvojí klíč, ukazuje se vždy jen první nesplněný:** místo nedosažené → věta o místě (mince se nekomentují); místo dosažené → případně „Chybí N mincí“. Žádný seznam úkolů (P13).
+- **Pořadí karet je pevné podle katalogu** (Dart, Glider, Hawk, Kite, Skimmer, Sail, Needle). Po koupi nic neskáče, mění se jen stav karty.
+- **Kolik siluet:** všechny zbývající modely kromě Night Owl (nejvýš 3). Silueta neprozrazuje jméno ani cenu, jen „ještě něco je na trase“ (P3, 06 obsah 5).
+- **Stav nikdy jen barvou:** ✓ + text, ikona mince + číslo, ⚑ + text, skica vs. plný náhled vs. silueta (WCAG 1.4.1).
+
+### 2.2 Potisk a razítko
+
+| Stav | Políčko | Klepnutí | Text |
 |---|---|---|---|
-| **V ruce** | plný náhled, rám grafit 3 px, štítek ✓ „V ruce“ | `planes.inHand` | žádné (zakázané „V ruce“ s ✓) |
-| **Vlastněný** | plný náhled | `planes.ready` | „Letět s ní“ (`planes.use`) |
-| **Zamčený: mince, stačí** | plný náhled, cena hořčicovou ikonou + `mustard-800` | `{price} ◈` | „Koupit za {price} ◈“ (`planes.buy`) |
-| **Zamčený: mince, nestačí** | stejně jako výše (nic se neschovává, nic nebliká) | `{price} ◈` | zakázané „Koupit…“ + řádek „Chybí 1 150 mincí.“ (`detail.missing`) |
-| **Zamčený: postup** | tužková skica (obrys, bez výplně), ikona praporku trasy | „Otevře se u místa {place}“ | žádné, podmínka v detailu |
-| **Skrytý** (volba B3) | siluetka bez detailu, ikona praporku | „Otevře se dál na trase“ | žádné, detail jen jedna věta bez čísel |
+| **Nasazený** | barevný náhled, rám grafit 3 px, ✓ | nic | „✓ Nasazeno“ |
+| **Odemčený, neviděný** | barevný náhled + páskový štítek „NOVÉ“ | **nasadí** (přeložení 300 ms, `looks.woreDone`) | jméno |
+| **Odemčený** | barevný náhled | **nasadí** | jméno |
+| **Zamčený** | tužková skica (`pencil`, bez barvy), malý zámek | ukáže detail s podmínkou a skicu v náhledu; nic se nenasadí | jméno + „Jak ho získat: …“ |
+| **Bez razítka** (jen v Razítkách) | čisté křídlo, text „Bez razítka“ | sundá razítko | `stamps.none` |
 
-- **Cena se ukazuje stejně, ať mince stačí, nebo ne.** Žádné zvýraznění „můžeš koupit!“, žádný puls (02 §4.3 bod 6 „návnady v rozhodovacích momentech“, 06 Atlas bod 4 „nikdy kvůli možnosti koupě“).
-- **Stav nikdy jen barvou:** ✓ + text, ikona mince + číslo, ikona praporku + text, skica vs. barva (1.4.1).
-
-### 2.2 Vzhled
-
-| Stav | Políčko | Text | Akce |
-|---|---|---|---|
-| **Nasazený** | barevný náhled, rám grafit 3 px, ✓ | „Nasazeno“ | – |
-| **Odemčený, ještě neviděný** | barevný náhled + páskový štítek „NOVÉ“ | jméno | „Nasadit“ |
-| **Odemčený** | barevný náhled | jméno | „Nasadit“ |
-| **Zamčený** | **tužková skica** vlaštovky (grafitová linka `pencil`, bez barvy), malý zámek | jméno + „Jak ho získat: Doleť k místu Maják na konci mola.“ | žádná; „Prohlédnout“ ukáže skicu větší |
-
-- Štítek „NOVÉ“ zmizí, jakmile hráč políčko uvidí v záložce Vzhled (stačí otevřít záložku, nemusí klepnout). **Neviděný vzhled nedává tečku na tlačítko Dílny** (07-menu §2.1): novinku už oznámil Výsledek (§7).
-- **Podmínka je vždy celá vidět.** Žádné „???“ ani tajné podmínky: nejistota má být ve hře (kam doletím), ne v tom, co se po mně chce (P3 výhrada „nejistotu nese obsah“, 02 §2.7 bod 3).
-- **Zamčené vzhledy se ukazují všechny**, protože nejsou síla a podmínky jsou zároveň náhled toho, co hra nabízí (08 N8 „signifikátor popisuje možnost hry“). Pořadí: nasazený, odemčené (nejnovější první), zamčené podle toho, jak blízko po trase jsou.
+- Štítek „NOVÉ“ zmizí, jakmile hráč políčko uvidí (stačí otevřít záložku Vzhled). Neviděná položka **nedává tečku** na tlačítko Dílny (07-menu §2.1).
+- **Podmínka je vždy celá vidět.** Žádné „???“ ani tajné podmínky (P3, 02 §2.7 bod 3).
+- **Zamčené potisky a razítka se ukazují všechny**: nejsou síla a jejich podmínky ukazují, co hra nabízí (08 N8). Pořadí: nasazený, odemčené (nejnovější první), zamčené podle vzdálenosti na trase. Night Mail (K11, Night Route) se do odemčení Night Route neukazuje.
+- **Bez počítadla** „7 / 11“, bez procentního pruhu, bez odměny za všechny (06 obsah 7, 08 N7).
 
 ---
 
 ## 3. Dávkování (co hráč vidí kdy)
 
-Navazuje na 06 menu B1 (Dílna se objeví po 1. hodu, Atlas po 1. místě) a 07 N5 / P14.
+Navazuje na 06 menu B1 (Dílna po 1. hodu) a 07 N5 / P14. Místa a pořadí podle 01 §2.8 (zástupné).
 
-| Okamžik (zástupné) | Dílna ukazuje | Proč |
+| Okamžik | Dílna ukazuje | Proč |
 |---|---|---|
-| před 1. hodem | Dílna v menu není (06 B1) | nic ke koupi, nic k volbě |
-| po 1. hodu | **jen obsah záložky Vylepšení, lišta záložek skrytá** | jedna věc; strom je hlavní smyčka |
-| Glider se odemkne (Atlas, 1. místo, 100 m) **nebo** se objeví první model za mince | lišta záložek: **Vlaštovky · Vylepšení**; Vlaštovky ukazují vlastněné + nejbližší zamčené (B3) | druhý model = první skutečná volba |
-| první odemčený vzhled | třetí záložka **Vzhled** | žádný prázdný šatník s jedním políčkem „Čistý papír“ |
-| další čtvrti | v Vlaštovkách se odkrývají další skryté modely (B3) | blízký cíl, ne celá mapa (P3, Loewenstein) |
-| po finále (Delivered) | vše beze změny; zbývající modely za mince dál koupitelné | mince mají po konci smysl, bez nového tlaku (02 N6) |
+| před 1. hodem | Dílna v menu není (06 B1) | nic ke koupi |
+| po 1. hodu | **jen Vylepšení, lišta záložek skrytá** | jedna věc; strom je hlavní smyčka |
+| Glider na 100 m | lišta **Vlaštovky · Vylepšení**; Vlaštovky: Dart, Glider, 2 nejbližší (Hawk, Kite) plně, zbytek siluety | druhý model = první skutečná volba |
+| místo 4 (Hawk k prodeji) | Hawk přejde ze skici do plného náhledu s aktivní cenou; řádek na Výsledku `result.planeForSale` | dvojí klíč: místo otevře, mince rozhodnou |
+| první odemčený potisk nebo razítko | třetí záložka **Vzhled** | žádný prázdný šatník |
+| koupě modelu | další silueta se změní na plnou kartu | vždy 2 blízké cíle (P6) |
+| po finále | beze změny; zbylé modely dál koupitelné; Night Owl až s Night Route | žádný nový tlak po konci (02 N6) |
 
-**Kdy se objeví model za mince** (nejdřív) určí game designer a balance-analyst. UX požadavek: první model za mince má být v nabídce **dřív, než na něj hráč má**, aby šlo vidět cíl a cenu (blízký cíl, P6), ale ne dřív, než hráč pochopil strom (doporučení: po první koupené úrovni nebo po 1. místě).
+Razítka R1 a R2 (první perfekt poryvu a holuba) přijdou dřív než Dílna se Vzhledem: ohlásí se až po odemčení Dílny a jen řádkem (01 §3.3). Pokud je razítko první kosmetika, s ním se odkryje záložka Vzhled.
 
 ---
 
@@ -102,299 +130,383 @@ Dílna je panel `<dialog id="workshop">` podle 07-menu §2.7 (mobil přes celou 
 
 ```
 ┌──────────────────────────────┐
-│ [✕]  Workshop       [9,240 ◈]│  hlavička 56 px, mince vpravo (tabular-nums)
+│ [✕]  Your Workshop  [1,240 ◈]│  hlavička 56 px, mince vpravo (tabular-nums)
 │──────────────────────────────│
-│  ╱▔▔▔╲   náhled vlaštovky    │  „okno“ 30 % výšky: 3D záběr na ruku dítěte
-│ ✈  (model + vzhled)          │  (fallback: statický obrázek modelu, §9)
+│     náhled: vlaštovka v ruce │  „okno“ 30 % výšky: model + papír + potisk + razítko
+│     dítěte                   │  (fallback: statický obrázek, §10)
 │──────────────────────────────│
-│ Planes │ Upgrades │ Looks ·NEW│  záložky 48 px, podtržení páskou
+│ Planes │ Upgrades │ Looks NEW │  záložky 48 px, podtržení páskou
 │──────────────────────────────│
-│ ◀ [Dart✓][Glider][Needle][?] ▶│  karty 120 × 132, vodorovně scroll-snap
-│                              │  (scroll jen uvnitř pásu, ne stránky)
-│ Needle                 2,400 ◈│  detail zvolené karty
-│ Fast and flat. Loves Power.  │
-│ Launch speed ▓▓▓▓▓▓░ ▲ +12 % │
-│ Glide        ▓▓▓░░░░ ▼ −8 %  │
-│ Events       ▓▓▓▓░░░  same   │
-│ Best angle   22° (now 25°)   │
-│  ┌ dráhy: - - Dart  ── Needle┐│  graf 100 % × 96 px
-│  └───────────────────────────┘│
+│ Tap a plane you own to take  │  14 px, pencil-700 (vždy, ne jen poprvé)
+│ it.                          │
+│ [✓V ruce][Tvoje][400◈][⚑700◈][▒]▶│ karty 120 × 132, scroll-snap
+│                              │
+│ Kite                   700 ◈ │  detail karty, na kterou hráč klepl
+│ Rides every updraft…         │
+│ ⚑ Fly to Crane Forest first, │
+│   then you can buy it.       │
+│ Launch speed ▓▓▓▓░░ ▼ −29 %  │
+│ Glide        ▓▓▓▓▓▓ ▲ +44 %  │
+│ Event boost  ▓▓▓▓▓░ ▲ +10 %  │
+│ Best angle   40° (now 18°)   │
+│  ┌ dráhy: - - Dart  ── Kite ┐│  graf 100 % × 96 px
+│  └──────────────────────────┘│
 │ Calm throw: ~412 m → ~446 m  │
-│ Estimate: full power, …      │  14 px, pencil-700
-│ Upgrades and paper work for  │
-│ every plane.                 │
+│ Estimate: full power, …      │
 │──────────────────────────────│
-│ [   Buy for 2,400 ◈        ] │  přilepený pás akce 56 px
-│ [ Throw it ↗ ]               │  (07-menu: „Házet“ v panelu zůstává)
+│ Fly to Crane Forest first, … │  důvod zákazu (jen když je Koupit zakázané)
+│ [   Buy for 700 ◈          ] │  jen u zamčené k prodeji / s nedosaženým místem
+│ [ Throw it ↗ ]               │  vždy, jediné „Hodit“
 └──────────────────────────────┘
 ```
 
-- **Náhledové okno** nahoře: na Vlaštovkách a Vzhledu ukazuje **zvolenou** (ne nasazenou) položku na ruce dítěte, tedy „zkouška“ bez nasazení. Na Vylepšení ukazuje vlaštovku v ruce (papír se mění po koupi, 06 papíry bod 4). Na výšce ≤ 640 px se okno zmenší na 22 % a na šířku je vlevo (§4.3).
-- **Pás akce dole** má vždy jen jednu hlavní akci podle zvolené položky (Koupit / Letět s ní / Nasadit) a pod ní „Házet ↗“ jako vedlejší. Když zvolená položka nemá akci (v ruce, zamčená postupem), hlavní tlačítko zmizí a „Házet ↗“ se stane hlavním. Tím je „Házet“ vždy jedno klepnutí (07 Z4).
-- **Karty modelů**: 120 × 132 px (cíl celý), mezera 8 px, `scroll-snap-type:x mandatory`, okraj 16 px, poslední karta vykukuje (je vidět, že pás pokračuje). Šipky ◀ ▶ jen pro `pointer:fine`.
-- Na 320 px: karty 104 × 124, detail jedním sloupcem, pruhy statistik na celou šířku pod názvem řádku.
+- **Pás akce dole má nejvýš dvě tlačítka a nikdy dvě se stejným významem:** u zamčené „Koupit“ (hlavní) + „Hodit“ (vedlejší); jinak jen „Hodit“ (hlavní). Žádné „Letět s touhle“, „Použít“ ani „Nasadit“: výběr dělá klepnutí na kartu (06 obsah 6). „Hodit“ je tak vždy jedno klepnutí (07 Z4).
+- **Náhledové okno** ukazuje vlaštovku **v ruce** s jejím potiskem a razítkem na tónu aktuálního papíru. Výjimka: když hráč klepne na zamčenou kartu, okno ukáže **ji** (skicu, nebo plný náhled u k prodeji, čistý papír), s malým štítkem „Náhled“ (`workshop.previewOnly`), aby nebylo nejasné, co je v ruce. Klepnutí na vlastněnou / zavření Dílny vrátí okno k ruce.
+- **Věta nad kartami** `planes.tapHint` je vždy vidět. Bez ní by nový hráč nevěděl, že klepnutí rovnou mění vlaštovku (objevitelnost nového chování).
+- **Karty:** 120 × 132 px (cíl celý), mezera 8 px, `scroll-snap-type:x mandatory`, okraj 16 px, poslední karta vykukuje. Šipky ◀ ▶ jen pro `pointer:fine`.
+- Na 320 px: karty 104 × 124, detail jedním sloupcem, pruhy na celou šířku.
 
 ### 4.2 Desktop (≥ 1024 × 600)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│ [✕ Back]  Workshop                                        [9,240 ◈] │
+│ [✕ Back]  Your Workshop                                   [1,240 ◈] │
 ├────────────────────────────┬────────────────────────────────────────┤
 │                            │ Planes │ Upgrades │ Looks               │
-│   3D: dítě s vlaštovkou    │ ┌────┐┌────┐┌────┐┌────┐┌────┐┌────┐   │  mřížka 3 × 2
-│   (zvolená položka,        │ │Dart││Glid││Need││Broa││ ?  ││ ?  │   │
-│    pomalu se otáčí)        │ └────┘└────┘└────┘└────┘└────┘└────┘   │
-│                            │ Needle · 2,400 ◈                       │
-│                            │ srovnání + graf drah (vedle sebe)      │
-│                            │ odhad + poznámka                       │
-│                            │ [Buy for 2,400 ◈]   [Throw it ↗]       │
+│   3D: dítě s vlaštovkou    │ Tap a plane you own to take it.        │
+│   v ruce (pomalu se otáčí) │ ┌────┐┌────┐┌────┐┌────┐ (mřížka 4 × 2)│
+│                            │ │Dart││Glid││Hawk││Kite│               │
+│                            │ └────┘└────┘└────┘└────┘               │
+│                            │ Kite · 700 ◈                           │
+│                            │ srovnání │ graf drah + odhad           │
+│                            │ [Buy for 700 ◈]   [Throw it ↗]         │
 └────────────────────────────┴────────────────────────────────────────┘
-  levý sloupec 40 %, pravý 60 % (max 640 px)
 ```
 
 ### 4.3 Mobil na šířku (932 × 430)
-Náhled vlevo 35 %, záložky a obsah vpravo, pás akce přilepený dole v pravém sloupci. Karty modelů v jednom řádku, detail roluje uvnitř pravého sloupce. Nic se nescrolluje vodorovně mimo pás karet.
+Náhled vlevo 35 %, záložky a obsah vpravo, pás akce přilepený dole v pravém sloupci. Karty v jednom řádku. Nic se nescrolluje vodorovně mimo pás karet.
 
 ### 4.4 Záložky
-- `role="tablist"` / `tab` / `tabpanel`, šipky ←→ přepínají, Home/End. Aktivní záložka: tučný text + podtržení páskou `tape` 4 px (ne jen barva).
-- **Kam se Dílna otevře:** z menu na poslední záložce, kde hráč byl; z Výsledku tlačítkem „Dílna“ na Vylepšení (hlavní smyčka); z řádku novinky na Výsledku (§7) rovnou na danou položku.
-- Štítek „NOVÉ“ na záložce jen tehdy, když je uvnitř neviděná položka (stejné pravidlo jako tečka Atlasu, 06 Atlas bod 4). Nikdy za „můžeš koupit“.
+- `role="tablist"` / `tab` / `tabpanel`, šipky ←→, Home/End. Aktivní: tučně + páska `tape` 4 px (ne jen barva).
+- **Kam se Dílna otevře:** z menu na poslední záložce; z Výsledku tlačítkem „Dílna“ na Vylepšení; z řádku novinky (§7) rovnou na danou položku.
+- Štítek „NOVÉ“ na záložce jen při neviděné položce. Nikdy za „můžeš koupit“.
 
 ---
 
 ## 5. Vlaštovky: výběr, srovnání, koupě
 
-### 5.1 Srovnání „v ruce → zvolená“ (přínos vidět předem)
-Zobrazí se, kdykoli je zvolená jiná karta než model v ruce. Když je zvolený model v ruce, ukáže se jen jeho profil (stejné pruhy, bez šipek).
+### 5.1 Výběr = klepnutí (06 obsah 6)
+
+```
+klepnutí na vlastněnou kartu ─► S.inHand = id, uloží se hned (p.model)
+                                ├─ karta: štítek „✓ V ruce“ se přesune (150 ms, štítek „dopadne“)
+                                ├─ náhled: vlaštovka se přeloží do nového tvaru (300 ms)
+                                ├─ detail: profil vlaštovky v ruce (bez šipek)
+                                └─ aria-live: „Kite je v ruce.“ (planes.inHandDone)
+klepnutí na zamčenou kartu ───► jen detail se srovnáním + náhled zamčené („Náhled“), nic se neukládá
+klepnutí na kartu v ruce ─────► nic (detail jejího profilu)
+```
+
+- **Vratné a zdarma:** zpět je jedno klepnutí na předchozí kartu. Proto bez potvrzení a bez „Zpět“.
+- **Mezi hody kdykoli, za letu nikdy** (Dílna je panel nad menu a výsledkem, 07-menu §5). Při míření jen rychlá volba Sail (§8).
+- **Srovnání mezi vlastněnými** se dělá přímo: klepnu, uvidím profil a odhad, klepnu zpět. Detail vlaštovky v ruce ukazuje odhad `planes.estimateOwn` a v grafu **i čárkovanou dráhu předchozí vlaštovky v ruce**, dokud hráč Dílnu nezavře (`planes.previewLabelPrev`). Tím je vidět, co výměna udělala, bez dalšího tlačítka.
+
+### 5.2 Srovnání „v ruce → tahle“ (přínos vidět předem, 06 obsah 5)
+Zobrazí se u zamčené karty (porovnává s vlaštovkou v ruce).
 
 | Řádek | Zdroj (pro game-deva) | Zobrazení |
 |---|---|---|
-| Rychlost výhozu | `MODELS[m].speed` × vylepšení hráče | pruh 0–100 % pevné škály přes všechny modely (ne relativní k tomuhle páru), číslo m/s v `aria`, šipka ▲/▼ + „+12 %“ / „−8 %“ / „stejné“ |
-| Klouzavost (doba ve vzduchu) | `glide`, `drag` | totéž; text „~16 s ve vzduchu“ u vybrané, pokud to simulace umí (08 §2 „Speed / Airtime“) |
-| Síla událostí | `qte` | totéž, „+15 %“ |
-| Nejlepší úhel | `ideal` | číslo „22° (teď 25°)“ + věta „S touhle miř o kousek níž.“ (zpětná vazba pro míření, P7) |
-| **Odhad klidného hodu** | nová čistá funkce `previewThrow(model, levels)` (plná síla, nejlepší úhel, bez větru a událostí, seed bez událostí) | „Klidný hod s tvými vylepšeními: ~412 m → ~446 m“ + poznámka `planes.estimateNote` |
-| **Graf drah** | stejná funkce vrací ~40 bodů (x, y) | SVG: model v ruce **čárkovaně** `pencil`, zvolený **plně** `graphite` 2,6 px s malou vlaštovkou na konci; legenda textem; osa x se značkou nejbližšího místa trasy (P6) |
+| Rychlost výhozu | `MODELS[m].speed` × vylepšení | pruh na **pevné škále** přes všechny modely, značka modelu v ruce, šipka ▲/▼ + „+12 %“ / „−8 %“ / „stejné“ |
+| Klouzavost | `glide`, `drag` | totéž |
+| Síla událostí | `qte` | totéž |
+| Nejlepší úhel | `ideal` | „40° (teď 18°)“ + „S touhle miř výš.“ |
+| **Specialita** | nová pole 01 §2.9 (`perfectK`, `liftK`, `windK`, …) | jedna věta „Loves: …“ z 01 (`model.<id>.loves`), u Hawka i pravdivá věta o automatice („Auto-hits don't count as perfect.“) |
+| **Odhad klidného hodu** | čistá funkce `previewThrow(model, levels)` (plná síla, nejlepší úhel, bez větru a událostí) | „Klidný hod s tvými vylepšeními: ~412 m → ~446 m“ + `planes.estimateNote` |
+| **Graf dvou drah** | stejná funkce, ~40 bodů | SVG: v ruce **čárkovaně** `pencil`, zvolená **plně** `graphite` 2,6 px s malou vlaštovkou; legenda textem; značka nejbližšího místa trasy (P6) |
 
 Pravidla:
-- **Poctivě i dolů.** Když je zvolený model v něčem horší, šipka ▼ je vidět stejně výrazně jako ▲. Model, který je „jiný, ne lepší“, musí jako jiný vypadat (P8 smysluplná volba, 02 §2.7 bod 3).
-- **Odhad je odhad.** Vždy `~`, vždy poznámka pod ním. Pozdní hra stojí na událostech a bonusech, které odhad nezahrnuje; poznámka to říká. Nikdy neukazovat odhad „hodů do koupě“ (stará KB K5, rozpor R-N6 zůstává otevřený).
-- **Pevná škála pruhů** (maximum = nejlepší model v hodnotě), aby se hodnoty daly porovnat i mezi kartami bez šipek.
-- **Graf se kreslí 600 ms ease-out** (vlaštovka po dráze), přerušitelné, reduced motion = hned celý.
+- **Poctivě i dolů** (P8, 02 §2.7 bod 3). ▼ je stejně výrazná jako ▲. Nové modely jsou „o něco lepší celkově a výrazně ve specialitě“ (06 obsah 2), ale kde jsou horší, je to vidět.
+- **Odhad je odhad.** Vždy `~` a poznámka. Specialita (vítr, termika, perfekty) v klidném odhadu **není**, proto ji nese věta „Loves: …“. Nikdy „hodů do koupě“.
+- **Bez zkušebního hodu** (06 obsah 5).
+- **Graf se kreslí 600 ms ease-out**, přerušitelné, reduced motion = celý hned.
+- Pro Sail navíc tři varianty dráhy (protivítr / klid / zadní vítr) je návrh 01 §2.5. V UI: přepínač `[Klid | Do zad]` nad grafem jen u Sail (2 segmenty, 44 px). **Zástupné, rozhodne game-dev podle ceny implementace**; bez něj se specialita Sail ukáže jen větou.
 
-### 5.2 Tok koupě
+### 5.3 Tok koupě (06 obsah 5: s potvrzením, rovnou do ruky)
 
 ```
-karta (zamčená: mince) ─klepnutí─► detail se srovnáním
-   │
-   └─[Koupit za 2 400 ◈]─► POTVRZOVACÍ LIST (malý panel nad Dílnou)
-         „Koupit Needle?“
-         Mince: 9 240 → 6 840
-         [Koupit za 2 400 ◈]   (hlavní)
-         [Teď ne]              (výchozí fokus, Esc)
-              │
-              ├─ potvrzeno ─► save ─ok─► přeložení vlaštovky v náhledu 750 ms
-              │                          karta = „V ruce ✓“, mince odečtené (číslo odpočítá 300 ms)
-              │                          aria-live: „Needle je v ruce.“
-              │                          pás akce: [Házet ↗] hlavní
-              │                 └─chyba ukládání─► nic se neodečte, zpráva buy.failed, list zůstane
+karta (zamčená, k prodeji) ─klepnutí─► detail se srovnáním
+   └─[Koupit za 700 ◈]─► POTVRZOVACÍ LIST
+         „Koupit vlaštovku Kite?“
+         Mince: 1 240 → 540
+         Půjde rovnou do ruky.            (buy.toHand)
+         [Koupit za 700 ◈]   (hlavní)
+         [Teď ne]            (výchozí fokus, Esc)
+              ├─ potvrzeno ─► save ─ok─► karta = „✓ V ruce“, mince odečtené (odpočet 300 ms)
+              │                          náhled: přeložení 750 ms (klepnutí ho dokončí)
+              │                          aria-live: „Kite je v ruce.“
+              │                          další silueta → plná karta (§3)
+              │                          pás akce: [Hodit] hlavní
+              │                 └─chyba ukládání─► nic se neodečte, buy.failed v listu, list zůstane
               └─ zrušeno ─► zpět na detail, fokus na „Koupit…“
 ```
 
-- **Proč list a ne rovnou:** koupě modelu je největší jednorázový výdaj ve hře (zástupně tisíce až desítky tisíc ◈) a nedá se vrátit. Nechtěné klepnutí na telefonu by bylo frustrující (P13 bez trestu). Vylepšení ve stromu potvrzení nemají (malé kroky, dnešní chování); rozdíl je zdůvodněný cenou a nevratností. Volba B4.
-- **Výchozí fokus na „Teď ne“**, Esc = Teď ne. Hlavní tlačítko „Koupit“ je vizuálně hlavní (rajčatové), ale fokus nedostane, aby Enter dvakrát rychle za sebou nic nekoupil.
-- **Po koupi model rovnou do ruky** (volba B6 A): hráč ho kupuje, aby s ním letěl; vrátit se ke starému je jedno klepnutí zdarma.
-- **Mince po koupi** se v hlavičce odečtou krátkým odpočtem (300 ms, reduced: hned). Žádný zvuk „ztráty“; zvuk přeložení papíru (P11, vizuální protějšek je animace).
-- **Bez slev, bez časových nabídek, bez „poslední šance“** (02 §4.3 bod 7). Cena se nikdy nemění podle chování hráče.
-
-### 5.3 Změna modelu v ruce
-„Letět s ní“ → karta dostane ✓, náhled přeloží vlaštovku (300 ms, ne celých 750, není to novinka), pás akce ukáže „Házet ↗“ jako hlavní. Uloží se hned (`p.model`). **Mezi hody kdykoli, za letu nikdy** (Dílna je panel jen nad menu a výsledkem, 07-menu §5).
+- **Proč list:** největší jednorázový výdaj a nevratný; nechtěné klepnutí na telefonu by bylo frustrující (06 obsah 5, P13).
+- **Výchozí fokus na „Teď ne“**, Esc = Teď ne. Enter dvakrát rychle nic nekoupí.
+- **Věta „Půjde rovnou do ruky.“** v listu: hráč ví předem, co se stane (žádné překvapení), a ví, že staré vlaštovky zůstávají („vrátíš se klepnutím“ je v `planes.tapHint`).
+- **Bez slev, časových nabídek a „poslední šance“** (02 §4.3 bod 7). Cena se nemění podle chování.
+- **Vrácení koupě** (01 §1 „poslední koupi lze vrátit do dalšího hodu“) v rozhodnutí 06 není. UX ho nepřidává; když ho game designer zavede, patří jako vedlejší odkaz do detailu koupené vlaštovky, ne do pásu akce (jinak by tam byly opět dvě akce).
 
 ---
 
-## 6. Vzhled (skiny)
+## 6. Vzhled (potisky a razítka)
 
 ### 6.1 Rozložení záložky Vzhled
 
 ```
 ┌──────────────────────────────┐
-│ Looks change only how the    │  věta nahoře, 14 px (vždy, ne jen poprvé)
-│ plane looks, never how it    │
-│ flies.                       │
-│ ┌────┐ ┌────┐ ┌────┐ ┌────┐  │  mřížka: auto-fill minmax(76px,1fr)
-│ │ ✈✓ │ │ ✈  │ │ ✎  │ │ ✎  │  │  políčko ≥ 76 × 92 (cíl celé políčko)
-│ │Plain│ │Air-│ │Kite│ │Lan-│  │  ✎ = tužková skica (zamčeno)
+│ Tap to wear. Prints and      │  věta nahoře, 14 px (vždy)
+│ stamps never change how the  │
+│ plane flies.                 │
+│ ┌ On your plane ───────────┐ │  blok vrstev (P7), 14 px
+│ │ Plane: Hawk              │ │
+│ │ Paper: Washi (Upgrades)  │ │
+│ │ Print: Harbor Chart      │ │
+│ │ Stamp: Gust              │ │
+│ └──────────────────────────┘ │
+│ PRINTS                       │  nadpis sekce
+│ ┌────┐ ┌────┐ ┌────┐ ┌────┐  │  mřížka auto-fill minmax(76px,1fr)
+│ │ ✈✓ │ │ ✈  │ │ ✎  │ │ ✎  │  │  políčko ≥ 76 × 92
 │ └────┘ └NEW─┘ └────┘ └────┘  │
-│ …                            │
-│ Airmail                      │  detail zvolené položky
-│ Red-and-blue edge, a stamp   │
-│ on the wing.                 │
+│ STAMPS                       │
+│ [none][ ◎ ][ ✎ ][ ✎ ] …      │  políčka ≥ 64 × 76
+│                              │
+│ Harbor Chart                 │  detail naposledy klepnuté položky
+│ Depth lines and an anchor.   │
 │ Fits every plane.            │
-│ [ Wear ]                     │
 │ — nebo u zamčené —           │
-│ Kite  🔒                      │
-│ How to get it: Fly to the    │
-│ Lighthouse at the Pier's End.│
+│ Kite Tail 🔒                  │
+│ How to get it: First perfect │
+│ thermal with the Kite.       │
 └──────────────────────────────┘
+pás akce: [Throw it ↗] (jediné tlačítko)
 ```
 
-- **Výběr políčka = zkouška v náhledovém okně** (§4.1), nic se neukládá. „Nasadit“ uloží. Zavření Dílny bez nasazení vrátí v náhledu nasazený vzhled.
-- **Zamčené políčko jde zvolit** a v náhledu ukáže tužkovou skicu vzhledu na aktuálním modelu (zvědavost na obsah, P3), ale nic se nenasadí.
-- **Žádné počítadlo** „7 / 15“, žádný procentní pruh sbírky, žádná odměna za všechny (volba B1, 06 13. 10. „sběratelství ne“, 08 N7 riziko povinnosti).
-- **Výchozí vzhled** „Čistý papír“ je vždy odemčený a vždy první. Před prvním odemčeným vzhledem záložka Vzhled neexistuje (§3), takže prázdný stav „jen jeden vzhled“ hráč nikdy nevidí.
+- **Klepnutí na odemčené políčko = nasadit** (uloží se hned, přeložení 300 ms, `looks.woreDone`). Žádné „Nasadit“ v pásu akce. Vratné jedním klepnutím.
+- **Zamčené políčko jde zvolit:** náhled ukáže tužkovou skicu potisku na vlaštovce v ruce se štítkem „Náhled“, detail podmínku. Nic se nenasadí.
+- **Blok „Na tvé vlaštovce“** vysvětluje vrstvy bez tutoriálu: co je model, co papír (a že je z Vylepšení), co potisk a razítko. Papír tu nejde měnit (je to nejvyšší koupený druh, 01 §3.1); řádek je odkaz „Paper: Washi (Upgrades)“ → přepne na záložku Vylepšení.
+- **Výchozí potisk** „Čistý“ (K0) je vždy odemčený a první v pořadí odemčených. Razítka mají vždy „Bez razítka“. Před první kosmetikou záložka Vzhled neexistuje (§3).
+- **Retroaktivní odemčení** (§6.3) jednou věta nahoře.
 
-### 6.2 Typy podmínek (obecné šablony textu)
+### 6.2 Typy podmínek (šablony)
 
-| Typ | Příklad (zástupný) | Šablona | Etická poznámka |
+| Typ | Příklad (zástupný, 01 §3.2–3.3) | Šablona | Etická poznámka |
 |---|---|---|---|
-| místo | Doleť k místu Maják na konci mola. | `looks.howPlace` | běžný postup, každý hráč |
-| čtvrť | Doleť do čtvrti Zlatá pole. | `looks.howDistrict` | běžný postup |
-| finále | Doruč zásilku na konec trasy. | `looks.howRoute` | jednou, na konci |
-| model | Hoď jednou vlaštovkou Needle. | `looks.howPlane` | ukazuje možnost hry (08 N8) |
-| dovednost | Zvládni perfektně holuba. | `looks.howPerfect` | jen pár kusů; **širší okna z Nastavení platí** (bez trestu, 07 A13) |
-| dolet | Doleť 1 000 m jedním hodem. | `looks.howDistance` | jen hodnoty, které padnou při běžném postupu |
+| suvenýr čtvrti | Reach Bright Harbor. | `looks.howDistrict` | běžný postup |
+| finále | Deliver at the end of the route. | `looks.howRoute` | jednou |
+| podpis modelu | First perfect thermal with the Kite. | `look.<id>.how` (text na míru, dodá game designer) | učí trik modelu (01 §3.2), během pár hodů |
+| razítko: perfekt | First perfect gust. | `stamps.howPerfect` | širší okna z Nastavení platí (07 A13) |
+| razítko: hvězda | Catch a shooting star. | `stamps.howStar` | |
+| razítko: finále | Deliver at the end of the route. | `looks.howRoute` | |
 
-**Nepoužívat:** počty hodů nebo opakování („hoď 100×“, „10 perfektů“), časové podmínky („tento týden“), série („5 dní v řadě“), podmínky dosažitelné jen grindem nebo jen šikovným hráčem u většiny vzhledů (02 §4.3 body 4–5, 08 N7–N8, Zagal grinding). Návrh pro game designera: ≥ 2/3 vzhledů za běžný postup trasou, ≤ 1/3 za „okamžik“ (dovednost, model, zvláštní událost).
+**Nepoužívat:** počty („hoď 100×“), časové podmínky, série dní, podmínky jen pro grind (02 §4.3 body 4–5, 08 N7–N8). 06 obsah 7: suvenýry čtvrtí, finále, podpisové, 7 razítek.
 
 ### 6.3 Retroaktivní odemčení
-Hráč s existujícím save už podmínky splnil (místa, finále). Při načtení se vyhodnotí a vzhledy se tiše odemknou se štítkem „NOVÉ“. **Na Výsledku se neohlašují** (nejsou výsledkem hodu, P1). V záložce Vzhled jednou věta „Cestou sis už vysloužil 4 vzhledy.“ (`looks.retro`, bez rodu: „Cestou už máš 4 vzhledy.“) a zmizí po prvním zobrazení.
+Existující save: suvenýry čtvrtí a finále se dopočítají z `best`/Atlasu a tiše odemknou se štítkem „NOVÉ“ (razítka a podpisové potisky se dopočítat nedají, 01 §5). **Na Výsledku se neohlašují** (P1). Ve Vzhledu jednou věta `looks.retro` a zmizí.
 
 ---
 
-## 7. Oznámení odemčení na Výsledku
+## 7. Oznámení na Výsledku
 
-Karta Výsledku podle 07-menu §2.5 má **jeden řádek novinky** (dnes „New place: …“). Nové typy novinek se do něj řadí, nepřidávají další bannery.
+Karta Výsledku (07-menu §2.5) má **jeden řádek novinky**. **Jedna novinka za hod** (01 U3): když se jich sejde víc, další se ohlásí po dalším hodu; v řádku se nehromadí.
 
-**Priorita (zobrazí se jen nejvyšší):**
-1. nové místo / nová čtvrť (07-menu, Atlas)
-2. nový druh papíru (papíry §0 bod 4)
-3. nový model odemčený postupem („Nová vlaštovka: Glider“)
-4. nový model **v nabídce** za mince („Needle je teď v Dílně“)
-5. nový vzhled („Nový vzhled: Airmail“)
+**Priorita (zobrazí se nejvyšší, ostatní čekají na další hod):**
+1. nové místo / nová čtvrť (Atlas)
+2. nový druh papíru
+3. Glider zdarma („Nová vlaštovka: Glider“)
+4. model **k prodeji** (místo dosažené: „Vlaštovku Kite teď koupíš v Dílně“)
+5. nový potisk
+6. nové razítko (nejtišší)
 
 ```
-│ ▌New look: Airmail     [✈] [ Wear ] │  náhled 40 × 40, tlačítko 44 px (vedlejší, krémové)
-│  +1 more new thing in the Workshop   │  jen když je víc novinek, 14 px
+│ ▌New print: Harbor Chart  [✈] [ Wear it ] │  náhled 40 × 40, tlačítko 44 px (vedlejší, krémové)
 ```
 
-- **„Nasadit“ přímo z Výsledku** (jen u vzhledu a modelu odemčeného postupem) nasadí bez otevření Dílny a změní se na „Nasazeno ✓“. Je vedlejší (krémové), menší než „Hodit znovu“, takže nesoupeří s hlavní akcí (02 §4.3 bod 6 platí oběma směry: ani pokračování, ani novinka nemá být návnadou).
-- Klepnutí na jméno / náhled otevře Dílnu přímo na položce.
-- **Intenzita oslavy podle hodnoty** (P1, 02 N3): vzhled = řádek s malou papírovou animací štítku (250 ms), žádný konfety přes obrazovku. Nové místo / čtvrť má dál větší moment (Atlas).
-- **Model za mince „v nabídce“** se oznamuje bez ceny a bez „kup si“: jen že existuje (P6 blízký cíl). Cena je v Dílně.
-- Řádek nikdy neříká „Skoro!“ ani „Zbývá 40 m do nového vzhledu“. Pravdivou těsnost k místu už nese řádek „Další: …“ (06 F5 bod 1); vzhled se k místu váže sám.
-- Novinka, kterou hráč na Výsledku přeskočil (rovnou „Hodit znovu“), **se znovu neohlašuje** a nezanikne: má štítek „NOVÉ“ v Dílně.
+- **Akce v řádku je jen u věcí, které jsou hned k použití:** potisk / razítko „Nasadit“ (`result.wear`), Glider „Vzít do ruky“ (`result.takeIt`). Po klepnutí se změní na „✓ Nasazeno“ / „✓ V ruce“ (zakázané). Je to jiná věc než „Hodit znovu“, takže se dvě akce nepletou; tlačítko je vedlejší a menší (02 §4.3 bod 6).
+- **Model k prodeji nemá v řádku „Koupit“** ani cenu: koupě patří do Dílny se srovnáním a potvrzením. Klepnutí na řádek otevře Dílnu na té kartě.
+- **Žádné „Skoro!“**, žádné „zbývá 40 m do potisku“. Pravdivou těsnost nese řádek „Další: …“ (06 F5 bod 1).
+- Novinka přeskočená na Výsledku se znovu neohlašuje a nezanikne: má „NOVÉ“ v Dílně.
+- **Intenzita podle hodnoty** (P1): potisk a razítko = řádek s papírovým štítkem (250 ms), bez konfet.
+- Pozn.: dřívější `result.alsoNew` („+1 další novinka“) **odpadá**, protože platí fronta „jedna novinka za hod“ (01 §1).
 
 ---
 
-## 8. Stavy prvků
+## 8. Rychlá volba Sail při míření (06 obsah 5)
+
+**Účel:** když fouká do zad, hráč nemusí kvůli větru do Dílny (tření, ne volba, 01 BLOCKED 5). Čip nic nedoporučuje silou, jen nabízí a říká pravdivý odhad.
+
+### 8.1 Kdy se ukáže
+| Podmínka | Čip |
+|---|---|
+| Sail koupená, v ruce jiný model, vítr **do zad ≥ Light** (`w ≥ +0,04`, 08 Z3) | „**Sail** do ruky · ≈ +9 % v tomhle větru“ |
+| Sail v ruce, vítr **proti ≥ Light** | „**{předchozí model}** do ruky · ≈ +6 % v tomhle větru“ (zrcadlo: poctivé, Sail v protivětru prodělává 2,5×) |
+| Calm, slabý vítr, Sail nekoupená, nebo by výměna nic nepřinesla (odhad < +2 %) | žádný čip |
+| během nabíjení, za letu, v pauze, v tutoriálu (seed 1–3) | žádný čip |
+
+„Předchozí model“ = poslední jiný model v ruce (uloží se při výměně).
+
+### 8.2 Umístění a vzhled
+```
+┌──────────────────────────────────┐
+│ Next: Crane Forest  120 m   [◈][II]│  cíl vlevo nahoře, mince a pauza vpravo
+│ ⇢ Tailwind ≈ +4 %               │  ukazatel větru (08 Z3) pod cílem
+│ [≋ Sail in hand · ≈ +9 % here ] │  čip hned pod ukazatelem, ≥ 44 px vysoký
+│                                  │
+│         (míření, dítě, mířidlo)  │
+│                                  │
+│  [dotyk]                [dotyk]  │  dolní rohy = dotyk hodu
+└──────────────────────────────────┘
+```
+- **Zóna „cíl“ vlevo nahoře** (zadání HUD), pod ukazatelem větru, protože čip je odpověď na vítr. Mimo dolní rohy (palec pro hod) a mimo dráhu letu.
+- Krémová karta, grafitový obrys 2 px, ikonka siluety Sail (ne text-only), text 16 px `--display`, číslo `tabular-nums`. Max šířka `min(100% − 24px, 320px)`, dvouřádkové zalomení povolené. Rámeček nebliká, nepulzuje, objeví se prolnutím 200 ms ease-out spolu s ukazatelem větru.
+- **Ne hořčicová ani rajčatová** (hodnota a perfekt mají role, bible 2.2). Procenta v textu, ne barvou.
+
+### 8.3 Chování
+- **Klepnutí = výměna hned** (stejný princip jako v Dílně, 06 obsah 6): dítě v ruce vlaštovku přeloží (300 ms), `aria-live` „Sail je v ruce.“, uloží se `p.model`. Čip se **promění na zpáteční** („Dart do ruky · ≈ −9 % v tomhle větru“), takže výměnu jde vrátit stejným místem. Je to stále jeden prvek, ne dvě akce.
+- **Klepnutí na čip nesmí začít hod:** `pointerdown` se nepropaguje do `#game`; hod začne jen mimo čip. Během nabíjení se čip skryje (opacity 120 ms) a nejde na něj klepnout.
+- **Nové míření (další hod) se vyhodnotí znovu**: nový vítr = nová nabídka nebo nic. Čip si nepamatuje „odmítnuto“ a nikdy nevyskakuje opakovaně v jednom míření.
+- **Odhad** = `previewThrow` s větrem tohoto hodu, oba modely, stejný úhel a plná síla. Vždy `≈`. Když vyjde mezi −2 % a +2 %, čip se neukáže.
+
+### 8.4 Okrajové případy a zneužití
+1. **Pinwheel** (přehození větru) změní vítr během míření → čip se přepočítá a případně zmizí / objeví (bez animace navíc, jen prolnutí).
+2. **Pinwheel úr. 3 (`noHeadwind`)**: zpáteční čip v protivětru se nikdy neukáže (protivítr není). Dominance „Sail + Pinwheel 3“ je věc balancu (01 §2.5), UX ji neschovává.
+3. **Rychlé klepání na čip** (Sail ↔ Dart): každé klepnutí přepne, animace skočí na konec. Žádný limit.
+4. **Hráč klepne na čip a hned hází**: hod letí s novým modelem (stav se mění hned, ne po animaci).
+5. **Reduced motion**: bez přeložení, výměna prolnutím 0 ms; text a zvuk přehybu zůstanou.
+6. **Klávesnice**: čip je `<button>` v pořadí Tab po ukazateli větru; Enter / mezerník přepne. **Mezerník na fokusovaném čipu nesmí spustit hod** (handler hodu ignoruje událost, jejíž cíl je čip). Žádná jednoznaková zkratka (WCAG 2.1.4).
+7. **Tutoriál a první hody**: čip se neukáže před koupí Sail, tedy nejdřív v D3.
+
+---
+
+## 9. Stavy prvků
 
 | Prvek | Výchozí | Hover (`pointer:fine`) | Stisk | Focus | Zakázaný | Chyba |
 |---|---|---|---|---|---|---|
-| Karta modelu | `--card` krém, stín zvednutí, náhled | stín `--lift-hi`, posun −2 px | posun +2 px, stín 1 px (100 ms) | obrys `cobalt` 3 px, odsazení 3 px | – (zamčená karta je pořád volitelná, jen bez akce) | – |
-| Karta zvolená (ne v ruce) | rám `graphite` 2 px přerušovaný | | | | | |
-| Karta v ruce | rám `graphite` 3 px plný + štítek ✓ „V ruce“ | | | | | |
-| Políčko vzhledu | jako karta, menší | | | | | |
-| Záložka | text `--dim`, bez podtržení | text `--text` | – | obrys | skrytá, ne zakázaná (§3) | – |
-| Záložka aktivní | text `--text` tučně + páska 4 px | | | | | |
-| Hlavní tlačítko (Koupit, Letět s ní, Nasadit) | `tomato-600`, krémový text, spodní hrana 4 px `tomato-700` | světlejší výplň | posun 3 px, hrana 1 px | obrys | `--btn-disabled-*`, bez hrany, `aria-disabled` a **důvod textem vedle** („Chybí 1 150 mincí.“) | – |
-| Vedlejší (Teď ne, Nasadit na Výsledku, Házet) | krém, hrana `--line` | | | | | |
-| Potvrzovací list | krémová karta, páska nahoře | | | fokus „Teď ne“ | – | `buy.failed` v `role="alert"` nad tlačítky, ikona ⚠ + text |
-| Pruh statistiky | výplň `graphite`, stopa `card`, šipka ▲▼ + text | – | – | – | – | – |
-| Graf drah | čárkovaná `pencil` / plná `graphite` + legenda | – | – | – | „Náhled teď nejde zobrazit“ (§9) | – |
+| Karta modelu | `--card` krém, stín zvednutí | stín `--lift-hi`, posun −2 px | posun +2 px (100 ms) | obrys `cobalt` 3 px, odsazení 3 px | – (zamčená je klepnutelná, ukáže detail) | – |
+| Karta v ruce | rám `graphite` 3 px + páskový štítek „✓ V ruce“ | jako výchozí | – | | | |
+| Karta zamčená prohlížená | rám `graphite` 2 px **přerušovaný** | | | | | |
+| Karta silueta | výplň `pencil` 40 %, bez jména | | | | | |
+| Políčko potisku / razítka | jako karta, menší; nasazené = rám 3 px + ✓ | | | | | |
+| Záložka | text `--dim` | text `--text` | – | obrys | skrytá, ne zakázaná (§3) | – |
+| Hlavní tlačítko (Koupit, Hodit) | `tomato-600`, krémový text, spodní hrana 4 px | světlejší výplň | posun 3 px | obrys | `--btn-disabled-*`, `aria-disabled`, **důvod textem nad tlačítkem** | – |
+| Vedlejší (Hodit vedle Koupit, Teď ne, Nasadit na Výsledku) | krém, hrana `--line` | bílá | posun 3 px | obrys | | |
+| Potvrzovací list | krémová karta, páska nahoře | | | fokus „Teď ne“ | – | `buy.failed` v `role="alert"`, ⚠ + text |
+| Čip Sail (míření) | krém, obrys grafit 2 px, ikona siluety | stín zvednutí | posun 2 px | obrys `cobalt` 3 px | skrytý během nabíjení (ne zakázaný) | – |
+| Graf drah | čárkovaná `pencil` / plná `graphite` + legenda | – | – | – | – | `planes.previewOff` (§10) |
 
 ---
 
-## 9. Prázdné, načítací a chybové stavy
+## 10. Prázdné, načítací a chybové stavy
 
 | Situace | Co hráč vidí |
 |---|---|
-| **Dílna bez peněz** | vše viditelné s cenami, Koupit zakázané s „Chybí N mincí.“; nad stromem dnešní `workshop.empty` jen při 0 ◈. Žádné „Získej mince!“ (07-menu §8 bod 5) |
-| **Jen výchozí model** (před Gliderem a nabídkou) | lišta záložek skrytá, Dílna = Vylepšení (§3) |
-| **Všechny modely koupené** | karty bez cen, žádné „vše hotovo!“ oslavy navíc. Mince po konci: viz §11 bod 9 |
-| **Všechny vzhledy odemčené** | nic zvláštního, žádné počítadlo, žádná odměna |
-| **Načítání náhledu** (3D model / geometrie se staví) | v okně náhledu statická silueta modelu (SVG z dat karty), bez spinneru; srovnání a tlačítka fungují hned |
-| **Ztráta WebGL kontextu** | náhledové okno ukáže statickou siluetu + chip „Překresluji město…“ (07-menu §8 bod 4); Dílna funguje celá, koupě i volby jdou. Graf drah je SVG v DOM, na WebGL nezávisí |
-| **3D vůbec nejde** | okno náhledu = statický obrázek; zbytek beze změny |
-| **Uložení koupě selže** (`save` vrátí varování) | koupě se **nepočítá**: mince se neodečtou, model zůstane zamčený, v listu `buy.failed`. Postup se neztratí (pravidlo `storage.js`) |
-| **Neznámý model / vzhled v save** (starší / novější verze, poškození) | model → `dart`, vzhled → `plain`; poznámka přes dnešní `#warning` mechanismus jen při skutečném poškození. Vlastněné položky se nemažou (validace v `storage.js`) |
-| **Graf drah nejde spočítat** | místo grafu věta `planes.previewOff`, čísla srovnání zůstanou |
+| **Dílna bez peněz** | vše s cenami, Koupit zakázané s „Chybí N mincí.“; při 0 ◈ nad stromem `workshop.empty`. Žádné „Získej mince!“ |
+| **Jen Dart** | lišta záložek skrytá, Dílna = Vylepšení |
+| **Všechny modely koupené** | karty bez cen, žádná oslava navíc, žádné siluety |
+| **Vše odemčené ve Vzhledu** | nic zvláštního, žádné počítadlo |
+| **Načítání náhledu** | statická silueta modelu (SVG), bez spinneru; karty a tlačítka fungují hned |
+| **Ztráta WebGL kontextu** | náhled = statická silueta + čip „Překresluji město…“ (07-menu §8 bod 4); výměna, nasazení i koupě fungují; graf je SVG v DOM |
+| **3D nejde vůbec** | statický obrázek, zbytek beze změny |
+| **Uložení koupě selže** | koupě se nepočítá: mince zůstanou, model zamčený, `buy.failed` v listu |
+| **Uložení výměny / nasazení selže** | volba platí do konce sezení (hra s ní hází), varování přes dnešní `#warning` jednou za sezení; nic se neztrácí |
+| **Neznámý model / potisk / razítko v save** | model → `dart`, potisk → `plain`, razítko → žádné; vlastněné se nemažou (validace `storage.js`) |
+| **Graf nejde spočítat** | věta `planes.previewOff`, čísla zůstanou |
 
 ---
 
-## 10. Pohyb
+## 11. Pohyb
 
 | Přechod | Pohyb | Délka | Reduced motion |
 |---|---|---|---|
-| Přepnutí záložky | obsah prolnutí + posun 8 px ve směru záložky | 200 ms ease-out / 120 ms ease-in | jen prolnutí ≈ 0 |
-| Výběr karty | stisk 100 ms, detail prolnutí | 150 ms | hned |
-| Graf drah | vlaštovka po dráze | 600 ms ease-out, přerušitelné dalším výběrem | celá dráha hned |
+| Přepnutí záložky | prolnutí + posun 8 px | 200 ms ease-out / 120 ms ease-in | jen prolnutí ≈ 0 |
+| Klepnutí na kartu | stisk 100 ms | 100 ms | hned |
+| **Vzít do ruky** (karta, čip Sail) | štítek „✓ V ruce“ dopadne na novou kartu (scale .9 → 1, rotace −2°); vlaštovka v náhledu se zúží a rozloží do nového tvaru | štítek 150 ms, přeložení 300 ms ease-out | výměna prolnutím 0 ms, štítek hned |
+| Nasazení potisku / razítka | krátké přeložení | 300 ms | hned |
+| Graf drah | vlaštovka po dráze | 600 ms ease-out, přerušitelné | celá dráha hned |
 | Potvrzovací list | zdola 16 px + opacity, scrim 200 ms | 280 ms / 200 ms | ≈ 0 |
-| Přeložení po koupi | vlaštovka se rozloží na papír a složí do nového tvaru (náhledové okno) | 750 ms, klepnutí ji dokončí | výměna prolnutím 0 ms |
-| Změna modelu / vzhledu bez koupě | krátké přeložení | 300 ms | hned |
-| Mince v hlavičce po koupi | odpočet čísla | 300 ms | hned |
-| Řádek novinky na Výsledku | papírový štítek „dopadne“ (scale .96 → 1, rotace −1,5°) | 250 ms | bez pohybu |
+| Přeložení po koupi | rozloží se na list a složí do nového tvaru | 750 ms, klepnutí dokončí | prolnutí 0 ms |
+| Mince po koupi | odpočet čísla | 300 ms | hned |
+| Řádek novinky na Výsledku | štítek „dopadne“ | 250 ms | bez pohybu |
+| Čip Sail | prolnutí | 200 ms ease-out / 120 ms ease-in | hned |
 
-Animuje se jen `transform` a `opacity`. **Žádná animace neblokuje vstup:** během přeložení jde zavřít Dílnu, házet, vybrat jinou kartu (animace skočí na konec). Nic v Dílně v klidu nepulzuje ani nebliká.
-
----
-
-## 11. Okrajové případy a možné zneužití
-
-1. **Dvojité klepnutí na „Koupit“:** první otevře list, druhé dopadne na scrim (nic). V listu je fokus na „Teď ne“. Koupě je idempotentní (game-dev: `buyModel` vrátí false, když už je vlastněný).
-2. **Mince přesně na cenu:** povolit (≥). Po koupi 0 ◈, Dílna normálně, žádné varování.
-3. **Koupě během animace přeložení předchozí koupě:** animace skočí na konec, nový list se otevře. Stav se mění hned, ne po animaci.
-4. **Přepnutí jazyka v otevřené Dílně:** jména modelů a vzhledů jsou klíče (`model.<id>`, `look.<id>`), přepíšou se hned; šířka karet počítá s delší češtinou.
-5. **Model zamčený postupem zvolený přes URL / devtools** (`p.model='needle'` v save): validace v `storage.js` vrátí `dart` (jako dnes `glider && best<100`).
-6. **Reset postupu** (Nastavení): maže vlastněné modely i odemčené vzhledy (jsou postup). Text `confirm.body` doplnit o „vlaštovky, vzhledy“ (klíč `confirm.bodyLooks`, §14).
-7. **Pomoc s časováním** (širší okna, 06 menu B4) a **automatika QTE** (Atlas): podmínky „perfektně“ platí stejně. Pozor: automatika podle 06 zvládá jen běžný zásah, **bez perfektu**, takže vzhled za perfekt hráč s automatikou nezíská, dokud ji nevypne. Doporučení: podmínky „perfektně …“ splnitelné i ručně v Nastavení „Širší okna“ (bez trestu) a jen u ≤ 2 vzhledů.
-8. **Zneužití „odhadu“:** hráč může porovnávat odhady a koupit „nejlepší“ model. Není to zneužití, je to informace (P7). Riziko je jen v balancu: když je jeden model jasně nejlepší, volba ztrácí smysl (P8). Úkol pro balance-analysta (`04`), UX to zviditelní poctivě.
-9. **Po finále:** mince dál přibývají a modely za mince zůstávají jako dobrovolný cíl. **Nevymýšlet nové propady jen kvůli retenci** (02 N6). Když hráč koupil vše, mince se prostě sčítají; nic se nenabízí.
-10. **Starý save bez nových polí:** migrace (game-dev): `owned:['dart', …glider pokud best≥100]`, `look:'plain'`, `looks:[]` + retroaktivní vyhodnocení (§6.3), `seen:[]`. Poškozený save se neztratí.
-11. **Vzhled odemčený během letu** (dolet k místu): vyhodnotí se při přistání, oznámí na Výsledku. Na letící vlaštovce se nic nemění (žádné přebarvení za letu).
-12. **Dva vzhledy v jednom hodu** (např. místo + čtvrť): řádek ukáže první podle §7, „+1 další novinka“. Oba mají „NOVÉ“ v Dílně.
-13. **Úzký displej 320 px s CS:** nejdelší jméno + „Otevře se u místa Observatoř nad údolím“ musí zalomit na 2 řádky v detailu, na kartě jen ikona praporku a zkrácené „Na trase“ (`planes.lockedShort`).
-14. **Hráč nikdy neotevře Vzhled:** nic se neztrácí, štítek „NOVÉ“ čeká, žádné připomínky.
+Jen `transform` a `opacity`. **Žádná animace neblokuje vstup:** během přeložení jde zavřít Dílnu, házet, klepnout na jinou kartu (animace skočí na konec). Nic v klidu nepulzuje ani nebliká.
 
 ---
 
-## 12. Přístupnost
+## 12. Okrajové případy a možné zneužití
+
+1. **Nechtěná výměna klepnutím při rolování pásu karet:** tap se počítá jen při posunu prstu < 8 px (rozlišení tap vs. scroll, standardní `click`). Výměna je vratná jedním klepnutím a nic nestojí.
+2. **Šipky v pásu karet:** jen posouvají fokus, **nevymění** vlaštovku (jinak by procházení klávesnicí měnilo ruku). Enter / mezerník = klepnutí.
+3. **Dvojité klepnutí na „Koupit“:** první otevře list, druhé dopadne na scrim. `buyModel` je idempotentní (vrátí false, když už je vlastněný).
+4. **Mince přesně na cenu:** povolit (≥), po koupi 0 ◈.
+5. **Koupě během animace:** animace skočí na konec, stav se mění hned.
+6. **Místo dosažené za letu, kdy hráč má mince:** model je k prodeji až po přistání; oznámí se na Výsledku (§7, priorita 4).
+7. **Přepnutí jazyka v otevřené Dílně:** jména jsou klíče, přepíšou se hned; karty počítají s delší češtinou.
+8. **Model zamčený v save** (`p.model='kite'` bez koupě): validace vrátí `dart`.
+9. **Reset postupu:** maže vlastněné modely, potisky i razítka (`confirm.bodyLooks`).
+10. **Pomoc s časováním a automatika QTE:** podpisové potisky a razítka za perfekt automatika nedá (06: automatika = běžný zásah). „Širší okna“ perfekt umožňují bez trestu (07 A13). Hawk s automatikou: detail to říká pravdivě (01 M1).
+11. **Zneužití odhadu:** porovnat a koupit „nejlepší“ je informace, ne zneužití (P7). Riziko je dominance jednoho modelu (P8) → balance (`04`).
+12. **Po finále:** modely zůstávají dobrovolný cíl, žádné nové propady kvůli retenci (02 N6).
+13. **Starý save:** migrace (game-dev, 01 §5): `p.models` (koupené), `p.look {skin, stamp}`, `p.cosmetics`, retroaktivní suvenýry a finále.
+14. **Kosmetika odemčená za letu:** vyhodnotí se při přistání; na letící vlaštovce se nic nemění.
+15. **Dvě novinky v jednom hodu:** fronta, druhá po dalším hodu (01 U3); obě mají „NOVÉ“ v Dílně hned.
+16. **Úzký displej 320 px s CS:** „Nejdřív doleť k místu Observatoř nad údolím, pak ji koupíš.“ zalomí na 2–3 řádky v detailu i nad tlačítkem; na kartě jen ⚑ „Na trase“.
+17. **Hráč nikdy neotevře Vzhled:** nic se neztrácí, „NOVÉ“ čeká, žádné připomínky.
+18. **Výměna modelu nesundá potisk ani razítko** (jeden vzhled pro všechny, 06 obsah 7). Hawk má úzká křídla: razítko se zmenší (03 §4.2), UI nic neřeší.
+
+---
+
+## 13. Přístupnost
 
 | Bod | Řešení | WCAG / KB |
 |---|---|---|
-| Struktura | záložky `tablist`; karty modelů a políčka vzhledů jako `<button aria-pressed>` uvnitř `role="list"` / `listitem` (výběr k náhledu) — stav „v ruce / nasazeno“ v `aria-label` a viditelně textem; detail `aria-live="polite"` jen při změně zvolené položky | 4.1.2, 1.3.1 |
-| Klávesnice | Tab: záložky → pás karet (jeden tab stop, šipky ←→ mezi kartami, roving tabindex 0/−1) → detail → pás akce. Enter / mezerník vybere. Esc zavře list, pak Dílnu. Žádný kladný `tabindex` | 2.1.1, 2.4.3 |
-| Fokus | `cobalt` 3 px + odsazení, nikdy zakrytý přilepeným pásem akce (`scroll-padding-bottom` = výška pásu) | 2.4.7, 2.4.11 |
-| Dotykové cíle | karty 120 × 132, políčka ≥ 76 × 92, záložky 48 px, tlačítka 48–56 px, ✕ 44 × 44, mezery ≥ 8 px | 2.5.8 |
-| Tažení | pás karet roluje tažením, ale **každá karta je dosažitelná i klepnutím / šipkami** (◀ ▶ na desktopu, klávesnice); žádná akce jen tažením | 2.5.7 |
-| Barva | stavy vždy tvar + text (✓ V ruce, ikona mince + cena, zámek + „Jak ho získat“, skica vs. barva, ▲▼ + „+12 %“). Graf drah: čárkovaná vs. plná + legenda textem | 1.4.1 |
-| Kontrast | text na kartách `graphite` × `cream` 13,9; popisky `pencil` × `cream` 5,6; cena `mustard-800` × `cream` 5,5; **tužková skica `pencil` × `cream` 5,6 (grafika ≥ 3 : 1 OK)**; páska „NOVÉ“ `graphite` × `tape` — výpočet z hex ~12 : 1 (NOT ASSESSED v pixelech); šipka ▼ `graphite` (ne červená) | 1.4.3, 1.4.11 |
-| Náhled a graf | 3D okno je `aria-hidden` ozdoba; veškerá informace je v DOM (srovnání, odhad). Graf SVG má `role="img"` + `aria-label` z `planes.previewLabel` + odhad textem | 1.1.1 |
-| Stavové zprávy | „Needle je v ruce.“, „Nasazeno: Airmail.“, chyba koupě `role="alert"` | 4.1.3 |
-| Pohyb | §10, Nastavení „Pohyb“ (07-menu) přebíjí systém | 2.3.3 |
-| Jazyk | jména vzhledů a modelů přes i18n, `lang` podle volby | 3.1.1 |
-| Zvětšení textu | 200 %: karty rostou do výšky, pás karet zůstane vodorovný uvnitř sebe, stránka bez vodorovného posunu | 1.4.4, 1.4.10 |
+| Struktura | záložky `tablist`; pás karet `<ul role="list">` s `<button>`. **Vlastněné karty mají `aria-pressed`** (`true` = v ruce, přepínač „mít v ruce“); zamčené a siluety **bez `aria-pressed`**, s `aria-controls` na detail (otevírají detail, nic nepřepínají). Políčka potisků a razítek stejně (`aria-pressed` = nasazeno). Detail `aria-live="polite"` jen při změně prohlížené položky | 4.1.2, 1.3.1 |
+| Popisky | `aria-label` karty = jméno + stav: „Kite, v ruce“ / „Hawk, tvoje“ / „Kite, 700 mincí, nejdřív doleť k místu Crane Forest“ / „Neznámá vlaštovka, otevře se dál na trase“ (`planes.cardAria`) | 1.1.1, 2.4.6 |
+| Klávesnice | Tab: záložky → pás karet (jeden tab stop, roving tabindex 0/−1, **šipky jen přesouvají fokus**) → detail → pás akce. Enter / mezerník = klepnutí. Esc zavře list, pak Dílnu. Žádný kladný `tabindex` | 2.1.1, 2.4.3 |
+| Fokus | `cobalt` 3 px + odsazení, nikdy zakrytý přilepeným pásem (`scroll-padding-bottom`) | 2.4.7, 2.4.11 |
+| Dotykové cíle | karty 120 × 132, políčka potisků ≥ 76 × 92, razítek ≥ 64 × 76, záložky 48 px, tlačítka 48–56 px, ✕ 44 × 44, čip Sail ≥ 44 px, mezery ≥ 8 px | 2.5.8 |
+| Tažení | pás karet roluje tažením, ale každá karta je dosažitelná klepnutím / šipkami | 2.5.7 |
+| Barva | stav vždy tvar + text (✓ V ruce, ikona mince + cena, ⚑ + text, zámek, skica vs. plný náhled vs. silueta, ▲▼ + „+12 %“) | 1.4.1 |
+| Kontrast | text `graphite` × `cream` 13,9; popisky `pencil-700` × `cream`; cena `mustard-800` × `cream` 5,5; skica `pencil` × `cream` 5,6 (grafika ≥ 3 : 1); štítky `graphite` × `tape` ~12 : 1 (z hex, v pixelech **NOT ASSESSED**); čip Sail nad 3D scénou: krémová karta s obrysem, text uvnitř karty (nezávisí na nebi) | 1.4.3, 1.4.11 |
+| Náhled a graf | 3D okno je `aria-hidden`; vše podstatné v DOM. Graf `role="img"` + `aria-label` + odhad textem | 1.1.1 |
+| Stavové zprávy | „Kite je v ruce.“, „Nasazeno: Harbor Chart.“, chyba koupě `role="alert"`; u čipu Sail totéž „Sail je v ruce.“ | 4.1.3 |
+| Čip Sail a hod | čip je `<button>`; mezerník na něm hod nespustí; žádná jednoznaková zkratka | 2.1.1, 2.1.4 |
+| Pohyb | §11, Nastavení „Pohyb“ přebíjí systém | 2.3.3 |
+| Jazyk | jména přes i18n, `lang` podle volby | 3.1.1 |
+| Zvětšení textu | 200 %: karty rostou do výšky, stránka bez vodorovného posunu | 1.4.4, 1.4.10 |
 
 ---
 
-## 13. Etika: kontrola proti KB
+## 14. Etika: kontrola proti KB
 
 | Kritérium | Jak to návrh plní |
 |---|---|
-| 02 §2.7 test „engagement, ne compulsion“ 1–6 | 1: hráč ví, proč kupuje (srovnání). 2: nic nepropadá, vylepšení platí pro všechny modely. 3: ceny a podmínky pevné a známé. 4: modely i vzhledy jsou konečné, po finále nic nového nepřibývá. 5: koupě je aktivní volba s potvrzením, „Teď ne“ má fokus. 6: podmínky vzhledů většinou za běžný postup |
-| 02 §4.3 seznam „ne“ | žádná náhoda (žádné truhly s vzhledy), žádné časové nabídky, žádné streaks, žádná oslava nezávislá na hodnotě, žádné „skoro“ |
-| P13 / 06 Atlas bod 4 | žádný puntík za možnost koupě, Dílna bez tečky, štítek „NOVÉ“ jen u skutečné neviděné věci |
-| 06 13. 10. „sběratelství ne“ | vzhledy bez počítadla, bez kompletace, bez odměny za sadu; jsou to ozdoby za cestu, ne sbírka |
-| P7 přičitatelnost | tři vrstvy s jasnou rolí; vzhled nikdy nemění čísla a říká to |
-| P6 / P3 blízký cíl, zvědavost | nejbližší zamčený model s cenou, skrytě jen „dál na trase“; zamčené vzhledy jako skica s podmínkou |
-| 08 N8 | podmínky „ukazují možnosti hry“, bez řad 10/100/1000 |
+| 02 §2.7 test 1–6 | 1: hráč ví, proč kupuje (srovnání, dvě dráhy). 2: nic nepropadá, vylepšení platí pro všechny. 3: ceny a podmínky pevné a známé. 4: konečný obsah. 5: koupě s potvrzením, „Teď ne“ má fokus. 6: kosmetika za běžný postup |
+| 02 §4.3 seznam „ne“ | žádná náhoda, časové nabídky, streaks, oslava nezávislá na hodnotě, „skoro“ |
+| P13 / 06 Atlas bod 4 | žádný puntík za možnost koupě, Dílna bez tečky, „NOVÉ“ jen u skutečné neviděné věci; čip Sail nepulzuje, nevyskakuje opakovaně, ukazuje i zpáteční směr |
+| 06 obsah 7, 06 13. 10. „sběratelství ne“ | bez počítadla, bez kompletace, bez odměny za sadu |
+| P7 přičitatelnost | vrstvy s jasnou rolí, blok „Na tvé vlaštovce“, kosmetika nikdy nemění čísla a říká to |
+| P6 / P3 blízký cíl, zvědavost | 2 nejbližší modely s cenou, další jen silueta; zamčená kosmetika jako skica s podmínkou |
+| 06 obsah 6 | jedna akce pro jednu věc: výběr klepnutím, jediné „Hodit“ |
 
 ---
 
-## 14. Texty (obecné prvky)
+## 15. Texty
 
-Výchozí jazyk EN. Plurály EN `{one,other}`, CS `{one,few,many,other}`, vybírá `count`. Čísla přes `num` / `unit`. Jména konkrétních modelů a vzhledů dodá game designer jako `model.<id>`, `model.<id>.desc`, `look.<id>`, `look.<id>.desc` (vzor dnešních `model.dart`). Texty bez rodu hráče. CS terminologie: Dílna, vlaštovka (= model), vzhled (= skin), mince, místo, čtvrť.
+Výchozí EN. Plurály EN `{one,other}`, CS `{one,few,many,other}`. Čísla přes `num` / `unit`. Jména modelů, potisků a razítek a jejich popisy dodá game designer jako `model.<id>`, `model.<id>.desc`, `model.<id>.loves`, `look.<id>`, `look.<id>.desc`, `look.<id>.how`, `stamp.<id>` (vzor `model.dart`). Bez rodu hráče. CS terminologie: Dílna, vlaštovka (= model), **v ruce**, vzhled (záložka), **potisk** (= skin), **razítko**, papír, mince, místo, čtvrť.
 
-**Poznámka k CS a jménům:** jména modelů a vzhledů se v CS nebudou skloňovat, proto šablony stavějí jméno za dvojtečku nebo za slovo „vlaštovka / vzhled“ („Koupit vlaštovku Needle?“, „Nový vzhled: Airmail“).
+**CS a jména:** jména se neskloňují, šablony je dávají za dvojtečku, za slovo „vlaštovka / potisk“ nebo do 1. pádu („Kite do ruky“).
+
+### 15.1 Nové a změněné klíče
 
 | klíč | EN | CS |
 |---|---|---|
@@ -405,14 +517,17 @@ Výchozí jazyk EN. Plurály EN `{one,other}`, CS `{one,few,many,other}`, vybír
 | `workshop.newTag` | New | Nové |
 | `workshop.tabNewAria` | {tab}, something new inside | {tab}, je tu něco nového |
 | `workshop.previewAria` | Your plane in the kid's hand | Tvoje vlaštovka v ruce dítěte |
+| `workshop.previewOnly` | Preview | Náhled |
 | `planes.listLabel` | Planes | Vlaštovky |
+| `planes.tapHint` | Tap a plane you own to take it. | Klepnutím vezmeš svou vlaštovku do ruky. |
 | `planes.inHand` | In hand | V ruce |
-| `planes.ready` | Ready | Připravená |
-| `planes.use` | Fly with this one | Letět s touhle |
+| `planes.owned` | Yours | Tvoje |
 | `planes.buy` | Buy for {price} ◈ | Koupit za {price} ◈ |
-| `planes.lockedPlace` | Opens at {place} | Otevře se u místa {place} |
+| `planes.needPlace` | Fly to {place} first, then you can buy it. | Nejdřív doleť k místu {place}, pak ji koupíš. |
+| `planes.freeAt` | Free when you reach {place}. | Zdarma, až doletíš k místu {place}. |
+| `planes.freeShort` | Free | Zdarma |
 | `planes.lockedShort` | On the route | Na trase |
-| `planes.lockedLater` | Opens later on the route | Otevře se dál na trase |
+| `planes.lockedLater` | Opens later on the route. | Otevře se dál na trase. |
 | `planes.hiddenName` | Unknown plane | Neznámá vlaštovka |
 | `planes.cardAria` | {name}, {status} | {name}, {status} |
 | `planes.statSpeed` | Launch speed | Rychlost výhozu |
@@ -423,89 +538,87 @@ Výchozí jazyk EN. Plurály EN `{one,other}`, CS `{one,few,many,other}`, vybír
 | `planes.up` | {value} more | o {value} víc |
 | `planes.down` | {value} less | o {value} míň |
 | `planes.same` | same | stejné |
-| `planes.aimHigher` | Aim a little higher with this one. | S touhle miř o kousek výš. |
-| `planes.aimLower` | Aim a little lower with this one. | S touhle miř o kousek níž. |
+| `planes.aimHigher` | Aim higher with this one. | S touhle miř výš. |
+| `planes.aimLower` | Aim lower with this one. | S touhle miř níž. |
 | `planes.estimate` | Calm throw with your upgrades: ~{now} → ~{after} | Klidný hod s tvými vylepšeními: ~{now} → ~{after} |
 | `planes.estimateOwn` | Calm throw with your upgrades: ~{now} | Klidný hod s tvými vylepšeními: ~{now} |
-| `planes.estimateNote` | Estimate: full power, best angle, no wind or events. | Odhad: plná síla, nejlepší úhel, bez větru a událostí. |
+| `planes.estimateNote` | Estimate: full power, best angle, no wind or events. Its special trick isn't counted. | Odhad: plná síla, nejlepší úhel, bez větru a událostí. Specialita vlaštovky v něm není. |
 | `planes.previewLabel` | Flight path: {current} dashed, {other} solid | Dráha letu: {current} čárkovaně, {other} plnou čarou |
+| `planes.previewLabelPrev` | Flight path: {other} solid, before it {current} dashed | Dráha letu: {other} plnou čarou, předtím {current} čárkovaně |
 | `planes.previewOff` | The flight preview can't be drawn right now. The numbers above still hold. | Náhled letu teď nejde nakreslit. Čísla výše platí. |
 | `planes.shared` | Your upgrades and paper work for every plane. | Vylepšení i papír platí pro každou vlaštovku. |
-| `planes.inHandDone` | {name} is in your hand. | Vlaštovka {name} je v ruce. |
+| `planes.inHandDone` | {name} is in your hand. | {name} je v ruce. |
+| `planes.autoNote` | Auto-hits don't count as perfect. | Automatický zásah se nepočítá jako perfektní. |
 | `buy.title` | Buy the {name}? | Koupit vlaštovku {name}? |
 | `buy.coins` | Coins: {now} → {after} | Mince: {now} → {after} |
+| `buy.toHand` | It goes straight into your hand. | Půjde rovnou do ruky. |
 | `buy.confirm` | Buy for {price} ◈ | Koupit za {price} ◈ |
 | `buy.cancel` | Not now | Teď ne |
 | `buy.failed` | The purchase couldn't be saved, so no coins were spent. Try again. | Nákup se nepodařilo uložit, mince zůstaly. Zkus to znovu. |
-| `looks.listLabel` | Looks | Vzhledy |
-| `looks.note` | Looks change only how the plane looks, never how it flies. | Vzhled mění jen to, jak vlaštovka vypadá, ne jak letí. |
+| `looks.note` | Tap to wear. Prints and stamps never change how the plane flies. | Klepnutím nasadíš. Potisk ani razítko nemění, jak vlaštovka letí. |
+| `looks.layersTitle` | On your plane | Na tvé vlaštovce |
+| `looks.layerPlane` | Plane: {name} | Vlaštovka: {name} |
+| `looks.layerPaper` | Paper: {name} (Upgrades) | Papír: {name} (Vylepšení) |
+| `looks.layerPrint` | Print: {name} | Potisk: {name} |
+| `looks.layerStamp` | Stamp: {name} | Razítko: {name} |
+| `looks.prints` | Prints | Potisky |
+| `looks.stamps` | Stamps | Razítka |
 | `looks.fitsAll` | Fits every plane. | Sedí na každou vlaštovku. |
 | `looks.wearing` | Wearing | Nasazeno |
-| `looks.wear` | Wear | Nasadit |
 | `looks.woreDone` | Wearing: {name} | Nasazeno: {name} |
 | `looks.lockedAria` | {name}, not yet. {how} | {name}, zatím ne. {how} |
 | `looks.how` | How to get it: {how} | Jak ho získat: {how} |
-| `looks.howPlace` | Fly to {place}. | Doleť k místu {place}. |
 | `looks.howDistrict` | Reach {district}. | Doleť do čtvrti {district}. |
 | `looks.howRoute` | Deliver at the end of the route. | Doruč zásilku na konec trasy. |
-| `looks.howPlane` | Throw the {plane} once. | Hoď jednou vlaštovkou {plane}. |
-| `looks.howPerfect` | Get a perfect on the {event} event. | Zvládni perfektně událost {event}. |
-| `looks.howDistance` | Fly {distance} in one throw. | Doleť {distance} jedním hodem. |
-| `looks.retro` | one: `You already earned {count} look on the way.` · other: `You already earned {count} looks on the way.` | one: `Cestou už máš {count} vzhled.` · few: `Cestou už máš {count} vzhledy.` · many: `Cestou už máš {count} vzhledů.` · other: `Cestou už máš {count} vzhledů.` |
-| `look.plain` | Plain Paper | Čistý papír |
+| `looks.retro` | one: `You already earned {count} print on the way.` · other: `You already earned {count} prints on the way.` | one: `Cestou už máš {count} potisk.` · few: `Cestou už máš {count} potisky.` · many/other: `Cestou už máš {count} potisků.` |
+| `stamps.none` | No stamp | Bez razítka |
+| `stamps.howPerfect` | First perfect {event}. | První perfektní {event}. |
+| `stamps.howStar` | Catch a shooting star. | Chyť padající hvězdu. |
+| `look.plain` | Plain | Čistý |
 | `look.plain.desc` | Just the paper and a good fold. | Jen papír a dobrý přehyb. |
 | `result.newPlane` | New plane: {name} | Nová vlaštovka: {name} |
-| `result.planeInShop` | {name} is now in the Workshop | Vlaštovka {name} je teď v Dílně |
-| `result.newLook` | New look: {name} | Nový vzhled: {name} |
+| `result.planeForSale` | You can now buy the {name} in the Workshop | Vlaštovku {name} teď koupíš v Dílně |
+| `result.newLook` | New print: {name} | Nový potisk: {name} |
+| `result.newStamp` | New stamp: {name} | Nové razítko: {name} |
 | `result.wear` | Wear it | Nasadit |
-| `result.worn` | Wearing ✓ | Nasazeno ✓ |
-| `result.useIt` | Fly with it | Letět s ní |
-| `result.alsoNew` | one: `+{count} more new thing in the Workshop` · other: `+{count} more new things in the Workshop` | one: `+{count} další novinka v Dílně` · few: `+{count} další novinky v Dílně` · many: `+{count} dalších novinek v Dílně` · other: `+{count} dalších novinek v Dílně` |
-| `confirm.bodyLooks` | This deletes coins, upgrades, planes, looks, places and your best distance. It can't be undone. | Smaže mince, vylepšení, vlaštovky, vzhledy, místa i rekord. Nejde to vrátit. |
+| `result.worn` | ✓ Wearing | ✓ Nasazeno |
+| `result.takeIt` | Take it | Vzít do ruky |
+| `result.taken` | ✓ In hand | ✓ V ruce |
+| `aim.swap` | {name} in hand | {name} do ruky |
+| `aim.swapGain` | ≈ {value} in this wind | ≈ {value} v tomhle větru |
+| `aim.swapAria` | Take the {name}. In this wind about {value}. | Vzít do ruky {name}. V tomhle větru asi {value}. |
+| `confirm.bodyLooks` | This deletes coins, upgrades, planes, prints, stamps, places and your best distance. It can't be undone. | Smaže mince, vylepšení, vlaštovky, potisky, razítka, místa i rekord. Nejde to vrátit. |
 
-**Použité beze změny:** `detail.missing` (Chybí N mincí), `workshop.empty`, `workshop.launch`, `workshop.title`, `workshop.preview` (07-menu), `menu.coins` (aria peněženky), `model.dart`, `model.glider` a jejich `.desc`. `model.glider.locked` nahradí obecné `planes.lockedPlace`.
-**Ke smazání po zavedení:** `workshop.upgrades` („Upgrades · for both planes“) a `workshop.note` (nahrazuje `planes.shared`), `result.gliderUnlocked` (nahrazuje `result.newPlane`).
+Pozn. k `stamps.howPerfect`: `{event}` je jméno události v 1. pádu (Gust / Poryv). CS „První perfektní Poryv.“ je hraniční; game designer může dodat text na míru `stamp.<id>.how` („První perfektní poryv.“).
 
----
+### 15.2 Zrušené klíče (z kola 1, do slovníků se nepřidávají)
+`planes.use` (Letět s touhle), `planes.ready` (nahrazuje `planes.owned`), `planes.lockedPlace` (nahrazuje `planes.needPlace` / `planes.freeAt`), `looks.wear` (Nasadit v Dílně, klepnutí nasadí), `looks.listLabel` (nahrazují `looks.prints` / `looks.stamps`), `looks.howPlace`, `looks.howPlane`, `looks.howPerfect`, `looks.howDistance` (podmínky podle 01 jsou suvenýr, finále, podpis, razítko), `result.useIt` (nahrazuje `result.takeIt`), `result.planeInShop` (nahrazuje `result.planeForSale`), `result.alsoNew` (fronta jedné novinky).
 
-## 15. Tokeny (tři vrstvy, papírová bible)
-
-Primitivní a rolové tokeny jsou v bibli kap. 2.1 a 8; Dílna přidává jen komponentové a jednu roli.
-
-| Vrstva | Token | Hodnota | Poznámka |
-|---|---|---|---|
-| role | `--color-new` | `var(--tape-200)` (`#efe0a8`) s textem `--ink` | **ne hořčicová**: hořčicová je jen hodnota (bible 2.2, 06 K1 bod 3). 07-menu měl `--color-new: var(--coin)` pro starý styl, tady se mění |
-| role | `--color-locked` | `var(--pencil-500)` (`#6b6158`) | tužková skica a text podmínky |
-| komponenta | `--wk-card-w`, `--wk-card-h` | `120px`, `132px` (≤ 340 px: `104px`, `124px`) | |
-| komponenta | `--wk-card-bg` | `var(--card)` | |
-| komponenta | `--wk-card-held-border` | `3px solid var(--ink)` | v ruce / nasazeno |
-| komponenta | `--wk-card-picked-border` | `2px dashed var(--ink)` | zvolená k náhledu |
-| komponenta | `--wk-sketch-stroke` | `var(--color-locked)` | |
-| komponenta | `--wk-tag-new-bg`, `--wk-tag-new-fg` | `var(--color-new)`, `var(--ink)` | štítek „NOVÉ“, natočený −2° (bible kap. 8) |
-| komponenta | `--wk-price-fg` | `var(--color-reward-text)` (`mustard-800`) | cena |
-| komponenta | `--wk-stat-fill`, `--wk-stat-track` | `var(--ink)`, `var(--desk)` | pruh statistiky |
-| komponenta | `--wk-path-now`, `--wk-path-new` | `var(--dim)` čárkovaná 1,5 px, `var(--ink)` plná 2,6 px | graf drah |
-| komponenta | `--wk-tab-mark` | `var(--tape)` 4 px | podtržení záložky |
-| komponenta | `--wk-preview-h` | `clamp(140px, 30dvh, 260px)` | náhledové okno na mobilu |
-| komponenta | `--wk-action-h` | `56px` + `env(safe-area-inset-bottom)` | přilepený pás |
-
-Typografie: jména modelů a ceny `--display` tučně, `tabular-nums`; popisy `--body` 15–16 px; poznámky 14 px; `--hand` jen jedna řádka (např. podpis vzhledu na detailu), nikdy cena ani podmínka.
+**Použité beze změny:** `detail.missing`, `workshop.empty`, `workshop.launch`, `workshop.title`, `menu.coins`, `model.dart`, `model.glider` a `.desc`. **Ke smazání po zavedení:** `workshop.upgrades`, `workshop.note` (nahrazuje `planes.shared`), `result.gliderUnlocked` (nahrazuje `result.newPlane`), `model.glider.locked` (nahrazuje `planes.freeAt`).
 
 ---
 
-## 16. Otevřené volby
+## 16. Rozhodnuté volby (z kola 1)
 
-**B1 Počítadlo vzhledů.** A) žádné „7 / 15“ ani sada; B) počítadlo bez odměny; C) počítadlo + odměna za všechny. **Doporučení A**: 06 13. 10. „sbírky navíc ne“, 08 N7 (sbírka vede k pocitu povinnosti); vzhledy jsou ozdoba za cestu. Maketa `?counter=1` ukáže B.
+| Volba | Rozhodnutí (06, 14. 10.) | Promítnuto |
+|---|---|---|
+| B1 Počítadlo vzhledů | **bez počítadla** (obsah 7) | §2.2, maketa bez `?counter` |
+| B2 Vzhled přes papír | **potisk přes papír** (obsah 7) | §1, §6.1 blok vrstev |
+| B3 Kolik zamčených modelů | **vlastněné + 2 nejbližší plně, další silueta** (obsah 5) | §2.1, maketa bez `?reveal` |
+| B4 Potvrzení koupě | **s potvrzením** (obsah 5) | §5.3, maketa bez `?confirm` |
+| B5 Vzhled pro všechny modely | **jeden pro všechny** (obsah 7) | §1, §12 bod 18 |
+| B6 Po koupi do ruky | **ano** (obsah 5) | §5.3, maketa bez `?autouse` |
+| — „Letět s touhle“ | **zrušeno, klepnutí = do ruky** (obsah 6) | §5.1, §6.1, §7 |
+| — Rychlá volba Sail | **ano** (obsah 5) | §8 |
 
-**B2 Jak se vzhled kreslí přes papír.** Papír už mění vzhled vlaštovky (papíry: materiál, vzor, obrys, stopa). A) **vzhled = potisk a akcenty nad papírem** (papír zůstává poznat podle materiálu a stopy, vzhled přidá např. lem, razítko, barevné špičky); B) vzhled papír vizuálně nahradí (papír zůstane jen v číslech); C) vzhled mění jen stopu a drobnou ozdobu, vlaštovka zůstává. **Doporučení A**: zachová schválenou identitu papírů (06 papíry 1–4) i přičitatelnost (P7), vzhled je pořád vidět zblízka (Dílna, výsledek). B je pro hráče jednodušší, ale ruší práci na papírech; C je nejlevnější, ale vzhled za letu skoro nebude vidět. Rozhoduje spolu s art-directorem (`03`).
+Otevřených voleb pro uživatele v tomto dokumentu není. Body k potvrzení orchestrátorem (návrhová rozhodnutí, ne vkus): zrcadlový zpáteční čip při protivětru (§8.1), přepínač drah u Sail (§5.2, podle ceny implementace), akce „Vzít do ruky“ / „Nasadit“ v řádku Výsledku (§7).
 
-**B3 Kolik zamčených modelů ukázat.** A) všechny s cenou a podmínkou; B) vlastněné + nejbližší 2 zamčené plně, další jako silueta „Otevře se dál na trase“; C) jen nejbližší jeden. **Doporučení B**: blízký cíl a cena vidět předem (P6, „chci a potřebuju“), ale ne celý katalog naráz (07 N5, P3 Loewenstein). Maketa `?reveal=all|near|next`.
-
-**B4 Potvrzení koupě modelu.** A) potvrzovací list s „Mince: 9 240 → 6 840“; B) bez potvrzení, s tlačítkem „Vrátit“ na pár sekund; C) podržet tlačítko pro koupi. **Doporučení A**: nejjasnější a bez časového tlaku. B má odpočet (P13) a C je horší pro motoriku (07 A13, WCAG 2.5.1 alternativa nutná). Maketa `?confirm=0` ukáže koupi bez listu.
-
-**B5 Vzhled pro všechny modely, nebo zvlášť.** A) jedna volba vzhledu platí pro každý model; B) každý model si pamatuje svůj vzhled; C) vzhledy jen pro konkrétní model. **Doporučení A**: méně voleb, vzhled se nezamkne koupí jiného modelu. Cena: art-director navrhuje vzhledy jako potisk na společné UV (6 modelů × 15 vzhledů musí sedět). C by znásobil práci a vytvořil „kup model, abys měl vzhled“.
-
-**B6 Po koupi rovnou do ruky.** A) ano; B) ne, hráč zvolí „Letět s ní“. **Doporučení A**: kupuje se, aby se s tím letělo, vrátit je jedno klepnutí. Maketa `?autouse=0`.
+### 16.1 Budoucí bonus „násobič mincí“ (06 obsah 3) — jen poznámka pro game designera
+Kde ukázat hodnotu „teď → po koupi“ (přínos vidět předem), detail mechaniky navrhne game designer:
+- **Dílna › Vylepšení, uzel bonusu** (je to koupená investice jako ostatní): detail uzlu „Mince z hodu: +0 % → +10 %“ a pod tím na posledním hodu hráče „Tvůj poslední hod: 312 ◈ → ~343 ◈“ (`~`, stejná logika jako `planes.estimate`). Žádné „vrátí se ti za N hodů“ (02 §4.3, R-N6).
+- **Výsledek, řádek mincí:** u přičtených mincí malý rozpad „+343 ◈ (včetně +31 ◈ z bonusu)“, aby hráč viděl, co bonus dělá (P7). Jen když je bonus koupený.
+- **Kde ne:** hlavička Dílny ani HUD letu (peněženka zůstává jedno číslo); žádný „×1,1“ odznak u mincí za letu.
+- Riziko pro balanc (06 obsah 3): příjem nesmí růst rychleji než ceny. To hlídá simulace (`04`).
 
 ---
 
@@ -513,19 +626,18 @@ Typografie: jména modelů a ceny `--display` tučně, `tabular-nums`; popisy `-
 
 | Dávka | Obsah | Soubory |
 |---|---|---|
-| D1 Data | seznam modelů a vzhledů jako čistá data (id, podmínka odemčení / cena z `params.mjs` přes `atlas-numbers.js`); čisté funkce `planeState(p,id)`, `lookState(p,id)`, `unlockedLooks(p)`, `previewThrow(model,levels)` (body dráhy + dolet, bez událostí) | nový `src/wardrobe.js` (bez DOM), testy |
-| D2 Save | migrace verze: `owned`, `look`, `looks`, `seen`; validace (neznámé id → výchozí, vlastněné se nemažou); retroaktivní odemčení | `src/storage.js`, testy |
-| D3 Koupě | `buyPlane(p,id)` (idempotentní, ≥ cena, vrací false bez změny) | `src/core.js` nebo `wardrobe.js`, testy |
-| D4 Texty | §14 do `en.js` / `cs.js` | `src/locales/*` |
-| D5 UI | záložky, karty, detail, list, Vzhled, řádek novinky ve Výsledku | `index.html`, `style.css`, `src/ui.js` (po M3b z 07-menu) |
-| D6 Render | model a vzhled na vlaštovce (Dílna, let), náhledové okno = kamera na ruku dítěte, přeložení | `src/render3d/*` (podle `03` art-directora) |
-
-D5 závisí na novém menu (07-menu M3b), protože Dílna je tam panel.
+| D1 Data | seznam modelů, potisků a razítek jako čistá data (id, místo odemčení, cena z `params.mjs` přes `atlas-numbers.js`); čisté funkce `planeState(p,id)` (`hand` / `owned` / `forSale` / `needPlace` / `free` / `hidden`), `lookState`, `stampState`, `previewThrow(model,levels,wind)` | nový `src/wardrobe.js` (bez DOM), testy |
+| D2 Save | migrace (01 §5): `p.models`, `p.look {skin, stamp}`, `p.cosmetics`, `p.prevModel` (pro zpáteční čip), `seen`; validace; retroaktivní suvenýry | `src/storage.js`, testy |
+| D3 Koupě a výměna | `buyPlane(p,id)` (idempotentní, ≥ cena, místo dosažené, po koupi `p.model=id`), `takePlane(p,id)` (jen vlastněný) | `src/core.js` nebo `wardrobe.js`, testy |
+| D4 Texty | §15 do `en.js` / `cs.js` | `src/locales/*` |
+| D5 UI | záložky, karty, detail, list, Vzhled, řádek Výsledku | `index.html`, `style.css`, `src/ui.js` (po M3b z 07-menu) |
+| D6 Míření | čip Sail (§8), `pointerdown` mimo `#game` | `src/ui.js`, HUD |
+| D7 Render | model, papír, potisk a razítko na vlaštovce, náhledové okno, přeložení | `src/render3d/*` (podle `03`) |
 
 ## 18. Co je zástupné
-- Jména modelů (Needle, Broadwing, Kite, Comet), vzhledů (Airmail, Lantern, Blueprint, …), ceny (2 400 – 60 000 ◈), podmínky a statistiky v maketě i v textu. Dodají `01`, `04` a simulátor.
-- Odhad klidného hodu a dráhy v maketě jsou spočítané hrubým vzorcem, ne fyzikou hry.
-- Náhled vlaštovky v maketě je 2D SVG (ne 3D scéna).
+- Jména, ceny (400–2 000 ◈ z 01), místa odemčení, statistiky modelů, potisky a razítka v maketě i textu. Dodají `01`, `04` a simulátor.
+- Odhad klidného hodu, dráhy a zisk v čipu Sail jsou v maketě spočítané hrubým vzorcem, ne fyzikou hry.
+- Náhled vlaštovky v maketě je 2D SVG s jednou siluetou upravenou podle modelu (ne siluety z `03`).
 
 ## 19. Ověření
-**Maketa `prototype-dilna.html`: NOT ASSESSED** (prohlížeč nepoužit podle zadání). K ověření orchestrátorem: šířky 320 / 360 / 375 × 667, 932 × 430, 1280 × 800; EN i CS (`?lang=cs`, delší texty v kartách a detailu); scénáře `?scenario=start|early|mid|broke|late|delivered` (výchozí `mid`), volby `?reveal=near|all|next` (B3), `?confirm=0` (B4), `?autouse=0` (B6), `?counter=1` (B1), `?savefail=1` (chyba uložení koupě), v panelu makety i Výsledek s novinkou a ztráta WebGL; klávesnice (záložky šipkami, pás karet šipkami, Esc v listu a v Dílně); reduced motion (`?motion=reduce` nebo systém); kontrast pásky „NOVÉ“ a tužkové skici v pixelech; žádný vodorovný posun stránky.
+**Maketa `prototype-dilna.html`: NOT ASSESSED** (prohlížeč nepoužit podle zadání). K ověření orchestrátorem: šířky 320 / 360 / 375 × 667, 932 × 430, 1280 × 800; EN i CS (`?lang=cs`); scénáře `?scenario=start|early|mid|broke|late|delivered` (výchozí `mid`); `?view=aim&wind=tail|calm|head` (čip Sail: `?scenario=late&view=aim&wind=tail` nabídne Sail, `?scenario=delivered&view=aim&wind=head` nabídne návrat na Kite; `&hand=<id>` přepíše vlaštovku v ruce, jen vlastněnou); `?savefail=1`; v panelu makety Výsledek s novinkou a ztráta WebGL; klávesnice (šipky v pásu karet jen fokus, Enter vezme do ruky, Esc v listu a v Dílně); reduced motion (`?motion=reduce`); **kontrolní otázka 06 obsah 6: na žádné obrazovce nejsou dvě tlačítka pro „vzít a letět“**; kontrast štítků a skici v pixelech; žádný vodorovný posun.
