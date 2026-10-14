@@ -2,7 +2,7 @@
 // (PAPER_MOODS[0]: světlo mood.light, opar). Vypnutá pata karet (ao) a maska stínů, takže vzhled zůstává jako u kopie z K1.
 // Post zůstává tady: hra nemá převod do šedi (kontrola siluety na 25 %, 10-katalog kap. 2).
 import * as THREE from 'three';
-import {paperUniforms,paperMaterial as gamePaper,cardGeometry,drawSky,lin,ID} from '../../src/render3d/paper.js';
+import {paperUniforms,paperMaterial as gamePaper,kidMaterial as gameKid,cardGeometry,drawSky,lin,ID} from '../../src/render3d/paper.js';
 import {PAPER_MOODS} from '../../src/render3d/paper-mood.js';
 
 const MOOD=PAPER_MOODS[0],U=paperUniforms();
@@ -11,6 +11,8 @@ U.aoOn.value=0;U.maskOn.value=0;
 export {lin,cardGeometry};
 // Bible 05 kap. 3: čelo = barva karty (nahoře o 5 % světlejší), horní řez = světlé jádro kartonu, boky do studeného stínu, vlákna, opar podle hloubky.
 export const paperMaterial=(opts={})=>gamePaper(ID.near,opts,U);
+// Dítě C (karty 'mesh'): rampa po stěnách jako ve hře (bible 05 kap. 9.4, kidMaterial).
+export const kidMaterial=()=>gameKid(U);
 // Post: převod do sRGB, statické zrno papíru, teplý tón a vinětace (bible kap. 4, jako paperPost). gray = převod do šedi.
 export function postPass(){
  const mat=new THREE.ShaderMaterial({uniforms:{tDiffuse:{value:null},res:{value:new THREE.Vector2(1,1)},grain:{value:.035},vignette:{value:.14},tint:{value:new THREE.Color('#fffaf2')},gray:{value:0}},depthTest:false,depthWrite:false,
