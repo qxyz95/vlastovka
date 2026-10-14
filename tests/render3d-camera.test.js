@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createDirector,direct,titleAlpha,punchZoom,speedZoom,placeTitle,ZOOM_RANGE,TITLE} from '../src/render3d/camera.js';
+import {createDirector,direct,titleAlpha,punchZoom,excessZoom,excessOf,placeTitle,ZOOM_RANGE,TITLE} from '../src/render3d/camera.js';
 import {follow} from '../src/render3d/geometry.js';
 import {PLACE_EN,onTwos,wrap} from '../src/render3d/life.js';
 import {ROUTE} from '../src/scenes.js';
@@ -9,7 +9,7 @@ import {ROUTE} from '../src/scenes.js';
 test('director: title and punch-in only at place boundaries, zoom bounded, plane stays put in frame',()=>{
  assert.equal(PLACE_EN.length,ROUTE.length);assert.deepEqual(placeTitle(1),{title:'Market under the Bunting',sub:'SUNRISE ROOFS · 2/4',district:0,first:false});
  assert.equal(titleAlpha(null),0);assert.equal(titleAlpha(1),1);assert.equal(titleAlpha(TITLE.fadeIn+TITLE.hold+TITLE.fadeOut+.01),0);
- assert.equal(punchZoom(null),1);assert.ok(punchZoom(.8)<.9);assert.equal(speedZoom(10),1);assert.ok(speedZoom(200)>1.4);
+ assert.equal(punchZoom(null),1);assert.ok(punchZoom(.8)<.9);assert.equal(excessZoom(excessOf(10,11)),1);assert.ok(Math.abs(excessZoom(excessOf(200,11))-1.35)<1e-12);
  const s=createDirector(),titles=[];let t=0;
  for(let x=0;x<1300;x+=.5,t+=1/60){direct(s,{x,v:30,t,dt:1/60,flying:true});if(s.at===t)titles.push(s.title.title);assert.ok(s.zoom>=ZOOM_RANGE[0]-1e-9&&s.zoom<=ZOOM_RANGE[1]+1e-9);
   const v=follow(x,10,{width:120*s.zoom});assert.ok(Math.abs((x-(v.cx-v.width/2))/v.width-148/640)<1e-9,'plane at px 148');}
@@ -19,8 +19,9 @@ test('director: title and punch-in only at place boundaries, zoom bounded, plane
 });
 
 // ── Režisér c2 (R5): zámek QTE, bez skoků, District, Calm, rotace, determinismus, project = view ──
+import {LAUNCH} from '../src/render3d/camera.js';
 import {createDirector as mk,direct as dir,project,cameraView,nextDirector,qteLock,nextEventIn,DISTRICT,MAX_ROT,LOCK_AFTER,REST,HAND} from '../src/render3d/camera.js';
-import {PLANE_OFFSET} from '../src/render3d/geometry.js';
+import {PLANE_OFFSET,tempoZoom} from '../src/render3d/geometry.js';
 import {restCamera,REST as POSE_REST} from '../src/render3d/pose.js';
 import {createFlight,step} from '../src/core.js';
 import {eventInput} from '../src/events.js';
@@ -39,7 +40,7 @@ function run(seed,{calm=false,flat=false,tempo=t=>1+.4*Math.min(1,t/10),levels={
 }
 test('camera: view(null) at the kid hand (148, 258) ±2 px; project of the plane = view = director target',()=>{
  const s=mk();dir(s,{x:PLANE_OFFSET,v:0,t:0,dt:DT,flying:false,y:HAND.y});const v=cameraView(s.camera,PLANE_OFFSET,HAND.y);
- assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2,`rest ${v.px},${v.py}`);const rc=restCamera(16/9);assert.ok(Math.abs(v.k-POSE_REST.k)<.02,'k = REST.k');assert.ok(Math.abs(s.camera.width-rc.width)<1e-9);
+ assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2,`rest ${v.px},${v.py}`);const rc=restCamera(16/9);assert.ok(Math.abs(v.k/POSE_REST.k-1)<.02,'k = REST.k');assert.ok(Math.abs(s.camera.width-rc.width)<1e-9);
  for(let i=0;i<3;i++)assert.ok(Math.abs(s.camera.position[i]-rc.position[i])<.05&&Math.abs(s.camera.target[i]-rc.target[i])<.05,'same as pose.restCamera');
  assert.ok(Math.abs(v.cam-(PLANE_OFFSET*2.1-v.px))<1e-9);
  const {frames}=run(3);
@@ -57,7 +58,9 @@ test('camera: QTE lock — from warning to 0.3 s after the result the zoom stays
 test('camera: never cuts — bounded width and px change per frame, plane moves continuously on screen',()=>{
  for(const seed of [1,4,7]){const {frames}=run(seed);
   for(let i=1;i<frames.length;i++){const a=frames[i-1],b=frames[i];
-   assert.ok(Math.abs(Math.log(b.cam.width/a.cam.width))<=.021,`seed ${seed} frame ${i}: width jump`);
+   // výhoz (S2): ease-out z polodetailu na šířku letu za LAUNCH.dur, rychlejší než strop letu, ale bez skoku a jen ven
+   const launch=b.state!=='rest'&&b.ft<=LAUNCH.dur&&!b.cam.lock,dw=Math.log(b.cam.width/a.cam.width);
+   assert.ok(launch?dw>=-1e-9&&dw<=.1:Math.abs(dw)<=.021,`seed ${seed} frame ${i}: width jump ${dw}`);
    assert.ok(Math.abs(b.view.px-a.view.px)<=.51,`px jump ${b.view.px-a.view.px}`);assert.ok(Math.abs(b.view.py-a.view.py)<=4,`py jump ${b.view.py-a.view.py}`);}
   assert.ok(new Set(frames.map(fr=>fr.state)).has('vista'),'vista appears in calm gliding');assert.ok(frames.some(fr=>fr.state==='landing'));}
 });
@@ -71,9 +74,9 @@ test('camera: District shot shortens when it would collide with an event (events
  const f={t:2,landed:false,events:[{at:1.5,phase:'effect',resolvedAt:1.8,doneAt:2.8},{at:Infinity,gap:3,phase:'waiting'}]};
  assert.equal(qteLock(f),true);assert.ok(Math.abs(nextEventIn(f)-3.8)<1e-9);f.t=2.2;assert.equal(qteLock(f),false);
 });
-test('camera: Calm camera — zoom always 1, no rotation or shake, optional flattened depth',()=>{
- for(const flat of [false,true]){const {frames}=run(2,{calm:true,flat});
-  for(const fr of frames){assert.equal(fr.cam.zoom,1);assert.equal(fr.cam.yaw,0);assert.equal(fr.cam.roll,0);assert.deepEqual(fr.cam.shake,[0,0]);assert.ok(Math.abs(fr.view.px-148)<1e-9);
+test('camera: Calm camera — no dynamic zoom (rest = aim shot, flight = W_let·T(π)), no rotation or shake, optional flattened depth',()=>{
+ for(const flat of [false,true]){const tempo=()=>1.4,{frames}=run(2,{calm:true,flat,tempo});// π je za letu stálé (výbava)
+  for(const fr of frames){const w=fr.state==='rest'?POSE_REST.width:640/2.1/tempoZoom(tempo(fr.ft));assert.ok(Math.abs(fr.cam.width-w)<1e-9,`calm width ${fr.cam.width} vs ${w}`);assert.equal(fr.cam.yaw,0);assert.equal(fr.cam.roll,0);assert.deepEqual(fr.cam.shake,[0,0]);assert.ok(Math.abs(fr.view.px-148)<1e-9);
    if(flat)assert.ok(fr.cam.pitch===0&&fr.cam.fov<20);}}
  const {frames}=run(2);assert.ok(frames.some(fr=>fr.cam.shake[0]===3),'shake passes through without calm');assert.ok(frames.some(fr=>fr.cam.zoom<.97),'zoom out with speed and tempo');
 });
@@ -88,5 +91,5 @@ test('camera: rest keeps the workshop width also with a narrower Follow width; a
  const s=mk({width:120});dir(s,{x:PLANE_OFFSET,y:HAND.y,v:0,t:0,dt:DT,flying:false});assert.ok(Math.abs(s.camera.width-POSE_REST.width)<1e-9,'rest width outside ZOOM_RANGE');
  const v=cameraView(s.camera,PLANE_OFFSET,HAND.y);assert.ok(Math.abs(v.px-REST.px)<=2&&Math.abs(v.py-REST.py)<=2);
  const f={t:2,landed:false,events:[{type:'gust',at:1.5,phase:'interaction',result:null}]},g=mk({width:120});dir(g,{x:200,y:20,v:20,t:2,dt:DT,flying:true,f});
- assert.equal(g.lock,true);assert.ok(Math.abs(g.camera.width-120)<1,`first locked frame is Follow, not rest: ${g.camera.width}`);
+ assert.equal(g.lock,true);assert.ok(Math.abs(g.camera.width-120*excessZoom(excessOf(20,11)))<1e-9,`first locked frame is Follow, not rest: ${g.camera.width}`);
 });

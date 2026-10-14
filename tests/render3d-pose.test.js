@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {kidPose,planePose,HAND,REST,restCamera} from '../src/render3d/pose.js';
+import {kidPose,planePose,HAND,REST,restCamera,aimWidth} from '../src/render3d/pose.js';
 import {PLANE_OFFSET} from '../src/render3d/geometry.js';
 import {noise1,fbm} from '../src/motion.js';
 import {flightAngle,createFx} from '../src/juice.js';
@@ -46,6 +46,8 @@ test('rest camera projects the plane in hand to (148, 258)',()=>{
  const project=([x,y,z])=>{const d=[x-ex,y-ey,z-ez],dot=a=>a[0]*d[0]+a[1]*d[1]+a[2]*d[2],t=Math.tan(REST.fov*Math.PI/360),depth=dot(F);
   return [320+dot(R)/(depth*t*16/9)*320,180-dot(U)/(depth*t)*180];};
  const [sx,sy]=project([HAND.x,HAND.y,HAND.z]);assert.ok(Math.abs(sx-148)<=.05&&Math.abs(sy-258)<=.05,`HAND → ${sx.toFixed(2)}, ${sy.toFixed(2)}`);
- const [,gy]=project([HAND.x,0,0]);assert.ok(Math.abs(gy-300)<=3,`ground line ${gy}`);
- assert.ok(Math.abs(REST.width-640/2.1/1.25)<1e-9);
+ // Polodetail 16 m (S2): ruka 16 m nad zemí, záběr vysoký 9 m → zem je pod dolním okrajem (dřív 2D čára 300 px při 244 m).
+ const [,gy]=project([HAND.x,0,0]);assert.ok(gy>360,`ground below the frame ${gy}`);
+ assert.equal(REST.width,16);assert.equal(REST.narrow,7);assert.equal(aimWidth(375),7);assert.equal(aimWidth(360),7);assert.equal(aimWidth(1280),16);assert.ok(Math.abs(aimWidth(640)-640/54)<1e-9);assert.ok(Math.abs(REST.k-640/2.1/16)<1e-12);
+ for(const w of [7,16]){const r=restCamera(16/9,w);assert.ok(Math.abs(r.width-w)<1e-9);}
 });
