@@ -133,3 +133,7 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Katalog, skupina G1 (K3, 14. 10.): schváleno.** Řadový dům, dům se štítem, vzdálené město a komín podle katalogu, včetně rozměrů odhadnutých agentem.
   1. Strop LOD 0 řadového domu 650 △ místo 600 (nejbohatší kombinace je vzácná, rozpočet místa se počítá hustotou).
   2. Komín nejvýš 2 nástavce (se třemi by překročil strop 20 △).
+- **Katalog, skupina G2 (K4, 14. 10.):** Dílna, nárožní dům s věžičkou, člověk a lampa přijaty.
+  1. Strop pouliční lampy zvýšen na 42 / 12 / 0 △ (dvouramenná a s košem jsou vzácné).
+  2. Buben věžičky v barvě stěny (uživatel nechal na orchestrátorovi), jehlan a střecha zůstávají tmavomodré.
+  3. Dveře a klika Dílny se neřeší zvlášť: uživatel chce **přepracovat celý začátek hodu** (odkud se hází, okolí hráče a Dílnu) a **kameru**: na začátku hodu přiblížená, při zrychlení se vzdaluje. Návrh připraví game designer a art director.

@@ -227,7 +227,7 @@ test('corner-turret: přízemí + 4 patra, arkýř přes 3 patra, šestiboká v�
  const wall=l.find(c=>c.part==='wall');assert.ok(near(wall.h,15)&&near(wall.w,14)&&wall.color===D.near[6]);
  const drum=by('turret')[0],helm=by('helm')[0];assert.equal(drum.shape,'prism');assert.equal(drum.n,6);assert.equal(cardTriangles([drum]),6,'3 viditelné stěny');
  assert.ok(near(drum.w,4)&&near(drum.y,15)&&near(drum.y+drum.h,21),'buben ⌀ 4 m nad římsou');assert.ok(helm.apex&&near(helm.y+helm.h,25),'jehlan do 25 m');
- assert.ok([drum.color,helm.color,l.find(c=>c.part==='roof').roof].every(c=>c===D.roof[0]),'věžička a střecha #3d4f7a');
+ assert.equal(drum.color,D.near[6],'buben v barvě stěny (14. 10.)');assert.ok([helm.color,l.find(c=>c.part==='roof').roof].every(c=>c===D.roof[0]),'jehlan a střecha #3d4f7a');
  const flag=by('flag')[0];assert.ok(flag.color===PT.tomato&&near(flag.w,1)&&near(flag.h,.7)&&flag.y>25,'praporek 1 × 0,7 m nad jehlanem');
  const oriel=by('oriel').find(c=>c.shape==='box');assert.ok(near(oriel.y,6)&&near(oriel.y+oriel.h,15)&&oriel.color===tones(D.near[6]).trim,'arkýř 2.–4. patro');
  const ow=l.filter(c=>c.part==='window'&&near(c.x+c.w/2,TURRET.cx)&&c.z>.5);assert.equal(ow.length,4,'3 okna arkýře + okno věžičky');

@@ -44,7 +44,7 @@ export default Object.freeze({
  params:Object.freeze({arms:P([1,2],1),basket:P([0,1],0)}),
  // Výchozí varianta (jedno rameno): patka až konec lucerny, výška po špici sloupu, hloubka patky a lucerny.
  size:Object.freeze({w:LAMP.base/2+LAMP.arm+LAMP.lw/2,h:LAMP.h+LAMP.finial,d:LAMP.lw}),
- // Strop karty [21, 8, 0] platí pro jednoramennou bez koše (21 / 7). Dvouramenná s košem má 42 / 12 (BLOCKED v runs/2026-10-14-k4-modely.md).
+ // Strop karty [21, 8, 0] platí pro jednoramennou bez koše (21 / 7). Dvouramenná s košem má 42 / 12 (strop zvýšen rozhodnutím 14. 10.).
  tris:Object.freeze([42,12,0]),
  lod:Object.freeze([p=>build(p,0),p=>build(p,1),()=>[]]),shadow
 });

@@ -15,9 +15,9 @@ const DRUM_D=TURRET.w*Math.sin(Math.PI/3),DRUM_Z=TURRET.out-DRUM_D/2,TOP=H+TURRE
 const mirror=list=>list.map(c=>c.shape==='disc'?{...c,x:-c.x}:{...c,x:-(c.x+c.w),...(c.pts?{pts:(m=>[m[0],...m.slice(1).reverse()])(c.pts.map(([x,y])=>[-x,y]))}:{})});
 const tri=(pts,z,color,part)=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys);return {shape:'poly',x,w:Math.max(...xs)-x,y,h:Math.max(...ys)-y,z:z-.025,d:.05,pts,color,part};};
 const prism=(o)=>({shape:'prism',n:6,part:'turret',...o});
-// Věžička: buben (LOD 2 sahá až k patě arkýře, tvoří jednu siluetu), jehlan s přesahem, stožár (0,08 m, jedna linka D-1) a praporek.
+// Věžička: buben v barvě stěny (odliší se od střechy a jehlanu, 14. 10.) (LOD 2 sahá až k patě arkýře, tvoří jednu siluetu), jehlan s přesahem, stožár (0,08 m, jedna linka D-1) a praporek.
 function turret(roof,lod,wall){
- const {cx,w,helm,ov,pole,flag}=TURRET,out=[prism({x:cx-w/2,w,y:lod===2?TURRET.from:H,h:lod===2?TOP-TURRET.from:TURRET.drum,z:DRUM_Z,d:DRUM_D,top:false,color:roof}),
+ const {cx,w,helm,ov,pole,flag}=TURRET,out=[prism({x:cx-w/2,w,y:lod===2?TURRET.from:H,h:lod===2?TOP-TURRET.from:TURRET.drum,z:DRUM_Z,d:DRUM_D,top:false,color:wall}),
   prism({x:cx-w/2-ov,w:w+2*ov,y:TOP,h:helm,z:DRUM_Z,d:DRUM_D+2*ov*Math.sin(Math.PI/3),apex:true,color:roof,part:'helm'})];
  if(lod<2)out.push(...windowCut({cx,y:H+SCALE.sill,front:TURRET.out,t:tones(wall),lod}));
  out.push(panel({x:cx-.04,w:.08,y:TOP+helm-.2,h:pole+.2,front:DRUM_Z+.06,color:roof,part:'pole'}));
