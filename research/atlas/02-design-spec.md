@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** vzhled pohlednic (tištěný komiks, tuš 2,5 px, půltón, indigové tokeny, posterizované nebe); platí `research/design/05-styl-papir.md` kap. 10 (pohlednice jako fotky dioramatu přilepené páskou). Struktura, toky a texty Atlasu platí (`research/atlas/01-navrh-atlasu.md`, `03-texty.md`). Nečíst jako zadání vzhledu.
+
 # Atlas: design spec (A1)
 
 **14. 10. 2026, product-designer.** Navazuje na `01-navrh-atlasu.md` (závazný). Prototyp: `prototype-atlas.html` + `prototype/atlas/` (falešná data, `src/` beze změny). Texty: `03-texty.md` (generováno z `prototype/atlas/content.js`). Odkazy: `06` = rozhodnutí, `08` = návrh 2. kola, `P1–P15` = `research/kb/README.md`, svět = `research/svet/01-zivy-svet.md`.

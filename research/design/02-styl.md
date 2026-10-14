@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** celá bible (cyber/komiks: tištěný komiks S2, neon, magenta perfekt, indigová UI) je nahrazená Papírovým městem; platí `research/design/05-styl-papir.md` (kap. 15 říká, co se z 02 přebírá a co ruší). Nečíst jako zadání.
+
 # Stylová bible Just Throw It
 
 > **Schváleno 14. 10. 2026.** Napsal art-director podle rozhodnutí „Jednotný vizuální styl“, uživatel schválil „vše podle doporučení“ (`research/bonusy/06-rozhodnuti.md`, blok „Ke stylové bibli“, 14. 10.): pilíře A, paleta A, jedno UI na tokenech Atlasu, perfekt = magenta, obzor Neon Core do tyrkysové, půltón jen ve stínech budov. **Bible je závazná.** Kde se kód liší, platí bible a rozdíl je úkol v `research/design/03-styl-implementace.md`. Změna bible = nové rozhodnutí uživatele.

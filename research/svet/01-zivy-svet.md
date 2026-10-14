@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** vizuální stránka (komiksové město, tuš, půltón, neonová nálada, „barevná cesta za sluncem“ v původní podobě); platí `research/design/05-styl-papir.md` a `research/plan-hratelnost/03-art.md`. Nápady na život města, postavy a humor platí jako podklad. Nečíst jako zadání.
+
 # Živý svět: návrh pro 3D komiksové město
 
 Návrhový dokument, 14. 10. 2026. Jen návrh, kód se nemění. Navazuje na `research/bonusy/08-navrh-kolo2.md` (dále **08**), rozhodnutí `research/bonusy/06-rozhodnuti.md` (**06**), zásady P1–P15 z `research/kb/README.md` a na 3D prototyp (`prototype-3d.html`, `prototype/3d/`). Herní texty jsou anglicky, výklad česky. Štítky jako v KB: **V** opřeno o výzkum, **H** praxe nebo norma, **N** náš návrh nebo odhad k ověření.

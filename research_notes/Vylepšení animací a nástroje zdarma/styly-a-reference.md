@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** techniky pro 4 vizuální styly na Canvas 2D (kyberpunk pixel, papír, výkres, soumrak); platí `research/design/05-styl-papir.md` (jediný styl, 3D). Nečíst jako zadání.
+
 # Techniky animací a renderování pro 4 vizuální styly hry "Just Throw It" (Canvas 2D)
 
 Poznámka k metodě: Proběhlo zhruba 16 vyhledávání a stažení stránek. Primárních zdrojů s konkrétními čísly je málo. GDC talky (Nesbitt, Ferrari 2016) nebyly nalezeny jako přepis, takže tvrzení o nich jsou v Gaps. Řemeslné postupy bez zdroje jsou uvedeny jen v Inferences jako návrh implementace.

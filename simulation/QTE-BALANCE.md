@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** celý report (pravidla 0.4.0, `qte-balance.mjs`); QTE se přepracovává podle `research/plan-hratelnost/01-game-design.md` a `research/bonusy/06-rozhodnuti.md` (15. 10.). Skript, který ho zapisuje, se nespouští. Nečíst jako zadání.
+
 # Párové lety — živé město
 
 Pravidla 0.4.0. 1 000 seedů pro každý model, úroveň 0/2/5 a variantu pomoci. 18 000 párů; stejná konfigurace a seed v obou letech. Standardní úhel a rychlost konstrukce; dovednost úvodního hodu není v tomto měření měněna. Úspěšnost QTE 60 %, z úspěchů 25 % perfektních. Test jedné události ignoruje vstupy druhého typu, plánovač zůstává stejný.

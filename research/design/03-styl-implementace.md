@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** plán implementace bible 02 (rozpory R1–R18, dávky G0–G4 pro cyber/komiks); bible 02 je překonaná; platí `research/design/05-styl-papir.md`. Hotové dávky G0–G4 zůstávají jen jako historie. Nečíst jako zadání.
+
 # Stylová bible: plán implementace
 
 Art-director, 14. 10. 2026. Převádí rozpory R1–R18 ze schválené bible `research/design/02-styl.md` (kap. 11) na úkoly. Cílové hodnoty jsou z bible. Bible má přednost; když úkol a bible nesouhlasí, platí bible a úkol se opraví.

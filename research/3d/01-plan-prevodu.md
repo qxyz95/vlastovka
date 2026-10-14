@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** „komiksové město“ (obrysy, půltón, cyber nálady); jediný styl je Papírové město (`research/design/05-styl-papir.md`, `research/bonusy/06-rozhodnuti.md`). Technický postup po fázích (kamera, kvalita, výkon, smazání 2D ve fázi f) platí dál, stav fází je v `docs/stav.md`. Nečíst jako zadání vzhledu.
+
 # Plán převodu 3D komiksového města do hry
 
 **14. 10. 2026.** Plán agenta Plan podle rozhodnutí v `research/bonusy/06-rozhodnuti.md` („3D nahradí 2D“, 2D se smaže, až bude 3D ve hře hratelné). Odhady: **S** do 1 dne, **M** 2–4 dny, **L** 1–2 týdny práce agenta. Logika (`config`, `core`, `events`, `throw`, `scenes`, `storage`, `random`, `motion`, `juice`) a simulátor se nemění.
