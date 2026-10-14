@@ -137,3 +137,12 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   1. Strop pouliční lampy zvýšen na 42 / 12 / 0 △ (dvouramenná a s košem jsou vzácné).
   2. Buben věžičky v barvě stěny (uživatel nechal na orchestrátorovi), jehlan a střecha zůstávají tmavomodré.
   3. Dveře a klika Dílny se neřeší zvlášť: uživatel chce **přepracovat celý začátek hodu** (odkud se hází, okolí hráče a Dílnu) a **kameru**: na začátku hodu přiblížená, při zrychlení se vzdaluje. Návrh připraví game designer a art director.
+- **Odemykatelný obsah: vlaštovky za mince a skiny (14. 10., `research/obsah/01–04`): vše podle doporučení orchestrátora, s úpravami uživatele.**
+  1. Pět nových vlaštovek (Hawk, Kite, Skimmer, Sail, Needle), odemčení dvojím klíčem: dolet na místo, pak koupě za mince. Siluety podle `research/design/img/obsah/siluety.png` (zadání pro katalog modelů).
+  2. **Nové vlaštovky jsou o něco lepší celkově a výrazně lepší ve své specialitě, a dražší** (cíl, na který se šetří). Uživatel považuje hru za spíš krátkou: **cílová délka kampaně průměrného hráče kolem 60 min** (dnes ~49 min, pásmo 08 §10.2 50–75 min). Hawk se zkrotí (ne ideal 34°), ale zůstane znatelně lepší. Ceny a statistiky ladí simulace (`04-ekonomika.md`), ne napevno.
+  3. **Bonus násobič mincí** („+X % mincí z každého hodu“) jako koupená investice, v souladu s plánem 3. kola (násobitel podle čtvrti + bonusy +X % mincí). Hlídat, aby příjem nerostl rychleji než ceny.
+  4. Glider dál zdarma na 100 m, Night Owl až po finále.
+  5. Dílna: vlastněné vlaštovky a 2 nejbližší zamčené plně s cenou, další jako silueta. Náhled dvou drah a odhad doletu, bez zkušebního hodu. Koupě s potvrzením, koupená jde rovnou do ruky. Rychlá volba Sail při míření, když fouká.
+  6. **Klepnutí na vlastněnou vlaštovku ji rovnou dá do ruky, tlačítko „Letět s touhle“ se ruší**; u zamčené jen „Koupit“, dole vždy jedno „Hodit“.
+  7. Skiny jen za postup (suvenýry čtvrtí, finále, podpisové za první trik modelu) + 7 razítek, bez počítadla. Skin = potisk přes papír, jeden skin pro všechny vlaštovky, stopa bez kosmetiky, lampionový skin ve čtvrti 4 jemně svítí. Viditelnost skinů za letu na telefonu se řeší až s telefonem na konci.
+  8. Papíry přepracovat pro Papírové město (světlý Kraft, místo Neon Foil stříbrná fólie, grafitový obrys) a Neon Foil s 2. kapsou přeladit ve 3. kole.
