@@ -1,13 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {registerHooks} from 'node:module';
-import {CYBER,PAPIR,PAPER_TOKENS,palette} from '../src/render3d/palette.js';
+import {PAPIR,PAPER_TOKENS,palette} from '../src/render3d/palette.js';
 import {PAPER_KEYS} from '../src/render3d/mood.js';
 import {PAPER_TRAIL,ID} from '../src/render3d/paper-cards.js';
-import {drawUi,drawQte,drawLabel,drawPopups,drawSpeedLines,drawParticles,drawAim,QTE_BASE,QTE_WIDTH,QTE_STAR} from '../src/render3d/ui-layer.js';
+import {drawUi,drawQte,drawLabel,drawPopups,drawSpeedLines,drawParticles,drawAim,QTE_BASE,QTE_STAR} from '../src/render3d/ui-layer.js';
 import {gustStrips,scrapAngle,scrapTone,particles,GUST} from '../src/render3d/fx-map.js';
 import {createFx,fxEvent,stepFx} from '../src/juice.js';
-import {HAND,PAPER_HAND,kidPose} from '../src/render3d/pose.js';
+import {HAND,kidPose} from '../src/render3d/pose.js';
 
 // P3 „Hrdina“ Papírového města (spec research/design/06-papir-ctvrt1.md, bible 05 kap. 3, 7, 9, 11, stíny 08-stiny.md S4).
 // three.js moduly: holý import 'three' na vendorovaný build (jako import map v prohlížeči); plátno cedulky nahrazeno záznamem volání.
@@ -17,7 +17,7 @@ const drawn=[];
 globalThis.document??={createElement:()=>({width:0,height:0,getContext:()=>new Proxy({},{get:(_,k)=>k==='fillText'?(...a)=>drawn.push(a[0]):()=>{},set:()=>true})})};
 const THREE=await import('three');
 const {createPlane,planeColors,PLANE_SCALE}=await import('../src/render3d/plane.js');
-const {createWorkshop,kidParts,PAPER_SIGN,paperSignTexture}=await import('../src/render3d/workshop.js');
+const {createWorkshop,PAPER_SIGN,paperSignTexture}=await import('../src/render3d/workshop.js');
 const {paperKit,MASK_LAYER}=await import('../src/render3d/paper.js');
 
 const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
@@ -42,7 +42,7 @@ function fakeCtx(width=1280){
 }
 const view={cam:0,px:148,py:200,ground:300,k:1},zones={success:[.4,.7],perfect:[.5,.6]};
 const strip=c=>c.ops.map(o=>[o.name,o.args.map(a=>typeof a==='number'?+a.toFixed(4):a),o.style.fillStyle,o.style.strokeStyle,o.style.lineWidth,+o.style.globalAlpha.toFixed(4)]);
-const planeCtx=(palette,extra={})=>({ramp:null,planeHull:new THREE.MeshBasicMaterial(),palette,scale:PLANE_SCALE,...extra});
+const planeCtx=(palette,extra={})=>({planeHull:new THREE.MeshBasicMaterial(),palette,scale:PLANE_SCALE,...extra});
 
 // ── Vlaštovka a stopa (plane.js)
 test('P3 plane: paper fill = vertex colours without light (up = paper, keel and undersides = planeUnder), graphite 2.6 px outline in the palette',()=>{
@@ -61,22 +61,22 @@ test('P3 plane: S4 shadow = castPlane of the plane geometry as a child of the me
  assert.equal(sh.material,kit.shadows.materials.plane,'plane mask material (exp fade with height)');assert.ok(sh.layers.isEnabled(MASK_LAYER)&&!sh.layers.isEnabled(0),'only in the mask pass');
  pl.apply({x:0,y:30,angle:0,model:'glider'},{flying:true});const q=pl.current;assert.notEqual(q,p);assert.equal(q.shadow.parent,q.mesh);assert.equal(sh.parent,null,'old caster removed');
  for(let i=0;i<5;i++)pl.apply({x:i,y:30,angle:0,model:'glider'},{flying:true});assert.equal(pl.current.shadow,q.shadow,'same caster every frame');
- // bez sady stínů (kvalita bez scény) žádný vrhač; cyber nikdy
- assert.equal(createPlane(planeCtx(PAPIR)).current.shadow,null);assert.equal(createPlane(planeCtx(CYBER,{shadows:kit.shadows})).current.shadow,null);
+ // bez sady stínů (kvalita bez scény) žádný vrhač
+ assert.equal(createPlane(planeCtx(PAPIR)).current.shadow,null);
  pl.dispose();kit.dispose();
 });
 
-test('P3 plane: scale × plan.plane.scale in both styles (length by the shot width, S3; +15 % paper narrow)',()=>{
+test('P3 plane: scale × plan.plane.scale (length by the shot width, S3; +15 % narrow)',()=>{
  const pp=createPlane(planeCtx(PAPIR));pp.apply({x:0,y:30,angle:0,scale:1.15},{flying:true});assert.ok(Math.abs(pp.current.root.scale.x-PLANE_SCALE*1.15)<1e-9);
  pp.apply({x:1,y:30,angle:0},{flying:true});assert.equal(pp.current.root.scale.x,PLANE_SCALE,'missing scale = 1');
- const cp=createPlane(planeCtx(CYBER));cp.apply({x:0,y:30,angle:0,scale:.5},{flying:true});assert.equal(cp.current.root.scale.x,PLANE_SCALE*.5);
+ pp.apply({x:0,y:30,angle:0,scale:.5},{flying:true});assert.equal(pp.current.root.scale.x,PLANE_SCALE*.5);
 });
 
 test('P3 trail: graphite pencil dashes (1.5 m of 2.4 m along the path, fixed in the world), half width max(0.22 m, 1.1 CSS px), no edge, alpha 0.85·√k',()=>{
  const pl=createPlane(planeCtx(PAPIR)),tr=pl.trail,u=tr.uniforms,geo=tr.mesh.geometry;
- assert.equal(tr.paper,true);assert.equal(u.dash.value,PAPER_TRAIL.dash);assert.equal(u.period.value,PAPER_TRAIL.period);assert.equal(u.minPx.value,PAPER_TRAIL.minPx);
+ assert.equal(u.dash.value,PAPER_TRAIL.dash);assert.equal(u.period.value,PAPER_TRAIL.period);assert.equal(u.minPx.value,PAPER_TRAIL.minPx);
  assert.deepEqual([PAPER_TRAIL.dash,PAPER_TRAIL.period,PAPER_TRAIL.half,PAPER_TRAIL.minPx,PAPER_TRAIL.alpha],[1.5,2.4,.22,1.1,.85]);
- assert.equal(hex(u.core.value),PAPIR.trail[0]);assert.equal(PAPIR.trailEdge,PAPIR.trail[0],'no edge');
+ assert.equal(hex(u.core.value),PAPIR.trail[0]);assert.ok(!('edge' in u),'no edge');
  const fs=tr.mesh.material.fragmentShader;assert.match(fs,/discard/);assert.doesNotMatch(fs,/edge/,'no ink edge in the paper trail');
  const buf=geo.attributes.dist.array;for(let i=0;i<30;i++)pl.apply({x:i*2,y:30,angle:0},{flying:true,trailColor:PAPIR.trail[0]});
  assert.equal(geo.attributes.dist.array,buf,'fixed buffers');
@@ -87,8 +87,6 @@ test('P3 trail: graphite pencil dashes (1.5 m of 2.4 m along the path, fixed in 
  for(let i=0;i<5;i++)pl.apply({x:60,y:30,angle:0},{flying:false});assert.equal(tr.points.length,n+1-5,'landing shortens the trail');
  assert.equal(geo.attributes.dist.array[0],tr.points[0][2],'dashes stay in the world when old points drop');
  pl.apply({x:0,y:30,angle:0},{flying:true});assert.equal(tr.points.length,1,'new throw resets');assert.equal(tr.points[0][2],0,'odometer reset');
- // cyber stopa beze změny: lem z tuše, bez čárek
- const cy=createPlane(planeCtx(CYBER)).trail;assert.equal(cy.paper,false);assert.equal(cy.mesh.geometry.attributes.dist,undefined);assert.doesNotMatch(cy.mesh.material.fragmentShader,/discard/);
 });
 
 test('P3 contrast: graphite outline and trail ≥ 3 : 1 against every sky stop and the haze of district 1 (hex; pixels NOT ASSESSED here)',()=>{
@@ -102,16 +100,14 @@ test('S4 launch site tokens (06 bod 6, bible 05 kap. 9.4–9.5): coat #f2b65a, k
  assert.equal(W.shirt,'#f2b65a');assert.equal(W.shirt,D1.near[1]);assert.equal(W.visor,PAPER_TOKENS.kraft);assert.equal(W.capBand,PAPER_TOKENS.tomato);
  for(const k of ['rail','frame','door','legs'])assert.equal(W[k],'#3d4f7a',k);assert.equal(W.knob,PAPER_TOKENS.cream);assert.equal(W.string,PAPER_TOKENS.pencil);
  assert.ok(![W.shirt,W.visor,W.rail,W.knob,W.string].some(c=>c===PAPER_TOKENS.mustard||c===PAPER_TOKENS.paper||c===PAPER_TOKENS.graphite),'no mustard, white or graphite next to the plane');
- // cyber dítě beze změny (kšilt, žádná čepice)
- assert.ok(!kidParts(CYBER.workshop).head.some(p=>p.shape==='pyr'));assert.equal(CYBER.workshop.rail,'#7a5bb0');
  // cedulka PAPER LAB: textura v poměru stran karty H2 (5,6 × 0,6 m), nápis a podtržení
  drawn.length=0;const tx=paperSignTexture(PAPER_SIGN.text);assert.ok(drawn.includes('PAPER LAB'));assert.ok(Math.abs(tx.image.width/tx.image.height-PAPER_SIGN.w/PAPER_SIGN.h)<.1);tx.dispose();
 });
 
-test('S4 workshop (paper): kid + flag one dynamic mesh on the shared kit (ID.near), sign texture, plane in hand at 12 m stamped in graphite, no card casters',()=>{
- const kit=paperKit(),g=createWorkshop(null,{style:'papir',paper:kit,planeScale:PLANE_SCALE});
+test('S4 workshop: kid + flag one dynamic mesh on the shared kit (ID.near), sign texture, plane in hand at 12 m stamped in graphite, no card casters',()=>{
+ const kit=paperKit(),g=createWorkshop(null,{paper:kit,planeScale:PLANE_SCALE});
  const meshes=[],casters=[];g.traverse(o=>{if(o.userData.shadow)casters.push(o);else if(o.isMesh)meshes.push(o);});
- assert.equal(g.userData.style,'papir');const near=kit.material(ID.near);
+ const near=kit.material(ID.near);
  const hero=meshes.filter(m=>m.material===near);assert.equal(hero.length,1,'kid + flag = 1 draw call');assert.equal(g.userData.kid,hero[0]);
  assert.equal(casters.length,1,'only the plane in hand casts (kid shadow is a proxy in the place mask)');assert.ok(casters.every(c=>c.layers.isEnabled(MASK_LAYER)));
  const sign=meshes.find(m=>m.material.map);assert.ok(sign&&Math.abs(sign.geometry.parameters.width-PAPER_SIGN.w)<1e-9,'paper sign texture on the H2 card');
@@ -120,24 +116,18 @@ test('S4 workshop (paper): kid + flag one dynamic mesh on the shared kit (ID.nea
  const pm=g.userData.plane.getObjectsByProperty('isMesh',true).find(m=>m.material.isMeshBasicMaterial&&m.material.vertexColors);
  assert.ok(pm,'plane in hand: vertex colours');assert.ok(pm.children.some(c=>c.material===kit.shadows.materials.plane),'caster under the hand plane');
  const outl=g.userData.outlines;assert.equal(outl.length,1,'only the plane is outlined');assert.equal(hex(outl[0].uniforms.color.value),PAPER_TOKENS.graphite);assert.equal(outl[0].userData.base,2.6);
- assert.ok(meshes.every(m=>!m.material.isMeshToonMaterial),'no toon in paper');
+ assert.ok(meshes.every(m=>!m.material.isMeshToonMaterial),'no toon');
  const sq=g.userData.plane.children[0].children[0];
  g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],scale:1.15});assert.ok(Math.abs(sq.scale.z-PLANE_SCALE*1.15)<1e-9,'plan.hand.scale');
  g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],model:'glider'});assert.equal(pm.children[0].geometry,pm.geometry,'caster follows the model');
- assert.deepEqual([g.userData.plane.position.x,g.userData.plane.position.y],[PAPER_HAND.x,12],'plane in hand at the physics height');assert.notEqual(PAPER_HAND.y,HAND.y);
+ assert.deepEqual([g.userData.plane.position.x,g.userData.plane.position.y],[HAND.x,12],'plane in hand at the physics height');
  // pózy: dlaň drží vlaštovku (i stažení při nabíjení), po hodu švih a mávání; poloha se přepisuje v témže bufferu (bez nové geometrie)
  const pos=hero[0].geometry.attributes.position,arr=pos.array,v0=pos.version,rig=g.userData.rig;
- g.update(kidPose({charge:1,rest:true}),{dx:-.2,dy:0,angle:0,squash:[1,1]});assert.ok(Math.abs(rig.last[2]-(PAPER_HAND.x-.2))<1e-9&&Math.abs(rig.last[3]-12)<1e-9,'palm on the pulled-back plane');
+ g.update(kidPose({charge:1,rest:true}),{dx:-.2,dy:0,angle:0,squash:[1,1]});assert.ok(Math.abs(rig.last[2]-(HAND.x-.2))<1e-9&&Math.abs(rig.last[3]-12)<1e-9,'palm on the pulled-back plane');
  g.update(kidPose({thrown:true,rest:false,since:2,t:1}),null,{t:1});assert.equal(g.userData.plane.visible,false);assert.ok(rig.last[3]>rig.last[1],'waving hand above the shoulder');
  assert.equal(pos.array,arr);assert.ok(pos.version>v0,'positions uploaded');
  g.dispose();kit.dispose();
- const solo=createWorkshop(null,{style:'papir'});let n=0;solo.traverse(o=>{if(o.userData.shadow)n++;});assert.equal(n,0);solo.dispose();
-});
-
-test('P3 workshop: cyber Dílna unchanged (toon + ink outlines, neon sign, glowing windows, hand scale from the shot (S3))',()=>{
- const g=createWorkshop(null,{planeScale:PLANE_SCALE});let toon=0,meshes=0;g.traverse(o=>{if(o.isMesh){meshes++;if(o.material.isMeshToonMaterial)toon++;}});
- assert.equal(g.userData.style,'cyber');assert.equal(meshes,14);assert.ok(toon>=5);assert.equal(g.userData.outlines.length,3);
- const sq=g.userData.plane.children[0].children[0];g.update(null,{dx:0,dy:0,angle:0,squash:[1,1],scale:1.15});assert.ok(Math.abs(sq.scale.z-PLANE_SCALE*1.15)<1e-9,'S3: vlaštovka v ruce i v cyber stylu podle záběru');g.dispose();
+ const solo=createWorkshop(null,{});let n=0;solo.traverse(o=>{if(o.userData.shadow)n++;});assert.equal(n,0);solo.dispose();
 });
 
 // ── UI vrstva (ui-layer.js, fx-map.js)
@@ -152,7 +142,6 @@ test('P3 QTE: cream annulus 0.95 with a lifted-paper shadow, arcs 6 / 9 / 11 px,
  assert.ok(si>0,'star');assert.ok(di>si,'dot on top of the star');assert.equal(c.ops[si-1].style.strokeStyle,PAPIR.qte.disc,'cream cut edge around the star');
  const sx=c.ops.filter(o=>o.name==='moveTo'||o.name==='lineTo').map(o=>Math.hypot(o.args[0]-view.px,o.args[1]-view.py));
  assert.ok(sx.length===10&&sx.every(r=>r>=30-QTE_STAR-1e-9&&r<=30+QTE_STAR+1e-9),'star sits on the ring, not over the plane');
- assert.deepEqual(QTE_WIDTH,{track:7,success:7,perfect:7});
 });
 
 test('P3 QTE contrast (bible 05 kap. 11): track, success, perfect and dot ≥ 3 : 1 on the cream disc mixed with the lightest and darkest sky of district 1',()=>{
@@ -164,11 +153,11 @@ test('P3 QTE contrast (bible 05 kap. 11): track, success, perfect and dot ≥ 3 
 
 test('P3 gust: wavy cream strips with a graphite edge left of the plane, drifting; static with reduced motion',()=>{
  const s=gustStrips(148,200,.1),r=gustStrips(148,200,.1,true);assert.equal(s.length,GUST.n);assert.equal(s[0].length,GUST.points);
- for(const t of [0,.1,.2,.3])assert.ok(gustStrips(148,200,t).flat().every(([x,y])=>x>=148-70&&x<=148-12&&Math.abs(y-200)<30),'left of the plane like the cyber dashes, never over it');
+ for(const t of [0,.1,.2,.3])assert.ok(gustStrips(148,200,t).flat().every(([x,y])=>x>=148-70&&x<=148-12&&Math.abs(y-200)<30),'left of the plane, never over it');
  assert.notDeepEqual(gustStrips(148,200,.2),s,'moves');assert.deepEqual(gustStrips(148,200,.7,true),r,'reduced = static');
  const c=fakeCtx();drawQte(c,{type:'gust',phase:'interaction',progress:.2,zones},view,.1,false,PAPIR);
  const st=c.ops.filter(o=>o.name==='stroke').slice(0,2).map(o=>[o.style.strokeStyle,o.style.lineWidth]);assert.deepEqual(st,[[PAPIR.qte.gustEdge,4],[PAPIR.qte.gust,2]]);
- assert.ok(!c.ops.some(o=>o.name==='fillRect'&&o.style.fillStyle===PAPIR.qte.gust),'no cyber dashes');
+ assert.ok(!c.ops.some(o=>o.name==='fillRect'&&o.style.fillStyle===PAPIR.qte.gust),'strips, not dashes');
 });
 
 test('P3 labels and popups: graphite tape −2° with cream text; popups as cream paper tags tilted ±1.5° with a lift shadow, text in the role colour',()=>{
@@ -200,17 +189,13 @@ test('P3 aim: graphite arrow on a cream card with a lifted shadow',()=>{
  const panels=c.ops.filter(o=>o.name==='fillRect'&&o.style.fillStyle===PAPER_TOKENS.cream);assert.ok(panels.some(o=>o.style.shadowBlur>0)&&panels.some(o=>o.style.shadowBlur===0));
  assert.ok(ratio(PAPIR.aim.text,PAPIR.aim.panel)>=4.5);
 });
-
-test('P3 style switch: drawUi picks the palette from plan.style; cyber (or no style) draws exactly as before',()=>{
+test('R0 one style: drawUi always paper (plan.style and ui.palette ignored), defaults of the draw functions are PAPIR',()=>{
  const fx=createFx();fxEvent(fx,'perfect');stepFx(fx,.05,null,{cam:0,px:148,py:200,ground:300},()=>.4);
- const plan=style=>({t:1,style,view,fx:{shake:{x:0,y:0,roll:0},flash:0,speedLines:[[300,50,80]],particles:particles(fx,view),popups:[{text:'PERFECT',style:'perfect',i:0,alpha:1,scale:1,rise:0}]},
-  ui:{qte:{type:'gust',phase:'interaction',progress:.3,zones},labels:[{label:'GUST!',age:.2}],aim:null,reduced:false,uiScale:1}});
- const run=p=>{const c=fakeCtx(1280);drawUi(c,p);return c;};
- assert.deepEqual(strip(run(plan('cyber'))),strip(run(plan(undefined))),'cyber = no style');
- const cy=run(plan('cyber')),pa=run(plan('papir'));
- assert.ok(cy.ops.some(o=>o.name==='fill'&&o.style.fillStyle===CYBER.qte.disc));assert.ok(pa.ops.some(o=>o.name==='fill'&&o.style.fillStyle===PAPIR.qte.disc));
- assert.ok(!cy.ops.some(o=>o.style.shadowBlur>0),'cyber: no canvas shadows');
- // výslovná paleta UI (visual.palette) má přednost před stylem
- const forced={...plan('papir'),ui:{...plan('papir').ui,palette:'cyber'}};assert.deepEqual(strip(run(forced)),strip(run(plan('cyber'))));
- assert.equal(palette('papir'),PAPIR);
+ const plan=(style,pal)=>({t:1,style,view,fx:{shake:{x:0,y:0,roll:0},flash:0,speedLines:[[300,50,80]],particles:particles(fx,view),popups:[{text:'PERFECT',style:'perfect',i:0,alpha:1,scale:1,rise:0}]},
+  ui:{qte:{type:'gust',phase:'interaction',progress:.3,zones},labels:[{label:'GUST!',age:.2}],aim:null,reduced:false,uiScale:1,palette:pal}});
+ const run=p=>{const c=fakeCtx(1280);drawUi(c,p);return c;},base=strip(run(plan()));
+ for(const [st,pal] of [['cyber'],['papir'],[undefined,'cyber']])assert.deepEqual(strip(run(plan(st,pal))),base,`${st}/${pal}`);
+ const pa=run(plan());assert.ok(pa.ops.some(o=>o.name==='fill'&&o.style.fillStyle===PAPIR.qte.disc));
+ const a=fakeCtx(),b=fakeCtx();drawAim(a,{angle:20,held:true,charge:.5},{px:148,py:258});drawAim(b,{angle:20,held:true,charge:.5},{px:148,py:258},PAPIR);assert.deepEqual(strip(a),strip(b));
+ assert.equal(palette('cyber'),PAPIR);
 });

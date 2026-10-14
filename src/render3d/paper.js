@@ -1,4 +1,4 @@
-// Papírové město (three.js, ?styl=papir): materiály papíru, stíny na zem (maska), nebe a post. Vlastní P1.
+// Papírové město (three.js): materiály papíru, stíny na zem (maska), nebe a post. Vlastní P1.
 // Převzato z prototype/styly/papir.js a stiny.js (bible research/design/05-styl-papir.md kap. 3–4, stíny research/design/08-stiny.md, spec 06 kap. 3).
 // Barvy z palette('papir'), plan.mood a paper-shadow.js, ne napevno.
 // paperKit() → {uniforms, material(id,opts), shadows, applyMood(mood), setQuality(level), dispose()}: sdílené materiály pro city.js a čtvrti (ctx.materials.paper).

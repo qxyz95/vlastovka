@@ -4,19 +4,15 @@
 import {PIXELS_PER_METER as PPM} from '../scenes.js';
 import {noise1,fbm} from '../motion.js';
 import {flightAngle} from '../juice.js';
-import {PLANE_OFFSET,follow,sideCamera} from './geometry.js';
+import {follow,sideCamera} from './geometry.js';
 import {LAUNCH,AIM_SHOT} from './models/launch-site.js';
 // Klidový záběr (Dílna, míření): polodetail 16 m, na užší scéně tak, aby vlaštovka v ruce (hand m) měla aspoň handPx CSS px, nejméně 7 m
 // (research/start/02 §2: desktop 16 m / 40 px, telefon 375 px 7 m / 27 px; rozhodnutí 06);
 // při nabíjení se přisune o push·charge (01 §2.2 fáze 3). k = logické px na světový px (2,1 px/m) v hloubce ruky.
-// Ruka podle stylu: cyber (stará Dílna, přístavek) HAND v 16 m, fyzika hází z 12 m a rozdíl překlene výhoz (frame.launchLift);
-// papír (S4, místo odhodu G2b) PAPER_HAND = launch-site LAUNCH.hand ve 12 m = výška výhozu fyziky (M-3), převod není potřeba.
-// Klidový sklon: cyber 6° shora, papír AIM_SHOT.pitch −8° (kamera mírně zespodu, za vlaštovkou nebe; bible 05 kap. 9.2).
-export const REST={width:16,narrow:7,hand:.5,handPx:27,push:.06,fov:20,pitch:6,k:640/PPM/16};
-export const HAND=Object.freeze({x:PLANE_OFFSET,y:16,z:0});
-export const PAPER_HAND=LAUNCH.hand;
-export const handOf=style=>style==='papir'?PAPER_HAND:HAND;
-export const restPitch=style=>style==='papir'?AIM_SHOT.pitch:REST.pitch;
+// Ruka (S4, místo odhodu G2b): HAND = launch-site LAUNCH.hand ve 12 m = výška výhozu fyziky (M-3), převod výhozu není potřeba.
+// Klidový sklon AIM_SHOT.pitch −8° (kamera mírně zespodu, za vlaštovkou nebe; bible 05 kap. 9.2).
+export const REST={width:16,narrow:7,hand:.5,handPx:27,push:.06,fov:20,pitch:AIM_SHOT.pitch,k:640/PPM/16};
+export const HAND=LAUNCH.hand;
 export const aimWidth=(cssWidth=640)=>Math.max(REST.narrow,Math.min(REST.width,REST.hand*cssWidth/REST.handPx));
 // Promítnutí bodu kamerou {position,target,fov} (up = +y) do logických px 640×360. Čisté, stejné jako THREE.PerspectiveCamera.lookAt.
 export function project(cam,[x,y,z],aspect=16/9){
@@ -33,17 +29,14 @@ export function restCamera(aspect=16/9,width=REST.width,{hand=HAND,pitch=REST.pi
  return c;
 }
 const m=px=>px/PPM;
-// Dítě: dýchá při míření (ve 2D ±1 px, tady bez zaokrouhlení), při nabíjení couvne (2D: kx − charge·3 px) a zakloní se (3D navíc),
-// po hodu mává (2D: rotate(−1,25 + sin(9t)·0,45) → three.js rotation.z s opačným znaménkem). Reduced motion: anim = 0, takže bez dýchání.
-// Neon dílny (2D: blikne, když noise1(.6t,7) > .45 a noise1(30t,9) > 0) a dýchající světlo okna (.7 + .3·sin 1,6t) jsou tu taky.
-// phase (papír, dítě H1): 'rest' klid (Dílna), 'aim' míření, 'charge' nabíjení, 'throw' výhoz (švih ruky, swing 0→1 za KID_THROW s od puštění,
-// since = čas letu f.t), 'wave' mávání; rest = klidový stav scény (Dílna, míření), state = visual.state. pose, arm a ostatní zůstávají pro cyber Dílnu.
+// Dítě (models/kid-rig.poseKid): dýchá při míření (bob), při nabíjení couvne (back) a zakloní se (lean), po hodu mává (arm, rad).
+// Reduced motion: anim = 0, takže bez dýchání. phase: 'rest' klid (Dílna), 'aim' míření, 'charge' nabíjení, 'throw' výhoz (švih ruky,
+// swing 0→1 za KID_THROW s od puštění, since = čas letu f.t), 'wave' mávání; rest = klidový stav scény (Dílna, míření), state = visual.state.
 export const KID_THROW=.3;
 export function kidPose({charge=0,thrown=false,t=0,reduced=false,rest=!thrown,state='aim',since=0}={}){
  const env=reduced?0:t,bob=thrown?0:m(Math.sin(env*2.5)),back=m(charge*3),arm=thrown?1.25-Math.sin(env*9)*.45:null;
  const phase=rest?(charge>0?'charge':state==='workshop'?'rest':'aim'):since<KID_THROW?'throw':'wave',swing=phase==='throw'?Math.max(0,Math.min(1,since/KID_THROW)):phase==='wave'?1:0;
- return {pose:thrown?'wave':charge>0?'charge':'hold',phase,swing,bob,back,lean:charge*.18,arm,charge,
-  flicker:noise1(env*.6,7)>.45&&noise1(env*30,9)>0,glow:.7+.3*Math.sin(env*1.6)};
+ return {phase,swing,bob,back,lean:charge*.18,arm,charge};
 }
 // Vlaštovka: rotace z pružiny fx.rot.x (nebo flightAngle), −charge·0,25 (záklon nosu), flutter šumem, squash & stretch fx.stretch.x
 // (bez fx −charge·0,2), stažení o charge·8 px a chvění nad 90 % nabití; v klidu se vznáší (fbm). Za letu charge = 0 jako ve 2D.

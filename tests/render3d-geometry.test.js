@@ -45,13 +45,12 @@ test('city chunks follow the route: deterministic, local to their place, behind 
   assert.equal(a.kind,ROUTE[screen%16].kind);assert.equal(a.index,screen%16);assert.equal(a.x0,0);assert.equal(a.x1,SCREEN_METERS);assert.equal(a.biome,Math.floor(screen%16/4));assert.equal(a.ground.water,a.biome===1);
   assert.ok(a.blocks.length>3,`${a.kind} has buildings`);
   for(const k of a.blocks){assert.ok(finite([k.x,k.w,k.z,k.d,k.h,k.y])&&k.w>0&&k.d>0&&k.h>0);
-   // Nothing stands between the camera and the plane (z = 0) except low lamps (lamps are separate).
+   // Nothing stands between the camera and the plane (z = 0).
    assert.ok(k.z+k.d/2<-3,`${a.kind} block in front of the plane`);
    if(!k.shop&&k.tone!==5&&k.type!=='pyramid')assert.ok(k.x>=a.x0-15&&k.x+k.w<=a.x1+30,`${a.kind} block stays near its stretch`);}
-  for(const s of a.signs){assert.ok(s.w>0&&s.h>0&&s.text.length>0&&/^#[0-9a-f]{6}$/.test(s.color));}
-  for(const l of a.lamps)assert.ok(l.h<=6&&l.z>0);
+  assert.ok(!('signs' in a)&&!('lamps' in a),'R0: no neon signs or lamps');
  }
- assert.ok(cityChunk(0).blocks.some(b=>b.shop)&&cityChunk(0).signs.some(s=>s.text==='PAPER LAB'&&s.shop));assert.ok(!cityChunk(1).blocks.some(b=>b.shop));
+ assert.ok(cityChunk(0).blocks.some(b=>b.shop));assert.ok(!cityChunk(1).blocks.some(b=>b.shop));
  assert.ok(cityChunk(14).blocks.some(b=>b.h>=180),'broadcast tower');
  assert.ok(Math.max(...cityChunk(15).blocks.filter(b=>b.z<=LAYERS.far+10).map(b=>b.h))>Math.max(...cityChunk(8).blocks.filter(b=>b.z<=LAYERS.far+10).map(b=>b.h)),'core skyline taller than fields');
 });

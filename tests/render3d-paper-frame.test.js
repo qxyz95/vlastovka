@@ -1,13 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {QUALITY,DROP,initialQuality,nextQuality,qualityPreset} from '../src/render3d/quality.js';
-import {comicLook,PAPER_OUTLINE,OUTLINE} from '../src/render3d/comic.js';
-import {planFrame,PLANE_NARROW,planeScale,styleOf,planeSizeScale,planeLength,PLANE_SIZE} from '../src/render3d/frame.js';
+import {comicLook,PAPER_OUTLINE} from '../src/render3d/comic.js';
+import {planFrame,PLANE_NARROW,planeScale,planeSizeScale,planeLength,PLANE_SIZE} from '../src/render3d/frame.js';
 import {moodAt} from '../src/render3d/mood.js';
 import {PAPER_TOKENS} from '../src/render3d/palette.js';
 import {createFlight,step} from '../src/core.js';
 
-// Papírové město P0: quality.js (bible 05 kap. 5), comicLook pro papír, plan.style / plan.quality / měřítko vlaštovky (frame.js).
+// Papírové město P0: quality.js (bible 05 kap. 5), comicLook, plan.quality / měřítko vlaštovky (frame.js).
 
 test('quality: tři úrovně podle bible, výchozí podle zařízení, čitelnost na všech stejná',()=>{
  assert.deepEqual(QUALITY.map(q=>q.level),[0,1,2]);
@@ -35,35 +35,29 @@ test('nextQuality: jen dolů, po 2 s nad 33 ms, nikdy během letu, nikdy nahoru'
  const prev={level:2,over:1};nextQuality(prev,{p95:60,dt:2});assert.deepEqual(prev,{level:2,over:1},'nemutuje');
 });
 
-test('comicLook papír: bez půltónu a posterizace, obrysy jen vlaštovce (grafit 2,6 px); cyber beze změny',()=>{
- for(const q of [0,1,2]){const m=moodAt(300,0,{style:'papir'}),c=comicLook(m,q);
-  assert.equal(c.style,'papir');assert.equal(c.halftone,0);assert.equal(c.levels,8);assert.equal(c.outline,PAPER_OUTLINE);assert.equal(c.worldOutline,false);
-  assert.equal(c.outline.plane,2.6);assert.equal(c.outline.building,0);assert.equal(c.outline.color,PAPER_TOKENS.graphite);assert.equal(c.ink,PAPER_TOKENS.graphite);
-  assert.deepEqual(comicLook(m,q,'papir'),c);
-  const cy=comicLook(moodAt(300),q);assert.equal(cy.outline,OUTLINE);assert.ok(!('style' in cy));assert.deepEqual(comicLook(moodAt(300),q,'cyber'),cy);}
+test('comicLook: obrysy jen vlaštovce (grafit 2,6 px), toon rampa bez stínování, kvalita 0–2',()=>{
+ for(const q of [0,1,2]){const c=comicLook(q);
+  assert.equal(c.quality,q);assert.equal(c.outline,PAPER_OUTLINE);assert.equal(c.worldOutline,false);assert.deepEqual(c.ramp,[255,255,255]);
+  assert.equal(c.outline.plane,2.6);assert.equal(c.outline.building,0);assert.equal(c.outline.detail,0);assert.equal(c.outline.color,PAPER_TOKENS.graphite);}
+ assert.equal(comicLook('mid').quality,1);assert.equal(comicLook().quality,2);assert.equal(comicLook({level:0}).quality,0);
 });
 
 const flight=()=>{const f=createFlight('dart',undefined,1);for(let i=0;i<90;i++)step(f);return f;};
-test('planFrame: plan.style a plan.quality, výchozí hra beze změny',()=>{
- assert.equal(styleOf({}),'cyber');assert.equal(styleOf({style:'papir'}),'papir');assert.equal(styleOf({style:'neon'}),'cyber');assert.equal(styleOf(null),'cyber');
+test('planFrame: jediný styl (visual.style se ignoruje), plan.quality z quality.js nebo visual.quality',()=>{
  const f=flight(),base={clock:1.5,state:'flight'};
  for(const v of [{},{cssWidth:390,touch:true},{cssWidth:1280}]){const a=planFrame({f,time:f.t,visual:{...base,...v}});
-  assert.equal(a.style,'cyber');assert.equal(a.quality,2,'cyber kvalita vždy 2 bez visual.quality');assert.equal(a.plane.scale,planeSizeScale(a.camera.width,'cyber',v.cssWidth??640));assert.ok(!('style' in a.mood));
-  assert.deepEqual(a.mood,{...moodAt(a.X,a.t,{hold:0}),fog:a.mood.fog});}
- assert.equal(planFrame({f,time:f.t,visual:{...base,quality:0}}).quality,0);
- const p=planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:1280}});
- assert.equal(p.style,'papir');assert.equal(p.quality,2);assert.equal(p.mood.style,'papir');assert.equal(p.comic.style,'papir');assert.ok('haze' in p.mood);
- assert.equal(planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:390,touch:true}}).quality,1);
- assert.equal(planFrame({f,time:f.t,visual:{...base,style:'papir',cssWidth:390,touch:true,quality:0}}).quality,0);
- // Stejný let a kamera v obou stylech (styl mění jen vzhled).
- const c=planFrame({f,time:f.t,visual:base});assert.deepEqual(p.camera,c.camera);assert.deepEqual(p.view,c.view);assert.deepEqual({...p.plane,scale:c.plane.scale},c.plane);assert.equal(p.plane.scale,c.plane.scale,'širší než 500 px: stejná velikost v obou stylech');
+  assert.ok(!('style' in a)&&!('style' in a.mood)&&!('style' in a.comic));assert.ok('haze' in a.mood);assert.equal(a.plane.scale,planeSizeScale(a.camera.width,v.cssWidth??640));
+  assert.deepEqual(a.mood,{...moodAt(a.X,a.t,{hold:0}),fog:a.mood.fog});
+  for(const style of ['cyber','papir'])assert.deepEqual(planFrame({f,time:f.t,visual:{...base,...v,style}}),a,style);}
+ assert.equal(planFrame({f,time:f.t,visual:{...base,cssWidth:1280}}).quality,2);
+ assert.equal(planFrame({f,time:f.t,visual:{...base,cssWidth:390,touch:true}}).quality,1);
+ assert.equal(planFrame({f,time:f.t,visual:{...base,cssWidth:390,touch:true,quality:0}}).quality,0);
 });
 
-test('vlaštovka na úzké scéně o 15 % větší jen v papíru (let i Dílna), fyzika a záběr beze změny',()=>{
+test('vlaštovka na úzké scéně o 15 % větší (let i Dílna), fyzika a záběr beze změny',()=>{
  assert.deepEqual(PLANE_NARROW,{width:500,scale:1.15});
- assert.equal(planeScale('papir',390),1.15);assert.equal(planeScale('papir',499),1.15);assert.equal(planeScale('papir',500),1);assert.equal(planeScale('cyber',390),1);
- const f=flight(),fl=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:375}}),wide=planFrame({f,time:f.t,visual:{clock:1,state:'flight',style:'papir',cssWidth:1280}});
+ assert.equal(planeScale(390),1.15);assert.equal(planeScale(499),1.15);assert.equal(planeScale(500),1);
+ const f=flight(),fl=planFrame({f,time:f.t,visual:{clock:1,state:'flight',cssWidth:375}}),wide=planFrame({f,time:f.t,visual:{clock:1,state:'flight',cssWidth:1280}});
  const W=fl.camera.width;assert.equal(fl.plane.scale,planeLength(W,375)/PLANE_SIZE.max*1.15);assert.equal(wide.plane.scale,planeLength(W,1280)/PLANE_SIZE.max);assert.equal(fl.plane.x,wide.plane.x);assert.deepEqual(fl.view,wide.view);
- const rest=planFrame({visual:{clock:1,state:'workshop',style:'papir',cssWidth:375}});assert.equal(rest.hand.scale,planeSizeScale(rest.camera.width,'papir',375));const rw=planFrame({visual:{clock:1,state:'workshop'}}).view;assert.ok(Math.abs(rest.view.px-rw.px)<1e-6&&Math.abs(rest.view.py-rw.py)<1e-6,'ruka na (148, 258) i na telefonu');assert.ok(rest.view.k>rw.k*1.5,'telefon 7 m, výchozí 640 px 11,9 m');
- const rc=planFrame({visual:{clock:1,state:'workshop',cssWidth:375}});assert.equal(rc.hand.scale,planeSizeScale(rc.camera.width,'cyber',375));
+ const rest=planFrame({visual:{clock:1,state:'workshop',cssWidth:375}});assert.equal(rest.hand.scale,planeSizeScale(rest.camera.width,375));const rw=planFrame({visual:{clock:1,state:'workshop'}}).view;assert.ok(Math.abs(rest.view.px-rw.px)<1e-6&&Math.abs(rest.view.py-rw.py)<1e-6,'ruka na (148, 258) i na telefonu');assert.ok(rest.view.k>rw.k*1.5,'telefon 7 m, výchozí 640 px 11,9 m');
 });
