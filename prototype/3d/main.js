@@ -11,11 +11,12 @@ import {flightAngle} from '../../src/juice.js';
 import {spring,lerp,noise1} from '../../src/motion.js';
 import {routeAt,districtAt,SCREEN_METERS} from '../../src/scenes.js';
 import {frameStats,ring} from '../../src/perf.js';
-import {planeShape,mergeBlocks,cityChunk,follow,sideCamera,tempoZoom,tempoPx,PLANE_OFFSET} from './geometry.js';
-import {toonRamp,outlineMaterial,windowTexture,signTexture,skyTexture,postPass} from './toon.js';
-import {createLife} from './life3d.js';
-import {createTrail,pushTrail,autoInput,companion,hash,EVENT_TEXT} from './life.js';
-import {createDirector,direct} from './director.js';
+import {planeShape,mergeBlocks,cityChunk,chunkOffset,follow,sideCamera,tempoZoom,tempoPx,PLANE_OFFSET} from '../../src/render3d/geometry.js';
+import {toonRamp,outlineMaterial,windowTexture,signTexture,skyTexture,postPass} from '../../src/render3d/toon.js';
+import {createLife} from '../../src/render3d/life3d.js';
+import {createTrail,pushTrail,companion,hash,EVENT_TEXT} from '../../src/render3d/life.js';
+import {autoInput} from '../../tests/helpers/auto-input.js';
+import {createDirector,direct} from '../../src/render3d/camera.js';
 
 const $=id=>document.getElementById(id),C=h=>new THREE.Color(h),clear='rgba(0,0,0,0)';
 // Bez zásahu do src/: kopie tématu cyber s průhlednou vlaštovkou (setTheme přijímá objekt). Stopa za letadlem zůstává.
@@ -81,8 +82,9 @@ function mood(x){const d=districtAt(x),w=d.index===0?1-d.blend:d.index===3?d.ble
  moon.color.copy(M(NIGHT.key,DUSK.key));rim.color.copy(M(NIGHT.rim,DUSK.rim));sun.visible=w>.3;}
 const unit=new THREE.PlaneGeometry(1,1),signMats=new Map(),signList=[];
 const signMat=(text,color,vertical)=>{const k=text+color+vertical;if(!signMats.has(k)){const m=new THREE.MeshBasicMaterial({map:signTexture(text,color,vertical),toneMapped:false});signMats.set(k,m);signList.push(m);}return signMats.get(k);};
+// cityChunk je v lokálních souřadnicích místa, skupina se posune o chunkOffset(screen). Dílna jen na první obrazovce.
 function buildChunk(screen){
- const c=cityChunk(screen),g=new THREE.Group();
+ const c0=cityChunk(screen),g=new THREE.Group(),keep=b=>screen<16||!b.shop,c={...c0,blocks:c0.blocks.filter(keep),signs:c0.signs.filter(keep)};g.position.x=chunkOffset(screen);
  const solid=c.blocks.filter(b=>!b.beacon).concat(c.lamps.map(l=>({type:'box',x:l.x,w:.5,z:l.z,d:.5,h:l.h,biome:c.biome,tone:1})));
  const glow=c.blocks.filter(b=>b.beacon).map(b=>({...b,glow:'#ff4d6d'})).concat(c.lamps.map(l=>({type:'box',x:l.x-.6,w:1.7,z:l.z,d:.9,h:.5,y:l.h,glow:l.color})));
  for(let x=c.x0;x<c.x1-7;x+=14)glow.push({type:'box',x,w:7,z:3,d:.3,h:.05,glow:c.ground.water?'#2f6f9a':'#3b2d6e'});

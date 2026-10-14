@@ -32,3 +32,5 @@ body[data-theme=blueprint] .scene{border:1px solid #eaf3ff;box-shadow:none;outli
 body[data-theme=blueprint] .score-card,body[data-theme=blueprint] .result-actions button{background:#163c6d;border:1px solid #eaf3ff;text-shadow:none}body[data-theme=blueprint] .score-card dd,body[data-theme=blueprint] .total{color:#ffd27a}body[data-theme=blueprint] #result h2{color:#eaf3ff;text-shadow:none}
 body[data-theme=dusk] .scene{border:0;border-radius:14px;box-shadow:0 20px 50px #0007}body[data-theme=dusk] h1{font-weight:300;letter-spacing:0}body[data-theme=dusk] button{border-radius:999px}body[data-theme=dusk] aside{border-radius:14px}
 body[data-theme=dusk] .score-card,body[data-theme=dusk] .result-actions button{background:#2b1a3acc;border:1px solid #f6a96b66;border-radius:14px;text-shadow:none;box-shadow:none}body[data-theme=dusk] .score-card dd,body[data-theme=dusk] .total{color:#f6a96b}body[data-theme=dusk] #result h2{color:#ffe0a3;text-shadow:none;font-family:inherit;font-weight:300}
+/* 3D vrstva (src/render3d/, fáze 0): zatím skrytá, hra kreslí 2D do #game. */
+#scene3d{display:none}

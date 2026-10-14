@@ -1,7 +1,11 @@
-// Čisté funkce 3D prototypu (bez three.js a bez DOM): vlaštovka z trojúhelníků, kvádry a jehlany budov,
-// rozložení města podle trasy (src/scenes.js) a kamera ze stejné logiky jako render.view(f). Testy: tests/prototype3d.test.js.
-import {ROUTE,SCREEN_METERS,PIXELS_PER_METER} from '../../src/scenes.js';
-import {random} from '../../src/random.js';
+// Čisté funkce 3D vykreslení (bez three.js a bez DOM). Vlastní R1: vlaštovka z trojúhelníků, kvádry a jehlany budov,
+// rozložení města podle trasy (src/scenes.js) a kamera ze stejné logiky jako render.view(f). Testy: tests/render3d-geometry.test.js.
+import {ROUTE,SCREEN_METERS,PIXELS_PER_METER} from '../scenes.js';
+import {random} from '../random.js';
+import {SUBURBS_LAYOUT} from './districts/suburbs-layout.js';
+import {DOCKS_LAYOUT} from './districts/docks-layout.js';
+import {HORIZON_LAYOUT} from './districts/horizon-layout.js';
+import {CORE_LAYOUT} from './districts/core-layout.js';
 // Ve 2D je vlaštovka vždy na px 148 a kamera = dolet, takže ve světě trasy leží 148 px (~70 m) před doletem.
 export const PLANE_OFFSET=148/PIXELS_PER_METER;
 export const WINDOW_TILE={w:24,h:28};// metry na jednu dlaždici textury oken (8 × 8 oken)
@@ -58,47 +62,34 @@ export const SIGNS=['PAPER LAB','NOODLES','OPEN 24H','FOLD & FLY','KARAOKE','HOT
 export const NEON=['#ff4fc3','#53e6ff','#ffb347','#9dff6a','#c77dff'];
 // Vrstvy hloubky za vlaštovkou (z=0): ulice, střed a panorama. Popředí (z>0) jen nízké lampy, aby nezakrylo let.
 export const LAYERS={near:-26,mid:-110,far:-380};
-// Parametry míst: hustota, rozsah výšek a šířek pro ulici a střed, podíl reklam. Speciality řeší cityChunk.
-const K={
- roofs:{near:[.9,8,22,10,18],mid:[.85,16,40],signs:.35},market:{near:[.95,6,14,8,12],mid:[.8,14,34],signs:.8},
- garden:{near:[.25,5,9,8,12],mid:[.5,10,24],signs:.1,trees:14},rail:{near:[.5,6,12,14,22],mid:[.7,12,30],signs:.2,train:true},
- warehouse:{near:[.85,8,14,24,40],mid:[.6,10,22],signs:.3},cranes:{near:[.4,6,10,16,26],mid:[.5,10,20],signs:.15,cranes:3},
- bridge:{near:[0],mid:[.3,8,16],signs:0,bridge:true},lighthouse:{near:[.15,4,8,10,16],mid:[.3,6,14],signs:.1,lighthouse:true},
- fields:{near:[0],mid:[.25,5,10],signs:0},turbines:{near:[0],mid:[.2,5,10],signs:0,turbines:5},
- peaks:{near:[0],mid:[0],signs:0,peaks:true},observatory:{near:[.2,5,9,10,14],mid:[0],signs:.1,peaks:true,observatory:true},
- gate:{near:[.6,10,24,10,16],mid:[.8,20,50],signs:.5,gate:true},terraces:{near:[.7,8,18,12,20],mid:[.85,24,60],signs:.4,terraces:true},
- tower:{near:[.8,12,30,10,16],mid:[.9,30,80],signs:.5,tower:true},port:{near:[.9,14,34,10,18],mid:[.95,30,90],signs:.6}};
-export const KIND_PARAMS=K;
-// Jedno místo trasy (screen = index obrazovky 305 m, opakuje se po 16) → bloky, reklamy, lampy a zem.
+// Parametry a zvláštnosti míst jsou v districts/<id>-layout.js (vlastní je agent čtvrti); tady jen obecné řady domů, reklamy a lampy.
+export const DISTRICT_LAYOUTS=[SUBURBS_LAYOUT,DOCKS_LAYOUT,HORIZON_LAYOUT,CORE_LAYOUT];
+export const KIND_PARAMS=Object.assign({},...DISTRICT_LAYOUTS.map(l=>l.kinds));
+export const placeIndex=screen=>((screen%ROUTE.length)+ROUTE.length)%ROUTE.length;
+// Posun skupiny místa ve světě (m): obrazovka `screen` (0, 1, … i za 16) leží na screen*SCREEN_METERS. Vlaštovka je na f.x+PLANE_OFFSET.
+export const chunkOffset=screen=>screen*SCREEN_METERS;
+// Jedno místo trasy (index 0–15, větší se zabalí) → bloky, reklamy, lampy a zem v LOKÁLNÍCH souřadnicích (x 0…SCREEN_METERS),
+// takže výsledek jde kešovat podle indexu a skupinu jen posunout o chunkOffset(screen). Seed = index, místa se po 16 opakují.
+// Dílna (bloky a cedule s shop:true) je v indexu 0; volající ji za první obrazovkou (screen ≥ 16) vynechá.
 // tone: 0 ulice, 1 střed, 2 panorama, 3 akcent (kontejnery, vlak), 4 zeleň, 5 hory.
-export function cityChunk(screen){
- const index=screen%ROUTE.length,kind=ROUTE[index].kind,biome=Math.floor(index/4),k=K[kind],rng=random(screen*7919+13),x0=screen*SCREEN_METERS,W=SCREEN_METERS;
+export function cityChunk(index){
+ index=placeIndex(index);const kind=ROUTE[index].kind,biome=Math.floor(index/4),L=DISTRICT_LAYOUTS[biome],k=L.kinds[kind],rng=random(index*7919+13),W=SCREEN_METERS;
  const blocks=[],signs=[],lamps=[],between=(a,b)=>a+rng()*(b-a);
  const add=b=>{const block={type:'box',y:0,biome,tone:0,ou:Math.floor(rng()*8)/8,ov:Math.floor(rng()*8)/8,...b};blocks.push(block);return block;};
- const row=(z,d,[dens=0,hmin,hmax,wmin=12,wmax=26],tone,gap=2)=>{const out=[];for(let x=x0;x<x0+W-wmin;){const w=Math.min(between(wmin,wmax),x0+W-x);if(rng()<dens)out.push(add({x,w:w-gap,z:z-rng()*6,d,h:between(hmin,hmax),tone}));x+=w;}return out;};
+ const row=(z,d,[dens=0,hmin,hmax,wmin=12,wmax=26],tone,gap=2)=>{const out=[];for(let x=0;x<W-wmin;){const w=Math.min(between(wmin,wmax),W-x);if(rng()<dens)out.push(add({x,w:w-gap,z:z-rng()*6,d,h:between(hmin,hmax),tone}));x+=w;}return out;};
  // Panorama: v jádře metropole vyšší a hustší, na polích a horách řídké.
- const tall=[1,.7,.5,1.4][biome],open=['fields','turbines','peaks','observatory'].includes(kind);
- row(LAYERS.far,50,[open?.25:.85,30*tall,150*tall,18,40],2,6);
+ const tall=L.tall;
+ row(LAYERS.far,50,[k.open?.25:.85,30*tall,150*tall,18,40],2,6);
  const mid=row(LAYERS.mid,26,k.mid,1,3),near=row(LAYERS.near,14,k.near,0);
- if(screen===0)add({x:20,w:24,z:-10,d:10,h:12,tone:3,shop:true});// dílna PAPER LAB u startu
- if(k.trees)for(let i=0;i<k.trees;i++)add({type:'pyramid',x:x0+rng()*W,w:4,z:-14-rng()*10,d:4,h:between(6,11),tone:4});
- if(k.train){for(let i=0;i<5;i++)add({x:x0+60+i*21,w:20,z:-9,d:4,h:4.5,y:.4,tone:3});add({x:x0,w:W,z:-9,d:5,h:.4,tone:1});}
- if(k.cranes)for(let i=0;i<k.cranes;i++){const cx=x0+40+i*W/k.cranes;add({x:cx,w:2.5,z:-45,d:2.5,h:46,tone:3});add({x:cx-14,w:44,z:-45,d:2,h:3,y:42,tone:3});for(let j=0;j<4;j++)add({x:cx+10+j*7,w:6,z:-30,d:3,h:3,y:j%2*3,tone:3});}
- if(k.bridge){add({x:x0,w:W,z:-14,d:8,h:2,y:9,tone:1});for(let x=x0+20;x<x0+W;x+=70)add({x,w:3,z:-14,d:9,h:34,tone:1});}
- if(k.lighthouse){const b=add({x:x0+W*.7,w:5,z:-32,d:5,h:34,tone:0});add({x:b.x-1,w:7,z:-32,d:7,h:4,y:34,tone:3,beacon:true});}
- if(k.turbines)for(let i=0;i<k.turbines;i++){const x=x0+30+i*W/k.turbines;add({x,w:1.4,z:-70,d:1.4,h:44,tone:1});add({x:x-11,w:24,z:-69,d:.6,h:1,y:43,tone:1});add({x:x-.2,w:1.8,z:-69,d:.6,h:24,y:32,tone:1});}
- if(k.peaks)for(let i=0;i<5;i++){const w=between(90,180);add({type:'pyramid',x:x0+i*W/5-w/4,w,z:-200-rng()*80,d:w*.6,h:between(50,120),tone:5});}
- if(k.observatory){add({x:x0+W*.55,w:14,z:-60,d:14,h:10,y:30,tone:1});add({x:x0+W*.55-30,w:74,z:-60,d:30,h:30,tone:5});add({type:'pyramid',x:x0+W*.55+1,w:12,z:-60,d:12,h:8,y:40,tone:3});}
- if(k.gate){for(const f of [.35,.6])add({x:x0+W*f,w:7,z:-40,d:7,h:60,tone:0});add({x:x0+W*.35,w:W*.25+7,z:-40,d:6,h:5,y:55,tone:3,sign:'METROPOLIS'});}
- if(k.terraces)for(let i=0;i<4;i++)add({x:x0+80+i*14,w:40-i*8,z:-60+i*6,d:14,h:46-i*10,tone:1});
- if(k.tower){const x=x0+W*.5;add({x,w:14,z:-70,d:14,h:180,tone:1});add({x:x+6,w:2,z:-70,d:2,h:40,y:180,tone:3,beacon:true});}
+ if(index===0)add({x:20,w:24,z:-10,d:10,h:12,tone:3,shop:true});// dílna PAPER LAB u startu
+ L.extras(kind,{add,rng,between,W,index});
  // Reklamy na čelech ulice a středu: vodorovné nad přízemím, svislé na vyšších domech.
  for(const b of [...near,...mid])if(b.h>9&&rng()<k.signs){const vertical=b.h>22&&rng()<.4,w=vertical?2.4:Math.min(b.w-2,between(6,11)),h=vertical?between(7,12):2.6;
   signs.push({x:b.x+between(1,Math.max(1,b.w-w-1)),y:vertical?between(6,b.h-h-1):Math.min(b.h-h-1,between(4,b.h*.6)),z:b.z+b.d/2+.4,w,h,vertical,text:SIGNS[Math.floor(rng()*SIGNS.length)],color:NEON[Math.floor(rng()*NEON.length)]});}
  for(const b of blocks)if(b.sign)signs.push({x:b.x+b.w*.25,y:b.y+.8,z:b.z+b.d/2+.4,w:b.w*.5,h:3.4,text:b.sign,color:NEON[1]});
- if(screen===0)signs.push({x:22,y:7.5,z:-4.6,w:20,h:3,text:'PAPER LAB',color:NEON[0]});
- if(!['bridge','fields','peaks','turbines'].includes(kind))for(let x=x0+15;x<x0+W;x+=45)lamps.push({x,z:9,h:6,color:NEON[biome%NEON.length]});
- return {screen,index,kind,biome,x0,x1:x0+W,blocks,signs,lamps,ground:{x0,x1:x0+W,biome,water:biome===1}};
+ if(index===0)signs.push({x:22,y:7.5,z:-4.6,w:20,h:3,text:'PAPER LAB',color:NEON[0],shop:true});
+ if(k.lamps!==false)for(let x=15;x<W;x+=45)lamps.push({x,z:9,h:6,color:NEON[biome%NEON.length]});
+ return {index,kind,biome,district:L.id,x0:0,x1:W,blocks,signs,lamps,ground:{x0:0,x1:W,biome,water:biome===1}};
 }
 // Kamera jako render.view(f), jen v metrech: vlaštovka na px/640 zleva, zem 60/360 nad spodním okrajem,
 // nad 190/360 výšky obrazu se kamera zvedá. width = viditelná šířka v metrech ve hloubce letu (hra: 640/2,1).

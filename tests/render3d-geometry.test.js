@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {planeShape,boxVertices,pyramidVertices,mergeBlocks,cityChunk,follow,sideCamera,tempoZoom,tempoPx,faceNormal,PLANE_OFFSET,LAYERS,KIND_PARAMS} from '../prototype/3d/geometry.js';
+import {planeShape,boxVertices,pyramidVertices,mergeBlocks,cityChunk,follow,sideCamera,tempoZoom,tempoPx,faceNormal,PLANE_OFFSET,LAYERS,KIND_PARAMS,DISTRICT_LAYOUTS,chunkOffset,placeIndex} from '../src/render3d/geometry.js';
 import {ROUTE,SCREEN_METERS} from '../src/scenes.js';
 import {createFlight,step} from '../src/core.js';
 
@@ -33,11 +33,16 @@ test('merge: one buffer per layer with per-block colours',()=>{
  assert.equal(m.count,42);assert.equal(m.position.length,126);assert.equal(m.uv.length,84);
  assert.deepEqual([...m.color.slice(0,3)],[1,0,0]);assert.deepEqual([...m.color.slice(-3)],[0,1,0]);
 });
-test('city chunks follow the route: deterministic, inside their stretch, behind the flight corridor',()=>{
+test('city chunks follow the route: deterministic, local to their place, behind the flight corridor',()=>{
  assert.deepEqual(Object.keys(KIND_PARAMS).sort(),ROUTE.map(r=>r.kind).sort());
+ // Each district layout owns exactly its four places and their kinds.
+ DISTRICT_LAYOUTS.forEach((l,d)=>{assert.deepEqual(l.places,[0,1,2,3].map(i=>d*4+i));assert.deepEqual(Object.keys(l.kinds),l.places.map(i=>ROUTE[i].kind));assert.equal(typeof l.extras,'function');});
+ assert.deepEqual(DISTRICT_LAYOUTS.map(l=>l.id),['suburbs','docks','horizon','core']);
+ assert.equal(placeIndex(17),1);assert.equal(placeIndex(-1),15);assert.equal(chunkOffset(3),3*SCREEN_METERS);
+ assert.deepEqual(cityChunk(16),cityChunk(0),'local chunks repeat every 16 places (cache by index)');
  for(let screen=0;screen<32;screen++){
   const a=cityChunk(screen),b=cityChunk(screen);assert.deepEqual(a,b);
-  assert.equal(a.kind,ROUTE[screen%16].kind);assert.equal(a.biome,Math.floor(screen%16/4));assert.equal(a.ground.water,a.biome===1);
+  assert.equal(a.kind,ROUTE[screen%16].kind);assert.equal(a.index,screen%16);assert.equal(a.x0,0);assert.equal(a.x1,SCREEN_METERS);assert.equal(a.biome,Math.floor(screen%16/4));assert.equal(a.ground.water,a.biome===1);
   assert.ok(a.blocks.length>3,`${a.kind} has buildings`);
   for(const k of a.blocks){assert.ok(finite([k.x,k.w,k.z,k.d,k.h,k.y])&&k.w>0&&k.d>0&&k.h>0);
    // Nothing stands between the camera and the plane (z = 0) except low lamps (lamps are separate).
@@ -46,7 +51,7 @@ test('city chunks follow the route: deterministic, inside their stretch, behind 
   for(const s of a.signs){assert.ok(s.w>0&&s.h>0&&s.text.length>0&&/^#[0-9a-f]{6}$/.test(s.color));}
   for(const l of a.lamps)assert.ok(l.h<=6&&l.z>0);
  }
- assert.ok(cityChunk(0).blocks.some(b=>b.shop)&&cityChunk(0).signs.some(s=>s.text==='PAPER LAB'));
+ assert.ok(cityChunk(0).blocks.some(b=>b.shop)&&cityChunk(0).signs.some(s=>s.text==='PAPER LAB'&&s.shop));assert.ok(!cityChunk(1).blocks.some(b=>b.shop));
  assert.ok(cityChunk(14).blocks.some(b=>b.h>=180),'broadcast tower');
  assert.ok(Math.max(...cityChunk(15).blocks.filter(b=>b.z<=LAYERS.far+10).map(b=>b.h))>Math.max(...cityChunk(8).blocks.filter(b=>b.z<=LAYERS.far+10).map(b=>b.h)),'core skyline taller than fields');
 });

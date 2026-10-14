@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import {mergeBlocks} from './geometry.js';
 import {signTexture} from './toon.js';
-import {sway} from '../../src/motion.js';
+import {sway} from '../motion.js';
 import {suburbLife,carX,trainCars,trainHead,puff,birdAt,balloonAt,droneAt,passTime,wake,windowLight,noticeAge,pose,crowdPose,robotPose,onTwos,wrap,TRACK,BOLTS} from './life.js';
 
 const C=h=>new THREE.Color(h),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),eu=new THREE.Euler(0,0,0,'YXZ'),P=new THREE.Vector3(),S=new THREE.Vector3(),tmp=new THREE.Color();

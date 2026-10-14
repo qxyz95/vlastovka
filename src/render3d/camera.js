@@ -1,7 +1,7 @@
 // Kamera jako režisér (čisté funkce bez three.js): nadpis místa a krátké přiblížení na hranici místa, oddálení při rychlém letu.
-// Mění jen šířku záběru; vlaštovka zůstává na stejném místě obrazu (follow → px), takže sledování nerozbije. Testy: tests/prototype3d-life.test.js.
-import {SCREEN_METERS,ROUTE} from '../../src/scenes.js';
-import {damp} from '../../src/motion.js';
+// Mění jen šířku záběru; vlaštovka zůstává na stejném místě obrazu (follow → px), takže sledování nerozbije. Vlastní R5 (doplní stavy Follow/Vista/Place intro/District/Landing, zámek při QTE, Calm). Testy: tests/render3d-life.test.js.
+import {SCREEN_METERS,ROUTE} from '../scenes.js';
+import {damp} from '../motion.js';
 import {PLACE_EN,DISTRICT_EN,smooth} from './life.js';
 export const TITLE={fadeIn:.3,hold:1.9,fadeOut:.6},PUNCH={dur:1.6,depth:.13},SPEED={from:24,span:90,out:.45},ZOOM_RANGE=[.8,1.5];
 export const titleAlpha=age=>age==null||age<0?0:age<TITLE.fadeIn?smooth(age/TITLE.fadeIn):age<TITLE.fadeIn+TITLE.hold?1:1-smooth((age-TITLE.fadeIn-TITLE.hold)/TITLE.fadeOut);

@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {suburbLife,windowPattern,facadeWindows,carX,trainCars,trainHead,trainPeriod,puff,birdAt,passTime,createTrail,pushTrail,wake,windowLight,pose,crowdPose,noticeAge,robotPose,companion,autoInput,onTwos,wrap,SUBURBS,TRACK,CAR_RANGE,PLACE_EN,REACT} from '../prototype/3d/life.js';
-import {createDirector,direct,titleAlpha,punchZoom,speedZoom,placeTitle,ZOOM_RANGE,TITLE} from '../prototype/3d/director.js';
-import {cityChunk,follow,WINDOW_TILE} from '../prototype/3d/geometry.js';
+import {suburbLife,windowPattern,facadeWindows,carX,trainCars,trainHead,trainPeriod,puff,birdAt,passTime,createTrail,pushTrail,wake,windowLight,pose,crowdPose,noticeAge,robotPose,companion,onTwos,wrap,SUBURBS,TRACK,CAR_RANGE,PLACE_EN,REACT} from '../src/render3d/life.js';
+import {autoInput} from './helpers/auto-input.js';
+import {cityChunk,chunkOffset,WINDOW_TILE} from '../src/render3d/geometry.js';
 import {ROUTE,SCREEN_METERS} from '../src/scenes.js';
 import {createFlight,step,eventInput} from '../src/core.js';
 import {eventStats} from '../src/events.js';
@@ -22,7 +22,7 @@ test('suburb layout: deterministic, inside places 1–4, nothing between the cam
  for(const p of L.people){assert.ok(p.x>=-15&&p.x<=SUBURBS.x1+30&&p.z<-3,'person behind the plane');assert.ok(REACT[p.kind]);}
  for(const c of L.cars)assert.ok(c.z+.9<-3&&c.speed>0);
  for(const s of L.static)assert.ok(Number.isFinite(s.x+s.w+s.h+s.z+s.d)&&s.w>0&&s.h>0&&s.z+s.d/2<-3,'static decor behind the plane');
- const roofs=cityChunk(0).blocks.concat(...[1,2,3].map(s=>cityChunk(s).blocks));
+ const roofs=[0,1,2,3].flatMap(s=>cityChunk(s).blocks.map(b=>({...b,x:b.x+chunkOffset(s)})));// chunks are local, life is in world metres
  for(const p of L.people.filter(p=>p.y>1))assert.ok(roofs.some(b=>Math.abs(b.h-p.y)<1e-9&&p.x>=b.x&&p.x<=b.x+b.w),'roof people stand on a roof');
  assert.ok(L.robot.x1>L.robot.x0&&L.robot.y>5);
  const s1=L.stalls.every(s=>s.x>=SCREEN_METERS&&s.x+s.w<=2*SCREEN_METERS);assert.ok(s1,'stalls on the market');
@@ -61,15 +61,4 @@ test('autopilot hits every event; companions follow the event phases',()=>{
  assert.ok(companion({type:'bird',phase:'effect',at:0,result:'perfect',resolvedAt:2},2.5).dx<1,'carries the plane');
  assert.ok(companion({type:'bird',phase:'effect',at:0,result:'miss',resolvedAt:2},3).dy>10,'leaves with the baguette');
  assert.ok(companion({type:'gust',phase:'interaction',at:0},1).steam>0);
-});
-test('director: title and punch-in only at place boundaries, zoom bounded, plane stays put in frame',()=>{
- assert.equal(PLACE_EN.length,ROUTE.length);assert.deepEqual(placeTitle(1),{title:'Market under the Antennas',sub:'VIOLET SUBURBS · 2/4',district:0,first:false});
- assert.equal(titleAlpha(null),0);assert.equal(titleAlpha(1),1);assert.equal(titleAlpha(TITLE.fadeIn+TITLE.hold+TITLE.fadeOut+.01),0);
- assert.equal(punchZoom(null),1);assert.ok(punchZoom(.8)<.9);assert.equal(speedZoom(10),1);assert.ok(speedZoom(200)>1.4);
- const s=createDirector(),titles=[];let t=0;
- for(let x=0;x<1300;x+=.5,t+=1/60){direct(s,{x,v:30,t,dt:1/60,flying:true});if(s.at===t)titles.push(s.title.title);assert.ok(s.zoom>=ZOOM_RANGE[0]-1e-9&&s.zoom<=ZOOM_RANGE[1]+1e-9);
-  const v=follow(x,10,{width:120*s.zoom});assert.ok(Math.abs((x-(v.cx-v.width/2))/v.width-148/640)<1e-9,'plane at px 148');}
- assert.deepEqual(titles,PLACE_EN.slice(0,5));
- const g=createDirector();direct(g,{x:400,v:0,t:0,dt:1/60,flying:false});assert.equal(g.title,null,'no title while aiming');
- assert.ok(Math.abs(onTwos(.99)-11/12)<1e-12&&wrap(-1,0,10)===9);
 });

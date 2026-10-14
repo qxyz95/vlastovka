@@ -1,10 +1,10 @@
-// Živá čtvrť Violet Suburbs (místa 1–4 trasy) pro 3D prototyp: čisté funkce bez three.js a bez DOM.
+// Živá čtvrť Violet Suburbs (místa 1–4 trasy): čisté funkce bez three.js a bez DOM.
 // Rozmístění (auta, vlak, lidé, komíny, prádlo, vlajky, okna, ptáci, balóny, drony), časování pohybu a plán reakcí.
-// Testy: tests/prototype3d-life.test.js. Kreslí je life3d.js.
-import {SCREEN_METERS} from '../../src/scenes.js';
-import {random} from '../../src/random.js';
-import {TIMING,windows,activeEvent} from '../../src/events.js';
-import {cityChunk,WINDOW_TILE} from './geometry.js';
+// Vlastní D1 (Suburbs). Testy: tests/render3d-life.test.js. Kreslí je life3d.js.
+import {SCREEN_METERS} from '../scenes.js';
+import {random} from '../random.js';
+import {TIMING} from '../events.js';
+import {cityChunk,chunkOffset,WINDOW_TILE} from './geometry.js';
 
 export const SUBURBS={x0:0,x1:4*SCREEN_METERS,screens:[0,1,2,3]};
 // Anglické názvy míst a čtvrtí (08-navrh-kolo2 §4.3; src/scenes.js je česky a neměníme ho).
@@ -36,7 +36,7 @@ export const LANES=[{z:-4.6,dir:1},{z:-7.2,dir:-1}],TRACK={z:-15,portal:656,end:
 // Celé rozmístění čtvrti. Deterministické (vlastní seed), vychází z cityChunk(0–3), takže lidé a komíny sedí na střechách.
 export function suburbLife(){
  const rng=random(90210),R=(a,b)=>a+rng()*(b-a),pick=a=>a[Math.floor(rng()*a.length)],pattern=windowPattern();
- const chunks=SUBURBS.screens.map(s=>cityChunk(s)),tag=c=>b=>({...b,screen:c.screen,kind:c.kind});
+ const chunks=SUBURBS.screens.map(s=>({...cityChunk(s),screen:s,dx:chunkOffset(s)})),tag=c=>b=>({...b,x:b.x+c.dx,screen:c.screen,kind:c.kind});// cityChunk je lokální, život ve světových m
  const near=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===0&&b.z<=-20&&b.z>-40).map(tag(c)));
  const mid=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===1&&b.z<=-100&&b.z>-130).map(tag(c)));
  const front=b=>b.z+b.d/2,L={cars:[],people:[],chimneys:[],tanks:[],antennas:[],laundry:[],bunting:[],pinwheels:[],windows:[],stalls:[],bulbs:[],flocks:[],balloons:[],drones:[],clouds:[],static:[]};
@@ -140,7 +140,3 @@ export function companion(e,ft){if(!e)return null;const age=ft-e.at;
   const k=ft-(e.resolvedAt??ft),hit=e.result==='success'||e.result==='perfect';return hit?{dx:.6,dy:2+Math.min(1,k*3)*.3,flap:true,hit}:{dx:8+k*16,dy:3+k*11,flap:true,hit};}
  if(e.phase==='warning'||e.phase==='interaction')return {dx:10,dy:0,steam:Math.min(1,age/TIMING.warning)};
  return {dx:0,dy:0,steam:Math.max(0,1-(ft-(e.resolvedAt??ft))*1.2),hit:e.result==='success'||e.result==='perfect'};}
-// Autopilot (režim sledování): stiskne poryv ve středu okna, holuba podrží právě po střední dobu. Vrací 'down' / 'up' / null.
-export function autoInput(f,dt=1/60){const e=activeEvent(f);if(!e||e.result||e.phase!=='interaction')return null;const w=windows(f);
- if(e.type==='gust')return f.t+dt/2>=e.at+w.gust.center?'down':null;
- if(e.heldAt===null)return 'down';return f.t+dt/2>=e.heldAt+w.bird.center?'up':null;}
