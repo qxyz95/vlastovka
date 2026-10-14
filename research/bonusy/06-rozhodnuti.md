@@ -103,3 +103,9 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   2. Postup: nejdřív jedna čtvrť (Violet Suburbs) v novém stylu přímo ve hře, zahrát a teprve pak přestavět zbytek.
   3. Názvy a nálady čtvrtí se smí změnit podle nového stylu.
   4. Bible `02-styl.md` platí pro současnou grafiku, dokud ji nenahradí nová bible stylu B. Hotové dávky G0–G4 (tokeny, jedna tuš, čitelnost vlaštovky a stopy) zůstávají jako základ.
+- **Struktura menu jako ve hrách (14. 10.):** hlavní obrazovka nemá vypadat jako aplikace.
+  1. Hlavní menu: název hry jen tady, živá 3D scéna na pozadí, tlačítka Házet (hlavní), Dílna, Atlas, Nastavení (jazyk EN/CS, hudba a zvuky, omezení pohybu); mince malým údajem v rohu.
+  2. Hra: jen scéna, malý HUD (vzdálenost, mince) a pauza (Pokračovat, Nastavení, Menu).
+  3. Výsledek: skóre (vzdálenost, rekord, mince), tlačítka Házet znovu (hlavní), Dílna, Atlas a malá ikonka Menu.
+  4. Z hlavní obrazovky pryč: logo v hlavičce, odkazy „01 / Workshop“, „02 / Atlas“, přepínač stylu, EN/CS a úvodní text.
+  Rozložení nezávisí na grafickém stylu, vzhled převezme styl B.
