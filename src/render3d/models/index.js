@@ -28,7 +28,7 @@ import { cardTriangles } from '../paper-cards.js';
 
 export { SCALE, LOD_LAYER, CARD_DEPTH } from './scale.js';
 export { place, bounds } from './parts.js';
-export { LAUNCH, DIORAMA, AIM_SHOT, MENU_SHOT } from './launch-site.js';
+export { LAUNCH, DIORAMA, AIM_SHOT, MENU_SHOT, INTRO_SHOT } from './launch-site.js';
 import { place } from './parts.js';
 import { DIORAMA } from './launch-site.js';
 // G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7; K4 workshop nahradily v S4), G3 trh (karty 9–13). Model s replacedBy je nahrazený, hero = LOD 0 je LOD H.

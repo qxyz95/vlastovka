@@ -20,6 +20,7 @@ const PURE = [
   'paper-mood',
   'paper-cards',
   'paper-shadow',
+  'intro',
 ]
   .map(n => n + '.js')
   .concat(

@@ -21,6 +21,7 @@ import { eventProgress, eventStats, windows, TIMING } from './events.js';
 import { createDecorations, stepDecorations } from './decorations.js';
 import { drawAim } from './render3d/ui-layer.js';
 import { eventView } from './render3d/events-view.js';
+import { introAfter, introPress, introDone } from './render3d/intro.js';
 // Renderer: 3D výchozí (src/render3d/), ?render=2d nebo prohlížeč bez WebGL2 → 2D render.js (do smazání 2D, fáze f plánu 3D).
 // Oba mají stejné rozhraní render(canvas,f,model,time,visual) a view(f); 3D kreslí mířidla v UI vrstvě, 2D je dostane přes drawAim.
 const webgl2 = () => {
@@ -250,6 +251,9 @@ function effectText(id) {
         : { steady: plus(UPGRADE.steady), window: plus(UPGRADE.window), qte: plus(UPGRADE.qte) },
   );
 }
+// Úvod (H1): {pressed: s | null} nebo null. Ukáže se po načtení a po návratu z Dílny, ne po „Hodit znovu“; první stisk spustí jízdu
+// do míření a zároveň nabíjení. Po zapojení screens.js (U5): úvod = s.title na Domově, stisk = událost 'press', Hodit znovu = 'throwAgain'.
+let intro = null;
 let angle = 15,
   held = false,
   heldTime = 0,
@@ -268,8 +272,9 @@ function show(next) {
     decorations = null;
   }
 }
-function prepare() {
+function prepare(from = 'throwAgain') {
   if ($('result').open) $('result').close();
+  intro = introAfter(from);
   f = null;
   fx = null;
   held = false;
@@ -283,6 +288,7 @@ function prepare() {
 }
 function workshop(upgrades = false) {
   if ($('result').open) $('result').close();
+  intro = null;
   held = false;
   owner = null;
   f = null;
@@ -309,12 +315,14 @@ function begin(source) {
   held = true;
   owner = source;
   heldTime = 0;
+  intro = introPress(intro, performance.now() / 1000);
 }
 function release(source) {
   if (!held || owner !== source || state !== 'aim') return;
   const launch = throwSettings(angle, chargeAt(heldTime));
   held = false;
   owner = null;
+  intro = null;
   f = createFlight(p.model, p.levels, p.attempts + 1, { x: 0, y: 0 }, launch);
   acc = 0;
   prev = null;
@@ -370,8 +378,8 @@ $('angle').oninput = () => {
   angle = Number($('angle').value);
   updateAim();
 };
-$('launch').onclick = prepare;
-$('retry').onclick = prepare;
+$('launch').onclick = () => prepare('workshop');
+$('retry').onclick = () => prepare('throwAgain');
 $('upgrades').onclick = () => workshop(true);
 $('return').onclick = () => workshop();
 $('cancel-aim').onclick = () => workshop();
@@ -446,7 +454,7 @@ window.addEventListener('keydown', e => {
     updateAim();
   }
   if (
-    (e.code === 'Space' || (e.code === 'Enter' && e.target === $('action'))) &&
+    (e.code === 'Space' || (e.code === 'Enter' && (e.target === $('action') || state === 'aim'))) &&
     (state === 'flight' || state === 'aim') &&
     !otherButton(e)
   ) {
@@ -537,6 +545,7 @@ function frame(now) {
   if (!hidden()) {
     if (state === 'aim') {
       if (held) heldTime += elapsed;
+      if (intro && introDone(intro, now / 1000, reduced.matches)) intro = null;
       updateAim();
     }
     if (state === 'flight') {
@@ -592,6 +601,7 @@ function frame(now) {
           clock: now / 1000,
           state,
           aim,
+          intro: intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
           best: p.best,
           style: STYLE,
           touch: coarse.matches,
@@ -713,4 +723,5 @@ function updateFlightUI() {
   } catch {}
   applyLang(pickLang(new URLSearchParams(location.search).get('lang'), stored));
 }
+prepare('load');
 tick();

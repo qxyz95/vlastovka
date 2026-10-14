@@ -26,6 +26,7 @@ import { fxMap } from './fx-map.js';
 import { eventView } from './events-view.js';
 import { uiScale } from './ui-layer.js';
 import { initialQuality } from './quality.js';
+import { introProgress, introShot, introTitleAlpha, introIdle } from './intro.js';
 
 // Výška dítěte H1 (person × 0,7 = 1,2 m, models/kid.js KID.h) pro LOD podle px na obrazovce.
 const KID_H = SCALE.person * 0.7;
@@ -132,11 +133,29 @@ export const DIRECTOR = {
   aspect: ASPECT,
 };
 // Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka HAND, sklon REST.pitch; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
+// Úvod (H1, intro.js): visual.intro = {since: s od prvního stisku, nebo null = úvod stojí}, jen při míření. V u = 1 je záběr přesně
+// záběr míření (i střih při reduced motion / Calm camera), takže po zahození úvodu v ui.js míření navazuje bez skoku.
+export function introOf(visual = {}) {
+  if (!visual?.intro || (visual.state ?? 'aim') !== 'aim') return null;
+  const since = visual.intro.since ?? null,
+    calm = calmOf(visual),
+    u = introProgress(since, calm);
+  const c = calm ? 0 : Math.max(0, Math.min(1, visual.charge ?? 0)),
+    aimW = restWidth(visual, c);
+  return {
+    u,
+    since,
+    calm,
+    aimW,
+    shot: introShot(u, { aspect: ASPECT, aim: { width: aimW, pitch: AIM.pitch } }),
+  };
+}
 const rests = new Map(),
   restWidth = (visual, c = 0) => aimWidth(visual?.cssWidth ?? 640) * (1 - AIM.push * c),
   restInput = (visual, t, dt) => {
     const calm = calmOf(visual),
-      c = calm ? 0 : Math.max(0, Math.min(1, visual.charge ?? 0));
+      c = calm ? 0 : Math.max(0, Math.min(1, visual.charge ?? 0)),
+      shot = introOf(visual)?.shot;
     return {
       x: HAND.x,
       y: HAND.y,
@@ -145,14 +164,15 @@ const rests = new Map(),
       dt,
       flying: false,
       calm,
-      aimW: restWidth(visual, c),
-      pitch: AIM.pitch,
+      aimW: shot ? shot.width : restWidth(visual, c),
+      pitch: shot ? shot.pitch : AIM.pitch,
+      at: shot ? [shot.at[0] * LOGICAL.w, shot.at[1] * LOGICAL.h] : null,
     };
   };
 const restDirector = (visual = {}) => {
   const i = restInput(visual, 0, 0),
     key = i.aimW + '|' + i.calm;
-  if (i.aimW !== restWidth(visual)) return direct(createDirector(DIRECTOR), i); // cache jen bez nabití
+  if (i.at || i.aimW !== restWidth(visual)) return direct(createDirector(DIRECTOR), i); // cache jen bez nabití a bez úvodu
   let r = rests.get(key);
   if (!r) rests.set(key, (r = direct(createDirector(DIRECTOR), i)));
   return r;
@@ -256,11 +276,12 @@ export function planFrame({
   const rest = state === 'aim' || state === 'workshop',
     [X, Y] = planeWorld(rest ? null : f);
   // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
-  const director = directorFor({ f: rest ? null : f, prev, time, visual }),
+  const intro = rest ? introOf(visual) : null,
+    director = directorFor({ f: rest ? null : f, prev, time, visual }),
     dirT = f && !rest ? (f.landed ? (time ?? f.t) : f.t) : clock,
     calm = calmOf(visual);
   const v = cameraView(director.camera, X, Y),
-    scale = planeSizeScale(director.camera.width, cssWidth),
+    scale = planeSizeScale(intro ? intro.aimW : director.camera.width, cssWidth), // úvod: vlaštovka v ruce jako při míření (M-2)
     mpp = 1 / (PPM * v.k),
     opts = {
       reduced,
@@ -305,7 +326,16 @@ export function planFrame({
   }; // v klidu drží vlaštovku workshop.js
   // dítě: px = výška dítěte 1,2 m na obrazovce (CSS px v hloubce ruky, LOD 44/52 px), aim = úhel mířidel ve ° (ruka F ukazuje směr hodu)
   const kid = {
-    ...kidPose({ charge, thrown: !!f && f.t > 0, t: anim, reduced, rest, state, since: f?.t ?? 0 }),
+    ...kidPose({
+      charge,
+      thrown: !!f && f.t > 0,
+      t: anim,
+      reduced,
+      rest,
+      state,
+      since: f?.t ?? 0,
+      idle: intro ? introIdle(intro.u) : 0,
+    }),
     visible: rest,
     px: (KID_H * cssWidth) / director.camera.width,
     aim: visual.aim?.angle ?? null,
@@ -350,7 +380,15 @@ export function planFrame({
     cheer: cheerAge(f),
     ui: {
       qte: visual.qte ?? null,
-      aim: visual.aim ?? null,
+      aim: intro && intro.since == null ? null : (visual.aim ?? null), // úvod před stiskem bez mířidel
+      intro:
+        intro && introTitleAlpha(intro.since, intro.calm) > 0
+          ? {
+              alpha: introTitleAlpha(intro.since, intro.calm),
+              band: intro.shot.text,
+              touch: !!visual.touch,
+            }
+          : null,
       labels: events,
       charge,
       reduced,

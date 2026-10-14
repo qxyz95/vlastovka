@@ -72,3 +72,19 @@ export const MENU_SHOT = Object.freeze({
   portraitAt: Object.freeze([0.62, 0.5]),
   planeInHand: 0.5,
 });
+// Úvodní záběr (03-art kap. 2.2, bible 05 kap. 9.2 „Úvod“, rozhodnutí 06 bod 15): dům s dílnou v řezu vlevo, dítě vpravo od středu, sklon +2°.
+// Desktop 30 m s rukou na (0,64; 0,66), telefon na šířku 30 m (0,66; 0,64), na výšku 18 m (0,80; 0,62). text = svislý pás nápisu v nebi nad hřebenem.
+export const INTRO_SHOT = Object.freeze({
+  width: 30,
+  portraitWidth: 18,
+  landWidth: 30,
+  pitch: 2,
+  fov: 20,
+  at: Object.freeze([0.64, 0.66]),
+  portraitAt: Object.freeze([0.8, 0.62]),
+  landAt: Object.freeze([0.66, 0.64]),
+  planeInHand: 0.5,
+  text: Object.freeze([0.08, 0.28]),
+  portraitText: Object.freeze([0.12, 0.32]),
+  landText: Object.freeze([0.04, 0.18]),
+});

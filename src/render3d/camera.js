@@ -147,7 +147,8 @@ const toward = (x, goal, hl, dt, max, log) => {
 };
 // Jeden krok: x,y zobrazená poloha vlaštovky (m, se zrychlením), v,vy rychlost (m/s), t hodiny scény, dt krok, k tempo π, c cestovní rychlost
 // výbavy (m/s, už × π), dive = střemhlav, f let (události, landed), best rekord v m (Place intro jen za ním), calm = Calm camera / reduced motion,
-// aimW = šířka klidového záběru (m), pitch = sklon klidového záběru (°, výchozí pose.REST.pitch). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
+// aimW = šířka klidového záběru (m), pitch = sklon klidového záběru (°, výchozí pose.REST.pitch), at = [px,py] ruky v klidu místo REST
+// (úvod a jízda do míření, intro.js; záběr bez dojezdu). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
 // Šířka = opts.width · zoom (stav: vista, district, intro, landing) · ex (přebytek, tlumený asymetricky) / tz (tempo); výhoz ji prolne z klidového záběru.
 export function direct(
   s,
@@ -170,6 +171,7 @@ export function direct(
     shake,
     aimW = POSE_REST.width,
     pitch = POSE_REST.pitch,
+    at = null,
   },
 ) {
   landed = landed ?? !!f?.landed;
@@ -177,7 +179,8 @@ export function direct(
     place = placeAt(x),
     lock = qteLock(f),
     ahead = nextEventIn(f),
-    low = y != null && y < EXCESS.low && vy < 0;
+    low = y != null && y < EXCESS.low && vy < 0,
+    anchor = rest ? at : null;
   const thrown = flying && s.thrownAt == null;
   s.cut = false;
   // výhoz z klidu: kamera odjede z klidového záběru (v Calm střih, s.cut pro prolnutí v rendereru)
@@ -273,13 +276,16 @@ export function direct(
     // stavové záběry (vista, district, intro, landing) se násobí, celek za letu v ZOOM_RANGE·W_let·T
     const zg = rest ? mult : calm ? 1 : clamp(mult, ZOOM_RANGE[0] / s.ex, ZOOM_RANGE[1] / s.ex),
       tg = tempoZoom(k),
-      pg = calm
-        ? REST.px
-        : Math.max(Math.min(VISTA.minPx, tempoPx(k) * 640), tempoPx(k) * 640 + px);
-    if (!s.camera) {
+      pg = anchor
+        ? anchor[0]
+        : calm
+          ? REST.px
+          : Math.max(Math.min(VISTA.minPx, tempoPx(k) * 640), tempoPx(k) * 640 + px);
+    if (!s.camera || anchor) {
       s.px = pg;
     }
-    if (!s.camera || thrown || calm) {
+    // úvod a jízda do míření (intro.js) drží záběr přesně, dojezd by jízdu 0,6 s zpozdil
+    if (!s.camera || thrown || calm || anchor) {
       s.zoom = zg;
       s.tz = tg;
     } // první snímek a výhoz bez dojezdu (i v zámku); Calm: T(π) jen mezi hody
@@ -300,7 +306,7 @@ export function direct(
     const Y = rest ? (y ?? HAND.y) : (y ?? f.y),
       fp = followPy(Y, w);
     // svisle: v klidu ruka na REST.py, při výhozu plynule z ní do polohy letu (při šířce letu W), jinak dojezd posunu k nule
-    if (rest) s.dy = REST.py - fp;
+    if (rest) s.dy = (anchor ? anchor[1] : REST.py) - fp;
     else if (L) s.dy = L.py + (followPy(Y, W) - L.py) * e - fp;
     else if (thrown && calm) s.dy = 0;
     else if (!lock) s.dy = damp(s.dy, 0, 0.3, dt);

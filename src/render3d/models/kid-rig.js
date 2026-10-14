@@ -139,6 +139,8 @@ function poseAngles(rig, k, t, reduced) {
     A.lean = k.lean ?? 0;
     A.back = (k.back ?? 0) * KID_SCALE;
     A.bob = breath;
+    // úvod → míření (intro.js): prolnutí ke klidu podle k.idle (ruka T se po sledování vlaštovky prolne znovu v poseKid)
+    if (k.idle > 0) blend(A, KID_POSES.idle, k.idle);
     return A;
   }
   if (ph === 'throw') {
@@ -192,6 +194,10 @@ export function poseKid(
     rig.track[0] = A.armT[0];
     rig.track[1] = A.armT[1];
     rig.aimArm = A.armF[0];
+    if (k?.idle > 0) {
+      A.armT[0] = lerp(A.armT[0], KID_POSES.idle.armT[0], k.idle);
+      A.armT[1] = lerp(A.armT[1], KID_POSES.idle.armT[1], k.idle);
+    }
     kidJoints(A, J, rig.root);
   }
   rig.lod = lod;

@@ -40,18 +40,18 @@ export function project(cam, [x, y, z], aspect = 16 / 9) {
   return [320 + (dot(R) / (depth * t * aspect)) * 320, 180 - (dot(U) / (depth * t)) * 180];
 }
 // Kamera v klidu (Dílna, míření): follow + sideCamera jako za letu se šířkou width (REST.width); sklon posune ruku hand,
-// proto se kamera (pozice i cíl) dorovná tak, aby ruka padla přesně na (148, 258). Vrací {cx,cy,width,height,lift,position,target,dist,fov}.
+// proto se kamera (pozice i cíl) dorovná tak, aby ruka padla přesně na (148, 258), nebo na podíl obrazu at (úvod, intro.js). Vrací {cx,cy,width,height,lift,position,target,dist,fov}.
 export function restCamera(
   aspect = 16 / 9,
   width = REST.width,
-  { hand = HAND, pitch = REST.pitch } = {},
+  { hand = HAND, pitch = REST.pitch, at = [148 / 640, 258 / 360] } = {},
 ) {
   const v = follow(hand.x, hand.y, { width, aspect }),
     c = { ...v, ...sideCamera(v, REST.fov, pitch), fov: REST.fov };
   for (let i = 0; i < 6; i++) {
     const [sx, sy] = project(c, [hand.x, hand.y, hand.z], aspect),
-      dx = ((sx - 148) / 640) * c.width,
-      dy = ((258 - sy) / 360) * c.height;
+      dx = ((sx - at[0] * 640) / 640) * c.width,
+      dy = ((at[1] * 360 - sy) / 360) * c.height;
     c.cx += dx;
     c.cy += dy;
     c.position = [c.position[0] + dx, c.position[1] + dy, c.position[2]];
@@ -63,6 +63,7 @@ const m = px => px / PPM;
 // Dítě (models/kid-rig.poseKid): dýchá při míření (bob), při nabíjení couvne (back) a zakloní se (lean), po hodu mává (arm, rad).
 // Reduced motion: anim = 0, takže bez dýchání. phase: 'rest' klid (Dílna), 'aim' míření, 'charge' nabíjení, 'throw' výhoz (švih ruky,
 // swing 0→1 za KID_THROW s od puštění, since = čas letu f.t), 'wave' mávání; rest = klidový stav scény (Dílna, míření), state = visual.state.
+// Úvod (intro.js): idle = váha pózy klid 0–1; 1 bez nabíjení = fáze 'idle', mezi 0 a 1 míření/nabíjení prolnuté ke klidu (kid-rig).
 export const KID_THROW = 0.3;
 export function kidPose({
   charge = 0,
@@ -72,6 +73,7 @@ export function kidPose({
   rest = !thrown,
   state = 'aim',
   since = 0,
+  idle = 0,
 } = {}) {
   const env = reduced ? 0 : t,
     bob = thrown ? 0 : m(Math.sin(env * 2.5)),
@@ -82,13 +84,24 @@ export function kidPose({
         ? 'charge'
         : state === 'workshop'
           ? 'rest'
-          : 'aim'
+          : idle >= 1
+            ? 'idle'
+            : 'aim'
       : since < KID_THROW
         ? 'throw'
         : 'wave',
     swing =
       phase === 'throw' ? Math.max(0, Math.min(1, since / KID_THROW)) : phase === 'wave' ? 1 : 0;
-  return { phase, swing, bob, back, lean: charge * 0.18, arm, charge };
+  return {
+    phase,
+    swing,
+    bob,
+    back,
+    lean: charge * 0.18,
+    arm,
+    charge,
+    idle: rest && state !== 'workshop' ? Math.max(0, Math.min(1, idle)) : 0,
+  };
 }
 // Vlaštovka: rotace z pružiny fx.rot.x (nebo flightAngle), −charge·0,25 (záklon nosu), flutter šumem, squash & stretch fx.stretch.x
 // (bez fx −charge·0,2), stažení o charge·8 px a chvění nad 90 % nabití; v klidu se vznáší (fbm). Za letu charge = 0 jako ve 2D.
