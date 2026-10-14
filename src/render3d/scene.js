@@ -65,7 +65,7 @@ export function createScene(canvas,{dpr=1,shadows=true,style='cyber'}={}){
  const sunOf=x=>{const g=new THREE.Group(),halo=disc(190,SK.sun.halo,.45),mid=disc(125,SK.sun.mid),core=disc(95,SK.sun.core);halo.position.z=-20;core.position.z=10;g.add(halo,mid,core);g.position.set(x,70,-1700);skyG.add(g);return {g,halo,mid,core};};
  const suns=[sunOf(260),sunOf(-380)];
  // Město, vlaštovka, Dílna (R3) a živá čtvrť.
- // Dílna a dítě s vlaštovkou v ruce (workshop.js R3); město proto shop bloky z cityChunk(0) nekreslí.
+ // Místo odhodu: dítě s vlaštovkou v ruce (workshop.js R3; cyber i Dílna, papír dioráma kreslí město v ulici místa 0); shop bloky město nekreslí.
  const workshop=createWorkshop(scene,{ramp,hull,model:'dart',planeScale:PLANE_SCALE,style,paper:kit});
  let mood=null;
  const city=createCity({scene,materials,ramp,hull,mood:()=>mood,reduced:false,shop:()=>false,...(paper?{style}:{})});scene.add(city.group);
@@ -73,7 +73,7 @@ export function createScene(canvas,{dpr=1,shadows=true,style='cyber'}={}){
  // Holub-kurýr a pára z ventilace (a4) v každé čtvrti; life3d.js je proto dostává comp = null.
  const companion=createCompanion({ramp,hull:thinHull,palette:pal});scene.add(companion.group);
  // FALLBACK(D1): Violet Suburbs žije zatím přes life3d.js ve světových souřadnicích (místa 0–3); D1 ji přesune do districts/suburbs.js.
- const life=createLife({ramp,hull,thinHull});scene.add(life.group);
+ const life=createLife({ramp,hull,thinHull,style});scene.add(life.group);
  let trail=createTrail(),lastX=Infinity,usePost=true,size=[4,4],last={style,quality:null},maskCalls=0;const buf=new THREE.Vector2(4,4);
  function resize(w,h,d=dpr){dpr=d;renderer.setPixelRatio(d);renderer.setSize(w,h,false);size=[w,h];const b=renderer.getDrawingBufferSize(buf);rt.setSize(b.x,b.y);kit?.shadows.resize(b.x,b.y);
   for(const [m] of outlines)m.uniforms.resolution.value.copy(b);thick();
@@ -114,7 +114,7 @@ export function createScene(canvas,{dpr=1,shadows=true,style='cyber'}={}){
   const frameCtx={t,X,Y,trail,events:plan.events,comp:plan.comp,quality:plan.quality,...(paper?{style}:{})};city.update(frameCtx);
   life.group.visible=cam.cx-cam.width<4*SCREEN_METERS+200;if(life.group.visible)life.update({t,X,Y,trail,comp:null,cheerAge:plan.cheer});
   companion.update({t,X,Y,vx:plan.vx,ev:plan.ev,comp:plan.comp,carry:plan.carry,reduced:plan.reduced});
-  workshop.update(plan.kid,plan.hand);
+  workshop.update(plan.kid,plan.hand,{t:plan.t,reduced:plan.reduced});
   // Neonové cedule občas zablikají (šum, ne náhoda za snímek).
   signList.forEach((s,i)=>s.color.setScalar(noise1(t*.8,i*13)>.62&&noise1(t*25,i)>0?.35:1));
   last.quality=plan.quality;

@@ -23,7 +23,8 @@ export const EASE={out:{hl:.25,rate:.8},in:{hl:1.2,rate:.25}};
 export const DISTRICT={dur:1.5,out:.5,min:.4},VISTA={calm:2.5,ahead:1.5,leave:1.2,out:1.1,px:-20,minPx:110},LANDING={dur:.85,zoom:.85},LAUNCH={dur:1.2,roll:1.5};
 // Zámek QTE a meze: zoom (ln šířky) nejvýš ZOOM_RATE/s na složku, px nejvýš PX_RATE px/s, natočení nejvýš MAX_ROT °. MARGIN = rezerva před událostí.
 export const LOCK_AFTER=.3,MARGIN=.2,ZOOM_RATE=.8,PX_RATE=30,MAX_ROT=3,REST={px:148,py:258};
-// Ruka dítěte a záběr v klidu z pose.js (R3): HAND (16 m) je v klidu na (148, 258); režisér v klidu drží šířku aimW (pose.aimWidth, přisunutí při nabíjení).
+// Ruka dítěte a záběr v klidu z pose.js (R3): ruka (vstup y v klidu, bez něj HAND 16 m) je v klidu na (148, 258); režisér v klidu drží šířku aimW
+// (pose.aimWidth, přisunutí při nabíjení) a sklon pitch (papír −8°, bez něj opts.pitch); výhoz sklon prolne na opts.pitch spolu s oddálením.
 export {HAND};
 export const titleAlpha=age=>age==null||age<0?0:age<TITLE.fadeIn?smooth(age/TITLE.fadeIn):age<TITLE.fadeIn+TITLE.hold?1:1-smooth((age-TITLE.fadeIn-TITLE.hold)/TITLE.fadeOut);
 // Přiblížení na hranici místa: šířka záběru × (1 − depth·sin), hladký nástup i návrat.
@@ -48,7 +49,7 @@ export function nextEventIn(f){
 }
 export function createDirector(opts={}){
  const o={width:640/PIXELS_PER_METER,aspect:16/9,fov:20,pitch:6,flatFov:8,...opts};
- return {place:-1,at:null,zoom:POSE_REST.width/o.width,title:null,alpha:0,opts:o,tz:1,ex:1,exGoal:1,exDir:0,exAt:-1e9,launch:null,cut:false,px:REST.px,yaw:0,roll:0,dy:0,state:'rest',shot:null,shotAt:null,shotDur:0,calmFrom:null,thrownAt:null,landedAt:null,lock:false,camera:null};
+ return {place:-1,at:null,zoom:POSE_REST.width/o.width,title:null,alpha:0,opts:o,tz:1,ex:1,exGoal:1,exDir:0,exAt:-1e9,launch:null,cut:false,px:REST.px,pitch:null,yaw:0,roll:0,dy:0,state:'rest',shot:null,shotAt:null,shotDur:0,calmFrom:null,thrownAt:null,landedAt:null,lock:false,camera:null};
 }
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),rot=v=>clamp(v,-MAX_ROT,MAX_ROT);
 // Klidový záběr (rest) drží přesně šířku pose.REST i při užší šířce Follow (opts.width < REST.width), proto mimo ZOOM_RANGE.
@@ -56,14 +57,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),rot=v=>clamp(v,-MAX_ROT,MAX_ROT);
 const toward=(x,goal,hl,dt,max,log)=>{const y=damp(x,goal,hl,dt);if(!log)return x+clamp(y-x,-max*dt,max*dt);const d=clamp(Math.log(y/x),-max*dt,max*dt);return x*Math.exp(d);};
 // Jeden krok: x,y zobrazená poloha vlaštovky (m, se zrychlením), v,vy rychlost (m/s), t hodiny scény, dt krok, k tempo π, c cestovní rychlost
 // výbavy (m/s, už × π), dive = střemhlav, f let (události, landed), best rekord v m (Place intro jen za ním), calm = Calm camera / reduced motion,
-// aimW = šířka klidového záběru (m). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
+// aimW = šířka klidového záběru (m), pitch = sklon klidového záběru (°, bez něj opts.pitch). Bez f (prototyp) není zámek ani vyhlídka. Vrací stejný objekt (mutuje).
 // Šířka = opts.width · zoom (stav: vista, district, intro, landing) · ex (přebytek, tlumený asymetricky) / tz (tempo); výhoz ji prolne z klidového záběru.
-export function direct(s,{x,y,v=0,vy=0,t,dt,flying,landed,f,k=1,c=CRUISE*k,dive=false,best,calm=false,flat=false,shake,aimW=POSE_REST.width}){
+export function direct(s,{x,y,v=0,vy=0,t,dt,flying,landed,f,k=1,c=CRUISE*k,dive=false,best,calm=false,flat=false,shake,aimW=POSE_REST.width,pitch=null}){
  landed=landed??!!f?.landed;const rest=!flying&&!landed,place=placeAt(x),lock=qteLock(f),ahead=nextEventIn(f),low=y!=null&&y<EXCESS.low&&vy<0;
  const thrown=flying&&s.thrownAt==null;s.cut=false;
  // výhoz z klidu: kamera odjede z klidového záběru (v Calm střih, s.cut pro prolnutí v rendereru)
- if(thrown){s.thrownAt=t;s.calmFrom=t;const from=s.camera&&s.state==='rest';s.launch=from&&!calm?{w:s.camera.width,py:s.camera.py,u:0}:null;s.cut=!!from&&calm;}
- if(rest){s.thrownAt=s.landedAt=null;s.shot=null;s.launch=null;}
+ if(thrown){s.thrownAt=t;s.calmFrom=t;const from=s.camera&&s.state==='rest';s.launch=from&&!calm?{w:s.camera.width,py:s.camera.py,pitch:s.pitch,u:0}:null;s.cut=!!from&&calm;}
+ if(rest){s.thrownAt=s.landedAt=null;s.shot=null;s.launch=null;s.pitch=pitch;}else if(!s.launch)s.pitch=null;
  if(landed&&s.landedAt==null)s.landedAt=t;
  if(flying&&place!==s.place){s.place=place;s.at=t;s.title=placeTitle(place);
   if(s.title.first&&place>0){const d=lock?0:Math.min(DISTRICT.dur,ahead-MARGIN);s.shot='district';s.shotDur=d>=DISTRICT.min?d:0;}// koliduje-li s událostí, zkrátí se (případně jen název)
@@ -92,11 +93,12 @@ export function direct(s,{x,y,v=0,vy=0,t,dt,flying,landed,f,k=1,c=CRUISE*k,dive=
  // Výhoz: postup u jen za letu; krátký let (nízko a klesá) ho zastaví a rovnou přijde záběr dopadu (01 §2.5 bod 3).
  const L=s.launch;if(L&&flying&&!low)L.u=Math.min(1,L.u+dt/LAUNCH.dur);
  const W=s.opts.width*s.zoom*s.ex/s.tz,e=L?launchEase(L.u):1,w=L?Math.exp(Math.log(L.w)+Math.log(W/L.w)*e):W;
- if(y!=null||f){const Y=rest?HAND.y:y??f.y,fp=followPy(Y,w);
+ if(L)s.pitch=L.pitch==null?null:L.pitch+(s.opts.pitch-L.pitch)*e;
+ if(y!=null||f){const Y=rest?y??HAND.y:y??f.y,fp=followPy(Y,w);
   // svisle: v klidu ruka na REST.py, při výhozu plynule z ní do polohy letu (při šířce letu W), jinak dojezd posunu k nule
   if(rest)s.dy=REST.py-fp;else if(L)s.dy=L.py+(followPy(Y,W)-L.py)*e-fp;else if(thrown&&calm)s.dy=0;else if(!lock)s.dy=damp(s.dy,0,.3,dt);
-  s.camera=shoot(s,x,Y,{calm,flat,shake,width:w});}
- if(L&&L.u>=1)s.launch=null;
+  s.camera=shoot(s,x,Y,{calm,flat,shake,width:w,pitch:s.pitch});}
+ if(L&&L.u>=1){s.launch=null;s.pitch=null;}
  return s;
 }
 export const nextDirector=(prev,input)=>direct(structuredClone(prev),input);
@@ -110,8 +112,8 @@ function basis(c){const fw=norm(sub(c.target,c.position)),r0=norm(cross(fw,[0,1,
 export function project(camera,point,aspect=camera.aspect??16/9){const b=basis(camera),d=sub(point,camera.position),z=dot(d,b.fw);
  return {px:320*(1+dot(d,b.r)/(z*b.th*aspect)),py:180*(1-dot(d,b.u)/(z*b.th)),depth:z};}
 // Záběr: orientace ze sideCamera (+ natočení yaw/roll), pak posun kamery v x/y světa tak, aby vlaštovka [X,Y,0] padla přesně na (s.px, py).
-export function shoot(s,X,Y,{calm=false,flat=false,shake,width}={}){
- const o=s.opts,w=width??o.width*s.zoom*s.ex/s.tz,fov=calm&&flat?o.flatFov:o.fov,pitch=calm&&flat?0:o.pitch,v=follow(X,Y,{width:w,aspect:o.aspect,px:s.px/640}),c=sideCamera(v,fov,pitch);
+export function shoot(s,X,Y,{calm=false,flat=false,shake,width,pitch:tilt=null}={}){
+ const o=s.opts,w=width??o.width*s.zoom*s.ex/s.tz,fov=calm&&flat?o.flatFov:o.fov,pitch=calm&&flat?0:tilt??o.pitch,v=follow(X,Y,{width:w,aspect:o.aspect,px:s.px/640}),c=sideCamera(v,fov,pitch);
  const ya=s.yaw*Math.PI/180,dir=sub(c.target,c.position),fw=[dir[0]*Math.cos(ya)-dir[2]*Math.sin(ya),dir[1],dir[0]*Math.sin(ya)+dir[2]*Math.cos(ya)];
  const cam={position:c.position,target:addS(c.position,fw,1),fov,roll:s.roll,aspect:o.aspect},ty=followPy(Y,w)+s.dy;
  // posun v rovině x/y světa (hloubka zůstane, jako pose.restCamera); kvůli sklonu pár iterací, konverguje na < 1e-9 px

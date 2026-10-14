@@ -5,6 +5,7 @@ import {SCREEN_METERS,ROUTE,DISTRICTS} from '../scenes.js';
 import EN from '../locales/en.js';
 import {random} from '../random.js';
 import {TIMING} from '../events.js';
+import {LAUNCH} from './models/launch-site.js';
 import {cityChunk,chunkOffset,WINDOW_TILE} from './geometry.js';
 import {CYBER} from './palette.js';
 
@@ -33,10 +34,14 @@ export function facadeWindows(b,pattern=windowPattern()){
 }
 const K=CYBER.life,CLOTHES=K.people.cloth,SKIN=K.people.skin,PASTEL=K.pastel;
 export const LANES=[{z:-4.6,dir:1},{z:-7.2,dir:-1}],TRACK={z:-15,portal:656,end:1560,cars:6,len:12,gap:1,speed:17,pause:5},CAR_RANGE=[-140,1360];
+// Auto v pruhu přes místo odhodu (Papírové město, S4): pruhy LANES vedou skrz opěrnou zeď H6 a pod domem H2, auto (střed x, půl délky half)
+// se proto v rozsahu zdi nekreslí, jinak by trčelo nad zeď.
+export const behindLaunch=(x,half=2.1)=>x+half>LAUNCH.wallX&&x-half<LAUNCH.wallX+LAUNCH.wallW;
 // Celé rozmístění čtvrti. Deterministické (vlastní seed), vychází z cityChunk(0–3), takže lidé a komíny sedí na střechách.
-export function suburbLife(){
+// view = pás výhledu S-1 jako papírové karty (cityChunk view), aby komíny a lidé seděli na snížených střechách místa 1.
+export function suburbLife({view=false}={}){
  const rng=random(90210),R=(a,b)=>a+rng()*(b-a),pick=a=>a[Math.floor(rng()*a.length)],pattern=windowPattern();
- const chunks=SUBURBS.screens.map(s=>({...cityChunk(s),screen:s,dx:chunkOffset(s)})),tag=c=>b=>({...b,x:b.x+c.dx,screen:c.screen,kind:c.kind});// cityChunk je lokální, život ve světových m
+ const chunks=SUBURBS.screens.map(s=>({...cityChunk(s,{view:view&&s===0}),screen:s,dx:chunkOffset(s)})),tag=c=>b=>({...b,x:b.x+c.dx,screen:c.screen,kind:c.kind});// cityChunk je lokální, život ve světových m
  const near=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===0&&b.z<=-20&&b.z>-40).map(tag(c)));
  const mid=chunks.flatMap(c=>c.blocks.filter(b=>b.type==='box'&&b.tone===1&&b.z<=-100&&b.z>-130).map(tag(c)));
  const front=b=>b.z+b.d/2,L={cars:[],people:[],chimneys:[],tanks:[],antennas:[],laundry:[],bunting:[],pinwheels:[],windows:[],stalls:[],bulbs:[],flocks:[],balloons:[],drones:[],clouds:[],static:[]};

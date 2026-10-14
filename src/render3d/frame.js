@@ -9,7 +9,7 @@ import {createDirector,direct,nextDirector,cameraView,project as projectCam,qteL
 import {follow,sideCamera,PLANE_OFFSET,LAYERS,chunkOffset,placeIndex} from './geometry.js';
 import {companion} from './life.js';
 import {moodAt} from './mood.js';
-import {planePose,kidPose,restCamera,HAND,REST as AIM,aimWidth} from './pose.js';
+import {planePose,kidPose,HAND,REST as AIM,aimWidth,handOf,restPitch} from './pose.js';
 import {comicLook} from './comic.js';
 import {fxMap} from './fx-map.js';
 import {eventView} from './events-view.js';
@@ -48,16 +48,17 @@ export function cameraFor(X,Y,{width=CAMERA.width,zoom=1,fov=CAMERA.fov,pitch=CA
  const [sx,,z]=project([X,Y,0],cam),dx=(sx-px)/pxPerMeter(z,cam);
  return {...cam,cx:cam.cx+dx,position:[cam.position[0]+dx,...cam.position.slice(1)],target:[cam.target[0]+dx,...cam.target.slice(1)]};
 }
-// Výhoz: ruka je v HAND.y (16 m), fyzika startuje z y0 (core.createFlight 12 m, nový systém f.d.y0). Zobrazená vlaštovka vyletí z ruky
-// a rozdíl se za LAUNCH.dur rozplyne (stejná křivka jako oddálení výhozu). Jen vzhled: fyzika ani view(f).cam se nemění. Po S4 (ruka = y0) je 0.
-export const launchLift=f=>f?(HAND.y-(f.d?.y0??12))*(1-launchEase(f.t/LAUNCH.dur)):0;
-export const planeWorld=f=>f?[f.x+PLANE_OFFSET,f.y+launchLift(f)]:[HAND.x,HAND.y];
+// Výhoz: ruka je v hand.y (pose.handOf(style)), fyzika startuje z y0 (core.createFlight 12 m, nový systém f.d.y0). Zobrazená vlaštovka vyletí
+// z ruky a rozdíl se za LAUNCH.dur rozplyne (stejná křivka jako oddálení výhozu). Jen vzhled: fyzika se nemění. Papír (S4): ruka = y0 = 12 m,
+// převod je 0; zůstává jen pro cyber Dílnu (ruka 16 m) a pro vyšší výhoz nového systému (Crane Lift, f.d.y0), dokud ho místo neukáže.
+export const launchLift=(f,hand=HAND)=>f?(hand.y-(f.d?.y0??12))*(1-launchEase(f.t/LAUNCH.dur)):0;
+export const planeWorld=(f,style)=>{const h=handOf(style);return f?[f.x+PLANE_OFFSET,f.y+launchLift(f,h)]:[h.x,h.y];};
 // Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr míření z pose.js (HAND na (148, 258), 16 m, telefon 7 m).
 export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
-// Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge); bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
-const rests=new Map(),restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0));
- return {x:HAND.x,y:HAND.y,v:0,t,dt,flying:false,calm,aimW:aimWidth(visual.cssWidth??640)*(1-AIM.push*c)};};
-const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm;if(i.aimW!==aimWidth(visual.cssWidth??640))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
+// Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka a sklon podle stylu; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
+const rests=new Map(),restInput=(visual,t,dt)=>{const calm=calmOf(visual),c=calm?0:Math.max(0,Math.min(1,visual.charge??0)),style=styleOf(visual),h=handOf(style);
+ return {x:h.x,y:h.y,v:0,t,dt,flying:false,calm,aimW:aimWidth(visual.cssWidth??640)*(1-AIM.push*c),pitch:restPitch(style)};};
+const restDirector=(visual={})=>{const i=restInput(visual,0,0),key=i.aimW+'|'+i.calm+'|'+i.y+'|'+i.pitch;if(i.aimW!==aimWidth(visual.cssWidth??640))return direct(createDirector(DIRECTOR),i);// cache jen bez nabití
  let r=rests.get(key);if(!r)rests.set(key,r=direct(createDirector(DIRECTOR),i));return r;};
 // Tempo π a cestovní rychlost výbavy (01 §3.3): nový systém nese π v f.d.pi a cestovní rychlost s β v f.cruise (simulation/progression/model.mjs),
 // dnešní hra jen f.p.cruise (π = 1). Calm camera i reduced motion = kamera bez dynamického zoomu (01 §3.8).
@@ -69,13 +70,13 @@ export const calmOf=visual=>!!(visual?.settings?.calm||visual?.reduced);
 export function directorFor({f=null,prev=null,time,visual={}}={}){
  if(!f){const base=prev?.director?.state==='rest'?prev.director:null,t=visual.clock??time??0;if(!base)return restDirector(visual);
   return nextDirector(base,restInput(visual,t,Math.max(0,Math.min(.1,t-(prev.dirT??t)))));}
- const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
+ const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f,styleOf(visual)),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
  const k=paceOf(f),input={x:X,y:Y,v:f.vx,vy:f.vy,t,dt,flying,landed:f.landed,f,k,c:cruiseOf(f,k),dive:!!f.dive,best:visual.best,calm:calmOf(visual)};
  return base?nextDirector(base,input):direct(createDirector(DIRECTOR),input);
 }
-export const cameraOf=f=>directorFor({f}).camera;
-// Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px.
-export function viewOf(f,camera){const [X,Y]=planeWorld(f);return cameraView(camera??cameraOf(f),X,Y);}
+export const cameraOf=(f,style)=>directorFor({f,visual:{style}}).camera;
+// Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px. style = styl scény (ruka podle stylu).
+export function viewOf(f,camera,style){const [X,Y]=planeWorld(f,style);return cameraView(camera??cameraOf(f,style),X,Y);}
 // Místa, která kamera vidí (i panorama v hloubce LAYERS.far a zem za ní), seřazená od nejbližšího ke středu záběru.
 export function placesFor(cam,margin=80){
  const depth=cam.dist-LAYERS.far+60,reach=depth*tanV(cam)*ASPECT+margin,a=Math.max(0,Math.floor((cam.cx-reach)/SCREEN_METERS)),b=Math.floor((cam.cx+reach)/SCREEN_METERS),out=[];
@@ -94,7 +95,7 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  const flying=!!f&&!f.landed,t=flying?f.t:visual.clock??time,clock=visual.clock??time,reduced=!!visual.reduced,charge=f?0:visual.charge??0;
  state=state??visual.state??(f?(f.landed?'landed':'flight'):'aim');
  state=state==='result'?'landed':state;
- const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f);
+ const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f,style);
  // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
  const director=directorFor({f:rest?null:f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=calmOf(visual);
  const v=cameraView(director.camera,X,Y),scale=planeSizeScale(director.camera.width,style,cssWidth),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
@@ -104,7 +105,7 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  // Póza z pose.js (R3). Tam je angle = rotation.z three.js (−úhel 2D); plan.plane.angle drží znaménko juice.flightAngle podle smlouvy.
  const anim=reduced?0:t,own=planePose({f:rest?null:f,fx:rest?null:visual.fx,charge,anim,clock,reduced,size:scale});
  const plane={x:X+own.dx,y:Y+own.dy+(f?.landed?.6:0),z:0,angle:-own.angle,...tilt(t,anim,flying,reduced),squash:own.squash,model,look:null,visible:!rest,scale};// v klidu drží vlaštovku workshop.js
- const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced}),visible:rest};
+ const kid={...kidPose({charge,thrown:!!f&&f.t>0,t:anim,reduced,rest,state,since:f?.t??0}),visible:rest};
  const e=rest?null:activeEvent(f),events=e?[eventView(e,f.t)]:[];
  // „Zadržení dechu“: od varování QTE do 0,3 s po výsledku (qteLock) se pozadí tlumí; náběh i doznění přes damp (stav v prev.mood.hold).
  const goal=!rest&&qteLock(f)?1:0,hold=prev&&!rest?damp(prev.mood?.hold??0,goal,.12,Math.max(0,Math.min(.1,dirT-(prev.dirT??dirT)))):goal;

@@ -5,7 +5,7 @@ import {mergeBlocks} from './geometry.js';
 import {signTexture} from './toon.js';
 import {CYBER,PAPER} from './palette.js';
 import {sway} from '../motion.js';
-import {suburbLife,carX,trainCars,trainHead,puff,birdAt,balloonAt,droneAt,passTime,wake,windowLight,noticeAge,pose,crowdPose,robotPose,onTwos,wrap,TRACK,BOLTS} from './life.js';
+import {suburbLife,behindLaunch,carX,trainCars,trainHead,puff,birdAt,balloonAt,droneAt,passTime,wake,windowLight,noticeAge,pose,crowdPose,robotPose,onTwos,wrap,TRACK,BOLTS} from './life.js';
 
 const C=h=>new THREE.Color(h),m4=new THREE.Matrix4(),q=new THREE.Quaternion(),eu=new THREE.Euler(0,0,0,'YXZ'),P=new THREE.Vector3(),S=new THREE.Vector3(),tmp=new THREE.Color();
 function bufferOf(m){const g=new THREE.BufferGeometry();for(const [k,n] of [['position',3],['normal',3],['uv',2],['color',3],['outline',3]])g.setAttribute(k,new THREE.BufferAttribute(m[k],n));g.computeBoundingSphere();return g;}
@@ -17,8 +17,9 @@ function outlined(g){g.computeBoundingBox();const c=g.boundingBox.getCenter(new 
 function put(m,i,x,y,z,ry=0,rx=0,rz=0,sx=1,sy=sx,sz=sx){eu.set(rx,ry,rz);q.setFromEuler(eu);m4.compose(P.set(x,y,z),q,S.set(sx,sy,sz));m.setMatrixAt(i,m4);}
 const hide=(m,i)=>{m4.makeScale(0,0,0);m.setMatrixAt(i,m4);};
 
-export function createLife({ramp,hull,thinHull}){
- const L=suburbLife(),K=CYBER.life,group=new THREE.Group(),meshes=[];
+// style 'papir' (S4): pás výhledu S-1 (střechy místa 1 snížené jako karty) a auta schovaná v rozsahu místa odhodu.
+export function createLife({ramp,hull,thinHull,style='cyber'}){
+ const paper=style==='papir',L=suburbLife({view:paper}),K=CYBER.life,group=new THREE.Group(),meshes=[];
  const toonV=new THREE.MeshToonMaterial({vertexColors:true,gradientMap:ramp}),toon=c=>new THREE.MeshToonMaterial({color:c,gradientMap:ramp});
  const glow=new THREE.MeshBasicMaterial({toneMapped:false}),glowV=new THREE.MeshBasicMaterial({vertexColors:true,toneMapped:false});
  // Instancovaná síť (+ volitelný obrys sdílející instanceMatrix). Dynamické, proto bez frustum cullingu.
@@ -90,7 +91,7 @@ export function createLife({ramp,hull,thinHull}){
  // Snímek: t = hodiny scény, X/Y vlaštovka (m), trail = stopa letu, comp = holub / pára (life.js companion), cheerAge = s od trefy.
  function update({t,X,Y,trail,comp,cheerAge}){
   const T=onTwos(t);
-  L.cars.forEach((c,i)=>{const x=carX(c,t),r=c.dir>0?0:Math.PI;put(cars,i,x,0,c.z,r);put(carLights,i,x,0,c.z,r);});
+  L.cars.forEach((c,i)=>{const x=carX(c,t),r=c.dir>0?0:Math.PI;if(paper&&behindLaunch(x)){hide(cars,i);hide(carLights,i);return;}put(cars,i,x,0,c.z,r);put(carLights,i,x,0,c.z,r);});
   trainCars(t).forEach((x,i)=>{if(x==null){hide(train,i);hide(trainWin,i);}else{put(train,i,x,0,TRACK.z);put(trainWin,i,x,0,TRACK.z);}});
   let k=0;L.chimneys.forEach(c=>{for(let j=0;j<5;j++,k++){const p=puff(j,5,t,c.big?4:3.2,c.phase);put(smoke,k,c.x+p.dx,c.y+c.h+p.dy,c.z,j,0,0,p.s*(c.big?1.7:1));}});
   const head0=trainHead(t);for(let j=0;j<10;j++,k++){const p=puff(j,10,t,2.4,0,-1.2),hx=trainHead(t-p.age);if(hx>TRACK.portal&&hx<TRACK.end&&head0>hx)put(smoke,k,hx-1.5+p.dx,4.6+p.dy*1.4,TRACK.z,j,0,0,p.s*1.4);else hide(smoke,k);}
