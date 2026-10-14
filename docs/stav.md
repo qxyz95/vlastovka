@@ -1,7 +1,7 @@
 # Stav projektu
 
 Aktualizuje se po každé větší práci (orchestrátor nebo agent, který práci dokončil). U každého údaje je datum.
-Poslední úprava: 14. 10. 2026 večer (Papírové město, kamera startu, rozhodnutí o obsahu a délce hry).
+Poslední úprava: 15. 10. 2026 (předání: plán hratelnosti po poznámkách tvůrce, nové role a skilly).
 
 ## Verze a hotové části
 **Verze 0.6.1 (13. 10. 2026).** Proběhlo review kódu, obsahu a mechanik. Opravené:
@@ -21,15 +21,21 @@ Poslední úprava: 14. 10. 2026 večer (Papírové město, kamera startu, rozhod
 **14. 10. 2026:** komiksový 2D prototyp `verse` (jen náhled), 3D prototyp, hudební prototyp (F1+F3), 3D převod fáze 0 a a1–a6 (3D výchozí ve hře).
 
 ## Rozpracované práce
-### Papírové město, obsah a délka hry (14. 10. 2026, večer)
-- **Styl B Papírové město** za příznakem `?styl=papir` (bible `research/design/05-styl-papir.md`, katalog `11-katalog-ctvrt1.md`). Hotové dávky P0, P1, P3, P4; katalog modelů v `src/render3d/models/` (G1, G2, G2b místo odhodu) a stránka `prototype-katalog.html`. Výchozí (cyber) styl beze změny.
-- **Kamera startu S1–S3 ve hře:** šířka letu podle přebytku rychlosti a tempa π, vlaštovka roste s oddálením, míření zblízka 16 m. Dokud neběží S4, je v míření vidět staré obří dítě.
-- **Rozhodnutí (06, 14. 10.):** 5 nových vlaštovek za mince, Poštovní brašna (+X % mincí), skiny za postup, místo odhodu = podkrovní dílna v řezu, **cílová délka hry ~90 min** bez umělého natahování, kousky (triky) v odlehčené verzi až po ověření simulací. Návrhy: `research/obsah/01–05`, `research/start/01–02`, maketa `prototype-dilna.html`.
-- **Běží / navazuje se přes soubory průběhu `runs/`:**
-  - S4 místo odhodu ve hře: `runs/2026-10-14-s4-misto-odhodu.md` (worktree agenta, větev `worktree-agent-*`).
-  - Simulátor pro 90 min (Mailbag, náhled z posledních 5 hodů, detektory kousků): `runs/2026-10-14-sim-90.md`.
-  - Pak: balance-analyst ladí ceny vlaštovek a brašny na 90 min (05 §7.3), dávky obsahu A–D podle 05 §8, menu M1–M5, katalog G3–G7, P2.
-- Pokud se agent přeruší: nový agent přečte svůj soubor průběhu a pokračuje; orchestrátor zkontroluje worktree větev (`git log worktree-agent-<id>`) a sloučí ji `git merge --no-ff`.
+### Papírové město, obsah a hratelnost (stav 15. 10. 2026)
+- **Ve hře ():** papírové město (P0, P1, P3, P4), kamera startu S1–S3 (šířka podle přebytku rychlosti, vlaštovka roste s oddálením), **místo odhodu S4** (podkrovní dílna v řezu, dítě 1,2 m, ruka 12 m, nižší domy za startem). Výchozí cyber styl drží starý vzdálený záběr Dílny. Katalog modelů G1, G2, G2b, G3 (, ).
+- **Simulátor** (): vlaštovky za mince (), Mailbag, náhled z posledních 5 hodů, detektory kousků v2, cíle . Výchozí rozbor 90 min:  (hra dnes ~42–48 min, obsahu zhruba polovina).
+- **Rozhodnutí (06):** 5 vlaštovek za mince, Poštovní brašna, skiny za postup, cíl **~90 min** bez natahování, kousky jen zdravé po ověření; po poznámkách tvůrce 15. 10.: **jediný styl papír, hra přes celou obrazovku, výzva uprostřed, plastická papírová postavička, skoro každý hod novinka, QTE podle rychlosti a role událostí, balance-analyst až po schválení obsahu**.
+- **Čeká na uživatele:** 15 otázek z plánu hratelnosti, souhrn  (návrhy 00 kreativní, 01 game design, 02 UX, 03 art). Pak dávky podle pořadí v README.
+- **Nic neběží.** Dev server Unknown command: "start"
+
+
+Did you mean one of these?
+  npm star # Mark your favorite packages
+  npm stars # View packages marked as favorites
+  npm start # Start a package
+To see a list of supported npm commands, run:
+  npm help byl zastaven kvůli paměti, spustit ručně. Necommitnuté screenshoty uživatele v kořeni repa () jsou jeho, necommitovat.
+- Role a skilly:  (nově creative-director, qa-tester, narrative-writer, audio-designer; skilly smoke-test, predani, novy-model, fun-check).
 
 ### Progrese a simulátor (F5)
 - Simulátor nového systému `simulation/progression/`, nový systém zatím **není ve hře**.
