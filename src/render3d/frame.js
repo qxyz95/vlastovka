@@ -5,7 +5,7 @@
 import {PIXELS_PER_METER as PPM,SCREEN_METERS} from '../scenes.js';
 import {activeEvent} from '../events.js';
 import {noise1,damp} from '../motion.js';
-import {createDirector,direct,nextDirector,cameraView,project as projectCam,qteLock} from './camera.js';
+import {createDirector,direct,nextDirector,cameraView,project as projectCam,qteLock,CRUISE} from './camera.js';
 import {follow,sideCamera,PLANE_OFFSET,LAYERS,chunkOffset,placeIndex} from './geometry.js';
 import {companion} from './life.js';
 import {moodAt} from './mood.js';
@@ -46,12 +46,17 @@ export const planeWorld=f=>f?[f.x+PLANE_OFFSET,f.y]:[HAND.x,HAND.y];
 // Režisér (camera.js): šířka záběru Follow CAMERA.width, v klidu záběr Dílny z pose.js (HAND na (148, 258)). Klidový stav je konstantní.
 export const DIRECTOR={width:CAMERA.width,fov:CAMERA.fov,pitch:CAMERA.pitch,aspect:ASPECT};
 let rest;const restDirector=()=>rest??=direct(createDirector(DIRECTOR),{x:HAND.x,y:HAND.y,v:0,t:0,dt:0,flying:false});
+// Tempo π a cestovní rychlost výbavy (01 §3.3): nový systém nese π v f.d.pi a cestovní rychlost s β v f.cruise (simulation/progression/model.mjs),
+// dnešní hra jen f.p.cruise (π = 1). Calm camera i reduced motion = kamera bez dynamického zoomu (01 §3.8).
+export const paceOf=f=>f?.d?.pi??f?.p?.pi??1;
+export const cruiseOf=(f,k=paceOf(f))=>f?.cruise??(f?.p?.cruise??CRUISE)*k;
+export const calmOf=visual=>!!(visual?.settings?.calm||visual?.reduced);
 // Jeden krok režiséra pro let f (bez f = klid). time = hodiny scény (za letu f.t, po dopadu f.t + čas od dopadu, v klidu visual.clock).
 // prev = předchozí plan (jeho director a dirT); bez prev nový režisér. Čisté: prev.director se nemutuje.
 export function directorFor({f=null,prev=null,time,visual={}}={}){
  if(!f)return restDirector();
  const flying=!f.landed,t=flying?f.t:time??f.t,[X,Y]=planeWorld(f),base=prev?.director,dt=base?Math.max(0,Math.min(.1,t-(prev.dirT??t))):1/60;
- const input={x:X,y:Y,v:f.vx,t,dt,flying,landed:f.landed,f,k:1,best:visual.best,calm:!!visual.settings?.calm};
+ const k=paceOf(f),input={x:X,y:Y,v:f.vx,vy:f.vy,t,dt,flying,landed:f.landed,f,k,c:cruiseOf(f,k),dive:!!f.dive,best:visual.best,calm:calmOf(visual)};
  return base?nextDirector(base,input):direct(createDirector(DIRECTOR),input);
 }
 export const cameraOf=f=>directorFor({f}).camera;
@@ -77,7 +82,7 @@ export function planFrame({f=null,model='dart',time=0,visual={},state,prev=null}
  state=state==='result'?'landed':state;
  const rest=state==='aim'||state==='workshop',[X,Y]=planeWorld(rest?null:f);
  // Kamera: režisér (camera.js). V Dílně a při míření klidový záběr (i když ui.js ještě drží dopadlý let).
- const director=rest?restDirector():directorFor({f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=!!visual.settings?.calm;
+ const director=rest?restDirector():directorFor({f,prev,time,visual}),dirT=f&&!rest?(f.landed?time??f.t:f.t):clock,calm=calmOf(visual);
  const v=cameraView(director.camera,X,Y),mpp=1/(PPM*v.k),opts={reduced,clock,settings:visual.settings,metersPerPx:mpp,vx:f?.vx??0,frame:t,flying};
  const fxv=fxMap(visual.fx,v,opts);
  // otřes: x,y logické px (UI vrstva), dx,dy m a roll rad (3D kamera); Calm camera bez otřesu

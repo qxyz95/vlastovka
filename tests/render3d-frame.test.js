@@ -26,7 +26,7 @@ test('particle formula with k: a world point d m ahead of the plane lands d·2,1
  const p=planFrame({f}),v=p.view;
  for(const d of [-6,-2,3,8]){const wx=v.cam+v.px+d*PPM,sx=v.px+(wx-v.cam-v.px)*v.k,[px]=project([p.X+d,p.Y,0],p.camera);near(sx,px,.02,`dx ${d} m`);
   const wy=v.py-d*PPM,sy=v.py+(wy-v.py)*v.k,[,py]=project([p.X,p.Y+d,0],p.camera);near(sy,py,.6,`dy ${d} m`);}
- near(v.k,LOGICAL.w/CAMERA.width/PPM,.06,'k ≈ 640/(width·2,1)');
+ near(v.k,LOGICAL.w/p.camera.width/PPM,.06,'k ≈ 640/(width·2,1)');
 });
 test('places cover the visible width at the flight depth and the far skyline, nearest first',()=>{
  for(const X of [PLANE_OFFSET,400,1234,5000]){const cam=cameraFor(X,15),ps=placesFor(cam),lo=Math.min(...ps.map(p=>p.x0)),hi=Math.max(...ps.map(p=>p.x0))+SCREEN_METERS;
