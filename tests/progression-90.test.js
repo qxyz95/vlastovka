@@ -2,8 +2,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {P,setParams,MODEL_SETS,TARGET_SETS} from '../simulation/progression/params.mjs';
-import {campaign,reward,coinReward,mailbagM,replayModel} from '../simulation/progression/campaign.mjs';
-import {checks,summarize,trickTable} from '../simulation/progression/run.mjs';
+import {campaign,reward,coinReward,mailbagM,replayModel,windSwitch} from '../simulation/progression/campaign.mjs';
+import {checks,summarize,trickTable,trickSummary,args} from '../simulation/progression/run.mjs';
 import {createFlight,fly} from '../simulation/progression/model.mjs';
 import {throwOnce,lineRocketBot,rocketBot} from '../simulation/progression/abilities.mjs';
 import {TRICKS,trickById,detectTricks,intentTricks} from '../simulation/progression/tricks.mjs';
@@ -66,22 +66,40 @@ test('preview replay: campaign uses replay by default, passive mode stays availa
 });
 
 // syntetický let pro detektory: události {type,i,result,resolvedAt,comboBefore}
-const ev=(type,result,t,extra={})=>({type,i:extra.i??Math.round(t*10),result,resolvedAt:t,comboBefore:extra.combo??0,phase:'done'});
+const ev=(type,result,t,extra={})=>({type,i:extra.i??Math.round(t*10),result,resolvedAt:t,comboBefore:extra.combo??0,phase:'done',doneAt:t+1,
+ ...(extra.wAt!=null?{whistled:true,whistledAt:extra.wAt}:{})});
 const fake=(events,o={})=>({events,echoes:o.echoes??[],stats:{skips:0,maxY:12,...o.stats},kit:o.kit??full,w:o.w??0,t:o.t??20,x:o.x??1000});
 const hit=(id,f,replay)=>trickById[id].detect(f,replay);
 
 test('tricks: detectors on synthetic flights',()=>{
- assert.equal(TRICKS.length,13);assert.deepEqual(intentTricks(),['pigeonExpress','overTheLine','dronePingPong','hawkFeather','kiteTail','skimmerRipples','sailStripes','needleThread']);
+ assert.equal(TRICKS.length,13);assert.deepEqual(intentTricks(),['kettleSong','overTheLine','whistleStop','hawkFeather','kiteTail','skimmerRipples','sailStripes','needleThread']);
+ assert.ok(!trickById.steamOrgan);assert.deepEqual(TRICKS.filter(t=>!t.model).map(t=>t.cls),['dovednost','volba','volba','dovednost','volba','dovednost','dovednost','pestrost']);
  assert.ok(hit('pigeonExpress',fake([ev('bird','perfect',3),ev('gust','perfect',4.4)])));
  assert.ok(!hit('pigeonExpress',fake([ev('bird','perfect',3),ev('gust','perfect',4.6)])));
  assert.ok(!hit('pigeonExpress',fake([ev('bird','success',3),ev('gust','perfect',4)])));
  assert.ok(!hit('pigeonExpress',fake([ev('bird','perfect',3),ev('steam','perfect',3.5),ev('gust','perfect',4)])));
+ // v2: „hned další událost“ s oknem 99 (05 §4.6.2)
+ setParams({tricks:{pigeonWindow:99,droneWindow:99}});
+ try{assert.ok(hit('pigeonExpress',fake([ev('bird','perfect',3),ev('star','miss',5),ev('gust','perfect',9)])));assert.ok(!hit('pigeonExpress',fake([ev('bird','perfect',3),ev('steam','perfect',5),ev('gust','perfect',9)])));
+  assert.ok(hit('dronePingPong',fake([ev('drone','perfect',3),ev('drone','perfect',8)])));assert.ok(!hit('dronePingPong',fake([ev('drone','perfect',3),ev('gust','perfect',5),ev('drone','perfect',8)])));
+ }finally{setParams();}
+ assert.ok(trickById.dronePingPong.cap(fake([ev('drone','miss',3),ev('drone','success',5)])));assert.ok(!trickById.dronePingPong.cap(fake([ev('drone','miss',3),ev('gust','success',5),ev('drone','perfect',8)])));
+ assert.ok(!trickById.dronePingPong.has({atlas:{drone:2}}));assert.ok(trickById.dronePingPong.has({atlas:{drone:3}}));
+ assert.ok(trickById.wish.cap(fake([ev('star','miss',3)])));assert.ok(!trickById.wish.cap(fake([ev('gust','perfect',3)])));
+ // Whistle Stop: přivolaná perfektně, předchozí běžná perfektně, pískání do whistleGap od konce jejího účinku (doneAt = resolvedAt + 1 v ev)
+ assert.ok(hit('whistleStop',fake([ev('gust','perfect',3),ev('bird','perfect',5,{wAt:4.9})])));
+ assert.ok(hit('whistleStop',fake([ev('gust','perfect',3),ev('star','perfect',4.8),ev('bird','perfect',6,{wAt:4.9})])));
+ assert.ok(!hit('whistleStop',fake([ev('gust','perfect',3),ev('bird','perfect',6,{wAt:5.1})])));
+ assert.ok(!hit('whistleStop',fake([ev('gust','success',3),ev('bird','perfect',5,{wAt:4.2})])));assert.ok(!hit('whistleStop',fake([ev('gust','perfect',3),ev('bird','success',5,{wAt:4.2})])));
+ assert.ok(!hit('whistleStop',fake([ev('gust','perfect',3),ev('bird','perfect',5)])));assert.equal(trickById.whistleStop.diag(fake([ev('gust','perfect',3),ev('bird','perfect',5,{wAt:4.5})])),.5);
+ setParams({tricks:{whistleGap:99}});try{assert.ok(hit('whistleStop',fake([ev('gust','perfect',3),ev('bird','perfect',9,{wAt:8})])));}finally{setParams();}
+ assert.ok(trickById.whistleStop.has({slots:['whistle']}));assert.ok(!trickById.whistleStop.has({slots:['rocket']}));
+ assert.ok(trickById.kettleSong.has({atlas:{steam:1},slots:['sharp']}));assert.ok(!trickById.kettleSong.has({atlas:{steam:1},slots:['calm']}));
  assert.ok(hit('kettleSong',fake([ev('steam','perfect',3)])));assert.ok(!hit('kettleSong',fake([ev('steam','success',3)])));
  assert.ok(hit('tapeSave',fake([ev('gust','miss',3),ev('star','perfect',4),ev('bird','perfect',6)])));assert.ok(!hit('tapeSave',fake([ev('gust','miss',3),ev('bird','success',6)])));
- const st=ev('steam','perfect',3,{i:4});
- assert.ok(hit('steamOrgan',fake([st],{echoes:[{src:4,done:true}]})));assert.ok(!hit('steamOrgan',fake([st],{echoes:[{src:4}]})));
  assert.ok(hit('wish',fake([ev('star','perfect',5,{combo:5})])));assert.ok(!hit('wish',fake([ev('star','perfect',5,{combo:4})])));assert.ok(!hit('wish',fake([ev('star','miss',5,{combo:9})])));
  assert.ok(hit('dronePingPong',fake([ev('drone','perfect',3),ev('drone','perfect',5)])));assert.ok(!hit('dronePingPong',fake([ev('drone','perfect',3),ev('drone','perfect',5.2)])));
+ assert.ok(!hit('dronePingPong',fake([ev('drone','perfect',3),ev('star','perfect',3.5),ev('drone','perfect',5.5)])));
  const verbs=[ev('gust','success',2),ev('bird','perfect',5),ev('steam','success',9),ev('drone','success',13)];
  assert.ok(hit('allTheVerbs',fake(verbs)));assert.ok(!hit('allTheVerbs',fake(verbs.slice(0,3))));assert.ok(!hit('allTheVerbs',fake([...verbs.slice(0,2),ev('steam','partial',9),verbs[3]])));
  const hawk={...full,model:'hawk'};
@@ -96,7 +114,7 @@ test('tricks: detectors on synthetic flights',()=>{
  assert.ok(otl(9.5,10,pl-5));assert.ok(!otl(9.5,10,pl+1));assert.ok(!otl(8.5,10,pl-5));
  // přísady a model v ruce
  assert.ok(!trickById.kettleSong.has({atlas:{}}));assert.ok(trickById.overTheLine.has({slots:['rocket']}));assert.ok(!trickById.hawkFeather.has(full));
- const D=detectTricks(fake([ev('steam','perfect',3)]));assert.ok(D.hit>>1&1);assert.equal(D.ing>>TRICKS.findIndex(t=>t.id==='hawkFeather')&1,0);
+ const D=detectTricks(fake([ev('steam','perfect',3)],{kit:{...full,slots:['sharp']}}));assert.ok(D.hit>>1&1);assert.equal(D.cap,0);assert.equal(D.ing>>TRICKS.findIndex(t=>t.id==='hawkFeather')&1,0);
 });
 
 test('tricks: detection does not change the campaign, intent changes pockets and bots',()=>{
@@ -135,7 +153,71 @@ test('tricks: verdict table follows 05 §4.6 thresholds',()=>{
  const G={'average|realistic|auto|better':grp({kettleSong:per(.3,5,0),wish:per(.005,50,.8)}),'weak|realistic|auto|better':grp({}),'expert|realistic|auto|better':grp({}),
   'average|realistic|auto|better|i:overTheLine':grp({overTheLine:per(.2,5,0)}),'average|realistic|auto|better|i:pigeonExpress':grp({pigeonExpress:per(.11,5,0)})};
  const X=trickTable(G),row=id=>X.rows.find(r=>r.id===id);
- assert.equal(row('overTheLine').verdict,'HEALTHY');assert.equal(row('pigeonExpress').vIntent,'náhoda');assert.equal(row('kettleSong').vRate,'samozřejmý');
- assert.equal(row('kettleSong').verdict,'CRITICAL');assert.equal(row('wish').vRate,'vzácný');assert.equal(row('tapeSave').verdict,'HEALTHY (záměr NOT ASSESSED)');
- assert.equal(row('hawkFeather').verdict,'HEALTHY');assert.equal(X.gate.of,8);assert.equal(X.gate.strict,1);
+ assert.equal(row('overTheLine').verdict,'HEALTHY');assert.equal(row('pigeonExpress').vIntent,'náhoda');assert.equal(row('pigeonExpress').verdictIntent,'CONCERNS');assert.equal(row('kettleSong').vRate,'samozřejmý');
+ assert.equal(row('kettleSong').verdict,'CRITICAL');assert.equal(row('wish').vRate,'vzácný');assert.equal(row('tapeSave').verdictIntent,'HEALTHY (záměr NOT ASSESSED)');
+ assert.equal(row('hawkFeather').verdict,'HEALTHY');assert.equal(X.gate.of,8);assert.equal(X.gate.strict,1);assert.equal(X.gate.byClass,2); // Over the Line záměrem, All the Verbs četností
+ // v2: třídy (dovednost expert / slabý ≥ 1,3×, pestrost jen četností) jako volba gateBy, čtvrť nad 25 % = samozřejmý
+ assert.equal(row('allTheVerbs').verdictClass,'HEALTHY');assert.equal(row('allTheVerbs').verdictIntent,'HEALTHY (záměr NOT ASSESSED)');
+ assert.equal(row('tapeSave').vSkill,'hraniční');assert.equal(row('tapeSave').verdictClass,'CONCERNS');assert.equal(X.gate.by,'class');assert.equal(row('tapeSave').verdict,row('tapeSave').verdictClass);
+ assert.equal(X.gate.build.mode,'4.7');assert.deepEqual(X.gate.build.tricks,[]);assert.equal(X.gate.build.models.length,5);
+ const G2={...G,'average|realistic|auto|better|i:whistleStop':grp({whistleStop:per(.2,5,0)}),'expert|realistic|auto|better':grp({tapeSave:per(.14,10,0),pigeonExpress:per(.09,10,0)}),
+  'average|realistic|auto|better':grp({kettleSong:per(.3,5,0),wish:per(.005,50,.8),dronePingPong:per(.1,10,0,{byD:[null,null,.3,.1],dMax:.3})})};
+  try{const Y=trickTable(G2),rw=id=>Y.rows.find(r=>r.id===id);assert.equal(Y.gate.by,'class');
+  assert.equal(rw('tapeSave').vSkill,'zdravý');assert.equal(rw('tapeSave').verdict,'HEALTHY');assert.equal(rw('pigeonExpress').vSkill,'náhoda');assert.equal(rw('pigeonExpress').verdict,'CONCERNS');
+  assert.equal(rw('dronePingPong').vDist,'samozřejmý');assert.equal(rw('dronePingPong').verdict,'CRITICAL');assert.equal(rw('overTheLine').verdict,'HEALTHY');
+  assert.equal(Y.gate.byClass,Y.rows.filter(r=>!r.model&&r.verdict==='HEALTHY').length);
+  assert.deepEqual(Y.gate.build.healthy,['overTheLine','tapeSave','whistleStop','allTheVerbs']);assert.equal(Y.gate.build.mode,'healthy+models');assert.deepEqual(Y.gate.build.tricks,Y.gate.build.healthy);
+ }finally{setParams();}
+ setParams({targets:{tricks:{gateBy:'intent'}}});try{const Z=trickTable(G2);assert.equal(Z.rows.find(r=>r.id==='tapeSave').verdict,'HEALTHY (záměr NOT ASSESSED)');}finally{setParams();}
+});
+
+test('tricks v2: summary by district, cap, share and φ list',()=>{
+ const i=id=>TRICKS.findIndex(t=>t.id===id),b=id=>1<<i(id),pe=b('pigeonExpress'),ts=b('tapeSave');
+ // 40 letů v D1 (pigeon 10 ×, s dvojicí 20 ×), 40 v D2 (pigeon 2 ×); tape jen v D2 a vždy s pigeon
+ const fl=[...Array.from({length:40},(_,k)=>[pe,k<10?pe:0,'dart',0,k<20?pe:0]),...Array.from({length:40},(_,k)=>[pe|ts,k<2?pe|ts:0,'dart',1,0])];
+ const R={tricks:{flights:fl,first:{pigeonExpress:{ing:1,ingN:1,hit:1,hitN:1}},diag:{}},throws:80};
+ const S=trickSummary([R]),pp=S.per.pigeonExpress;
+ assert.deepEqual(pp.byD.map(v=>v==null?null:+v.toFixed(3)),[.25,.05,null,null]);assert.equal(pp.dMax,.25);assert.equal(pp.cap,.25);assert.equal(pp.share,1);
+ assert.equal(S.per.tapeSave.share,.5);assert.equal(S.per.tapeSave.cap,undefined);
+ const c=S.corr.find(x=>x.a==='pigeonExpress'&&x.b==='tapeSave');assert.ok(c&&Math.abs(c.phi-1)<1e-9);assert.ok(S.corr.every((x,k)=>!k||S.corr[k-1].phi>=x.phi));
+});
+
+test('tricks v2: intent bots (Kettle Song second pocket, Whistle Stop after perfect)',()=>{
+ const spec={profile:'average',strategy:'realistic',seed:1,id:3},k=campaign({...spec,intent:'kettleSong'});
+ assert.equal(k.intent,'kettleSong');assert.ok(!(k.slotsUsed.calm>0));assert.ok((k.slotsUsed.sharp??0)<=(k.slotsUsed.rocket??0)); // Sharp Edge až ve druhé kapse, první zůstává výchozí
+ // Whistle Stop: záměr píská jen po perfektu běžné události
+ const kit={...full,slots:['whistle']};let n0=0;
+ for(let n=1;n<=30;n++){const f=throwOnce(kit,{key:'wsb|1',n,profile:'weak',angle:18,intent:'whistleStop'}),w=f.events.find(e=>e.whistled);if(!w)continue;n0++;
+  const p=f.events.filter(e=>e.result&&e.type!=='star'&&e!==w&&e.resolvedAt<=w.whistledAt).sort((a,b)=>a.resolvedAt-b.resolvedAt).at(-1);
+  assert.equal(p.result,'perfect');assert.ok(w.whistledAt>=p.doneAt-1e-9);}
+ assert.ok(n0>0);
+ // kapsa ze záměru s běžnými boty (výskyt „bez záměru“ Whistle Stop): Whistle v kapse, ale bez bota se záměrem
+ const wb=campaign({...spec,id:4,intent:'whistleStop',intentBase:true}),wi=campaign({...spec,id:4,intent:'whistleStop'});
+ assert.equal(wb.intentBase,true);assert.equal(wi.intentBase,undefined);assert.ok(wb.slotsUsed.whistle>0);
+ const per=(fl,rate)=>({flights:fl,rate,campaigns:4,first:5,never:0,firstIng:3,firstIngP90:9});
+ const grp=o=>({tricks:{per:Object.fromEntries(TRICKS.map(t=>[t.id,o[t.id]??per(200,.1)])),firstTrick:5,found:.5,corrHigh:[]}});
+ const G={};for(const p of ['weak','average','expert']){G[p+'|realistic|auto|better']=grp({whistleStop:per(0,null),kettleSong:per(0,null)});
+  G[p+'|realistic|auto|better|i:whistleStop|base']=grp({whistleStop:per(100,.04)});G[p+'|realistic|auto|better|i:whistleStop']=grp({whistleStop:per(100,.12)});
+  G[p+'|realistic|auto|better|i:kettleSong']=grp({kettleSong:per(100,.15)});}
+ const X=trickTable(G),r=id=>X.rows.find(x=>x.id===id);
+ assert.equal(r('whistleStop').rate,.04);assert.equal(r('whistleStop').baseFrom,'kapsa');assert.ok(Math.abs(r('whistleStop').ratio-3)<1e-9);assert.equal(r('whistleStop').vIntent,'zdravý');
+ assert.equal(r('kettleSong').rate,.15);assert.equal(r('kettleSong').ratio,1);assert.equal(r('kettleSong').vIntent,'náhoda');assert.equal(r('pigeonExpress').baseFrom,'');
+});
+
+test('preview wind both: hand by same, one-throw switch only for windK models, no switch = same',()=>{
+ setParams(MODEL_SETS.obsah01);
+ try{const spec={profile:'average',strategy:'realistic',model:'preview',seed:1,id:0},same=campaign(spec);assert.equal(same.windSwitch,undefined);
+  setParams({...MODEL_SETS.obsah01,bots:{modelPick:{wind:'both',switchGain:99}}});const nos=campaign(spec);sameRun(same,nos);assert.equal(nos.windSwitch,0);
+  setParams({...MODEL_SETS.obsah01,bots:{modelPick:{wind:'both',switchGain:-1,switchWind:0}}});
+  const hist=[1,2,3,4,5].map(n=>({key:'wb',n,profile:'average',bias:0,angle:18})),meta=hist.map(h=>({model:'dart',grades:{}}));
+  const m=windSwitch(full,['dart','glider','hawk','sail','needle'],{hist,meta,cur:'dart',key:'wb',n:6,profile:'average'});assert.ok(['sail','needle'].includes(m));
+  assert.equal(windSwitch(full,['dart','glider','hawk'],{hist,meta,cur:'dart',key:'wb',n:6,profile:'average'}),null);
+  assert.equal(windSwitch(full,['dart','sail'],{hist:[],meta:[],cur:'dart',key:'wb',n:6,profile:'average'}),null);
+  setParams({...MODEL_SETS.obsah01,bots:{modelPick:{wind:'both'}}});const both=campaign({...spec,id:1});assert.ok(both.windSwitch>=0&&both.windSwitch<=both.throws);
+ }finally{setParams();}
+});
+
+test('cli: --set can be repeated',()=>{
+ const a=args(['--n','4','--set','tricks.pigeonWindow=99','--set','tricks.droneWindow=99','--tricks','--set','tricks.wishCombo=3']);
+ assert.deepEqual(a.set,['tricks.pigeonWindow=99','tricks.droneWindow=99','tricks.wishCombo=3']);assert.equal(a.n,'4');assert.equal(a.tricks,true);
 });

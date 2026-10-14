@@ -23,9 +23,10 @@ const median=v=>{const s=[...v].sort((a,b)=>a-b),k=s.length>>1;return s.length%2
 // Volba 'preview', mode 'replay' (01 §2.10 bod 2): posledních k hodů (ctx + výsledky QTE + model v ruce) se současnou výbavou a každým
 // vlastněným modelem, úhel hodu + (ideál modelu − ideál modelu, se kterým se hodilo), stejné výsledky QTE (ctx.grades). Odhad = medián
 // poměru doletu proti modelu v ruce; vezme nejvyšší, při shodě drží model v ruce. Vrací {model, est:{model: poměr}}.
-export function replayModel(kit,owned,{hist,meta,cur,key,n,profile,r=null}){
+// wind = přepis bots.modelPick.wind ('both' tu znamená 'same'), w = už známý vítr příštího hodu.
+export function replayModel(kit,owned,{hist,meta,cur,key,n,profile,r=null,wind=null,w:wn=null}){
  const MP=P.bots.modelPick,k=Math.min(MP.throws??5,hist.length),nz=MP.noise??0,est={[cur]:1};if(!k)return {model:cur,est};
- const hs=hist.slice(-k),ms=meta.slice(-k),w=MP.wind==='next'?createFlight(kit,{key,n,profile,events:false}).w:null;
+ const hs=hist.slice(-k),ms=meta.slice(-k),w=(wind??MP.wind)==='next'?wn??createFlight(kit,{key,n,profile,events:false}).w:null;
  const run=(m,j)=>throwOnce({...kit,model:m},{...hs[j],angle:hs[j].angle+P.models[m].ideal-P.models[ms[j].model].ideal,grades:ms[j].grades,...(w!=null?{w}:{})}).x;
  const base=hs.map((h,j)=>run(cur,j));let best=cur,bv=1;
  for(const m of owned){if(m===cur)continue;let v=median(hs.map((h,j)=>run(m,j)/Math.max(1e-6,base[j])));if(nz&&r)v*=Math.exp(nz*gauss(r));est[m]=v;if(v>bv+1e-12){bv=v;best=m;}}
@@ -33,6 +34,14 @@ export function replayModel(kit,owned,{hist,meta,cur,key,n,profile,r=null}){
 }
 // Volba 'preview', mode 'passive' (náhled do 14. 10.): vítr před hodem je známý (vč. Pinwheel), pasivní let bez událostí každého vlastněného
 // modelu s jeho úhlem záměru a silou mu profilu, vezme nejdelší. bots.modelPick.noise = log-normální chyba odhadu (stream r).
+// Vítr v náhledu 'both' (01 §2.10 bod 7): model v ruce cur je podle 'same'; řádek „This throw“ = přehrání s větrem příštího hodu jen u modelů
+// s windK ≠ 1 a jen při |vítr| ≥ switchWind. Vrací model na tento jeden hod (≥ switchGain víc než cur), jinak null. Bez šumu odhadu.
+export function windSwitch(kit,owned,{hist,meta,cur,key,n,profile}){
+ const MP=P.bots.modelPick,ws=owned.filter(m=>m!==cur&&(P.models[m].windK??1)!==1);if(!ws.length||!hist.length)return null;
+ const w=createFlight(kit,{key,n,profile,events:false}).w;if(Math.abs(w)<MP.switchWind-1e-9)return null;
+ const {est}=replayModel(kit,[cur,...ws],{hist,meta,cur,key,n,profile,wind:'next',w});let best=null;
+ for(const m of ws)if(est[m]>=1+MP.switchGain-1e-9&&(!best||est[m]>est[best]))best=m;return best;
+}
 export function previewModel(kit,owned,{key,n,profile,intent={},r=null}){
  const sk=P.profiles[profile],w=createFlight(kit,{key,n,profile,events:false}).w,charge=Math.round(sk.mu*20)/20,nz=P.bots.modelPick?.noise??0;let best=null;
  for(const m of owned){let x=fly({...kit,model:m},{key,n,profile,angle:intent[m]??P.bots.angleStart,charge,exact:true,events:false,w}).x;
@@ -59,14 +68,15 @@ export function equip(owned,district,wanted,fallback=P.bots.pocketFallback){
 // model: 'better' = poslední dolety vlastněných modelů + zkouška modelExplore (dnešní MC), 'preview' = náhled v Dílně před hodem
 // (bots.modelPick: přehrání posledních hodů, nebo pasivní let), id modelu = jen ten, pokud ho hráč vlastní.
 // tricks: true = detekce kousků (tricks.mjs, kampaň se nemění); intent = id kousku = bot se záměrem (05 §4.6, zapne i detekci):
-// kapsa z intent.pocket má přednost a její bot jedná podle kousku (abilities INTENT_BOTS); na model z intent.model hráč šetří hned po
-// odemčení a dá ho do ruky, kdykoli ho vlastní (Sail jen při známém větru ≥ tricks.sailWind).
+// kapsa z intent.pocket má přednost (intent.second: až po první výchozí kapse) a její bot jedná podle kousku (abilities INTENT_BOTS); na model z intent.model hráč šetří hned po
+// odemčení a dá ho do ruky, kdykoli ho vlastní (Sail jen při známém větru ≥ tricks.sailWind). intentBase = kapsa ze záměru, ale běžní boti
+// (výskyt „bez záměru“ u kousků, jejichž kapsu výchozí výbava nemá, např. Whistle Stop: Whistle v kapse s dnešním botem, 05 §4.6.2 bod 5).
 export function campaign(spec){
  const profile=spec.profile??'average',strategy=spec.strategy??'balanced',pk=spec.pockets??'auto',modelRule=spec.model??'better';
  const key=`${spec.seed??1}|${profile}|${spec.id??0}`; // společná náhoda napříč strategiemi a kapsami (CRN)
  const sk=P.profiles[profile],rc=stream(key,'campaign'),bias=sk.qte/2*gauss(stream(key,'bias'));
  const it=spec.intent?trickById[spec.intent]:null;if(spec.intent&&!it)throw new Error('intent '+spec.intent);
- const base0=pk==='auto'?P.bots.pocketAuto[profile]??[]:pk==='none'?[]:pk.split('+'),wanted=it?.intent?.pocket?[it.intent.pocket,...base0]:base0;
+ const base0=pk==='auto'?P.bots.pocketAuto[profile]??[]:pk==='none'?[]:pk.split('+'),wanted=!it?.intent?.pocket?base0:it.intent.second?[...base0.slice(0,1),it.intent.pocket,...base0.slice(1)]:[it.intent.pocket,...base0];
  const ids=Object.keys(P.models),MB=P.economy.mailbag,tricksOn=!!(spec.tricks||it);
  const st={coins:0,power:0,folds:0,paper:0,atlas:{},pockets:0,best:0,throws:0,places:0,district:0,glider:false,model:'dart',owned:['dart'],mailbag:0,
   intent:Object.fromEntries(ids.map(m=>[m,P.bots.angleStart])),last:Object.fromEntries(ids.map(m=>[m,null])),history:[],meta:[],fallback:[],fbSig:''};
@@ -75,8 +85,9 @@ export function campaign(spec){
  const R={profile,strategy,pockets:pk,model:modelRule,id:spec.id??0,done:false,real:0,sim:0,districts:[],flights:[],droughts:[],placeGaps:[],firstPocket:null,
   crane:{tugs:0,newPlace:0},gliderThrows:0,byModel:{},econ:{income:[0,0,0,0],spend:[0,0,0,0],kind:{},mailbag:[0,0,0,0]},eCap:0,betaCap:0,qte:{done:0,hits:0,perfect:0},dive:{uses:0,crash:0,low:0},buys:[],slotsUsed:{},
   droughtsA:[],repeat:[[0,0],[0,0],[0,0],[0,0]],mailbag:[]};
- if(it)R.intent=spec.intent;
+ if(it)R.intent=spec.intent;if(it&&spec.intentBase)R.intentBase=true;
  if(tricksOn)R.tricks={flights:[],first:{},diag:{}};
+ if(modelRule==='preview'&&P.bots.modelPick.wind==='both'&&(P.bots.modelPick.mode??'replay')==='replay')R.windSwitch=0; // hody s modelem jen na jeden hod
  let drought=0,droughtA=0,lastPlaceThrow=0,target=null;const seenTypes=new Set(),seenSlots=new Set();
  const kitOf=(o={})=>{const s={...st,...o};return {model:s.model,power:s.power,folds:s.folds,paper:s.paper,atlas:{...s.atlas},slots:equip(s.pockets,s.district,wanted,s.fallback)};};
  // Záloha kapes (AUDIT F2 #34): záložní speciál se nasadí, jen když náhled na posledních hodech ukáže kladný přínos.
@@ -158,13 +169,17 @@ export function campaign(spec){
   const im=it?.intent?.model,imOn=im&&o.includes(im)&&(!it.intent.wind||createFlight(kitOf(),{key,n,profile,events:false}).w>=P.tricks.sailWind-1e-9);
   if(imOn)st.model=im;
   else if(o.length>1&&modelRule!=='dart'){
-   if(modelRule==='preview')st.model=(P.bots.modelPick.mode??'replay')==='replay'?replayModel(kitOf(),o,{hist:st.history,meta:st.meta,cur:st.model,key,n,profile,r:rp}).model
+   const MP=P.bots.modelPick,both=MP.wind==='both'&&(MP.mode??'replay')==='replay';
+   // 'both': st.hand = model v ruce (podle 'same'), st.model = model tohoto hodu (na jeden hod může být Sail / Needle)
+   if(modelRule==='preview'&&both){const cur=st.hand??st.model,hand=replayModel(kitOf(),o,{hist:st.history,meta:st.meta,cur,key,n,profile,r:rp}).model;st.hand=hand;
+    const sw=windSwitch({...kitOf(),model:hand},o,{hist:st.history,meta:st.meta,cur:hand,key,n,profile});st.model=sw??hand;R.windSwitch=(R.windSwitch??0)+(sw?1:0);}
+   else if(modelRule==='preview')st.model=(MP.mode??'replay')==='replay'?replayModel(kitOf(),o,{hist:st.history,meta:st.meta,cur:st.model,key,n,profile,r:rp}).model
     :previewModel(kitOf(),o,{key,n,profile,intent:st.intent,r:rp}).model;
    else if(modelRule!=='better'){if(o.includes(modelRule))st.model=modelRule;}
    else{const L=st.last;let m=o.find(x=>L[x]==null);if(!m){m=o[0];for(const x of o)if(L[x]>L[m])m=x;}
     if(rc()<P.bots.modelExplore){const others=o.filter(x=>x!==m);m=others.length===1?others[0]:others[Math.floor(rc()*others.length)];}st.model=m;}
   }
-  const kit=kitOf(),ctx={key,n,profile,bias,angle:st.intent[st.model]};if(it)ctx.intent=spec.intent;
+  const kit=kitOf(),ctx={key,n,profile,bias,angle:st.intent[st.model]};if(it&&!spec.intentBase)ctx.intent=spec.intent;
   const f=throwOnce(kit,ctx),x=f.x,d0=st.district;
   // Mailbag: odměna s košem M, bonus po úrovních (podíl ΔM/M) do R.mailbag, hod návratnosti = první, kdy úroveň vydělala svou cenu
   const M=mailbagM(st.mailbag),base=reward(x);
@@ -179,7 +194,7 @@ export function campaign(spec){
   for(const e of f.events)if(e.result&&e.result!=='interrupted'){if(!seenTypes.has(e.type)){seenTypes.add(e.type);noveltyA=true;}
    const rp4=R.repeat[d0];rp4[1]++;if(e.type==='gust'||e.type==='bird')rp4[0]++;}
   for(const s of kit.slots)if(!seenSlots.has(s)){seenSlots.add(s);noveltyA=true;}
-  if(tricksOn){const T=detectTricks(f,bot=>throwOnce(kit,{...ctx,bot})),TR=R.tricks;TR.flights.push([T.ing,T.hit,st.model]);
+  if(tricksOn){const T=detectTricks(f,bot=>throwOnce(kit,{...ctx,bot})),TR=R.tricks;TR.flights.push([T.ing,T.hit,st.model,d0,T.cap]);
    for(const [k,g] of Object.entries(T.diag))(TR.diag[k]??=[]).push(+g.toFixed(3));
    TRICKS.forEach((t,i)=>{if(!(T.ing>>i&1))return;const r=TR.first[t.id]??={ing:n,ingN:0,hit:null,hitN:null};r.ingN++;
     if(T.hit>>i&1&&r.hit==null){r.hit=n;r.hitN=r.ingN;noveltyA=true;}});}

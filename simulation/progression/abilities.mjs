@@ -45,7 +45,9 @@ export function lineRocketBot(f){
  const pred=f.x+(f.vx+burstLeft(f)*f.cruise)*tr,gap=Math.ceil(pred/P.route.place)*P.route.place-pred,reach=R.amp*f.cruise*R.tau*(1-Math.exp(-tr/R.tau));
  if(gap>0&&gap<=reach)rocket(f);
 }
-export const INTENT_BOTS={pigeonExpress:{whistle:whistleAfter('bird')},dronePingPong:{whistle:whistleAfter('drone')},overTheLine:{rocket:lineRocketBot}};
+// Whistle Stop: píská hned po perfektu jakékoli běžné události (po hvězdě ne, kousek počítá předchozí běžnou událost).
+const whistleAfterPerfect=f=>{const e=f.lastEv;if(e&&e.type!=='star'&&e.result==='perfect'&&f.y>=P.specials.whistle.minY&&canAct(f))whistle(f);};
+export const INTENT_BOTS={pigeonExpress:{whistle:whistleAfter('bird')},dronePingPong:{whistle:whistleAfter('drone')},overTheLine:{rocket:lineRocketBot},whistleStop:{whistle:whistleAfterPerfect}};
 export const botsFor=(kit,intent)=>(kit.slots??[]).filter(s=>BOTS[s]).map(s=>INTENT_BOTS[intent]?.[s]??BOTS[s]);
 // Celý hod s boty schopností podle nasazených kapes.
 export const throwOnce=(kit,ctx)=>fly(kit,ctx,botsFor(kit,ctx.intent));
