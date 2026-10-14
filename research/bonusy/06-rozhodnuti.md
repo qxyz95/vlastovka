@@ -204,3 +204,4 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   3. **(c)** **Žádná tužková stopa** minulého ani nejlepšího hodu v letu.
   4. **(c)** Druhé dítě (nálezce) **až ve finále**, ne od začátku.
   5. **(a)** Vystřihovánka se rozkládá **v každé čtvrti jinak** (4 způsoby).
+- **Formátování kódu (15. 10.):** zaveden Prettier (přes `npx`, bez npm závislostí), hutný styl one-linerů končí. Hromadný commit je v `.git-blame-ignore-revs`.

@@ -7,12 +7,13 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`).
 ## Příkazy
 - `npm start`: http://127.0.0.1:4173. Nespouštět přes `file://`.
 - `npm test`: `node --test`, bez instalace (Node 24). Musí projít po každé změně.
+- `npm run format`: Prettier 3.3.3 přes `npx` (JS a CSS; dokumenty, HTML, vendor a archiv ne).
 - Ladění 3D: `?render=2d` (záloha 2D), `?perf=1` (ms/snímek), `?timer` (smyčka běží i ve skrytém okně), `window.__r3d` (`advance`, `snapshot`, `bench`, `lose`, `restore`). Jazyk: `?lang=en|cs`.
 - Simulátor progrese: `node simulation/progression/run.mjs ... --out <jméno>` (výstup do `simulation/progression/out/`).
 - **IMPORTANT: Nespouštět `npm run simulate`, `node simulation/run.mjs`, `monte-carlo.mjs` ani `qte-balance.mjs`.** Přepisují reporty v `simulation/` (zakázáno i v `.claude/settings.json`).
 
 ## Pravidla kódu
-- Hutný styl (one-linery) jako zbytek projektu, dokud se nerozhodne o formátování. Komentáře jen tam, kde nejsou zřejmé. Identifikátory anglicky.
+- Formátování dělá **Prettier** (`npm run format`, kontrola `npm run format:check`; přes `npx`, bez závislostí, konfigurace `.prettierrc.json`). Před commitem kódu spustit `npm run format`. Statické testy, které čtou zdrojáky, porovnávají přes `tests/helpers/compact.js`. Komentáře jen tam, kde nejsou zřejmé. Identifikátory anglicky.
 - Logika jsou čisté funkce bez DOM (`config.js`, `core.js`, `events.js`, `throw.js`, `scenes.js`, `storage.js`, `random.js`, `atlas*.js`). Simulace i testy importují `src/` přímo, proto do logiky nemíchat DOM ani three.js.
 - Každá změna chování má test v `tests/`.
 - Fyzika je deterministická: pevný krok `DT=1/60`, seedovaný RNG. Seed letu = `attempts+1`, tutoriálové události jen pro seed 1.
