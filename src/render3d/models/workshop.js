@@ -84,6 +84,8 @@ function shadow(p){
 const Pp=(values,def)=>Object.freeze({values:Object.freeze(values),default:def});
 export default Object.freeze({
  id:'workshop',name:'Dílna PAPER LAB',district:0,layers:LOD_LAYER,
+ // Nahrazeno 14. 10. skupinou G2b (06 „Začátek hodu“ bod 1, bible 05 kap. 9): zůstává pro hru (workshop.js) do dávky S4, pak se smaže.
+ replacedBy:'workshop-attic',
  prototype:'Domek dítěte na začátku cesty (bible 05 kap. 9): krémový dům se štítem, velké dílenské okno se stolem, cedulka na provázcích, tyrkysový přístavek s terasou.',
  purpose:'Hrdina ulice místa 1 („domov“): hráč ji vidí před každým hodem v klidovém záběru; dítě stojí na terase přístavku a drží vlaštovku.',
  // door: 'world' dveře světa 1,1 × 2,2 m (doporučeno, 10 kap. 2), 'p3' dveře dnešní Dílny 4,2 × 6 m (BLOCKED). kid: statické dítě pro katalog.

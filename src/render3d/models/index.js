@@ -14,12 +14,22 @@ import workshop from './workshop.js';
 import cornerTurret from './corner-turret.js';
 import person from './person.js';
 import streetLamp from './street-lamp.js';
+import kid from './kid.js';
+import workshopAttic from './workshop-attic.js';
+import workshopInterior from './workshop-interior.js';
+import loftBalcony from './loft-balcony.js';
+import hoistBeam from './hoist-beam.js';
+import retainingWall from './retaining-wall.js';
 import {cardTriangles} from '../paper-cards.js';
 
 export {SCALE,LOD_LAYER,CARD_DEPTH} from './scale.js';
 export {place,bounds} from './parts.js';
-// G1 hmota města (K3), G2 start hodu (K4).
-export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney,workshop,cornerTurret,person,streetLamp]);
+export {LAUNCH,DIORAMA,AIM_SHOT,MENU_SHOT} from './launch-site.js';
+import {place} from './parts.js';
+import {DIORAMA} from './launch-site.js';
+// G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7). Model s replacedBy je nahrazený (zůstává do S4), hero = LOD 0 je LOD H.
+export const MODELS=Object.freeze([houseRow,houseGable,farSkyline,chimney,workshop,cornerTurret,person,streetLamp,kid,workshopAttic,workshopInterior,loftBalcony,hoistBeam,retainingWall]);
+export const ACTIVE_MODELS=Object.freeze(MODELS.filter(m=>!m.replacedBy));
 export const modelById=id=>MODELS.find(m=>m.id===id)??null;
 export const defaults=m=>Object.fromEntries(Object.entries(m.params).map(([k,v])=>[k,v.default]));
 // Karty modelu v daném LOD; neznámé parametry se ignorují, chybějící doplní výchozí.
@@ -38,3 +48,9 @@ export function buildShadow(m,params={}){
  const p={...defaults(m)};for(const k of Object.keys(m.params))if(params[k]!==undefined)p[k]=params[k];
  return m.shadow?m.shadow(p):m.lod[2](p);
 }
+// Dioráma místa odhodu (G2b): karty H1–H6 posunuté do souřadnic místa 1 (launch-site.js DIORAMA). params {id: {…}} přepíše varianty modelů.
+// Ve hře (S4) bude H2–H6 ve sloučené geometrii ulice místa 1 a dítě zvlášť (11 kap. 4.2); tady jen karty pro katalog a testy.
+export function diorama(lod=0,params={},{only=null}={}){
+ return DIORAMA.filter(o=>!only||only.includes(o.id)).flatMap(o=>place(buildModel(o.id,lod,params[o.id]??{}).map(c=>({...c,model:o.id})),o.at));
+}
+export const dioramaShadow=(params={})=>DIORAMA.flatMap(o=>place(buildShadow(o.id,params[o.id]??{}),o.at));
