@@ -42,6 +42,7 @@ Selhání levnějších modelů (typ práce → přidělit Opusu): zatím žádn
 
 - Dokument, který přestane platit, dostane hlavičku `ZASTARALÉ (datum): co neplatí; platí <odkaz>` a řádek v `docs/zdroje.md`. Úplně mrtvý se přesune `git mv` do `archiv/`, pokud na něj neodkazuje kód nebo test.
 - Zkušenost se Sonnetem: úklid dokumentů 15. 10. prošel kontrolou bez oprav.
+- Zkušenost se Sonnetem: U1 texty 15. 10. prošly technicky, ale místo hotových vět z bible napsal vlastní; po jedné opravě v pořádku. **Pro Sonnet uváděj v zadání přesné řádky / sekce dokumentu, ze kterých má text nebo hodnoty převzít doslova, a dej to i do kritérií přijetí.**
 
 ## Report subagenta
 Krátce: změněné soubory, co je hotové, výsledek testů, co bylo ověřeno a co ne (neověřené označ „NOT ASSESSED“, neodhaduj), otevřené body a případně řádky `BLOCKED:`.
