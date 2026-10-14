@@ -1,0 +1,6 @@
+{"models":{
+"hawk":{"speed":20,"glide":3.35,"drag":0.12,"cruise":12,"ideal":18,"qte":1.05,"perfectK":1.7,"missK":0.08,"unlockPlace":4,"price":450},
+"kite":{"speed":14,"glide":4.1,"drag":0.12,"cruise":11,"ideal":30,"qte":1.15,"liftK":1.2,"pushK":0.8,"unlockPlace":6,"price":770},
+"skimmer":{"speed":20,"glide":3.1,"drag":0.12,"cruise":12,"ideal":18,"qte":1.05,"ground":{"below":6,"glide":1.8},"skip":1,"unlockPlace":8,"price":1100},
+"sail":{"speed":14,"glide":4.15,"drag":0.12,"cruise":11,"ideal":30,"qte":1.1,"windK":3,"unlockPlace":10,"price":1560},
+"needle":{"speed":20,"glide":3.05,"drag":0.09,"cruise":14,"ideal":16,"qte":1.0,"windK":0.4,"droneBurst":3,"unlockPlace":14,"price":2190}}}

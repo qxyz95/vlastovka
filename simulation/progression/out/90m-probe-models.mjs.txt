@@ -1,0 +1,43 @@
+// Sonda modelů na pevné výbavě (01 §6.1 body 4–6). Použití: node probe.mjs models.json [n] [profiles]
+import {readFileSync} from 'node:fs';
+const root='file:///C:/Users/micha/chatVlastovky/Just%20Throw%20it/simulation/progression/';
+const {P,setParams,MODEL_SETS}=await import(root+'params.mjs');
+const {throwOnce}=await import(root+'abilities.mjs');
+const {bestAngle}=await import(root+'model.mjs');
+const {kitFrom}=await import(root+'run.mjs');
+const {reward}=await import(root+'campaign.mjs');
+const over=JSON.parse(JSON.stringify(MODEL_SETS.obsah01));
+const extra=process.argv[2]?JSON.parse(readFileSync(process.argv[2],'utf8')):{};
+const n=+(process.argv[3]??200),profiles=(process.argv[4]??'average').split(',');
+const merge=(t,s)=>{for(const [k,v] of Object.entries(s))v&&typeof v==='object'&&!Array.isArray(v)&&t[k]&&typeof t[k]==='object'?merge(t[k],v):t[k]=v;return t;};
+setParams(merge(over,extra));
+const models=Object.keys(P.models),kits=['konec D1','konec D2','konec D3','plná výbava'];
+const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:NaN,pct=v=>(v>=0?'+':'')+(v*100).toFixed(0)+'%';
+for(const prof of profiles){
+ console.log(`\n### profil ${prof}, n ${n}`);
+ for(const kn of kits){
+  const c=P.curve.find(c=>c.name===kn),res={};
+  for(const m of models){const kit={...kitFrom(c),model:m},a=bestAngle(kit,Math.round(P.profiles[prof].mu*20)/20),pas=[],fl=[];
+   for(let i=0;i<n;i++){pas.push(throwOnce(kit,{key:'probe|'+i,n:20,profile:prof,angle:a,events:false}));fl.push(throwOnce(kit,{key:'probe|'+i,n:20,profile:prof,angle:a}));}
+   res[m]={a,pas,fl};}
+  // situace podle letu Dartu
+  const D=res.dart.fl,sit={
+   tail:i=>D[i].w>=.08,head:i=>D[i].w<=-.08,calm:i=>Math.abs(D[i].w)<.05,
+   lift:i=>D[i].events.some(e=>(e.type==='thermal'||e.type==='steam')&&e.result&&!['miss','interrupted'].includes(e.result)),
+   skip:i=>res.dart.fl[i].stats.skips>0||res.skimmer?.fl[i].stats.skips>0,
+   drones2:i=>D[i].events.filter(e=>e.type==='drone'&&e.result).length>=2,
+   birds:i=>D[i].events.filter(e=>(e.type==='bird'||e.type==='drone')&&e.result).length>=2,
+   perf:i=>D[i].stats.perfect/Math.max(1,D[i].stats.done)>=.4,
+  };
+  const idx=f=>[...Array(n).keys()].filter(f);
+  const X=(m,ii,k='fl')=>mean(ii.map(i=>res[m][k][i].x)),T=(m,ii)=>mean(ii.map(i=>res[m].fl[i].real));
+  const cpm=(m,ii)=>mean(ii.map(i=>reward(res[m].fl[i].x)))/(T(m,ii)+8)*60;
+  const all=idx(()=>true),bestX=(ii,k)=>Math.max(X('dart',ii,k),X('glider',ii,k)),bestC=ii=>Math.max(cpm('dart',ii),cpm('glider',ii));
+  console.log(`\n**${kn}** (Dart pasivní ${X('dart',all,'pas').toFixed(0)} m, s událostmi ${X('dart',all).toFixed(0)} m; situace v % letů: `+Object.entries(sit).map(([k,f])=>k+' '+(idx(f).length/n*100).toFixed(0)).join(', ')+')');
+  console.log('| model | úhel | pasivní vs lepší D/G | s událostmi vs lepší | let skut. [s] | ◈/min vs lepší | '+Object.keys(sit).join(' | ')+' |');
+  console.log('|'+'---|'.repeat(6+Object.keys(sit).length));
+  for(const m of models){const row=[m,res[m].a,pct(X(m,all,'pas')/bestX(all,'pas')-1),pct(X(m,all)/bestX(all)-1),T(m,all).toFixed(1),pct(cpm(m,all)/bestC(all)-1)];
+   for(const f of Object.values(sit)){const ii=idx(f);row.push(ii.length?pct(X(m,ii)/bestX(ii)-1):'–');}
+   console.log('| '+row.join(' | ')+' |');}
+ }
+}

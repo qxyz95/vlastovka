@@ -1,0 +1,984 @@
+{
+ "name": "90m-smoke",
+ "date": "2026-10-14T20:33:05.138Z",
+ "n": 20,
+ "seed": 1,
+ "over": {
+  "models": {
+   "hawk": {
+    "speed": 17,
+    "glide": 3,
+    "drag": 0.12,
+    "cruise": 11,
+    "ideal": 34,
+    "qte": 1,
+    "perfectK": 1.6,
+    "missK": 0.06,
+    "unlockPlace": 4,
+    "price": 400
+   },
+   "kite": {
+    "speed": 12,
+    "glide": 4.6,
+    "drag": 0.12,
+    "cruise": 8,
+    "ideal": 40,
+    "qte": 1.1,
+    "liftK": 1.6,
+    "pushK": 0.6,
+    "unlockPlace": 6,
+    "price": 700
+   },
+   "skimmer": {
+    "speed": 21,
+    "glide": 2.8,
+    "drag": 0.12,
+    "cruise": 12,
+    "ideal": 10,
+    "qte": 0.9,
+    "ground": {
+     "below": 6,
+     "glide": 1.7
+    },
+    "skip": 1,
+    "unlockPlace": 8,
+    "price": 1000
+   },
+   "sail": {
+    "speed": 15,
+    "glide": 4.2,
+    "drag": 0.12,
+    "cruise": 10,
+    "ideal": 26,
+    "qte": 0.9,
+    "windK": 2.5,
+    "unlockPlace": 10,
+    "price": 1400
+   },
+   "needle": {
+    "speed": 24,
+    "glide": 2.6,
+    "drag": 0.08,
+    "cruise": 14,
+    "ideal": 12,
+    "qte": 0.9,
+    "windK": 0.4,
+    "droneBurst": 1.5,
+    "unlockPlace": 14,
+    "price": 2000
+   }
+  },
+  "targets": {
+   "throwsPerDistrict": [
+    [
+     34,
+     46
+    ],
+    [
+     36,
+     48
+    ],
+    [
+     37,
+     49
+    ],
+    [
+     36,
+     48
+    ]
+   ],
+   "minutesPerDistrict": [
+    [
+     14,
+     20
+    ],
+    [
+     18,
+     24
+    ],
+    [
+     21,
+     27
+    ],
+    [
+     23,
+     29
+    ]
+   ],
+   "totalMinutes": [
+    82,
+    98
+   ],
+   "totalThrows": [
+    150,
+    185
+   ],
+   "weakFinishWithin": 250,
+   "weakVsAverage": 1.35,
+   "weakVsAverageStat": "minutes",
+   "expertVsAverage": 0.69,
+   "droughtA": {
+    "median": 3,
+    "p90": 6,
+    "maxP90": 12
+   },
+   "droughtP90": 5,
+   "placeGapMedian": 11,
+   "placeGapP90": 17,
+   "repeat": [
+    0.95,
+    0.6,
+    0.6,
+    0.6
+   ],
+   "buyGap": {
+    "median": [
+     1,
+     2,
+     2,
+     2
+    ],
+    "p90": 4
+   },
+   "model": "preview",
+   "notAssessed": true
+  },
+  "economy": {
+   "mailbag": {
+    "on": true
+   }
+  }
+ },
+ "groups": {
+  "weak|realistic|auto|preview": {
+   "n": 20,
+   "doneRate": 1,
+   "throws": 86,
+   "throwsP90": 96,
+   "throwsMax": 97,
+   "minutes": 48.14534246275149,
+   "district": [
+    {
+     "throws": 36,
+     "minutes": 15.579517874707504
+    },
+    {
+     "throws": 23,
+     "minutes": 13.495761039524101
+    },
+    {
+     "throws": 18,
+     "minutes": 11.274482543997529
+    },
+    {
+     "throws": 14,
+     "minutes": 9.874554744062529
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.9,
+     "p90": 24.52,
+     "max": 30.78
+    },
+    {
+     "median": 27,
+     "p90": 31.07,
+     "max": 38.18
+    },
+    {
+     "median": 28.58,
+     "p90": 36.93,
+     "max": 62.99
+    },
+    {
+     "median": 34.9,
+     "p90": 46.88,
+     "max": 78.91
+    }
+   ],
+   "flightP90": 35.1,
+   "flightMax": 78.91,
+   "simMax": 89.26,
+   "droughtMedian": 2,
+   "droughtMax": 8,
+   "droughtMaxMedian": 5,
+   "droughtMaxP90": 6,
+   "placeGapMedian": 7,
+   "placeGapP90": 12,
+   "firstPocket": 43,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.6470588235294118,
+   "eCap": 0.11873198847262248,
+   "betaCap": 0,
+   "craneTugRate": 0.005187319884726225,
+   "craneNewPlace": 0.2222222222222222,
+   "qteHit": 0.9080865428878319,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2277.85,
+     4117,
+     5599.8,
+     6197.25
+    ],
+    "spend": [
+     1983.5,
+     3810,
+     5024.5,
+     5375
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5660,
+     "atlas": 6188,
+     "pocket": 300,
+     "model": 725,
+     "mailbag": 2200
+    },
+    "left": 1914,
+    "models": {
+     "dart": {
+      "share": 0.15043227665706052,
+      "coins": 88.91954022988506,
+      "x": 753.7626136153083,
+      "coinsPerMin": 216.86784317609545,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.6178674351585014,
+      "coins": 156.05223880597015,
+      "x": 1340.8094587428213,
+      "coinsPerMin": 294.64450857608267,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.18501440922190202,
+      "coins": 439.0218068535826,
+      "x": 3427.263213808625,
+      "coinsPerMin": 656.2386645265776,
+      "bought": 0.95,
+      "buyThrow": 70
+     },
+     "kite": {
+      "share": 0.04668587896253602,
+      "coins": 400.1975308641975,
+      "x": 3082.3913752521794,
+      "coinsPerMin": 474.4509785680714,
+      "bought": 0.35,
+      "buyThrow": 72
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9544582933844679,
+    0.7743467933491687,
+    0.6995884773662552,
+    0.534522885958107
+   ],
+   "buyGap": {
+    "median": [
+     4,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2446.95,
+    "incomeRatio": 1.153995239910425,
+    "income": 18191.9,
+    "toGo": [
+     3.018867924528302,
+     1.2734082397003745,
+     1.2830188679245282,
+     1.7208413001912046
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 44,
+      "payEst": 30.303030303030305,
+      "paid": 1,
+      "payFrac": 0.5333333333333333
+     },
+     {
+      "bought": 1,
+      "buyThrow": 62,
+      "payEst": 29.62962962962963,
+      "paid": 0.55,
+      "payFrac": 1
+     },
+     {
+      "bought": 1,
+      "buyThrow": 76,
+      "payEst": 22.167487684729064,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   }
+  },
+  "average|realistic|auto|preview": {
+   "n": 20,
+   "doneRate": 1,
+   "throws": 78,
+   "throwsP90": 88,
+   "throwsMax": 88,
+   "minutes": 42.1703372117198,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 13.258600016736873
+    },
+    {
+     "throws": 24,
+     "minutes": 12.88145510160882
+    },
+    {
+     "throws": 12,
+     "minutes": 8.174085765082125
+    },
+    {
+     "throws": 15,
+     "minutes": 10.920964088267937
+    }
+   ],
+   "flight": [
+    {
+     "median": 18.75,
+     "p90": 25.1,
+     "max": 31.67
+    },
+    {
+     "median": 24.34,
+     "p90": 28.65,
+     "max": 37.86
+    },
+    {
+     "median": 29.34,
+     "p90": 37.79,
+     "max": 56.93
+    },
+    {
+     "median": 34.1,
+     "p90": 41.78,
+     "max": 77.03
+    }
+   ],
+   "flightP90": 35.42,
+   "flightMax": 77.03,
+   "simMax": 84.16,
+   "droughtMedian": 2,
+   "droughtMax": 6,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 5,
+   "placeGapMedian": 6,
+   "placeGapP90": 11,
+   "firstPocket": 41,
+   "levelsBought": 0.6956521739130435,
+   "gliderShare": 0.524390243902439,
+   "eCap": 0.13466494845360824,
+   "betaCap": 0,
+   "craneTugRate": 0.0032216494845360823,
+   "craneNewPlace": 0.2,
+   "qteHit": 0.9717523975588491,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2012.55,
+     4371.6,
+     3823.9,
+     6898.05
+    ],
+    "spend": [
+     1707,
+     4184.5,
+     3398.5,
+     6086
+    ],
+    "kind": {
+     "workshop": 1120,
+     "paper": 5240,
+     "atlas": 5846,
+     "mailbag": 2200,
+     "pocket": 300,
+     "model": 670
+    },
+    "left": 1643,
+    "models": {
+     "dart": {
+      "share": 0.25193298969072164,
+      "coins": 127.71611253196932,
+      "x": 1104.8304670396149,
+      "coinsPerMin": 281.7739656210116,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5141752577319587,
+      "coins": 166.97117794486215,
+      "x": 1428.3646269604346,
+      "coinsPerMin": 311.74898816170435,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "kite": {
+      "share": 0.026417525773195876,
+      "coins": 448.2926829268293,
+      "x": 3457.8391972601617,
+      "coinsPerMin": 517.0670394425656,
+      "bought": 0.2,
+      "buyThrow": 66
+     },
+     "hawk": {
+      "share": 0.20682989690721648,
+      "coins": 436.46417445482865,
+      "x": 3471.3259167083984,
+      "coinsPerMin": 645.6346688783526,
+      "bought": 0.95,
+      "buyThrow": 62
+     },
+     "needle": {
+      "share": 0.0006443298969072165,
+      "coins": 457,
+      "x": 3428.5130439826075,
+      "coinsPerMin": 962.307025781155,
+      "bought": 0.05,
+      "buyThrow": 82
+     }
+    }
+   },
+   "droughtA": {
+    "median": 4,
+    "p90": 9,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9412410763316859,
+    0.7780580075662042,
+    0.7151702786377709,
+    0.5459896983075792
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     2
+    ],
+    "p90": 5
+   },
+   "mailbag": {
+    "coins": 2211.2,
+    "incomeRatio": 1.1455793563128451,
+    "income": 17106.1,
+    "toGo": [
+     2.3529411764705883,
+     1.3559322033898304,
+     1.2594458438287153,
+     1.5679442508710801
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 38,
+      "payEst": 30.674846625766868,
+      "paid": 1,
+      "payFrac": 0.5813953488372093
+     },
+     {
+      "bought": 1,
+      "buyThrow": 60,
+      "payEst": 26.75585284280936,
+      "paid": 0.3,
+      "payFrac": null
+     },
+     {
+      "bought": 1,
+      "buyThrow": 68,
+      "payEst": 23.498694516971277,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   }
+  },
+  "expert|realistic|auto|preview": {
+   "n": 20,
+   "doneRate": 1,
+   "throws": 62,
+   "throwsP90": 65,
+   "throwsMax": 67,
+   "minutes": 35.59846293146011,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 11.344396088174658
+    },
+    {
+     "throws": 22,
+     "minutes": 12.94306726538766
+    },
+    {
+     "throws": 13,
+     "minutes": 8.353638257212129
+    },
+    {
+     "throws": 5,
+     "minutes": 3.9107135938602156
+    }
+   ],
+   "flight": [
+    {
+     "median": 23.25,
+     "p90": 28.27,
+     "max": 34.55
+    },
+    {
+     "median": 27.28,
+     "p90": 31.61,
+     "max": 37.32
+    },
+    {
+     "median": 29.27,
+     "p90": 37.28,
+     "max": 49.88
+    },
+    {
+     "median": 38.23,
+     "p90": 44.93,
+     "max": 52.45
+    }
+   ],
+   "flightP90": 35.28,
+   "flightMax": 52.45,
+   "simMax": 55.44,
+   "droughtMedian": 1,
+   "droughtMax": 4,
+   "droughtMaxMedian": 3,
+   "droughtMaxP90": 4,
+   "placeGapMedian": 5,
+   "placeGapP90": 10,
+   "firstPocket": 36,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.75,
+   "eCap": 0.13166666666666665,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9436619718309859,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1626.95,
+     4048.8,
+     4405.15,
+     2210.9
+    ],
+    "spend": [
+     1287,
+     3690.5,
+     4119.5,
+     1785
+    ],
+    "kind": {
+     "paper": 3505,
+     "workshop": 1120,
+     "atlas": 3807,
+     "pocket": 300,
+     "mailbag": 1535,
+     "model": 615
+    },
+    "left": 1200,
+    "models": {
+     "dart": {
+      "share": 0.14083333333333334,
+      "coins": 146.8284023668639,
+      "x": 1276.5349542179424,
+      "coinsPerMin": 306.2913859009816,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.7266666666666667,
+      "coins": 175.5630733944954,
+      "x": 1528.130289291376,
+      "coinsPerMin": 304.19392573131853,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "hawk": {
+      "share": 0.11833333333333333,
+      "coins": 432.00704225352115,
+      "x": 3542.7509706786173,
+      "coinsPerMin": 619.1080032603774,
+      "bought": 0.9,
+      "buyThrow": 53
+     },
+     "needle": {
+      "share": 0.0008333333333333334,
+      "coins": 647,
+      "x": 4887.5285888556045,
+      "coinsPerMin": 1020.5209199275189,
+      "bought": 0.05,
+      "buyThrow": 64
+     },
+     "kite": {
+      "share": 0.013333333333333334,
+      "coins": 371.1875,
+      "x": 3153.7185422992134,
+      "coinsPerMin": 447.73468417471565,
+      "bought": 0.15,
+      "buyThrow": 59
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 7,
+    "maxP90": 13
+   },
+   "droughtP90": 3,
+   "repeat": [
+    0.9433962264150944,
+    0.7964869775893398,
+    0.679368029739777,
+    0.5450236966824644
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     1,
+     2
+    ],
+    "p90": 4
+   },
+   "mailbag": {
+    "coins": 1188.05,
+    "incomeRatio": 1.1046715451154046,
+    "income": 12291.8,
+    "toGo": [
+     2.5,
+     0.8947368421052632,
+     1.2903225806451613,
+     1.1990407673860912
+    ],
+    "levels": [
+     {
+      "bought": 1,
+      "buyThrow": 31,
+      "payEst": 26.041666666666664,
+      "paid": 1,
+      "payFrac": 0.7352941176470589
+     },
+     {
+      "bought": 0.9,
+      "buyThrow": 46,
+      "payEst": 28.98550724637681,
+      "paid": 0,
+      "payFrac": null
+     },
+     {
+      "bought": 0.35,
+      "buyThrow": 61,
+      "payEst": 20.179372197309416,
+      "paid": 0,
+      "payFrac": null
+     }
+    ]
+   }
+  }
+ },
+ "targetSet": "t90",
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 28,
+   "goal": "34–46",
+   "ok": false
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 24,
+   "goal": "36–48",
+   "ok": false
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 12,
+   "goal": "37–49",
+   "ok": false
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 15,
+   "goal": "36–48",
+   "ok": false
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "13.3",
+   "goal": "14–20",
+   "ok": false
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "12.9",
+   "goal": "18–24",
+   "ok": false
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "8.2",
+   "goal": "21–27",
+   "ok": false
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "10.9",
+   "goal": "23–29",
+   "ok": false
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "42.2",
+   "goal": "82–98",
+   "ok": false
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "18.8",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "24.3",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "29.3",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "34.1",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "35.4",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 5 (max 6, P90 5)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": true
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "6 / 11",
+   "goal": "≤ 11 / ≤ 17",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "0.3 % / 20 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "13 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "52 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 41,
+   "goal": "20–40",
+   "ok": false
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "70 %",
+   "goal": "60 %–85 %",
+   "ok": true
+  },
+  {
+   "name": "Hody celkem (průměrný)",
+   "value": 78,
+   "goal": "150–185",
+   "ok": false
+  },
+  {
+   "name": "Sucho bez novinky A medián / P90 / P90 max kampaní (bez zastávek a variant)",
+   "value": "4 / 9 / 15",
+   "goal": "≤ 3 / ≤ 6 / ≤ 12",
+   "ok": false
+  },
+  {
+   "name": "Sucho bez nákupu ani novinky P90",
+   "value": 4,
+   "goal": "≤ 5",
+   "ok": true
+  },
+  {
+   "name": "Poryv + holub mezi QTE D1 (bez variant)",
+   "value": "94 %",
+   "goal": "≤ 95 %",
+   "ok": true
+  },
+  {
+   "name": "Poryv + holub mezi QTE D2 (bez variant)",
+   "value": "78 %",
+   "goal": "≤ 60 %",
+   "ok": false
+  },
+  {
+   "name": "Poryv + holub mezi QTE D3 (bez variant)",
+   "value": "72 %",
+   "goal": "≤ 60 %",
+   "ok": false
+  },
+  {
+   "name": "Poryv + holub mezi QTE D4 (bez variant)",
+   "value": "55 %",
+   "goal": "≤ 60 %",
+   "ok": true
+  },
+  {
+   "name": "Hody mezi nákupy medián D1–D4 / P90",
+   "value": "3 / 2 / 2 / 2 / 5",
+   "goal": "≤ 1 / 2 / 2 / 2 / ≤ 4",
+   "ok": false
+  },
+  {
+   "name": "Mezi zastávkami (zastávky v simulátoru nejsou)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Fronta novinek (není v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Varianty událostí: přínos a první setkání (nejsou v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Délka letu: varianty, vír a lampiony (nejsou v simulátoru)",
+   "value": "–",
+   "goal": "05 §7.2",
+   "ok": "na"
+  },
+  {
+   "name": "Kousky (05 §4.6, běh bez --tricks)",
+   "value": "–",
+   "goal": "brána 6 z 8",
+   "ok": "na"
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "78.9",
+   "goal": "≤ 60",
+   "ok": false
+  },
+  {
+   "name": "Slabý: cíl do 250 hodů",
+   "value": "100 % (max 97)",
+   "goal": "100 %",
+   "ok": true
+  },
+  {
+   "name": "Slabý / průměrný (minuty)",
+   "value": "1.14",
+   "goal": "≤ 1.35",
+   "ok": true
+  },
+  {
+   "name": "Expert / průměrný (hody)",
+   "value": "0.79",
+   "goal": "≥ 0.69",
+   "ok": true
+  },
+  {
+   "name": "Expert / slabý (hody)",
+   "value": "0.72",
+   "goal": "0.6–0.75",
+   "ok": true
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (weak)",
+   "value": "1.15",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (weak, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (average)",
+   "value": "1.15",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (average, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  },
+  {
+   "name": "Mailbag: příjem / příjem bez bonusu v téže kampani (expert)",
+   "value": "1.10",
+   "goal": "≤ 1.2",
+   "ok": true
+  },
+  {
+   "name": "Mailbag III: návratnost do finále, podíl zbývajících hodů (expert, medián; vráceno)",
+   "value": "∞ (0 %)",
+   "goal": "≤ 70 %",
+   "ok": false
+  }
+ ],
+ "seconds": 65.841
+}
