@@ -125,3 +125,8 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   1. Stíny Papírového města „na zem“ podle `research/design/08-stiny.md` (čisté stěny, kontaktní pata domů, studený tint, světlo zezadu): ráno jemné, ve Zlatých polích výraznější a delší. Dnešní stíny ze siluet se ruší.
   2. Přechody mezi čtvrtěmi (`09-prechody-ctvrti.md`): dálka jde napřed (míchání stavebnic v pásu ~150 m) a ručně navržené brány na hranicích (most, maják, sedlo s tunelem, poslední věž). Papírový mrak přes obraz ne.
   3. Katalog modelů (`10-katalog-modelu.md`): modely psané v kódu, **hodně detailu všude** (ne jen u dominant), katalog před dávkou P2. Rozpočty na místo (`.claude/rules/render3d.md`) dál platí, detail se musí vejít přes LOD a sloučenou geometrii.
+- **Karty objektů čtvrti 1 (`research/design/11-katalog-ctvrt1.md`, 14. 10.): vše podle doporučení.**
+  1. Dominanty vyprávějí místo: 1 nárožní dům s věžičkou u Dílny, 2 tržní hala s lucernou (pára události), 3 velký skleník, 4 železniční vodárna s nádražím. Kostel ne (soupeřil by s Hodinovou věží).
+  2. Drobnosti: herní velikost jen u toho, co hráč potřebuje vidět (holub v události, větrník kvůli Pinwheel), ozdoby jako praporky 0,8 m, zbytek ve skutečné velikosti.
+  3. Praporky bez hořčicové, místo ní `#f2b65a`. Hořčicová zůstává jen pro hodnotu.
+  4. Hodně detailu všude podle scénáře C (tenké díly jako ploché karty `panel`/`lista`, kap. 1.3 a 4).
