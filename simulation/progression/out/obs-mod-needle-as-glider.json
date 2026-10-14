@@ -1,0 +1,403 @@
+{
+ "name": "obs-mod-needle-as-glider",
+ "date": "2026-10-14T18:33:44.629Z",
+ "n": 60,
+ "seed": 1,
+ "over": {
+  "profiles": {
+   "weak": {
+    "qte": 0.44
+   },
+   "average": {
+    "qte": 0.28
+   },
+   "good": {
+    "qte": 0.18
+   },
+   "expert": {
+    "qte": 0.1
+   },
+   "weakAssist": {
+    "qte": 0.44
+   },
+   "auto": {
+    "qte": 0.44
+   }
+  },
+  "models": {
+   "glider": {
+    "speed": 24,
+    "glide": 2.6,
+    "cruise": 14,
+    "ideal": 12,
+    "qte": 0.9,
+    "drag": 0.08
+   }
+  }
+ },
+ "groups": {
+  "weak|realistic|auto|better": {
+   "n": 60,
+   "doneRate": 1,
+   "throws": 139,
+   "throwsP90": 151,
+   "throwsMax": 164,
+   "minutes": 62.28270183057446,
+   "district": [
+    {
+     "throws": 41,
+     "minutes": 14.786277247814509
+    },
+    {
+     "throws": 29,
+     "minutes": 12.893464209317466
+    },
+    {
+     "throws": 32,
+     "minutes": 15.875693839371689
+    },
+    {
+     "throws": 38,
+     "minutes": 19.485075171897506
+    }
+   ],
+   "flight": [
+    {
+     "median": 13.04,
+     "p90": 18.59,
+     "max": 26.73
+    },
+    {
+     "median": 19.11,
+     "p90": 24.49,
+     "max": 32.47
+    },
+    {
+     "median": 21.86,
+     "p90": 26.62,
+     "max": 35.67
+    },
+    {
+     "median": 21.98,
+     "p90": 27.44,
+     "max": 38.68
+    }
+   ],
+   "flightP90": 25.41,
+   "flightMax": 38.68,
+   "simMax": 41.34,
+   "droughtMedian": 2,
+   "droughtMax": 14,
+   "droughtMaxMedian": 11,
+   "droughtMaxP90": 13,
+   "placeGapMedian": 10,
+   "placeGapP90": 20,
+   "firstPocket": 42,
+   "levelsBought": 0.9130434782608695,
+   "gliderShare": 0.5652173913043478,
+   "eCap": 0.023329283110571083,
+   "betaCap": 0,
+   "craneTugRate": 0.015309842041312272,
+   "craneNewPlace": 0.015873015873015872,
+   "qteHit": 0.7007564675889163,
+   "diveCrash": null
+  },
+  "average|realistic|auto|better": {
+   "n": 60,
+   "doneRate": 1,
+   "throws": 113,
+   "throwsP90": 128,
+   "throwsMax": 139,
+   "minutes": 53.284570672302124,
+   "district": [
+    {
+     "throws": 33,
+     "minutes": 12.85879234282049
+    },
+    {
+     "throws": 23,
+     "minutes": 10.454284308012129
+    },
+    {
+     "throws": 24,
+     "minutes": 12.64198246451404
+    },
+    {
+     "throws": 32,
+     "minutes": 17.43965526416921
+    }
+   ],
+   "flight": [
+    {
+     "median": 15.15,
+     "p90": 19.73,
+     "max": 27.78
+    },
+    {
+     "median": 19.28,
+     "p90": 24.03,
+     "max": 32.03
+    },
+    {
+     "median": 23.32,
+     "p90": 28.23,
+     "max": 36.22
+    },
+    {
+     "median": 23.68,
+     "p90": 28.77,
+     "max": 37.25
+    }
+   ],
+   "flightP90": 26.48,
+   "flightMax": 37.25,
+   "simMax": 40.8,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 11,
+   "placeGapMedian": 8,
+   "placeGapP90": 16,
+   "firstPocket": 37,
+   "levelsBought": 0.8913043478260869,
+   "gliderShare": 0.5607476635514018,
+   "eCap": 0.05586424388046253,
+   "betaCap": 0,
+   "craneTugRate": 0.010662261600840967,
+   "craneNewPlace": 0.04225352112676056,
+   "qteHit": 0.8491818000399122,
+   "diveCrash": null
+  },
+  "expert|realistic|auto|better": {
+   "n": 60,
+   "doneRate": 1,
+   "throws": 64,
+   "throwsP90": 78,
+   "throwsMax": 86,
+   "minutes": 31.872465321018762,
+   "district": [
+    {
+     "throws": 21,
+     "minutes": 8.654692966396405
+    },
+    {
+     "throws": 14,
+     "minutes": 7.1081824446893265
+    },
+    {
+     "throws": 14,
+     "minutes": 7.695277574848795
+    },
+    {
+     "throws": 13,
+     "minutes": 8.168230536994749
+    }
+   ],
+   "flight": [
+    {
+     "median": 16.94,
+     "p90": 21.25,
+     "max": 27.68
+    },
+    {
+     "median": 21.31,
+     "p90": 25.46,
+     "max": 32.3
+    },
+    {
+     "median": 24.23,
+     "p90": 30.22,
+     "max": 37.31
+    },
+    {
+     "median": 27.41,
+     "p90": 33.79,
+     "max": 42.33
+    }
+   ],
+   "flightP90": 29.52,
+   "flightMax": 42.33,
+   "simMax": 43.78,
+   "droughtMedian": 1,
+   "droughtMax": 8,
+   "droughtMaxMedian": 4,
+   "droughtMaxP90": 7,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 24,
+   "levelsBought": 0.6956521739130435,
+   "gliderShare": 0.6615384615384615,
+   "eCap": 0.0593904662672571,
+   "betaCap": 0,
+   "craneTugRate": 0.008595988538681949,
+   "craneNewPlace": 0.030303030303030304,
+   "qteHit": 0.9041911148365466,
+   "diveCrash": 0.017049408489909535
+  }
+ },
+ "checks": [
+  {
+   "name": "Hody D1 (průměrný)",
+   "value": 33,
+   "goal": "25–35",
+   "ok": true
+  },
+  {
+   "name": "Hody D2 (průměrný)",
+   "value": 23,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D3 (průměrný)",
+   "value": 24,
+   "goal": "20–30",
+   "ok": true
+  },
+  {
+   "name": "Hody D4 (průměrný)",
+   "value": 32,
+   "goal": "20–30",
+   "ok": false
+  },
+  {
+   "name": "Minuty D1 (průměrný)",
+   "value": "12.9",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D2 (průměrný)",
+   "value": "10.5",
+   "goal": "10–16",
+   "ok": true
+  },
+  {
+   "name": "Minuty D3 (průměrný)",
+   "value": "12.6",
+   "goal": "12–18",
+   "ok": true
+  },
+  {
+   "name": "Minuty D4 (průměrný)",
+   "value": "17.4",
+   "goal": "14–20",
+   "ok": true
+  },
+  {
+   "name": "Minuty celkem (průměrný)",
+   "value": "53.3",
+   "goal": "50–75",
+   "ok": true
+  },
+  {
+   "name": "Let medián D1 [s]",
+   "value": "15.2",
+   "goal": "≤ 22",
+   "ok": true
+  },
+  {
+   "name": "Let medián D2 [s]",
+   "value": "19.3",
+   "goal": "≤ 27",
+   "ok": true
+  },
+  {
+   "name": "Let medián D3 [s]",
+   "value": "23.3",
+   "goal": "≤ 30",
+   "ok": true
+  },
+  {
+   "name": "Let medián D4 [s]",
+   "value": "23.7",
+   "goal": "≤ 35",
+   "ok": true
+  },
+  {
+   "name": "Let P90 [s]",
+   "value": "26.5",
+   "goal": "≤ 45",
+   "ok": true
+  },
+  {
+   "name": "Sucho medián / P90 max kampaní",
+   "value": "2 / 11 (max 12, P90 11)",
+   "goal": "≤ 4 / ≤ 8",
+   "ok": false
+  },
+  {
+   "name": "Mezi místy medián / P90",
+   "value": "8 / 16",
+   "goal": "≤ 8 / ≤ 14",
+   "ok": false
+  },
+  {
+   "name": "Paper Crane: tah v kampani (lety) / přes nové místo (tahy, info)",
+   "value": "1.1 % / 4 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Strop E zasažen (lety)",
+   "value": "6 %",
+   "goal": "≤ 20 %",
+   "ok": true
+  },
+  {
+   "name": "Strop β zasažen (lety)",
+   "value": "0 %",
+   "goal": "≤ 25 %",
+   "ok": true
+  },
+  {
+   "name": "Podíl kluzáku",
+   "value": "56 %",
+   "goal": "30 %–70 %",
+   "ok": true
+  },
+  {
+   "name": "První kapsa (hod)",
+   "value": 37,
+   "goal": "20–40",
+   "ok": true
+  },
+  {
+   "name": "Koupené úrovně v cíli",
+   "value": "89 %",
+   "goal": "60 %–85 %",
+   "ok": false
+  },
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "42.3",
+   "goal": "≤ 60",
+   "ok": true
+  },
+  {
+   "name": "Slabý: cíl do 250 hodů",
+   "value": "100 % (max 164)",
+   "goal": "100 %",
+   "ok": true
+  },
+  {
+   "name": "Slabý / průměrný (hody)",
+   "value": "1.23",
+   "goal": "≤ 1.4",
+   "ok": true
+  },
+  {
+   "name": "Expert / průměrný (hody)",
+   "value": "0.57",
+   "goal": "≥ 0.7",
+   "ok": false
+  },
+  {
+   "name": "Expert / slabý (hody)",
+   "value": "0.46",
+   "goal": "0.6–0.75",
+   "ok": false
+  }
+ ],
+ "seconds": 42.915
+}
