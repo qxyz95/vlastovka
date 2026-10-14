@@ -13,7 +13,7 @@ const L=h=>{const [r,g,b]=rgb(h).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055
 test('U14: life3d, workshop a companion3d bez hex literálů, barvy jen z palette.js',()=>{
  for(const n of FILES){const s=src(n);assert.deepEqual(s.match(/#[0-9a-f]{3,8}\b|0x[0-9a-f]{6}\b/gi)??[],[],n);}
  for(const n of ['life3d.js','workshop.js'])assert.match(src(n),/import \{[^}]*CYBER[^}]*\} from '\.\/palette\.js'/,n);
- assert.match(src('workshop.js'),/const PAL=CYBER\.workshop;/);
+ assert.match(src('workshop.js'),/PAL=\(paper\?PAPIR:CYBER\)\.workshop;/);// P3: papírová Dílna bere PAPIR.workshop
  assert.match(src('life3d.js'),/K=CYBER\.life\b/);
  assert.match(src('companion3d.js'),/K=palette\.companion\b/);
 });
