@@ -1,7 +1,7 @@
 // Katalog modelů K1 (research/design/10-katalog-modelu.md kap. 4 a 6): objekt z registru src/render3d/models na otočném podstavci,
 // pohled zblízka / v záběru hry (kamera cameraFor, vrstva podle LOD) / na 25 % v šedi, LOD 0–2, varianty, počty △ a draw calls.
 import * as THREE from 'three';
-import {MODELS,modelById,buildModel,defaults,bounds,SCALE,LOD_LAYER} from '../../src/render3d/models/index.js';
+import {MODELS,modelById,buildModel,defaults,bounds,nearestLod,SCALE,LOD_LAYER} from '../../src/render3d/models/index.js';
 import {cardTriangles,groundCards,PLACE_W} from '../../src/render3d/paper-cards.js';
 import {cameraFor} from '../../src/render3d/frame.js';
 import {planeShape} from '../../src/render3d/geometry.js';
@@ -35,12 +35,13 @@ const plane=(()=>{const s=planeShape('dart'),g=new THREE.BufferGeometry(),n=s.po
 scene.add(person,plane);
 
 function rebuild(){
- const m=modelById(state.model);list=buildModel(m,state.lod,state.params);box=bounds(list);
+ // Model, který se v daném LOD nekreslí (dálka: strop 0), ukáže nejbližší kreslený LOD.
+ const m=modelById(state.model);state.shown=nearestLod(m,state.lod);list=buildModel(m,state.shown,state.params);box=bounds(list);
  modelMesh?.geometry.dispose();pedestal?.geometry.dispose();if(ground){ground.geometry.dispose();scene.remove(ground);}modelMesh=pedestal=ground=null;spinner.clear();turntable.clear();turntable.add(spinner);
  modelMesh=new THREE.Mesh(cardGeometry(list),mat);
  // Model otáčený kolem středu půdorysu; na podstavci stojí ve 0, ve hře přední hranou na hraně vrstvy.
  const cx=(box.x0+box.x1)/2,cz=(box.z0+box.z1)/2;modelMesh.position.set(-cx,0,-cz);spinner.add(modelMesh);
- if(state.view==='game'){const L=LOD_LAYER[state.lod];turntable.position.set(GAME.X+GAME.dx,0,GAME.front[L]-(box.z1-cz));
+ if(state.view==='game'){const L=LOD_LAYER[state.shown];turntable.position.set(GAME.X+GAME.dx,0,GAME.front[L]-(box.z1-cz));
   ground=new THREE.Mesh(cardGeometry(groundCards('papir',0)),groundMat);ground.position.x=GAME.X-PLACE_W/2;scene.add(ground);}
  else{turntable.position.set(0,0,0);const r=Math.hypot(box.w,box.d)/2+1.2;pedestal=new THREE.Mesh(colored(new THREE.CylinderGeometry(r,r*1.04,.5,48),T.kraft),mat);pedestal.position.y=-.25;turntable.add(pedestal);}
  const fig=state.figures&&state.view!=='game';person.visible=fig;person.position.set(-(Math.hypot(box.w,box.d)/2+2.4),0,0);
@@ -83,7 +84,7 @@ function ui(){
  stage.dataset.view=state.view;$('#model').value=state.model;$('#figures').checked=state.figures;
  $('#m-name').textContent=`${m.name} (${m.id})`;$('#m-proto').textContent=m.prototype;$('#m-purpose').textContent=m.purpose;
  $('#m-size').textContent=`${fmt(m.size.w)} × ${fmt(m.size.h)} × ${fmt(m.size.d)} m (š × v × h)`;$('#m-bounds').textContent=`${fmt(box.w)} × ${fmt(box.h)} × ${fmt(box.d)} m`;
- $('#m-lod').innerHTML=[0,1,2].map(l=>{const n=cardTriangles(buildModel(m,l,p)),over=n>m.tris[l];return `<tr${l===state.lod?' class="on"':''}><th>${l}</th><td>${LOD_LAYER[l]}</td><td${over?' class="over"':''}>${n}</td><td>${m.tris[l]}</td></tr>`;}).join('');
+ $('#m-lod').innerHTML=[0,1,2].map(l=>{const n=cardTriangles(buildModel(m,l,p)),over=n>m.tris[l];return `<tr${l===state.shown?' class="on"':''}><th>${l}</th><td>${LOD_LAYER[l]}${m.tris[l]?'':' (nekreslí se)'}</td><td${over?' class="over"':''}>${n}</td><td>${m.tris[l]}</td></tr>`;}).join('');
  // Volby varianty se staví jen při změně objektu (fokus klávesnice v selectu zůstane).
  const box2=$('#params');if(box2.dataset.model!==m.id){box2.dataset.model=m.id;box2.innerHTML='';
   for(const [k,v] of Object.entries(m.params)){const l=document.createElement('label'),s=document.createElement('select');l.textContent=k+' ';s.dataset.param=k;

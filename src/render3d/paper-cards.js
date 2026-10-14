@@ -1,6 +1,6 @@
 // Papírové karty (čisté, ?styl=papir): bloky cityChunk a život čtvrti → tenké karty dioramatu a jejich vrcholy (stíny na zem: paper-shadow.js).
 // Přeneseno z prototype/styly/papir-data.js (bible research/design/05-styl-papir.md kap. 3), barvy z palette(style).city / .life, ne napevno.
-// Karta: {shape:'box'|'gable'|'pyr'|'disc'|'flag', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?}, metry.
+// Karta: {shape:'box'|'panel'|'lista'|'gable'|'eave'|'pyr'|'disc'|'flag'|'poly', layer:'near'|'mid'|'far'|'cloud'|'balloon', x,w,y,h,z,d, color, roof?, r?, n?, pts?}, metry.
 import {SCREEN_METERS} from '../scenes.js';
 import {chunkOffset} from './geometry.js';
 import {suburbLife,carX,TRACK} from './life.js';
@@ -76,27 +76,46 @@ export function lifeCards(life=suburbLife(),style='papir'){
  return {cards:out,clouds:life.clouds,balloons:life.balloons};
 }
 
-// ── Vrcholy karet: pozice, normála, barva ('#rrggbb' sRGB, převod dělá three.js modul). Čelo karty míří na +z (ke kameře).
+// ── Vrcholy karet: pozice, normála, barva ('#rrggbb' sRGB, převod dělá three.js modul). Čelo karty míří na +z (ke kameře), pořadí vrcholů CCW zvenku.
+// Tenké karty (research/design/11-katalog-ctvrt1.md kap. 1.3, scénář C): 'panel' = jen čelo (2 △), 'lista' = čelo + světlý horní řez (4 △).
+// box tenčí než THIN se kreslí sám jako panel (díly ze seznamu LISTA jako lista), disc s d ≤ THIN_DISC jen čelem (n − 2 △): boky jsou v záběru pod 1 px.
+// Další tvary katalogu: gable {eaves:false} bez lemů okapu (5 △), 'eave' střecha okapem ke kameře (hřeben v půli hloubky, 2 sklony + 2 boční
+// štíty; back:false bez zadního sklonu, 4 △), 'poly' vystřižené čelo {pts:[[x,y]…] CCW, vějíř z pts[0], hvězdicový k pts[0]; x,w,y,h = obal}.
+// opts.thin=false nakreslí panel, lista a tenký disc jako plnou kartu (porovnání se stavem před K3).
+export const THIN=.15,THIN_DISC=.1,LISTA=Object.freeze(new Set(['sill','cornice','stringcourse','plinth','step','canopy','flowerbox','lintel','balcony','counter','coping']));
+export const cardKind=(b,thin=true)=>b.shape==='panel'||b.shape==='lista'?(thin?b.shape:'box'):b.shape==='box'&&thin&&b.d<=THIN?(LISTA.has(b.part)?'lista':'panel'):b.shape==='disc'&&thin&&b.d<=THIN_DISC?'plate':b.shape;
 const quad=(o,a,b,c,d,n,col)=>{for(const v of [a,b,c,a,c,d]){o.p.push(...v);o.n.push(...n);o.c.push(col);}};
-export function cardVertices(list){
+const tri=(o,a,b,c,n,col)=>{for(const v of [a,b,c]){o.p.push(...v);o.n.push(...n);o.c.push(col);}};
+export function cardVertices(list,{thin=true}={}){
  const o={p:[],n:[],c:[]};
- for(const b of list){const z0=b.z-b.d/2,z1=b.z+b.d/2;
-  if(b.shape==='box'){const x0=b.x,x1=b.x+b.w,y0=b.y,y1=b.y+b.h,col=b.color;
-   quad(o,[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],col);quad(o,[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],col);
+ for(const b of list){const z0=b.z-b.d/2,z1=b.z+b.d/2,k=cardKind(b,thin);
+  if(k==='box'||k==='panel'||k==='lista'){const x0=b.x,x1=b.x+b.w,y0=b.y,y1=b.y+b.h,col=b.color;
+   quad(o,[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1],col);if(k==='panel')continue;quad(o,[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0],[0,1,0],col);if(k==='lista')continue;
    quad(o,[x1,y0,z1],[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[1,0,0],col);quad(o,[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[-1,0,0],col);}
-  else if(b.shape==='gable'){const x0=b.x,x1=b.x+b.w,xm=(x0+x1)/2,y0=b.y,y1=b.y+b.h,s=Math.hypot(b.h,b.w/2),nl=[-b.h/s,b.w/2/s,0],nr=[b.h/s,b.w/2/s,0];
+  else if(k==='gable'){const x0=b.x,x1=b.x+b.w,xm=(x0+x1)/2,y0=b.y,y1=b.y+b.h,s=Math.hypot(b.h,b.w/2),nl=[-b.h/s,b.w/2/s,0],nr=[b.h/s,b.w/2/s,0];
    for(const v of [[x0,y0,z1],[x1,y0,z1],[xm,y1,z1]]){o.p.push(...v);o.n.push(0,0,1);o.c.push(b.color);}
    quad(o,[x0,y0,z1],[xm,y1,z1],[xm,y1,z0],[x0,y0,z0],nl,b.roof);quad(o,[xm,y1,z1],[x1,y0,z1],[x1,y0,z0],[xm,y1,z0],nr,b.roof);
+   if(b.eaves===false)continue;
    // okap: tenký pruh střechy na čele štítu (papír přeložený přes hranu)
    const t=.55;for(const [a,c2] of [[[x0,y0,z1+.05],[xm,y1,z1+.05]],[[xm,y1,z1+.05],[x1,y0,z1+.05]]]){const dx=c2[0]-a[0],dy=c2[1]-a[1],l=Math.hypot(dx,dy),nx=-dy/l*t,ny=dx/l*t;
     quad(o,a,c2,[c2[0]-nx,c2[1]-ny,c2[2]],[a[0]-nx,a[1]-ny,a[2]],[0,0,1],b.roof);}}
-  else if(b.shape==='pyr'||b.shape==='flag'){const x0=b.x,x1=b.x+b.w,xm=(x0+x1)/2,flag=b.shape==='flag',ya=flag?b.y+b.h:b.y,yb=flag?b.y:b.y+b.h;
-   const tri=flag?[[x0,ya,z1],[xm,yb,z1],[x1,ya,z1]]:[[x0,ya,z1],[x1,ya,z1],[xm,yb,z1]];for(const v of tri){o.p.push(...v);o.n.push(0,0,1);o.c.push(b.color);}
+  else if(k==='eave'){const x0=b.x,x1=b.x+b.w,y0=b.y,y1=b.y+b.h,zm=(z0+z1)/2,f=Math.hypot(b.h,z1-zm);
+   quad(o,[x0,y0,z1],[x1,y0,z1],[x1,y1,zm],[x0,y1,zm],[0,(z1-zm)/f,b.h/f],b.roof);
+   if(b.back!==false)quad(o,[x1,y0,z0],[x0,y0,z0],[x0,y1,zm],[x1,y1,zm],[0,(zm-z0)/f,-b.h/f],b.roof);
+   tri(o,[x0,y0,z0],[x0,y0,z1],[x0,y1,zm],[-1,0,0],b.color);tri(o,[x1,y0,z1],[x1,y0,z0],[x1,y1,zm],[1,0,0],b.color);}
+  else if(k==='poly'){const P=b.pts,v=([x,y])=>[x,y,z1];for(let i=1;i<P.length-1;i++)tri(o,v(P[0]),v(P[i]),v(P[i+1]),[0,0,1],b.color);}
+  else if(k==='pyr'||k==='flag'){const x0=b.x,x1=b.x+b.w,xm=(x0+x1)/2,flag=k==='flag',ya=flag?b.y+b.h:b.y,yb=flag?b.y:b.y+b.h;
+   const tr=flag?[[x0,ya,z1],[xm,yb,z1],[x1,ya,z1]]:[[x0,ya,z1],[x1,ya,z1],[xm,yb,z1]];for(const v of tr){o.p.push(...v);o.n.push(0,0,1);o.c.push(b.color);}
    if(!flag){const s=Math.hypot(b.h,b.w/2);quad(o,[x0,ya,z1],[xm,yb,z1],[xm,yb,z0],[x0,ya,z0],[-b.h/s,b.w/2/s,0],b.color);quad(o,[xm,yb,z1],[x1,ya,z1],[x1,ya,z0],[xm,yb,z0],[b.h/s,b.w/2/s,0],b.color);}}
-  else if(b.shape==='disc'){const n=b.n??18,a0=b.n===4?0:Math.PI/2;for(let i=0;i<n;i++){const a=a0+i/n*Math.PI*2,c2=a0+(i+1)/n*Math.PI*2,P=t=>[b.x+Math.cos(t)*b.r,b.y+Math.sin(t)*b.r];
+  else if(k==='plate'){const n=b.n??18,a0=b.n===4?0:Math.PI/2,P=i=>[b.x+Math.cos(a0+i/n*Math.PI*2)*b.r,b.y+Math.sin(a0+i/n*Math.PI*2)*b.r,z1];
+   for(let i=1;i<n-1;i++)tri(o,P(0),P(i),P(i+1),[0,0,1],b.color);}
+  else if(k==='disc'){const n=b.n??18,a0=b.n===4?0:Math.PI/2;for(let i=0;i<n;i++){const a=a0+i/n*Math.PI*2,c2=a0+(i+1)/n*Math.PI*2,P=t=>[b.x+Math.cos(t)*b.r,b.y+Math.sin(t)*b.r];
     const [ax,ay]=P(a),[bx,by]=P(c2);o.p.push(b.x,b.y,z1,ax,ay,z1,bx,by,z1);o.n.push(0,0,1,0,0,1,0,0,1);o.c.push(b.color,b.color,b.color);
     const nm=[Math.cos((a+c2)/2),Math.sin((a+c2)/2),0];quad(o,[ax,ay,z1],[ax,ay,z0],[bx,by,z0],[bx,by,z1],nm,b.color);}}}
  return o;
 }
-// Trojúhelníky karet bez sestavení vrcholů (rozpočet): box 8, gable 1 + 4 + 4, pyr 1 + 4, flag 1, disc 3 × n.
-export const cardTriangles=list=>list.reduce((s,b)=>s+(b.shape==='box'?8:b.shape==='gable'?9:b.shape==='pyr'?5:b.shape==='flag'?1:3*(b.n??18)),0);
+// Trojúhelníky karet bez sestavení vrcholů (rozpočet): box 8, panel 2, lista 4, gable 9 (bez lemů 5), eave 6 (bez zad 4), pyr 5, flag 1, poly body − 2,
+// disc 3 × n, tenký disc n − 2 (mnohoúhelník čelem).
+const TRIS={box:8,panel:2,lista:4,pyr:5,flag:1};
+export const cardTriangles=(list,{thin=true}={})=>list.reduce((s,b)=>{const k=cardKind(b,thin);
+ return s+(TRIS[k]??(k==='gable'?(b.eaves===false?5:9):k==='eave'?(b.back===false?4:6):k==='poly'?b.pts.length-2:k==='plate'?(b.n??18)-2:3*(b.n??18)));},0);
