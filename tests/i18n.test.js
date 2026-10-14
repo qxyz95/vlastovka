@@ -1,12 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync,readdirSync} from 'node:fs';
 import {t,num,unit,pct,setLang,getLang,pickLang,setStrict,has,paramsOf,LOCALES,LANG_IDS,DEFAULT_LANG,translateMessage} from '../src/i18n.js';
 import en from '../src/locales/en.js';
 import cs from '../src/locales/cs.js';
 import {BRANCHES,MODELS} from '../src/config.js';
 import {ROUTE,DISTRICTS,routeAt,districtAt,SCREEN_METERS} from '../src/scenes.js';
-import {THEME_IDS} from '../src/themes.js';
 import {throwSettings} from '../src/throw.js';
 import {angleHint} from '../src/core.js';
 import {eventView,EVENT_VIEWS} from '../src/render3d/events-view.js';
@@ -51,7 +50,7 @@ test('i18n: a missing key falls back to English, in strict mode (tests) it fails
 });
 test('i18n: every dynamic key built from game data exists',()=>{
  const keys=[...BRANCHES.flatMap(b=>['branch.'+b.id,'branch.'+b.id+'.effect']),...Object.keys(MODELS).flatMap(m=>['model.'+m,'model.'+m+'.desc']),
-  ...THEME_IDS.map(id=>'theme.'+id),...ROUTE.flatMap(r=>['place.'+r.kind,'place.'+r.kind+'.story']),...DISTRICTS.map(d=>'district.'+d.id),
+  ...ROUTE.flatMap(r=>['place.'+r.kind,'place.'+r.kind+'.story']),...DISTRICTS.map(d=>'district.'+d.id),
   ...[0,.4,.8,1].map(c=>'throw.'+throwSettings(15,c).grade),...[-12,-5,0,5,12].map(d=>angleHint(20+d,20)),
   ...['success','perfect','miss'].flatMap(r=>['feedback.'+r,'popup.'+r])];
  for(const id of LANG_IDS)for(const k of keys)assert.ok(has(k,id),`${id}: ${k}`);
@@ -63,7 +62,7 @@ test('i18n: switching the language at run time changes place, district and event
  assert.equal(eventView({type:'gust',phase:'warning',at:0,result:null},.1).label,'! GET READY');
  setLang('cs');assert.equal(routeAt(x).name,'Trh pod praporky');assert.equal(routeAt(0).story,'Z okna dílny vyrážíš nad spící ulici.');
  assert.equal(districtAt(x).name,'STŘECHY ZA ÚSVITU · 2/4 · Trh pod praporky');
- assert.equal(eventView({type:'gust',phase:'interaction',at:0,result:null},1).label,'↓ KLEPNI');assert.equal(eventView('bird').title,'Kyberholub-kurýr');
+ assert.equal(eventView({type:'gust',phase:'interaction',at:0,result:null},1).label,'↓ KLEPNI');assert.equal(eventView('bird').title,'Papírový holub-kurýr');
  setLang('en');
 });
 test('i18n: district and place names follow the Paper City bible, set C (decision 14. 10.)',()=>{
@@ -102,6 +101,18 @@ test('i18n: every save warning from storage.js is shown in the chosen language',
   assert.equal(translateMessage(save({}),'storage.','en'),t('storage.saveFailed',{},'en'));
   assert.equal(translateMessage(save({}),'storage.','cs'),t('storage.saveFailed',{},'cs'));}
  finally{globalThis.localStorage=ls;}
+});
+test('U1: removed style keys are gone and unread; no night/neon wording; new keys from UX 5.1 and menu 10 exist with the same params',()=>{
+ const gone=k=>/^theme\./.test(k)||['nav.style','nav.styleLabel','brand.sub'].includes(k);
+ for(const d of [en,cs])assert.deepEqual(Object.keys(d).filter(gone),[]);
+ const srcs=[...readdirSync(new URL('../src/',import.meta.url),{recursive:true}).filter(f=>f.endsWith('.js')&&!f.startsWith('locales')).map(f=>read('src/'+f)),read('index.html'),read('bonus.html')];
+ for(const s of srcs)assert.ok(!/['"`]theme\.|nav\.style|brand\.sub|data-i18n="theme/.test(s),'a removed key is still read');
+ for(const [lang,d] of [['en',en],['cs',cs]])for(const [k,v] of Object.entries(d))assert.ok(!/neon|night|cyber|noc[ní]|noční|neonov|kyber/i.test(JSON.stringify(v)),`${lang}: ${k} mentions night/neon`);
+ for(const k of ['prompt.throw','prompt.hintTouch','prompt.tooShort','status.thrown','menu.coins','hud.newBest','gain.atlasPlace','result.coinsNow','result.canBuy','workshop.levelOf','atlas.lockedAt','settings.fullscreen','settings.tapToggle','confirm.delete','pause.cancelHelp','flight.btnIdle'])for(const id of LANG_IDS)assert.ok(has(k,id),`${id}: ${k}`);
+ assert.deepEqual(paramsOf(en['status.thrown']),['angle','grade']);
+ assert.equal(t('scene.label',{},'en'),'A paper plane over a paper town at sunrise');assert.equal(t('workshop.launch',{},'cs'),'Hoď ji ↗');
+ assert.equal(t('result.canBuy',{count:1},'cs'),'Stačí na 1 vylepšení');assert.equal(t('menu.coins',{count:2},'cs'),'2 mince');
+ assert.match(read('bonus.html'),/theme-color" content="#d9c4a0"/);assert.match(read('bonus.html'),/color-scheme" content="light"/);
 });
 test('guard: navigation links and language buttons keep a 44 px touch target (also on bonus.html without the picker)',()=>{
  const css=read('style.css');
