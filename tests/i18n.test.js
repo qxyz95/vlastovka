@@ -218,10 +218,7 @@ test("guard: every data-i18n key and every literal t('…') key exists in both d
     used.add(k);
   assert.ok(used.size > 60, `found ${used.size} keys`);
   // M2: nové klíče z reportu dávky (NEW KEY), locales mezitím mění A2. Doplní orchestrátor při slučování, pak tento seznam smazat.
-  const PENDING_M2 = ['save.refund', 'workshop.paperLater', 'branch.paper.effectSpeed'];
-  for (const k of used)
-    for (const id of LANG_IDS)
-      assert.ok(has(k, id) || PENDING_M2.includes(k), `${id}: missing "${k}"`);
+  for (const k of used) for (const id of LANG_IDS) assert.ok(has(k, id), `${id}: missing "${k}"`);
   assert.match(
     read('index.html'),
     /^<!doctype html>\r?\n<html lang="en">/,
