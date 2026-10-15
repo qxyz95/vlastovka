@@ -281,6 +281,7 @@ export default {
   'settings.wideWindowsHelp': 'Bez postihu. Mince i místa zůstávají stejné.',
   'settings.progress': 'Postup',
   'settings.resetHelp': 'Mince, vylepšení, místa a rekord. Nastavení zůstane.',
+  'settings.devCoins': '+1000 mincí (vývoj)',
   'settings.saved': 'Uloženo v tomto zařízení.',
   'settings.fullscreen': 'Celá obrazovka',
   'settings.fullscreenHelp': 'Skryje lišty prohlížeče. Klávesa Esc ji ukončí.',

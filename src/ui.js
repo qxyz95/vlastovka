@@ -22,6 +22,7 @@ import { createDecorations, stepDecorations } from './decorations.js';
 import { initialState, transition, loopRuns, PANELS } from './screens.js';
 import { reveal, coinLine } from './reveal.js';
 import { loadSettings, saveSettings, reducedMotion } from './settings.js';
+import { devEnabled, addDevCoins } from './dev.js';
 import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
 import { eventView } from './render3d/events-view.js';
 import { introAfter, introPress, introDone } from './render3d/intro.js';
@@ -405,6 +406,15 @@ $('confirm-delete').onclick = () => {
   refresh();
   go({ type: 'resetProgress' });
 };
+// ?dev=1: „+1000 mincí“ v Nastavení, aby šlo odemknout vše bez grindu (jen mince, rekord ne; rozhodnutí 06).
+if (devEnabled(location.search)) {
+  $('dev-coins').hidden = false;
+  $('dev-coins').onclick = () => {
+    addDevCoins(p);
+    persist();
+    refresh();
+  };
+}
 function prepare(from = 'throwAgain') {
   intro = introAfter(from);
   f = null;

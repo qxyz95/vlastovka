@@ -251,6 +251,7 @@ export default {
   'settings.wideWindowsHelp': 'No penalty. Coins and places stay the same.',
   'settings.progress': 'Progress',
   'settings.resetHelp': 'Coins, upgrades, places and best distance. Settings stay.',
+  'settings.devCoins': '+1000 coins (dev)',
   'settings.saved': 'Saved on this device.',
   'settings.fullscreen': 'Full screen',
   'settings.fullscreenHelp': 'Hides the browser bars. Esc leaves full screen.',
