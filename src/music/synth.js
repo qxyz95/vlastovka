@@ -12,14 +12,6 @@ export function noiseBuffer(ctx, sec = 2, seed = 12345) {
   for (let i = 0; i < d.length; i++) d[i] = r();
   return b;
 }
-// Short looped noise = metallic "periodic noise" of old sound chips.
-function metalBuffer(ctx) {
-  const b = ctx.createBuffer(1, 93, ctx.sampleRate),
-    d = b.getChannelData(0),
-    r = lcg(7);
-  for (let i = 0; i < 93; i++) d[i] = r() > 0 ? 1 : -1;
-  return b;
-}
 // Vinyl: faint hiss with sparse crackles.
 function crackleBuffer(ctx, sec = 4) {
   const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * sec), ctx.sampleRate),
@@ -142,7 +134,6 @@ export function createGraph(ctx) {
     sfxEchoIn,
     sfxDelay,
     noise: noiseBuffer(ctx),
-    metal: metalBuffer(ctx),
     crackle: crackleBuffer(ctx),
     waves: {},
   };
@@ -184,18 +175,6 @@ function perc(p, t, peak, dec) {
   p.linearRampToValueAtTime(peak, t + 0.002);
   p.setTargetAtTime(0, t + 0.002, dec);
   return t + 0.002 + dec * 6;
-}
-function pulseWave(g, duty) {
-  const k = 'p' + duty;
-  if (g.waves[k]) return g.waves[k];
-  const N = 24,
-    re = new Float32Array(N),
-    im = new Float32Array(N);
-  for (let n = 1; n < N; n++) {
-    re[n] = Math.sin(2 * Math.PI * n * duty) / (n * Math.PI);
-    im[n] = (1 - Math.cos(2 * Math.PI * n * duty)) / (n * Math.PI);
-  }
-  return (g.waves[k] = g.ctx.createPeriodicWave(re, im));
 }
 function vibrato(g, t, end, depth, rate, targets, delay = 0.3) {
   const l = src(g.ctx.createOscillator());
@@ -368,49 +347,11 @@ const V = {
     noise(g, t, end, filt(g, 'bandpass', 2000, 1, br));
     return end;
   },
-  pulse(g, e, t, dur, out, o) {
-    const fl = filt(g, 'lowpass', o.cut ?? 6000, 0.5),
-      A = amp(g, out);
-    fl.connect(A);
-    const end = adsr(A.gain, t, 0.002, o.dec ?? 0.12, o.sus ?? 0.65, 0.03, e.v * 0.055, dur),
-      x = osc(g, pulseWave(g, o.duty ?? 0.25), hz(e.n), t, end, fl);
-    if (o.vib) vibrato(g, t, end, o.vib, 6, [x], 0.15);
-    return end;
-  },
-  // One oscillator stepping through a chord: the classic chip "arpeggiated chord".
-  chiparp(g, e, t, dur, out, o) {
-    const ns = o.notes ?? [e.n],
-      step = o.step ?? 0.045,
-      A = amp(g, out),
-      fl = filt(g, 'lowpass', o.cut ?? 4000, 0.5, A),
-      x = src(g.ctx.createOscillator());
-    x.setPeriodicWave(pulseWave(g, o.duty ?? 0.5));
-    x.connect(fl);
-    for (let k = 0, tt = t; tt < t + dur; k++, tt += step)
-      x.frequency.setValueAtTime(hz(ns[k % ns.length]), tt);
-    const end = adsr(A.gain, t, 0.002, 0.3, 0.6, 0.05, e.v * 0.04, dur);
-    x.start(t);
-    x.stop(end + 0.05);
-    return end;
-  },
   tri(g, e, t, dur, out) {
     const A = amp(g, out),
       end = adsr(A.gain, t, 0.002, 0.1, 0.9, 0.02, e.v * 0.24, dur);
     osc(g, 'triangle', hz(e.n), t, end, A);
     return end;
-  },
-  cnoise(g, e, t, dur, out, o) {
-    const A = amp(g, out),
-      end = perc(A.gain, t, e.v * (o.lvl ?? 0.16), o.dec ?? 0.05);
-    noise(g, t, end, A, o.rate ?? 1, o.metal ? g.metal : g.noise);
-    return end;
-  },
-  ckick(g, e, t, dur, out) {
-    const A = amp(g, out),
-      x = osc(g, 'triangle', 180, t, t + 0.25, A);
-    x.frequency.exponentialRampToValueAtTime(48, t + 0.09);
-    perc(A.gain, t, e.v * 0.45, 0.05);
-    return t + 0.3;
   },
   kick(g, e, t, dur, out, o) {
     const A = amp(g, out),
@@ -521,19 +462,6 @@ const V = {
     noise(g, t, end, filt(g, 'bandpass', 3200, 0.4, A), 1.3);
     return end;
   },
-  brass(g, e, t, dur, out, o) {
-    const f = hz(e.n),
-      cut = o.cut ?? 2800,
-      fl = filt(g, 'lowpass', 300, 1),
-      A = amp(g, out);
-    fl.frequency.setValueAtTime(300, t);
-    fl.frequency.linearRampToValueAtTime(cut, t + 0.04);
-    fl.frequency.setTargetAtTime(cut * 0.5, t + 0.04, 0.15);
-    fl.connect(A);
-    const end = adsr(A.gain, t, o.a ?? 0.015, 0.15, 0.6, 0.1, e.v * 0.055, dur);
-    for (const d of [-12, 0, 12]) osc(g, 'sawtooth', f, t, end, fl, d);
-    return end;
-  },
   organ(g, e, t, dur, out) {
     const f = hz(e.n),
       A = amp(g, out),
@@ -544,18 +472,6 @@ const V = {
       [3, 0.35],
       [4, 0.2],
     ].forEach(([k, w]) => osc(g, 'sine', f * k, t, end, G(g.ctx, w, A)));
-    return end;
-  },
-  scratch(g, e, t, dur, out) {
-    const f = hz(e.n),
-      bp = filt(g, 'bandpass', 1400, 1.5),
-      A = amp(g, out);
-    bp.connect(A);
-    const end = adsr(A.gain, t, 0.005, 0.1, 0.8, 0.03, e.v * 0.12, dur),
-      x = osc(g, 'sawtooth', f * 0.4, t, end, bp);
-    x.frequency.linearRampToValueAtTime(f * 1.6, t + dur * 0.4);
-    x.frequency.linearRampToValueAtTime(f * 0.3, t + dur);
-    noise(g, t, end, G(g.ctx, 0.3, bp));
     return end;
   },
   choir(g, e, t, dur, out, o) {
