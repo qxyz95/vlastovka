@@ -1,6 +1,6 @@
 # Hudební zadání pro Papírové město
 
-**15. 10. 2026, audio-designer.** Krok 2 hudebního zadání, první část: sekce A–D. Sekce E (mapa intenzity) čeká na časové osy letů v `research/hudba/02-casova-osa.md`.
+**15. 10. 2026, audio-designer.** Krok 2 hudebního zadání: sekce A–D (směr a identita), E (mapa intenzity podle časových os `research/hudba/02-casova-osa.md`), F (spec pro game-deva na krok 3). Odpovědi uživatele z 15. 10. jsou zapracované (sekce „Rozpory“).
 
 **Zadání uživatele:** hudba „hlouběji, ne šířeji“, tedy jeden směr dotažený do hloubky, žádné nové žánry ani obsah navíc.
 
@@ -133,7 +133,7 @@ Všechno jde syntézou ve Web Audio, bez souborů a bez závislostí.
 | **Vítr** | otevřené okno, nebe | `air` (ponechat) | – | 0 |
 | **Dozvuk** | pokoj v podkroví | `impulse(3.4 s)` na hudbě, `impulse(1.8 s)` na efektech | Délka dozvuku podle čtvrti (tab. B.3). Stačí parametr `impulse(sec, decay)` při `applyDistrict` (nový buffer jen při změně čtvrti, ne za letu). | malá |
 
-**Ze `synth.js` se v novém směru nepoužije** (zůstane jen pro staré směry, dokud se nesmažou, viz BLOCKED 1):
+**Ze `synth.js` se v novém směru nepoužije.** Podle rozhodnutí 15. 10. se neonové hlasy mažou se směry A, C, D, F (dělá jiný agent). Hlasy, které používají B a E, zůstanou do slepého porovnání:
 - `pad` s pilou, `bass`, `lead`, `pulse`, `chiparp`, `tri`, `cnoise`, `ckick`,
 - `kick` (plný bicí), `snare` gate, `clap`, `hat`, `tom`, `crash`,
 - `vinyl`, `rain`, `brass`, `scratch`, `sax`, `choir`, `epiano`.
@@ -254,7 +254,7 @@ Obrys „skok nahoru, výdrž, sestup“ zůstává vždy stejný. Mění se mó
 
 **Proměny uvnitř hudby čtvrti** dělá `motifBar` (obměny 0–5: přímo, posunuté na akord, obrat, rak, fragment s odpovědí, ozdobené) a nic nového nepotřebuje. Obrat a rak jsou vhodné jen do ploch, protože obrys „hodu“ v nich zmizí. Ve znělce a v L3 se proto hraje vždy přímý tvar 0 nebo 5.
 
-**Téma roste s postupem uvnitř čtvrti** (N, viz BLOCKED 2). Na místě 1 čtvrti hraje lead jen hlavu 1 – 5 – 6, na místě 2 přibude 4, na místě 3 celé téma, na místě 4 i odpověď. Řídí to nejvzdálenější místo hráče, ne poloha vlaštovky, stejně jako volbu skladby.
+**Téma roste s postupem uvnitř čtvrti** (schválil uživatel 15. 10.). Na místě 1 čtvrti hraje lead jen hlavu 1 – 5 – 6, na místě 2 přibude 4, na místě 3 celé téma, na místě 4 i odpověď. Řídí to nejvzdálenější místo hráče, ne poloha vlaštovky, stejně jako volbu skladby.
 
 ---
 
@@ -302,13 +302,110 @@ Je to jeden žánr (akustický generativní ambient s měkkým tepem), prohloube
 
 ---
 
-## E. Mapa intenzity (zástupná)
-*Čeká na časové osy letů v `research/hudba/02-casova-osa.md` (jiný agent). Až budou hotové, doplní se:*
-- vrstvy L0–L3 a filtr po sekundách typického letu v každé čtvrti (rané, střední a pozdní lety),
-- kde padnou okna ticha kolem tiku,
-- kde téma zazní celé,
-- hustota událostí proti tempu,
-- přechod hranice čtvrti.
+## E. Mapa intenzity
+
+Zdroj časů: `research/hudba/02-casova-osa.md` (simulátor, bot profilu `average`, 15. 10.). Lidské časování, míření, výsledek a Dílna zvlášť jsou tam NOT ASSESSED, takže pravidla pro tyto obrazovky jsou N.
+
+### E.1 Co z časové osy plyne pro hudbu
+| Fakt z 02 | Hudební míra (84–100 BPM, doba 0,60–0,71 s, takt 2,4–2,9 s) | Důsledek (N) |
+|---|---|---|
+| Let 17–31 s letového času, skutečně ~8 % kratší (klouzání 1,4×, události se nezrychlují) | ≈ 7–11 taktů, tedy zhruba **jedna 8taktová fráze na let** | Fráze `phrase()` se nemusí srovnávat s hodem. Hudba běží dál přes celou smyčku (01 §0), nic nezačíná s hodem. Zrychlení klouzání tempo nemění (B.3). |
+| 1. varování **vždy v 1,5 s** po výhozu | ≈ 2–2,5 doby | Po výhozu se nestaví žádný „nástup“ ani drop. Za 2 doby přijde ztenčení. |
+| Okno se otevírá 0,8 s po začátku varování (termika 2,0 s), okno 1,2 s, holub ≤ 1,2 s po stisku | varování ≈ 1 doba (termika 3 doby), okno ≈ 2 doby | Ztenčení musí přijít **hned**. Čekání na dobu by zabralo až polovinu varování. |
+| Klid mezi událostmi medián 3,0 s, P10 3,0 s, P90 5,3–5,5 s | ≈ 1–1,25 taktu, nejméně 4 doby | Návrat vrstev po události **na nejbližší dobu**, ne na takt. Takt je skoro celý klid. |
+| Mimo událost 56–57 % letu (P10–P90 49–62 %), v okně 18–22 % | | Hudba je hlavní společník asi v polovině letu. V druhé polovině ustupuje. |
+| Rozestup akcí medián 1,7–5 s, **P10 0,4–0,8 s** (pára 2 stisky, holub stisk + puštění) | 0,4 s ≈ 2/3 doby | Rychlý sled je **uvnitř jedné události**. Mezi událostmi je vždy ≥ 3 s (E.3). |
+| Hranice čtvrtí od středního stádia ve 100 % letů, medián 2× (D1→D2 ~9–13 s, D2→D3 ~17–24 s) | | Přechod je běžná věc každého letu, ne událost. Často padne do varování nebo okna (v tabulce 02 B např. seed 93, 108, 109). Viz E.4. |
+| Čas ve čtvrtích ~15 / 12 / 16 / 10 min (simulace 54 min proti cíli 82–98 min) | při cíli 90 min po přepočtu ~25 / 20 / 27 / 17 min | Proti únavě se plánuje s horní hranicí, tedy **až ~27 min v jedné čtvrti** (E.5). |
+
+### E.2 Intenzita a vrstvy po fázích smyčky
+**Stupnice intenzity:**
+- **0** = hudba mlčí (jen vítr nebo pokoj),
+- **1** = plocha L0, případně téma tiše v plstěném pianu,
+- **2** = L0 + L1 (bas, ostinato), L2 papírové perkuse podle podmínky,
+- **3** = L0–L3 (+ téma v leadu).
+
+Hodnoty vrstev navazují na dnešní `mixTargets`. Odchylky od dnešního kódu jsou **tučně**.
+
+| Fáze | Intenzita | Vrstvy (gain) | Filtr celé hudby | Přechod dovnitř |
+|---|---|---|---|---|
+| **Dílna** (podkroví, menu) | 1 | L0 0,6. **Hlava tématu v plstěném pianu** každou 2. frázi, délka podle místa (C.2). | 2,4 kHz | na takt, náběh 0,5 s |
+| **Míření** | 1 → 2 | L0 0,8, L1 0,6 (bas a ostinato, bez perkusí). Nabíjení hodu nese jen SFX. | 7 kHz | na takt |
+| **Výhoz** (0–1,5 s) | 2 | L0 0,8, L1 0,85. L2 jen při rychlosti ≥ `FAST` 1,3. Žádný nástup ani drop. | podle rychlosti (2,5–18 kHz, dnešní vzorec) | SFX hned, vrstvy na nejbližší dobu |
+| **Klidný let** (56–57 %) | 2–3 | L0 0,8, L1 0,85, L2 0,8 po 1. zásahu nebo od `FAST`, L3 0,7 od komba 2 (oktáva od komba 3) | podle rychlosti | na nejbližší dobu, náběh 0,2 s |
+| **Varování** | 1 | L0 0,56 (plocha LP 650 Hz), L1 0,85 (tep zůstává), L2 × 0,12, **L3 0** (dnes × 0,35) | **1,8 kHz na celé hudbě** (nové) | **hned**, 40 ms |
+| **Okno QTE** | 1 | jako varování + **okno ticha** (E.3) | 1,8 kHz | hned |
+| **Zásah / perfekt** (účinek ≥ 1 s) | 2 → 3 | vrstvy zpět jako v klidném letu. Perfekt: duck −4 dB (`DUCK`) a **jedna ozdoba** (ozvěna posledního tónu tématu v hracím strojku) na další dobu, jen když do dalšího plánovaného středu zbývá > 1 doba. | filtr se otevře až po hysterezi (E.3) | na nejbližší dobu |
+| **Minutí** | 2 | návrat bez ozdoby, žádný jiný tón v hudbě | po hysterezi | na nejbližší dobu |
+| **Přechod hranice: nová čtvrť** (za rekordem) | beze změny vrstev | přepnutí skladby a krátký stinger jen v klidu (E.4) | – | na takt, jen v klidu |
+| **Přechod hranice: známá čtvrť** | beze změny | nic (E.4) | – | – |
+| **Dopad** | 2 → 1 | L2 a L3 dozní do konce taktu. Duck −3 dB / 0,3 s pod `flop`. | otevře se na 3,5 kHz | SFX hned, vrstvy na takt |
+| **Výsledek** | 1 | L0 0,75, téma v plstěném pianu tiše. Bez výherní znělky (P13). Znělka nové čtvrti (`sfx.jingle`) jen u karty čtvrti (E.4). | 3,5 kHz | na takt |
+| **Finále „Delivered.“** | vlastní cue | celé téma kapely (C.2), pak 4 s ticha, pak sólo strojek | – | po dopadu na takt |
+
+**Kde téma zazní celé:**
+- v leadu L3 jen při kombu ≥ 2 v klidném letu,
+- v Dílně a ve výsledku tiše v pianu,
+- ve znělce karty čtvrti.
+
+Délku tématu všude omezuje nejvzdálenější místo (C.2): místo 1 hlava, místo 2 + 1 tón, místo 3 celé, místo 4 i s odpovědí.
+
+### E.3 Rychlé akce za sebou: hystereze filtru a okno ticha
+P10 rozestupu akcí je 0,4–0,8 s. Kdyby filtr a ztenčení sledovaly jen fázi „okno“, hudba by v páře (dva stisky po ~0,5 s) nebo u holuba (stisk, puštění) pumpovala. Proto platí:
+
+1. **Ztenčení a filtr 1,8 kHz drží celou událost**, od začátku varování do konce účinku + 0,3 s, ne jen okno.
+   - Uvnitř jedné události se filtr nikdy neotevře.
+   - Náběh 40 ms, uvolnění 0,4 s.
+   - Klid mezi událostmi je vždy ≥ 3 s (P10 v 02 C), takže se filtr mezi událostmi otevře vždy a ztenčení nepřekryje celý let.
+   - Stav `mixTargets` „effect“ se tím mění: filtr 1,8 kHz zůstává, vrstvy se vrací (po zásahu může zaznít ozdoba, ale ne nad 1,8 kHz).
+2. **Okno ticha ±120 ms** kolem **každého** plánovaného středu:
+   - zdroj středů je dnešní `qteCenter` rozšířený na všechny typy,
+   - pára má 2 středy po ~0,46–0,5 s,
+   - u holuba se střed zná až po stisku (02 B: stisk → střed 0,3–0,9 s),
+   - termika má střed jádra.
+   
+   Pravidla masky:
+   - Začátky not L1 a L2 v masce se zahodí (L3 je v události stejně 0). Doznívající tóny se nezkracují.
+   - **Masky blíž než 0,4 s se slijí** do jedné. Pára pak má souvislé ticho ~0,7 s, místo aby mezi stisky vklouzl jeden tón basu.
+   - Maska se kontroluje **při vyjmutí noty z fronty** (`pump`, předstih `LOOK` 0,12 s), ne při plánování taktu. Středy naplánované později (holub) tak platí i pro už vygenerovaný takt.
+   - Střed přeplánovaný po hitstopu (`createTickPlanner`) posune i masku.
+3. **Duck se nesčítá a nepumpuje.**
+   - Dva perfekty po 0,5 s (pára) dají jeden duck −4 dB s prodlouženým držením, ne dva poklesy.
+   - Dnešní `a.duck` dělá `setValueAtTime(1, when)`. Uprostřed běžícího ducku tím skočí gain na 1 a vznikne cvaknutí a pumpa. Je potřeba to opravit (F, test D-3).
+4. **Ozdoby** (kvantované, rozhodnutí 06) se v události nikdy nepřidávají. Po perfektu jen tehdy, když do dalšího středu zbývá > 1 doba (v páře tedy ne).
+
+### E.4 Přechod hranice čtvrti za letu
+Skladba se řídí postupem (rozhodnutí 06), ne polohou. Rozlišují se dva případy:
+
+**a) Let přejde hranici čtvrti, kterou hráč ještě nemá jako nejvzdálenější („nová“, `boundaryCue` typ `new`).** Dopad je vždy dál než bod přechodu, takže **tento let rekord do nové čtvrti posune**. Přepnutí skladby za letu proto nepředbíhá postup, jen ho ohlásí o pár sekund dřív. Pravidla:
+1. Přepnutí (`a.play` s `pending`) se smí stát **jen v klidu**, na první hranici taktu, která padne do klidu a je aspoň 0,5 s před dalším varováním. Klid po účinku trvá ≥ 3 s, takže se vejde jeden takt (2,4–2,9 s), když přechod přijde do ~0,5 s po konci účinku.
+2. Padne-li přechod do události (častý případ), přepnutí **počká na další klid**.
+3. Nepřijde-li klid do dopadu, přepne se na výsledku.
+4. **Stinger za letu:** zmačkání papíru (`crumple`) a hlava tématu v novém módu na hracím strojku, ≤ 1 s, jen spolu s přepnutím, nikdy v události.
+5. **Plná znělka čtvrti** (`sfx.jingle`, 2–3 s) se z letu přesouvá **na kartu čtvrti ve výsledku** (02 D: karta čtvrti 4 s). V letu by se do klidu 3 s nevešla bez kolize s varováním.
+6. Pokud let přejde i další novou hranici, platí totéž a stinger zazní nejvýš jednou za let. Skladba skončí ve čtvrti dopadu.
+
+**b) Let přejde hranici čtvrti, kterou hráč už má („známá“, `revisit`).** Ve středním a pozdním stádiu se to děje **2× v každém letu**, za kampaň řádově 100–150×.
+- **Hudba nedělá nic:** žádná znělka, žádná změna barvy.
+- Dnešní plán (01 §3.3 „2s znělka a změna barvy“) by se stal nejčastějším a nejunavujícím zvukem hry (P4, Hicks et al. 2024 v 01 §1.1).
+- Informaci nese štítek místa a obraz (přístupnost: nic jen zvukem, a tady ani zvukem).
+
+**Místa uvnitř čtvrti (rozhodnutí 15. 10.):** totéž ve menším. Když let poprvé překročí nové nejvzdálenější místo, téma se prodlouží od **další fráze**. Bez stingeru, protože místa se přecházejí ~9–11× za let.
+
+### E.5 Únava za 10–27 min v jedné čtvrti
+Simulace dává 10–16 min na čtvrť, u strategie „paper-first“ až ~20 min v D1 a D3, při cíli 90 min po přepočtu až ~27 min. Vrstvy obrany:
+
+| Vrstva | Délka | Jak (N) |
+|---|---|---|
+| Fráze | 8 taktů ≈ 19–23 s (≈ jeden let) | `phrase()`. Akord se volí seedovaně z poolu (`progAt` / `chordAt`), nikdy stejný jako minule. |
+| Forma | 6 frází (A-B-A-C-B-D) ≈ 2,0–2,3 min | Fráze C je výdech (bez L2, jen ostinato). Každý cyklus formy má nový seed, nic se nesmyčkuje přesně. |
+| Eno cykly piana | 6,5 / 9 / 10,75 / 13,5 doby | Souhra se opakuje až po stovkách dob, slyšitelně nikdy. |
+| Proměna podle cyklu formy | každé ~2 min | Cyklus 1 lead sám, cyklus 2 lead + zdvojení o oktávu výš (hrací strojek), cyklus 3 téma jen jako obměna 4 (fragment + odpověď) z `motifBar`, pak znovu. |
+| Růst tématu podle místa | 4 stupně na čtvrť, ~3–7 min | C.2. Hráč slyší pokrok uvnitř čtvrti. |
+| **Ticho** | po každých ~12 min v téže čtvrti | Při další návštěvě Dílny nebo Atlasu hudba na 45–60 s zmizí (fade 2 s) a zůstane jen vítr a pokoj (`air`, tichý). Pak se vrátí jedním taktem plochy. Za letu se ticho nevkládá, tam rozhoduje stav hry. Tearaway měl podle výpisu hledání zásadu „nemít hudbu všude“ ([MCV](https://mcvuk.com/?p=77872), neotevřeno). |
+| Výsledek a Dílna | každá 3. návštěva | Jen plocha L0 bez tématu (ani piano). Téma tak neztratí váhu. |
+
+**Měření únavy:** únavový test z 01 §6 rozšířený na hodnocení v 1., 5., 10. a 15. minutě (scénář F.6). Kritérium: hodnocení „nechal bys ji zapnutou?“ v 15. min klesne nejvýš o 1 bod proti 1. min.
 
 ---
 
@@ -318,14 +415,153 @@ Je to jeden žánr (akustický generativní ambient s měkkým tepem), prohloube
 - 01 §1.3 bod 5 (oblouk soumrak → doky v moll → druhý západ → neonová noc) i `ARC` v kódu jsou překonané biblí 05 kap. 2.3 a 15.
 - Rozhodnutí 06 „ladit ke 3D komiksovému městu“ (14. 10.) překonala pozdější rozhodnutí téhož dne „Nová vizuální identita: směr B Papírové město“ a 15. 10. „Jediný styl je Papírové město“.
 
-**BLOCKED 1: co se starými směry.** Má se šest směrů v `src/music/` a prototypu smazat, nebo zmrazit?
-- Příklad: A, C, D, F jsou neonové nebo komiksové (podobně jako cyber větve v U0/R0).
-- Doporučení: **A, C, D, F smazat hned** v samostatném commitu (s nimi `pulse`, `chiparp`, `cnoise`, `ckick`, `brass`, `scratch`, `vinyl`, `rain`, `sax` ze `synth.js`). **B a E nechat**, dokud nebude „Diorama“ porovnaná slepým poslechem (D.3), pak smazat i je.
+**Rozhodnuto uživatelem 15. 10.** (06, „Hudba Diorama“), dříve BLOCKED 1–3:
+1. **Staré směry:** A, C, D, F se smažou hned i s neonovými hlasy (dělá jiný agent). B a E zůstávají do slepého porovnání (F.6).
+2. **Téma roste podle nejvzdálenějšího místa uvnitř čtvrti:** ano (C.2, E.4).
+3. **Papírové zvuky:** syntéza (B.2: `page`, `brush`, `crumple`). Vlastní nahrávky papíru jen jako záloha, pokud syntéza při poslechu zní levně. Vlastní nahrávka by pak potřebovala záznam v `credits.json`.
 
-**BLOCKED 2: aranžmá podle místa uvnitř čtvrti.** Smí téma a aranžmá růst podle nejvzdálenějšího místa uvnitř čtvrti (místa 1–4)? Rozhodnutí 06 mluví o skladbě podle nejvzdálenější čtvrti.
-- Příklad: na místě 1 hraje jen hlava tématu 1 – 5 – 6, od místa 3 celé téma.
-- Doporučení: **ano.** Je to stejný princip (postup hráče, ne poloha vlaštovky), jen jemnější, a hráč slyší pokrok i během 12–17 min v jedné čtvrti (01 §0).
+---
 
-**BLOCKED 3: vlastní nahrávky papíru.** Smí se pro papírové efekty a perkuse použít vlastní nahrávky skutečného papíru? Rozhodnutí 06 říká „hudba generovaná v kódu, případně CC0“ a vlastní nahrávky nezmiňuje.
-- Příklad: uživatel telefonem nahraje ~10 krátkých zvuků (zmačkání, přehyb, list o stůl, štětka po papíře), celkem < 200 kB, plná vlastní práva, zápis do `credits.json`.
-- Doporučení: **začít syntézou** (B.2, hlasy `page`, `brush`, `crumple`) a vlastní nahrávky povolit jako zálohu, pokud syntéza při poslechu zní „levně“. Tearaway šel cestou nahrávek (D.4).
+## F. Spec pro game-deva: krok 3 (Diorama v prototypu)
+
+**Cíl kroku 3:** směr „Diorama“ hraje v `prototype-music.html` (Auto flight na skutečné mechanice) se všemi pravidly z B, C, E. Je změřený (LUFS, výpadky) a připravený ke slepému poslechu.
+
+**Mimo rozsah:**
+- **zapojení do hry** (`ui.js`, `index.html`) je samostatný krok po slepém poslechu,
+- mazání A, C, D, F,
+- spec efektů (S6).
+
+**Model:**
+- Opus pro `audio-mix.js` (masky, hystereze, přechody) a KS,
+- Sonnet může dělat hlasy v `synth.js` podle tabulky B.2 a testy.
+
+Platí rozhodnutí 06 ř. 52 a 15. 10.
+
+### F.1 Moduly a soubory
+| Soubor | Co (povolené změny) |
+|---|---|
+| `src/music/diorama.js` (nový, čistý) | Data 4 čtvrtí + finále podle B.3: `bpm`, `mode`, `swing`, `lead`, `verbSec`, `verb[]`, `echo[]`, `pool`. Funkce `bar(i, d, { seed, density, place, cycle })` vrací události jako ostatní směry. Generativní jádro převzaté z `e-above-the-city.js` (`LOOPS`, `chordAt`, hustota). Téma přes `motifBar` s `ARC[d]`, délka podle `place` (C.2). Proměny podle cyklu formy (E.5). Výdech ve frázi C. `cue('finale', …)` pro finále. |
+| `src/music/ks.js` (nový, čistý) | `ksSamples(freq, rate, sec, seed) → Float32Array` (Karplus–Strong: šumový burst, průměrovací filtr, útlum). Žádné Web Audio. |
+| `src/music/synth.js` | Nové hlasy z B.2: `musicbox`, `ks` (cache `AudioBuffer` podle MIDI a `sampleRate`, líně), `flute`, `paperpad`, `box`, `page`, `brush`, `pencil`, `crumple`. Volby `piano.o.felt`, `organ.o.reed`. `impulse()` beze změny API. |
+| `src/music/index.js` | Přidat `Diorama` (id `G`) do `TRACKS`. |
+| `src/audio-mix.js` | 1) `ARC` podle C.2: id zůstávají, `name` a `mood` podle bible, módy lydian / ionian / mixolydian / dorian / lydian, `motif` a `rhythm` z tabulky. 2) `comboNote(n, octave, mode = 'ionian')` po stupních 1-2-3-5-6-8 módu. 3) `mixTargets`: v události (varování až konec účinku + 0,3 s) `L[3] = 0`, nové pole `musicFilter: 1800`, stav `effect` drží filtr (E.3/1). 4) `trackFor(progress)` vrací i `place` (0–3) z `best`. 5) Nové čisté funkce: `silenceMask(centres, { pad: 0.12, merge: 0.4 })` → intervaly, `inMask(t, mask)`, `switchAllowed({ t, calmUntil, barTime, urgent })` (E.4/1), `boundaryPlan(prevX, x, best)` = `boundaryCue` + `{ stinger, defer }` (typ `revisit` → `null`), `INTENSITY` (tabulka E.2 jako data), `fatigue({ minutesInDistrict, visits })` → `{ rest, bedOnly }` (E.5). |
+| `src/audio.js` | Maska ticha při vyjmutí noty z fronty v `pump` (L1–L2). `setMix` čte `musicFilter` a hysterezi. `a.duck` bez skoku na 1: při běžícím ducku prodloužit hold (E.3/3). `applyDistrict` vymění impulsní odezvu podle `verbSec` (buffer jen při změně čtvrti, cache). Stinger a odložené přepnutí podle `switchAllowed`. Ticho podle `fatigue`. |
+| `src/sfx.js` | `success` / `perfect` volají `comboNote(…, mode čtvrti)`. `jingle` hraje nové `ARC` (přímý tvar, obměna 0). `land`: hluboká složka `flop` < 120 Hz vypnutá při `calm` nebo `prefers-reduced-motion` (B.4). |
+| `src/audio-loudness.js` (nový, čistý) | `lufs(channels, rate)` podle ITU-R BS.1770 (K-filtr: dvě bikvadratické sekce, bloky 400 ms s překryvem 75 %, absolutní brána −70 LUFS, relativní −10 LU), `momentary`, `samplePeak`. Bez Web Audio, testovatelné v Node. |
+| `prototype-music.html`, `prototype/music/*` | Volba „Diorama“. Posuvník místa 1–4 (`place`). Tlačítko „LUFS“ (offline render 60 s na čtvrť, výpis tabulky). Slepý režim upravený podle F.6 včetně vyrovnání hlasitosti. Zobrazení masek ticha na časové ose (vizuální ekvivalent). |
+| Testy | `tests/audio-mix.test.js` (rozšířit), nové `tests/music-diorama.test.js`, `tests/music-ks.test.js`, `tests/audio-loudness.test.js` |
+
+**Cizí soubory (neměnit):** `src/flight.js`, `src/ui.js`, `index.html`, `src/render3d/*`, směry A–F (maže jiný agent), `CLAUDE.md`.
+
+### F.2 Rozhraní na stav hry
+Prototyp i budoucí hra předávají zvuku **jeden objekt stavu** na snímek: `audio.update(state)`. Odvození ze hry patří do čisté funkce `audioState(flight, model, screen)` v `audio-mix.js`, ať to jde testovat.
+
+| Pole | Typ | Zdroj ve hře |
+|---|---|---|
+| `screen` | `'workshop' \| 'aim' \| 'flight' \| 'result' \| 'finale'` | `screens.js` |
+| `event` | `'none' \| 'warning' \| 'window' \| 'effect'` | fáze aktivní události (`flight.js`) |
+| `eventType` | `'gust' \| 'bird' \| 'steam' \| 'thermal' \| 'drone' \| 'star' \| null` | typ události |
+| `centres` | `number[]` (čas letu středů, které ještě nenastaly) | rozšířený `qteCenter`: pára 2, holub po stisku, termika 1 |
+| `flightT` | number | čas letu (pro plánovač tiku a masky) |
+| `effectEnd` | number \| null | konec účinku poslední události (hystereze, klid pro přepnutí) |
+| `combo`, `hits` | number | jako dnes |
+| `speed` | number (vx / cruise) | jako dnes |
+| `height` | number (m) | jako dnes |
+| `x`, `prevX` | number (m) | poloha, jen pro `boundaryPlan` |
+| `best` | number (m) | rekord, řídí `trackFor` a `place` |
+| `calm`, `reducedMotion` | boolean | nastavení zvuku, `matchMedia` |
+
+**Výstupy zvuku zpět do UI:**
+- `audio.on('cue', …)`, jako dnes, pro vizuální ekvivalenty,
+- nové cue `mask` (okno ticha), `switch` (přepnutí čtvrti), `rest` (ticho proti únavě).
+
+### F.3 Testy (každý bod = alespoň jeden `test()`)
+**Téma a harmonie (`music-diorama`, `audio-mix`):**
+- T-1 Každé `ARC[d]`:
+  - 4–6 not, rytmus 8 osmin (dnešní test zůstává),
+  - první interval stoupá o 4 stupně (`motif[1] - motif[0] === 4`),
+  - vrchol je za 1. tónem a je maximem,
+  - poslední tón je pod vrcholem,
+  - jen finále končí na 0.
+- T-2 Módy `ARC` jsou v pořadí `lydian, ionian, mixolydian, dorian, lydian`, tónika D.
+- T-3 Pro každou čtvrť a 3 seedy je každá laděná nota z `bar()` v 64 taktech `inScale` daného módu.
+- T-4 Determinismus: stejné `(i, d, seed, place)` → stejné události. Jiný seed → jiné události aspoň v 1 z 8 taktů.
+- T-5 `bar()` používá jen povolené hlasy (seznam B.2). Žádný z mazaných neonových hlasů.
+- T-6 `place` 0 / 1 / 2 / 3 → lead L3 obsahuje 3 / 4 / 6 / 6 + odpověď not tématu (C.2).
+- T-7 Vyšší `density` → více not L1 (průměr přes 32 taktů).
+- T-8 `comboNote(n, 5, mode)` je pro n = 1…8 a všechny módy ve stupnici módu a neklesá.
+- T-9 BPM 84 / 92 / 96 / 100, `verbSec` ≤ 1,8 s ve čtvrtích 1–4.
+
+**Mix:**
+- M-1 `mixTargets` ve `warning` i `window`: `layers[3] === 0`, `musicFilter === 1800`. V `effect`: vrstvy jako v klidu, `musicFilter === 1800`.
+- M-2 Hystereze: sekvence stavů pára (warning → window → window → effect) nikdy nevrátí `musicFilter` > 1800 dřív než 0,3 s po `effectEnd`.
+- M-3 `silenceMask([8.13, 8.63])` dá jeden slitý interval [8.01, 8.75]. `[2.0, 3.0]` dá dva. `inMask` na hranách.
+- M-4 `boundaryPlan`: `revisit` → `null`. `new` v události → `defer: true`. `new` v klidu → stinger nejvýš 1× za let.
+- M-5 `switchAllowed` je false v události a false, pokud by takt začal < 0,5 s před `calmUntil`.
+- M-6 `fatigue`: 12 min v téže čtvrti → při další návštěvě Dílny `rest` 45–60 s. Každá 3. návštěva výsledku `bedOnly`.
+- M-7 `trackFor({ best })` → `place` 0–3 na hranicích 304,8 m. Čtvrť beze změny proti dnešku.
+
+**Ducking a plánovač** (falešný `ctx` jako v dnešních testech tiku):
+- D-1 Noty L1/L2 s časem v masce se nepřehrají, noty L0 ano.
+- D-2 Přeplánovaný střed po hitstopu posune masku.
+- D-3 Dva ducky po 0,5 s: zaznamenané hodnoty gainu nikdy nevystoupí na 1 mezi nimi a neklesnou pod −4 dB.
+
+**KS a hlasitost:**
+- K-1 `ksSamples(220, 48000, 1, s)` je deterministický. Perioda odhadnutá autokorelací je 48000 / 220 ± 2 %. RMS posledních 100 ms < RMS prvních 100 ms / 4.
+- L-1 `lufs`: stereo sinus 1 kHz o úrovni −23 dBFS v obou kanálech dá **−23,0 ± 0,1 LUFS** (EBU Tech 3341, zkušební případ 1, z paměti, ověřit v dokumentu EBU při implementaci).
+- L-2 Ticho dá `-Infinity`. Sinus −20 dBFS 1 s + 10 s ticha je o méně než 0,5 LU tišší než samotný sinus (brána).
+- S-1 (statický) Diorama nenačítá žádný soubor: v `src/music/diorama.js` ani v hlasech není `fetch` ani `decodeAudioData`, `assets/audio/` neobsahuje nic nového.
+
+### F.4 Měření hlasitosti (LUFS)
+- **Postup:** v `prototype-music.html` tlačítko „LUFS“ vyrenderuje přes `OfflineAudioContext` 60 s každé čtvrti. Stav je klidný let, kombo 3, `density` 0,7, výchozí nastavení (hudba 60 %, efekty 80 %, master 100 %). Výsledek spočítá `audio-loudness.js`.
+- Offline render je pro **obsah** zvuku spolehlivý. Gotcha z `CLAUDE.md` se týká **zátěže**, ne hlasitosti.
+
+| Měřítko | Cíl (N) |
+|---|---|
+| Integrovaná hlasitost hudby ve výchozím nastavení, každá čtvrť | **−22 ± 1,5 LUFS** |
+| Rozdíl mezi čtvrtěmi | ≤ 1,5 LU (večer smí být plnější hustotou, ne hlasitostí) |
+| Výsledek a Dílna proti klidnému letu | o 3–6 LU tišší |
+| Varování a okno proti klidnému letu (vliv ztenčení a filtru) | o ≥ 4 LU tišší |
+| Krátkodobá (momentary) hlasitost perfektu nad hudbou ve stejné chvíli | ≥ +6 LU |
+| Tik QTE nad hudbou v okně | ≥ +9 LU |
+| Vzorkový vrchol celé směsi | ≤ −1 dBFS (limiter `lim` threshold −8 dB nesmí trvale komprimovat: zisk redukce v klidném letu ≤ 2 dB, čte se `lim.reduction`) |
+
+Ve slepém poslechu se kandidáti **vyrovnají na stejnou integrovanou hlasitost** (−22 LUFS), jinak vyhrává hlasitější.
+
+### F.5 Měření zátěže (`playbackStats`)
+- **Prostředí:**
+  - reálný čas, okno **viditelné** (ne skryté a ne `?timer`),
+  - Chrome na referenčním notebooku,
+  - Auto flight 10 min na čtvrť (40 min celkem, lze po čtvrtích).
+- **Kritéria přijetí:**
+  - `a.stats().underruns` přírůstek **0** za 10 min,
+  - `underrunMs` 0,
+  - `schedMax` < 5 ms,
+  - `peak` hlasů ≤ 48,
+  - RAM: cache KS ≤ 8 MB (počet bufferů × délka × 4 B, vypsat).
+- **iPhone 15 Pro (Safari):** `playbackStats` tam nemusí být (dnes vrací `null`). Měří se poslechem 10 min (cvaknutí nebo výpadek = selhání) a `schedMax`. Bez zařízení **NOT ASSESSED**, neodhadovat.
+- Výsledky do `reports/` (cestu určí orchestrátor) se jménem prohlížeče, zařízení a datem.
+
+### F.6 Slepý poslech na 15 minut
+- **Kdo:** uživatel (ideálně + 2 další lidé).
+- **Kde:** `prototype-music.html`, slepý režim. Kandidáti X1–X3 = Diorama, E (dnešní), B (dnešní) v náhodném pořadí podle seedu sezení, vyrovnaní na −22 LUFS.
+- **Jak:** sluchátka. Telefonní reproduktor jen v bloku 5.
+- **Export:** hodnocení JSON, jako dnes.
+
+| Čas | Blok | Co posluchač dělá | Co se měří |
+|---|---|---|---|
+| 0:00–1:00 | Kalibrace | Nastaví si příjemnou hlasitost na X1, dál ji nemění. | – |
+| 1:00–7:00 | 1 Srovnání (čtvrť 1, ráno) | 3 × 2 min Auto flight, QTE mačká sám (mezerník). Po každém hodnotí 1–5: „ladí k rannímu papírovému městu“, „nechal bys ji zapnutou“, „rušila tě při QTE“. | pořadí kandidátů, podíl perfektů na kandidáta (stejné seedy) |
+| 7:00–10:00 | 2 Rozlišení čtvrtí (jen Diorama) | 4 × 45 s, čtvrti v náhodném pořadí, bez obrazu. Přiřadí každou k „ráno / poledne u moře / zlaté odpoledne / večer s lampiony“. | kritérium: ≥ 3 ze 4 správně |
+| 10:00–13:30 | 3 Únava (jen Diorama, čtvrť 3, místo 4) | Nepřetržitě hraje Auto flight s QTE. V 10:00 a 13:30 hodnotí „nechal bys ji zapnutou“ 1–5. | pokles ≤ 1 bod (E.5). Delší test 1., 5., 10., 15. min zvlášť mimo tento scénář. |
+| 13:30–14:30 | 4 Leitmotiv | Slyší 3 krátké znělky na stejných nástrojích: téma ve čtvrti 3 (mixolydické), téma pozpátku (rak) a cizí motiv stejné délky. Vybere „melodii vlaštovky, kterou už slyšel“. | kritérium: správně (náhoda 1/3), u 3 lidí ≥ 2 |
+| 14:30–15:00 | 5 Telefon | 30 s Diorama z reproduktoru telefonu. Otázka „je slyšet téma a tik?“ ano / ne. | ano / ne |
+
+**Kritéria přijetí kroku 3:**
+- Diorama vyhraje blok 1 průměrem „nechal bys ji zapnutou“, nebo je nejvýš o 0,5 bodu horší s lepším „ladí k městu“.
+- Blok 2 a 4 splněny.
+- Podíl perfektů s Dioramou není nižší než bez hudby o víc než 5 procentních bodů (stejné seedy, ≥ 20 letů). Tento test je mimo 15 min.
+- F.4 a F.5 splněny.
+- `npm test` a `npm run format:check` prochází.
+
+Když Diorama blok 1 prohraje, **nic se nesmaže** a výsledek jde orchestrátorovi k rozhodnutí uživatele.
