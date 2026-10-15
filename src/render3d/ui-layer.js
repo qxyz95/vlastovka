@@ -91,7 +91,10 @@ export function drawUi(c, plan = {}, visual = {}) {
     if (ui.aim) drawAim(c, ui.aim, v, p);
     if (dy) c.translate(0, -dy);
     if (!reduced) drawFlash(c, fx.flash, p, lh);
-    if (ui.intro) drawIntro(c, ui.intro, p, visual.cssWidth ?? c.canvas?.clientWidth ?? 640, lh);
+    if (ui.intro) {
+      const cw = visual.cssWidth ?? c.canvas?.clientWidth ?? 640;
+      drawIntro(c, ui.intro, p, cw, lh, uiZoom(cw, c.canvas?.clientHeight ?? 360));
+    }
   } finally {
     c.setTransform(1, 0, 0, 1, 0, 0);
   }
@@ -349,21 +352,22 @@ export const INTRO_TITLE = Object.freeze({ size: 36, sub: 13, at: 0.42, subAt: 0
 // Velikosti nápisu úvodu z tokenů 02-ux §6 v CSS px s horní mezí (--prompt-size clamp(32, 9vw, 72), --prompt-hint-size clamp(15, 3.8vw, 18)),
 // vydělené škálou plátna (CSS px na logický px = cssWidth / 640) → logické px pro c.font.
 const clampPx = (lo, v, hi) => Math.max(lo, Math.min(hi, v));
-export function introTextSize(cssWidth = 640, scale = cssWidth / 640) {
+// Krok zvětšení UI pro velká okna, stejný jako zoom v style.css (art review A2): nápis v plátně roste se stejným krokem jako titul a panely.
+export const uiZoom = (cssWidth = 640, cssHeight = 360) =>
+  cssWidth >= 2200 && cssHeight >= 1200 ? 1.5 : cssWidth >= 1700 && cssHeight >= 1000 ? 1.25 : 1;
+export function introTextSize(cssWidth = 640, scale = cssWidth / 640, zoom = 1) {
   const w = cssWidth > 0 ? cssWidth : 640,
-    k = scale > 0 ? scale : 1;
-  return {
-    size: clampPx(32, 0.09 * w, 72) / k,
-    sub: clampPx(15, 0.038 * w, 18) / k,
-    cssSize: clampPx(32, 0.09 * w, 72),
-    cssSub: clampPx(15, 0.038 * w, 18),
-  };
+    k = scale > 0 ? scale : 1,
+    z = zoom > 0 ? zoom : 1,
+    cssSize = clampPx(32, 0.09 * w, 72) * z,
+    cssSub = clampPx(15, 0.038 * w, 18) * z;
+  return { size: cssSize / k, sub: cssSub / k, cssSize, cssSub };
 }
-export function drawIntro(c, intro, p = PAPIR, cssWidth = 640, lh = VIEW.h) {
+export function drawIntro(c, intro, p = PAPIR, cssWidth = 640, lh = VIEW.h, zoom = 1) {
   if (!(intro?.alpha > 0)) return;
   const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * lh),
     k = INTRO_TITLE,
-    sz = introTextSize(cssWidth);
+    sz = introTextSize(cssWidth, cssWidth / 640, zoom);
   c.save();
   c.globalAlpha = Math.min(1, intro.alpha);
   c.fillStyle = p.aim.text;

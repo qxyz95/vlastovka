@@ -150,3 +150,16 @@ test('N-1: setPointerCapture na #hold a #action je v try/catch jako u #game', ()
     );
   assert.ok(!ui.match(/[^{]\$\('(hold|action)'\)\.setPointerCapture/), 'holé volání');
 });
+
+test('A2: nápis úvodu na velkém okně roste stejným krokem jako zoom UI v style.css', async () => {
+  const { uiZoom } = await import('../src/render3d/ui-layer.js');
+  assert.equal(uiZoom(1280, 800), 1);
+  assert.equal(uiZoom(1800, 900), 1);
+  assert.equal(uiZoom(1800, 1100), 1.25);
+  assert.equal(uiZoom(2560, 1277), 1.5);
+  assert.equal(introTextSize(2560, 4, 1.5).cssSize, 108);
+  assert.equal(introTextSize(2560, 4, 1.5).size, 27);
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  assert.match(css, /min-width: 1700px\) and \(min-height: 1000px\)[\s\S]*?zoom: 1\.25/);
+  assert.match(css, /min-width: 2200px\) and \(min-height: 1200px\)[\s\S]*?zoom: 1\.5/);
+});
