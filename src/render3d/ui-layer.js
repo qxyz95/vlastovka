@@ -91,7 +91,7 @@ export function drawUi(c, plan = {}, visual = {}) {
     if (ui.aim) drawAim(c, ui.aim, v, p);
     if (dy) c.translate(0, -dy);
     if (!reduced) drawFlash(c, fx.flash, p, lh);
-    if (ui.intro) drawIntro(c, ui.intro, p, scale, lh);
+    if (ui.intro) drawIntro(c, ui.intro, p, visual.cssWidth ?? c.canvas?.clientWidth ?? 640, lh);
   } finally {
     c.setTransform(1, 0, 0, 1, 0, 0);
   }
@@ -346,18 +346,32 @@ export function drawSpeedLines(c, lines = [], p = PAPIR) {
 // Nápis úvodu (H1, 03-art kap. 2.2, bible 05 kap. 9.2): „Throw it“ a pod ním nápověda, grafit bez podkladu nahoře v nebi nad hřebenem,
 // vodorovně na střed, svisle v pásu band (podíl výšky, intro.js / launch-site INTRO_SHOT.text). intro = {alpha, band, touch}.
 export const INTRO_TITLE = Object.freeze({ size: 36, sub: 13, at: 0.42, subAt: 0.86 });
-export function drawIntro(c, intro, p = PAPIR, scale = 1, lh = VIEW.h) {
+// Velikosti nápisu úvodu z tokenů 02-ux §6 v CSS px s horní mezí (--prompt-size clamp(32, 9vw, 72), --prompt-hint-size clamp(15, 3.8vw, 18)),
+// vydělené škálou plátna (CSS px na logický px = cssWidth / 640) → logické px pro c.font.
+const clampPx = (lo, v, hi) => Math.max(lo, Math.min(hi, v));
+export function introTextSize(cssWidth = 640, scale = cssWidth / 640) {
+  const w = cssWidth > 0 ? cssWidth : 640,
+    k = scale > 0 ? scale : 1;
+  return {
+    size: clampPx(32, 0.09 * w, 72) / k,
+    sub: clampPx(15, 0.038 * w, 18) / k,
+    cssSize: clampPx(32, 0.09 * w, 72),
+    cssSub: clampPx(15, 0.038 * w, 18),
+  };
+}
+export function drawIntro(c, intro, p = PAPIR, cssWidth = 640, lh = VIEW.h) {
   if (!(intro?.alpha > 0)) return;
   const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * lh),
-    k = INTRO_TITLE;
+    k = INTRO_TITLE,
+    sz = introTextSize(cssWidth);
   c.save();
   c.globalAlpha = Math.min(1, intro.alpha);
   c.fillStyle = p.aim.text;
   c.textAlign = 'center';
   c.textBaseline = 'middle';
-  c.font = `bold ${k.size}px ${p.popup.font}`;
+  c.font = `bold ${sz.size}px ${p.popup.font}`;
   c.fillText(t('prompt.throw'), 320, y0 + (y1 - y0) * k.at);
-  c.font = `600 ${Math.round(k.sub * scale)}px ${p.popup.font}`;
+  c.font = `600 ${sz.sub}px ${p.popup.font}`;
   c.fillText(
     t(intro.touch ? 'prompt.hintTouch' : 'prompt.hintMouse'),
     320,
