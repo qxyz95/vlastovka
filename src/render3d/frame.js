@@ -26,6 +26,7 @@ import { comicLook } from './comic.js';
 import { fxMap } from './fx-map.js';
 import { eventView } from './events-view.js';
 import { uiScale } from './ui-layer.js';
+import { qteRing, eventScene, burstOf, effectiveVx, comboOf } from './event-fx.js';
 import { initialQuality } from './quality.js';
 import { introProgress, introShot, introTitleAlpha, introIdle } from './intro.js';
 
@@ -333,7 +334,7 @@ export function planFrame({
       clock,
       settings: visual.settings,
       metersPerPx: mpp,
-      vx: f?.vx ?? 0,
+      vx: rest ? (f?.vx ?? 0) : effectiveVx(f), // výtrysk zvyšuje f.x, ne f.vx (C2a kap. 5): čáry vidí vEff
       frame: t,
       flying,
     };
@@ -401,6 +402,11 @@ export function planFrame({
   const m = moodAt(X, t, { hold: hold < 1e-3 ? 0 : hold }),
     mood = { ...m, fog: { near: camera.dist + 60, far: camera.dist + 950, ...m.fog } };
   const comic = comicLook(quality);
+  // C2a: kruh QTE z e.w běžící události (zóny konkrétní události, plující střed), výtrysk s ocasem v log. px, kombo jen s kotvou
+  // z ui.js (visual.combo: true | {x, y} CSS px; bez ní se řetěz nekreslí, zapne ho C2b), 3D objekty nových událostí (plan.evs).
+  const burst = flying ? burstOf(f) : null,
+    tail = 0.5 * PLANE_SIZE.max * scale * (LOGICAL.w / director.camera.width),
+    combo = flying && visual.combo ? comboOf(f) : null;
   return {
     t,
     state,
@@ -412,6 +418,8 @@ export function planFrame({
     director,
     dirT,
     vx: f?.vx ?? 0,
+    vEff: flying ? effectiveVx(f) : 0,
+    vy: f?.vy ?? 0,
     carry: f?.carry ?? 0,
     ev: e ? { at: e.at, phase: e.phase } : null,
     plane,
@@ -422,9 +430,16 @@ export function planFrame({
     events,
     fx: fxv,
     comp: companion(e, f?.t ?? 0),
+    evs: e ? eventScene(e) : null,
+    burst,
+    pxPerM: cssWidth / director.camera.width,
     cheer: cheerAge(f),
     ui: {
-      qte: visual.qte ?? null,
+      qte: e ? qteRing(e, f) : null,
+      burst: burst && { ...burst, tail },
+      combo,
+      comboAnchor: typeof visual.combo === 'object' ? visual.combo : null,
+      cssWidth,
       aim: intro && intro.since == null ? null : (visual.aim ?? null), // úvod před stiskem bez mířidel
       intro:
         intro && introTitleAlpha(intro.since, intro.calm) > 0

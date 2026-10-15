@@ -63,7 +63,7 @@ import { PAPER_KEYS } from './mood.js';
 import { frameStats, ring } from '../perf.js';
 import { initialQuality, nextQuality, qualityPreset } from './quality.js';
 import { planeContrast } from './paper.js';
-import { createFlight, step, eventInput } from '../core.js';
+import { createFlight, step, eventInput, gameFlight, bestAngle } from '../core.js';
 const MAX_DPR = 2,
   SLOW = 1000 / 30 - 2,
   WARM = [2, 3, 4, 5];
@@ -342,8 +342,25 @@ function perfPanel(canvas) {
 }
 // ── Ladění a měření (window.__r3d). Vlastní let ladění (seed z ?seed=, výchozí 1) hru neovlivní.
 const seedQ = () => +new URLSearchParams(globalThis.location?.search).get('seed') || 1;
+// ?events=all|steam|thermal|drone|star (C2a, jen ladicí let __r3d, hra a příznak NEW_EVENTS beze změny): plná Dílna a Atlas nových událostí,
+// Crowd Chain a Chimes na úrovni 3; s typem jsou všechny běžné události toho typu. Kombo se v ladicím letu kreslí ve výchozí poloze.
+export const DEBUG_EVENT_TYPES = Object.freeze(['steam', 'thermal', 'drone', 'star']);
+export function debugEventsFlight(q, seed = 1, model = 'dart') {
+  if (!q) return null;
+  const kit = {
+      model,
+      power: 3,
+      folds: 3,
+      paper: 3,
+      atlas: { steam: 3, thermal: 3, drone: 3, star: 3, chain: 3, onAir: 3 },
+      slots: [],
+    },
+    f = gameFlight(kit, seed, bestAngle(kit, 0.9), 0.9);
+  if (DEBUG_EVENT_TYPES.includes(q)) for (const e of f.events) if (!e.extra) e.type = q;
+  return f;
+}
 function reset(seed = seedQ(), model = R?.last?.model ?? 'dart', levels) {
-  R.debug = createFlight(model, levels, seed);
+  R.debug = debugEventsFlight(query('events'), seed, model) ?? createFlight(model, levels, seed);
   return R.debug;
 }
 // advance(s, input): přetočí ladicí let o s sekund (input(f) → 'down'|'up'|null, např. autopilot) a vykreslí jeden snímek.
@@ -367,6 +384,7 @@ function advance(s = 1, input = null) {
       fx: null,
       qte: null,
       clock: f.t,
+      combo: query('events') ? true : L.visual?.combo,
     },
     true,
   );

@@ -72,8 +72,8 @@ export function createScene(canvas, { dpr = 1 } = {}) {
   scene.add(city.group);
   const plane = createPlane({ planeHull, palette: pal, scale: PLANE_SCALE, shadows: kit.shadows });
   scene.add(plane.group);
-  // Holub-kurýr a pára z ventilace (a4) v každé čtvrti.
-  const companion = createCompanion({ ramp, hull: thinHull, palette: pal });
+  // Holub-kurýr a objekty nových událostí (a4, C2a: pára, termika, lampion, hvězda) v každé čtvrti.
+  const companion = createCompanion({ ramp, hull: thinHull, palette: pal, paper: kit });
   scene.add(companion.group);
   // FALLBACK(D1): Violet Suburbs žije zatím přes life3d.js ve světových souřadnicích (místa 0–3); H4 ji převede na papírové modely.
   const life = createLife({ ramp, hull, thinHull });
@@ -162,11 +162,15 @@ export function createScene(canvas, { dpr = 1 } = {}) {
       t,
       X,
       Y,
-      vx: plan.vx,
-      ev: plan.ev,
+      vx: plan.vEff ?? plan.vx,
+      vy: plan.vy,
       comp: plan.comp,
       carry: plan.carry,
       reduced: plan.reduced,
+      evs: plan.evs,
+      burst: plan.burst,
+      district: m.district,
+      pxPerM: plan.pxPerM,
     });
     workshop.update(plan.kid, plan.hand, { t: plan.t, reduced: plan.reduced });
     quality = plan.quality;

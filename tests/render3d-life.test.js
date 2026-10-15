@@ -185,5 +185,7 @@ test('autopilot hits every event; companions follow the event phases', () => {
     companion({ type: 'bird', phase: 'effect', at: 0, result: 'miss', resolvedAt: 2 }, 3).dy > 10,
     'leaves with the baguette',
   );
-  assert.ok(companion({ type: 'gust', phase: 'interaction', at: 0 }, 1).steam > 0);
+  // Rozhodnutí 06 (15. 10.): poryv bez ventilace (jen proužky), páru a nové události kreslí companion3d z plan.evs.
+  for (const type of ['gust', 'steam', 'thermal', 'drone', 'star'])
+    assert.equal(companion({ type, phase: 'interaction', at: 0 }, 1), null, type);
 });

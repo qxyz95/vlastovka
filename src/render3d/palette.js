@@ -181,7 +181,20 @@ export const PAPIR = {
     discAlpha: 0.95,
     shadow: { color: '#28190a', alpha: 0.35, blur: 4, dx: 3, dy: 3 },
     width: { track: 6, success: 9, perfect: 11 },
-    result: { perfect: PAPER_ROLE.perfect, success: PAPER_ROLE.success, other: PT.miss },
+    result: {
+      perfect: PAPER_ROLE.perfect,
+      success: PAPER_ROLE.success,
+      half: PT.kraftDark,
+      partial: PT.kraftDark,
+      other: PT.miss,
+    },
+    // C2a (research/atlas/05-art-udalosti.md kap. 0.1–3.2): half = stopa termiky a částečný účinek (3,66 : 1 na krému), pecky počtu stisků
+    // (krém s grafitovým lemem), zarážky jádra termiky tužkou, zarážka kontaktu lampionu grafitem.
+    half: PT.kraftDark,
+    peg: PT.cream,
+    pegEdge: PT.graphite,
+    stop: PT.pencil700,
+    contact: PT.graphite,
     gust: PT.cream,
     gustEdge: PT.graphite,
     bird: { body: '#b6c9e4', wing: '#7f9ed6', beak: '#f0a27a' },
@@ -212,9 +225,41 @@ export const PAPIR = {
     wing: '#a7bdd6',
     eye: PT.graphite,
     steam: PT.cream,
+    steamAlpha: 0.55,
     vent: PT.pencil,
     grate: PT.pencil,
+    // C2a (05-art-udalosti kap. 2–4): termika (stužky kraftDark, tělo páska / ve čtvrti 4 lampion, útržky kraft a cihlová D1.roof[1]),
+    // Sky Lantern (ve dne cihlový s tmavomodrými žebry, nesvítí; ve čtvrti 4 lampionový, svítí), padající hvězda (ve dne D1.window, večer krém).
+    thermal: {
+      edge: PT.kraftDark,
+      body: PT.tape,
+      bodyAlpha: 0.22,
+      night: CARDS[3].lantern,
+      nightAlpha: 0.18,
+      scraps: [PT.kraft, D1C.roof[1]],
+    },
+    lantern: {
+      day: D1C.roof[1],
+      dayRib: D1C.window,
+      night: CARDS[3].lantern,
+      nightRib: CARDS[2].roof[0],
+      wire: PT.kraftDark,
+      glowAlpha: 0.22,
+    },
+    star: { day: D1C.window, night: PT.cream, cut: PAPER_DISC, tailAlpha: 0.6 },
   },
+  // Kombo (05-art-udalosti kap. 6): papírový řetěz vpravo nahoře, očka role úspěchu, prázdná miss, číslo ×N grafit na krémovém štítku;
+  // zvoneček Chimes kraftDark se světlým řezem a tmavomodrým srdcem (D1). Výtrysk (kap. 5): čárky tužkou, obláčky páry krém.
+  combo: {
+    link: PAPER_ROLE.success,
+    empty: PT.miss,
+    text: PT.graphite,
+    tag: PT.cream,
+    bell: PT.kraftDark,
+    bellCut: PT.cream,
+    clapper: D1C.window,
+  },
+  burst: { line: PT.graphite, puff: PT.cream },
   // Život čtvrti z papírových modelů (models/*, paper-cards.lifeCards).
   life: {
     people: {

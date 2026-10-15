@@ -295,7 +295,13 @@ test('drawUi: logical 640×360 via setTransform, ends on the identity transform,
   assert.throws(() =>
     drawUi(bad, {
       view,
-      ui: { qte: { type: 'gust', phase: 'interaction', progress: 0.5, zones: { success: null } } },
+      ui: {
+        qte: {
+          get type() {
+            throw new Error('broken qte');
+          },
+        },
+      },
     }),
   );
   assert.deepEqual(Object.values(bad.getTransform()), [1, 0, 0, 1, 0, 0]);
