@@ -25,7 +25,7 @@ Měřítko každé fáze (`02 §2.7` bod 1, N): **umí hráč v tu chvíli říc
 | **Výsledek** | dolet a rekord · **rozdíl proti minule s příčinou** · jedna novinka z fronty · **čip nejbližší koupě** · další cíl | učební cíl na další hod; koupě bez cesty do Dílny | K2, K4 | `02 [12]` V, `04 [23]` V |
 | **Dílna (volitelně)** | strom, vlaštovky, náhled „Now → after“ | volba stylu, cíl, na který se šetří | `research/obsah/02` | `01 N3` N |
 | **Hranice čtvrti** | klidný pohled zpět na celou čtvrť, slunce se posune, karta nové čtvrti; „Keep throwing“ a „Menu“ stejně velké | uzavření a vlastní volba: dobré místo odejít | K9 | `03 N1`, `08 N11` H/N, Alexandrovsky 2024 (04 §9) V/H |
-| **Finále** | druhé dítě na konci města chytí vlaštovku, beze slov; „Delivered.“ a souhrn | konec hry | K9 | `02 §2.7` bod 4 N |
+| **Finále** | pejsek na konci města sebere vlaštovku a uteče (06, „Pejsek místo nálezce“, návrh `06-pejsek.md`); „Delivered.“ a souhrn | konec hry | K9 | `02 §2.7` bod 4 N |
 
 **Pravidlo jedné výrazné věci ve vzduchu (bible, 06).** Čistá funkce `airFocus(state)` vrátí jedinou věc, která smí mít zvukový akcent, pohyb kamery nebo titulek. Pořadí: aktivní QTE (varování a okno) > první setkání s událostí > nové místo (banner) > prasknutí pásky rekordu > vztyčení dominanty > běžné vztyčování (budovy, mola, lampiony) > posun konce koberce D3. Ostatní běží „potichu“: bez zvukového akcentu, menší amplituda, žádná reakce kamery. Nic se neodkládá ani nepřesouvá (pravdivost, P10), jen se tlumí. Test: pro každou dvojici souběžných věcí vrátí vyšší prioritu; při `reduced` nikdy pohyb kamery. Opora: juice má optimum `05` Kao 2020 (P2, V jen z abstraktu), efekty nesmí přehlušit zpětnou vazbu zásahu `01 [26]` V. Cena S (logika) + napojení v rendereru S.
 
@@ -143,7 +143,7 @@ Měřítko každé fáze (`02 §2.7` bod 1, N): **umí hráč v tu chvíli říc
 - **Cíl:** po čtvrti mám pocit hotového a můžu odejít spokojený; kdo chce, má hned další malou mezeru.
 - **Pravidla:** (1) Spouští se **prvním překročením hranice čtvrti** (místa 5, 9, 13), tedy ve chvíli, kdy předchozí čtvrť stojí celá. Rozšiřuje existující kartu čtvrti (06 14. 10. bod 1), nepřidává nový okamžik. (2) Po dopadu: **klidný záběr zpět** na celou čtvrť (2,5 s, přeskočitelný), slunce se posune o krok (cesta za sluncem), pak karta nové čtvrti. (3) Karta: „{district} stands.“, jedna věta nové čtvrti, **„Keep throwing“ a „Menu“ stejně velké**, nic neodpočítává; podržet kdekoli funguje (K1), ale pod kartou je nápis o uložení „Progress saved.“. (4) Fronta novinek: karta má přednost (FN1), jiné novinky čekají. (5) **Finále (místo 16):** druhé dítě na druhém konci města **chytí vlaštovku**, beze slov (06 bod 4: až ve finále), „Delivered.“ a souhrn po dohrání (06 14. 10. bod 4); Menu a „Fly for fun“ stejně velké. (6) Každá kapitola jen jednou.
 - **Stavy:** `landed` → `lookBack` (2,5 s) → `chapterCard` → `aim` / `menu`.
-- **Co uvidí:** art: záběr čtvrti (kamera vysoko, celé místo 1–4 v záběru), posun slunce; model druhého dítěte = postavička C s jinými barvami (H2), póza chycení. Product: karta.
+- **Co uvidí:** art: záběr čtvrti (kamera vysoko, celé místo 1–4 v záběru), posun slunce; pejsek ze `06-pejsek.md` (dávka H6), místo druhého dítěte. Product: karta.
 - **Texty:** `chapter.done` „{district} stands.“ / „{district} stojí.“ · `chapter.keep` „Keep throwing“ / „Házet dál“ · `chapter.menu` „Menu“ · `chapter.saved` „Progress saved.“ / „Postup je uložený.“ · finále existuje (`Delivered.`).
 - **Závislosti:** U3 (nová obrazovka `chapter`), Atlas (hranice čtvrtí), K5, H2 (postavička C), FN1.
 - **Test přijetí:** čistá `chapterTrigger(prevBest, best)` → index čtvrti nebo `null` (jen poprvé, i když hod přeletí dvě hranice: ukáže se jen vyšší); screens test `chapter` → `aim` i `menu`. Prohlížeč: záběr na 375 × 667, přeskočení.
@@ -206,7 +206,7 @@ Průměrný hráč, místa po ~305 m (Market 305, Gardens 610, Railway 914, hran
 | Tužková stopa minulého / nejlepšího hodu (04 A2, 00 S2) | **zamítnuto 06** | nahrazuje ji řádek K2 ve výsledku a páska K5 v letu |
 | Okno na konci města (04 C1) | **zamítnuto 06** (nálezce až ve finále) | finále v K9 |
 | Ranní noviny (00 S4) | **škrtnout, potvrzuji** | humor mění vnímání, ne chování `08 [22]` V (n = 11 804) |
-| Kdo ji našel po každém hodu (00 S3, 04 B4) | **škrtnout jako systém**; jediný nálezce je druhé dítě ve finále | totéž; 06 bod 4 |
+| Kdo ji našel po každém hodu (00 S3, 04 B4) | **škrtnout jako systém**; jediný nálezce je pejsek ve finále (a občas krátce při dopadu) | totéž; 06 bod 4 |
 | Paměť tvorů 10. a 25. setkání (00 U2) | **škrtnout, potvrzuji** | skryté počítadlo, hráč ho nepozná (fun-check otázka 1) |
 | Pop-up Updraft (04 A5) | **škrtnout, potvrzuji** | mění dolet, zesiluje silné; po rekordu prodlužuje sérii a tím reset `03 [9]` |
 | Návrat do rozdělané práce (04 C2) | **odložit** | K1 už dává okamžitou příležitost; mění rozhodnutý H1 |
@@ -263,7 +263,7 @@ Navazuje na **U0–U9** (02-ux §8) a **H0–H5** (03-art §6); nic z nich nezdv
 | **T2 Karta výsledku a vstupy** | zpřesnění **U6/U7**: řádek 2 z `throwDiff`, čip místo řádku mincí, Undo, zámek 400 ms, držení kdekoli na kartě | product (spec) → game-dev; narrative (texty EN/CS) | `src/ui.js`, `index.html`, `style.css`, `src/locales/*` | U6, U7, T1 |
 | **T3 Vlajka a natočení po dopadu** (K3) | model vlajky, `panToFlag` | art (karta katalogu) → game-dev | `src/render3d/models/`, kamera `render3d` | T1, data míst Atlasu |
 | **T4 Hranice a páska** (K5, čtvrť D1) | vztyčení po budovách ve shaderu, ploché archy, páska, dominanty D1; `perf-check`, `art-review` | art + game-dev | `src/render3d/*`, testy render3d | katalog G1–G3, H0 |
-| **T5 Konec kapitoly a finále** (K9) | obrazovka `chapter` (doplněk **U3**), záběr zpět, slunce, karta; druhé dítě (barvy postavičky C z **H2**), póza chycení | product + art → game-dev | `src/screens.js`, `ui.js`, `render3d`, `locales` | U3, T4, H2 |
+| **T5 Konec kapitoly a finále** (K9) | obrazovka `chapter` (doplněk **U3**), záběr zpět, slunce, karta; pejsek (dávka **H6**, `06-pejsek.md`) | product + art → game-dev | `src/screens.js`, `ui.js`, `render3d`, `locales` | U3, T4, H2 |
 | **T6 Mola D2** (K6) | lodě a mola v katalogu D2, `pierState` | art → game-dev | `render3d/models`, `render3d` | T4, katalog D2 |
 | **T7 Koberec D3** (K7) | `predictLanding`, koberec, jednorázová věta | game-dev (logika), art (koberec) | `src/core.js` nebo `throw.js`, `render3d`, `locales` | T4, 01 QS1, BLOCKED 3 |
 | **T8 Log `?playtest=1`** | log podle §5 A, souhlas, export a smazání | game-dev, product (text souhlasu) | nový `src/playtest-log.js`, háček v `ui.js` | T1 (`throwReasons`) |
@@ -311,7 +311,7 @@ Názor, ne měření. Co ukáže jen playtest: **NOT ASSESSED**.
 | Log `?playtest=1` | **OK (nástroj)** | bez něj nejde ověřit „dobrovolně a bez lítosti“ (P4) | jen pole z §5 A, žádné grafy ve hře |
 | Rytmus 40 hodů | **riziko** | díra 21–24 (4 hody jen koupě a rekord) porušuje cíl „≤ 3 hody bez důvodu“ | jedna scéna na jedno použití v úseku Gardens → Railway (BLOCKED 4) |
 
-**Jednota:** všechny karty jsou papír (archy, páska, plachty, obilí, lampiony), dítě (vlaštovka v ruce, druhé dítě ve finále) nebo cesta za sluncem (posun slunce v K9). Žádný cizí systém, žádné počítadlo.
+**Jednota:** všechny karty jsou papír (archy, páska, plachty, obilí, lampiony), dítě (vlaštovka v ruce, pejsek ve finále) nebo cesta za sluncem (posun slunce v K9). Žádný cizí systém, žádné počítadlo.
 **Top 3 silné:** K1 bez prodlevy, K5 hranice a páska, K3 vlajka dalšího místa.
 **Top 3 k předělání:** K4 čip (hlídat tlak na nákup měřením), K7 koberec (zúžit na hranu, ztišit při QTE), díra 21–24 v rytmu (výplň).
 **Etika (P13):** bez FOMO, odpočtů, náhodných odměn a seznamů; čip a napůl rozvinuté lodě jsou jediná místa s rizikem tlaku, obě mají pojistku (Vrátit, žádné počítadlo).

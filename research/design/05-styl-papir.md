@@ -138,7 +138,7 @@ Vlaštovka je změřená **z vykresleného snímku** (`__papir.measure()`: pixel
 - **boky a odvrácené střechy** = `mix(barva, #5b4f7a, .3)`, přivrácené ke slunci lehce světlejší;
 - **vlákna**: 3 oktávy šumu ve světových metrech (perioda ~1,1 m, 0,27 m, 0,08 m), síla ±7 % jasu, na zemi 5 %, na mracích 4 %. Statická, nehýbou se s kamerou. **P2.**
 - **žádné obrysy světa, žádný půltón, žádná posterizace, žádná toon rampa** (vše z 02 S2 končí).
-- **Výjimka: dítě** (jediná plastická postava, kap. 9.4) má vlastní plynulejší rampu po stěnách (`kidMaterial`), aby byly vidět jeho stěny. Pořád jeden plochý tón na stěnu, vlákna, žádný lesk ani obrys.
+- **Výjimka: dítě** (jediná plastická postava, kap. 9.4) má vlastní plynulejší rampu po stěnách (`kidMaterial`), aby byly vidět jeho stěny. Pořád jeden plochý tón na stěnu, vlákna, žádný lesk ani obrys. **Návrh 15. 10.:** stejný materiál i pro pejska nálezce (kap. 9.4, `research/plan-hratelnost/06-pejsek.md`).
 
 **Tvarosloví (Monument Valley):** kvádry, sedlové střechy se štítem ke kameře (70 % malých domů v ulici, 35 % ve středu, 40 % v dálce), jehlany jen na kopcích a nádržích, kotouče (stromy jako papírový kotouč na kmeni, hlavy postav, balóny, mraky ze tří kotoučů, větrníky jako čtverec natočený o 45°), vlaječky jako trojúhelníky. Okna jsou **malé tmavé výřezy** `mix(barva stěny, #3d4f7a, .6)`, ve středu větší a řidší, v dálce žádná (jen silueta). Dveře jen v ulici. **P2, P4.**
 
@@ -306,6 +306,8 @@ Menu, míření i Dílna jsou **jedna boční kamera**, jen jinak blízko; mezi 
 - **Vlaštovku v ruce nic nezakryje** (P1): dokud ji dítě drží, kreslí se přes dítě.
 - **LOD:** H **630 △** (míření 64–96 px, úvod na desktopu 51 px), LOD 1 **130 △** (dítě < 48 px: úvod na telefonu, oddálení), za letu 0. Jeden draw call s praporkem. Lidé ve městě (`person`) zůstávají ploší: hrdina je jediná plastická postava, protože je jediná zblízka (80 px/m proti 4–10 px).
 
+**Pejsek nálezce (NÁVRH 15. 10., 06 „Pejsek místo nálezce“; podrobnosti `research/plan-hratelnost/06-pejsek.md`, obrázky `img/hratelnost/pejsek.png`, `pejsek-pozy.png`):** druhá a poslední plastická postava, stejná technika i materiál jako dítě (díly s 6–10 stěnami, `kidMaterial`, bez obrysu). Malý teriér-voříšek 0,6 m: velká hlava, krátké nohy, tmavé trojúhelníkové uši (silueta „pes“ i na 25 px v šedi). Krémový `PT.cream`, uši, tlapky, nos a oči `PT.pencil700`, obojek `PT.tomato` (jako proužek čepice dítěte). LOD H 388 △, LOD 1 100 △, 1 DC jen během scény. Vlaštovku drží za zadní třetinu, nos vlaštovky vpřed (nezakryje mu obličej), vlaštovka v záběru psa nejméně 0,5 m (M-2). Pes je vidět jen po dopadu v přiblíženém záběru (10 m, finále 8 m), nikdy ve vzduchu ani při QTE; pózy on twos; reduced motion: finále statická póza, krátká verze vypnutá.
+
 Pózy: klid (úvod, obě dlaně s vlaštovkou před hrudí), míření, nabíjení (záklon a couvnutí jako dnes `kidPose`), výhoz (švih, trup se stočí za hodem), mávání po hodu, sed na pavlači (menu, pokud zůstane), u stolu (panel Dílny). Úhly v `03-art.md` kap. 1.7.
 
 | Část | Barva | Token |
@@ -390,7 +392,7 @@ Nálady čtvrtí: kap. 2.3.
 ## 13. Pravidla pro nové prvky (kontrolní seznam)
 
 1. **Silueta** čitelná v malém (25 %, šeď); dominanta místa poznat do 1 s; tvar čistý (kvádr, štít, kotouč, trojúhelník). (P2, P4)
-2. **Materiál:** papírový shader (čelo, řezaná hrana, boky, vlákna, opar). Žádný obrys, žádná textura s detailem, žádná emise kromě lampionů a okna Dílny. Jediná výjimka je rampa po stěnách dítěte (kap. 9.4). (P2)
+2. **Materiál:** papírový shader (čelo, řezaná hrana, boky, vlákna, opar). Žádný obrys, žádná textura s detailem, žádná emise kromě lampionů a okna Dílny. Jediná výjimka je rampa po stěnách dítěte (a podle návrhu 15. 10. pejska, kap. 9.4). (P2)
 3. **Paleta:** jen tokeny kap. 2.1 a barvy čtvrti kap. 2.3; nová barva = nový token se jménem role. (P3)
 4. **Vrstva a stencil:** prvek patří do jedné vrstvy (ulice / střed / dálka / nebe) a zapisuje její id; jinak by na něj padaly špatné stíny. (P2)
 5. **Hierarchie:** ve výšce letu nic bílého s grafitem; nic většího a světlejšího než vlaštovka v pásu letu. (P1)
@@ -421,6 +423,7 @@ Nálady čtvrtí: kap. 2.3.
 | 3.1 Měřítko | `img/start/zaber.png` prostřední: dítě 1,2 m, vlaštovka v ruce 0,5 m, záběr 16 m | `img/start/dnes.png`: dítě 11,75 m vysoké jako dům, dveře 4,2 × 6 m |
 | 9 Místo odhodu | `img/start/koncept-2-podkrovi.png`: pavlač nad ulicí, za vlaštovkou nebe, domov v řezu | `img/start/vyhled.png` horní: za dítětem zeď domů 38 m, slunce zakryté (S-1) |
 | 9.4 Dítě | `img/hratelnost/postavicka-c.png` „C hra“: objem z mnoha stěn, oči pod čepicí vidět, v šedi na 64 px hned za vlaštovkou | stejný list, „C náčrt“: proužek čepice přes oči; `postavicka-varianty.png` „Dnes“: plochá karta, ze strany výstřižek |
+| 9.4 Pejsek (návrh) | `img/hratelnost/pejsek.png` „A krém“: tmavé uši a tlapky, pes vidět na zemi všech 4 čtvrtí; „Krátká verze 10 m“: pes 77 px vedle karty | stejný list „B kraft“ (ve čtvrtích 2–3 splyne se zemí) a „Dnes po dopadu 102 m“ (pes 8 px, bez přiblížení neexistuje) |
 | 9.3 S-6 Kouř | `img/hratelnost/kour-papir.png` 2 a 5: malé krémové obláčky daleko za startem, při míření žádný kouř | `kour-papir.png` 1 a `img/hratelnost/zbytky-stareho-stylu.png` 1: fialové koule 3–7 m, za dítětem |
 | 17 Modely | `img/obsah/siluety.png` řádek 3 (Hawk): oddělené křídlo, mezi ním a trupem je vidět nebe i na 24 px | `img/obsah/siluety-pruzkum.png` řádek 7 (vidlicový ocas): krásný shora, z boku splyne se šipkou |
 | 17 Skiny | `img/obsah/skiny.png` K9 Sail Stripes: pruhy vidět na 24 px, vlaštovka zůstane světlá | modrotisk, zlatá, rajčatová (03 kap. 3, zakázané): večer zmizí, nebo si hráč splete roli barvy |

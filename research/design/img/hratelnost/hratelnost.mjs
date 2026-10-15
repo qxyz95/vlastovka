@@ -9,7 +9,7 @@ import {deflateSync} from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 import {cityChunk,follow} from '../../../../src/render3d/geometry.js';
 import {PAPIR,PAPER_TOKENS as T} from '../../../../src/render3d/palette.js';
-const OUT=fileURLToPath(new URL('.',import.meta.url)),SS=3;
+const OUT=fileURLToPath(new URL('.',import.meta.url)),SS=3,ONLY=process.env.ONLY;// ONLY=pejsek → zapíše jen listy, jejichž jméno obsahuje „pejsek“ (ostatní se jen spočtou)
 const D1=PAPIR.city.districts[0],WS=PAPIR.workshop;
 // ── barvy
 const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255),mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),C=c=>typeof c==='string'?hex(c):c;
@@ -31,7 +31,7 @@ class Img{
  down(s){const o=new Img(this.w/s|0,this.h/s|0);for(let y=0;y<o.h;y++)for(let x=0;x<o.w;x++)for(let k=0;k<3;k++){let v=0;for(let j=0;j<s;j++)for(let i=0;i<s;i++)v+=this.d[((y*s+j)*this.w+x*s+i)*3+k];o.d[(y*o.w+x)*3+k]=v/s/s;}return o;}
  blit(src,ox,oy){for(let y=0;y<src.h;y++)for(let x=0;x<src.w;x++){const X=ox+x,Y=oy+y;if(X<0||Y<0||X>=this.w||Y>=this.h)continue;for(let k=0;k<3;k++)this.d[(Y*this.w+X)*3+k]=src.d[(y*src.w+x)*3+k];}}
  grain(){for(let y=0;y<this.h;y++)for(let x=0;x<this.w;x++){const n=Math.sin(x*12.9898+y*78.233)*43758.5453,f=1+.035*((n-Math.floor(n))-.5);for(let k=0;k<3;k++)this.d[(y*this.w+x)*3+k]*=f;}}
- png(file){const {w,h}=this,raw=Buffer.alloc((w*3+1)*h);for(let y=0;y<h;y++){raw[y*(w*3+1)]=0;for(let x=0;x<w*3;x++)raw[y*(w*3+1)+1+x]=Math.max(0,Math.min(255,Math.round(this.d[y*w*3+x]*255)));}
+ png(file){if(ONLY&&!file.includes(ONLY))return;const {w,h}=this,raw=Buffer.alloc((w*3+1)*h);for(let y=0;y<h;y++){raw[y*(w*3+1)]=0;for(let x=0;x<w*3;x++)raw[y*(w*3+1)+1+x]=Math.max(0,Math.min(255,Math.round(this.d[y*w*3+x]*255)));}
   const crcT=[...Array(256)].map((_,n)=>{let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;return c>>>0;}),crc=b=>{let c=~0;for(const v of b)c=crcT[(c^v)&255]^(c>>>8);return (~c)>>>0;};
   const chunk=(t,data)=>{const l=Buffer.alloc(4);l.writeUInt32BE(data.length);const td=Buffer.concat([Buffer.from(t),data]),c=Buffer.alloc(4);c.writeUInt32BE(crc(td));return Buffer.concat([l,td,c]);};
   const ih=Buffer.alloc(13);ih.writeUInt32BE(w,0);ih.writeUInt32BE(h,4);ih[8]=8;ih[9]=2;
@@ -145,7 +145,7 @@ function flyUI(img,W,H){const portrait=H>W;card(img,W-(portrait?62:76),10,portra
 // ── koncepty. HAND zůstává jako ve hře (pose.HAND: x 70,5 m, y 16 m), fyzika i město se nemění; podlaha pod dítětem = HAND.y − 1,4 m.
 // Ruka ve 12 m = výška výhozu fyziky (core.js y0, 01-zacatek-a-kamera §1.5); dnešní HAND je 16 m (jen záběr Dnes).
 const HX=148/2.1,HY=12,FL=HY-1.4,HAND=[HX,HY,0],HY0=16,HAND0=[HX,HY0,0];
-const navy=hex('#3d4f7a'),cream=hex(WS.wall),tom=hex(T.tomato),teal=hex(WS.annex),warm=hex(WS.window),kraft=hex(T.kraftDark);
+const navy=hex('#3d4f7a'),cream=hex(WS.wall),tom=hex(T.tomato),teal=hex(WS.annex??'#5aa6a0'),warm=hex(WS.window),kraft=hex(T.kraftDark);
 // B: podkrovní dílna v řezu (domeček pro panenky) na opěrné zdi nad ulicí; dítě na pavlači u půdních dveří, nad ním trám s kladkou.
 function conceptB(S,{menu=false}={}){city(S,{skipNear:x=>x>44&&x<75});const wall=1.1,x0=55.5,x1=67.5,zf=1.2,ak=2.3,ar=4.6,stone=hex('#d9bf98');
  S.box(44,0,31,wall,zf+3,12,stone);for(let i=0;i<11;i++)S.panel(44.6+i*2.8,.5+(i%2)*.7,1.6,.06,zf+3.02,mix(stone,SIDE,.2));
@@ -460,3 +460,116 @@ function cyberSmoke(S){for(const c of chimneyTops())if(hash01(c.seed,1)<.55)for(
  sheet('KOUR: PAPIROVE OBLACKY (ROZHODNUTI 06 BOD 14)','1 DNES CYBER KOULE 3-7 M. 2 NAVRH: KOTOUC 8 STEN, KREM ALFA 0,5, 0,8-2,2 M, 1/4 KOMINU, 200 M A DAL OD RUKY.',
   [[{label:'1 DNES (LET 120 M)',img:today},{label:'2 NAVRH (LET 120 M)',img:paper}],[{label:'3 NA SIRKU 932X430',img:land},{label:'4 DETAIL 14 M',img:near},{label:'5 MIRENI: ZADNY KOUR',img:startAim}]],'kour-papir.png');}
 console.log(JSON.stringify({C:RES.C,smoke:RES.smoke}));
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+// PEJSEK (art-director, 15. 10. 2026, research/plan-hratelnost/06-pejsek.md; 06 „Pejsek místo nálezce“): papírový pes stejnou technikou
+// jako postavička C (latheP, jeden tón na stěnu, shade() = kidMaterial, bez obrysu), díly × kostra × pózy, náčrt × ve hře × LOD 1.
+//   ONLY=pejsek node research/design/img/hratelnost/hratelnost.mjs → pejsek.png, pejsek-pozy.png (ostatní listy se nepřepíšou)
+// ════════════════════════════════════════════════════════════════════════════════════════════════
+const DOG_COLORS={krem:{body:T.cream,dark:T.pencil700},kraft:{body:T.kraft,dark:T.pencil700},tuzka:{body:T.pencil,dark:T.graphite}};
+const DGC={body:hex(T.cream),dark:hex(T.pencil700),collar:hex(T.tomato)};
+const dogColors=k=>{DGC.body=hex(DOG_COLORS[k].body);DGC.dark=hex(DOG_COLORS[k].dark);};
+const HXR=rz(-Math.PI/2);// díl podél +x: osa dílu y → +x, poloměr a → svisle, b → do boku
+const turn=(F,R,d=[0,0,0])=>F.map(f=>({...f,pts:f.pts.map(p=>add(ap(R,p),d))}));
+const ear=(s,full=true)=>{const F=tent(.045,.11,.01,DGC.dark);return turn(full?F:F.slice(0,2),M(rx(s*.35),rz(.15)),[-.01,.19,s*.055]);};
+// díly (m od kloubu dílu): trup podél x, nohy a hlava podél y, čenich podél x; souřadnice psa: nos na +x, kamera na +z, chodidla y = 0
+const DOG={
+ H:{body:()=>turn(latheP([[-.24,0,0],[-.2,.08,.075],[-.1,.1,.095],[.07,.105,.1],[.18,.095,.09],[.24,0,0]],10,DGC.body),HXR),
+  leg:()=>latheP([[-.135,.032,.032],[0,.038,.038]],6,DGC.body),paw:()=>latheP([[-.17,.04,.035,.014],[-.135,.033,.033]],6,DGC.dark,{bot:true}),
+  neck:()=>turn([...latheP([[-.06,.065,.06],[.05,.055,.05]],8,DGC.body),...latheP([[-.025,.071,.066],[.01,.069,.064]],10,DGC.collar)],rz(-.3)),
+  head:()=>latheP([[0,0,0],[.035,.08,.085],[.095,.108,.108],[.155,.105,.103],[.2,.066,.07],[.225,0,0]],10,DGC.body),
+  snout:()=>turn(latheP([[0,.055,.055],[.06,.046,.05],[.1,.034,.038],[.12,0,0]],8,DGC.body),HXR,[.06,.08,0]),
+  nose:()=>turn(latheP([[0,.022,.026],[.024,0,0]],6,DGC.dark),HXR,[.165,.085,0]),
+  ears:()=>[...ear(1),...ear(-1)],eyes:()=>[...plate(.106,.14,.045,.016,DGC.dark),...plate(.106,.14,-.045,.016,DGC.dark)],
+  tail:()=>[...latheP([[0,.024,.024],[.08,.017,.017]],6,DGC.body),...latheP([[.08,.017,.017],[.13,0,0]],6,DGC.dark)]},
+ L1:{body:()=>turn(latheP([[-.24,0,0],[-.15,.095,.09],[.12,.105,.1],[.24,0,0]],6,DGC.body),HXR),
+  leg:()=>latheP([[-.17,.035,.035],[0,.038,.038]],4,DGC.body),paw:()=>[],
+  neck:()=>turn(latheP([[-.06,.065,.06],[.05,.055,.05]],4,DGC.body),rz(-.3)),
+  head:()=>latheP([[0,0,0],[.07,.108,.108],[.16,.105,.103],[.225,0,0]],6,DGC.body),
+  snout:()=>turn(latheP([[0,.055,.055],[.12,0,0]],4,DGC.body),HXR,[.06,.08,0]),nose:()=>[],
+  ears:()=>[...ear(1,false),...ear(-1,false)],eyes:()=>[],tail:()=>latheP([[0,.024,.024],[.13,0,0]],4,DGC.dark)}
+};
+// Pózy: yaw (natočení ke kameře), pitch (trup, + = předek nahoru), lift (kořen trupu ±, m), head [yaw, kývnutí (− = dolů), náklon],
+// tail [zdvih dozadu, vrtění do boku], legs [PB, PV, ZB, ZV] švih (+ = dopředu; P přední, Z zadní, B blízká ke kameře, V vzdálená).
+const DPOSE={
+ stoj:{yaw:.5,head:[.2,-.2,0],tail:[.45,0],legs:[0,0,0,0]},
+ klus:{yaw:.3,lift:.015,head:[0,-.35,0],tail:[.6,0],legs:[.4,-.3,-.3,.4]},
+ cuch:{yaw:.45,pitch:-.25,lift:-.02,head:[.1,-1.7,0],tail:[.3,.25],legs:[.3,.25,-.25,-.2]},
+ drzi:{yaw:.6,pitch:.06,head:[.3,-.15,0],tail:[.35,.3],legs:[.05,-.05,0,0],plane:true},
+ naklon:{yaw:.85,pitch:.6,lift:-.085,head:[.6,-.6,.4],tail:[1.45,.55],legs:[-.6,-.55,1.5,1.45],plane:true},
+ uklon:{yaw:.55,pitch:-.42,lift:-.05,head:[.45,.3,0],tail:[.1,.55],legs:[1.05,1,.15,.1],plane:true},
+ poskok:{yaw:.55,pitch:.18,lift:.13,head:[.35,-.3,0],tail:[.5,-.45],legs:[.75,.55,-.75,-.55],plane:true},
+ predani:{yaw:1.3,pitch:-.15,lift:-.01,head:[0,-.8,-.15],tail:[.6,.5],legs:[.15,.1,-.1,-.05],plane:true},
+ cval:{yaw:.12,pitch:.06,lift:.05,head:[0,-.45,0],tail:[.15,0],legs:[.85,.6,-.85,-.6],plane:true}
+};
+function buildDog(v,pose,at=[0,0,0]){
+ const V=DOG[v],P=DPOSE[pose],out=[];let tris=0;
+ const put=(F,R,t)=>{for(const f of F){const pts=f.pts.map(p=>add(ap(R,p),t)),n=newell(pts);tris+=f.tris;out.push({pts,n,col:f.col});}};
+ const child=(R,t,pivot,Rl)=>[M(R,Rl),add(t,ap(R,pivot))];
+ const [Rt,tt]=child(yaw(P.yaw),at,[0,.2+(P.lift??0),0],rz(P.pitch??0));put(V.body(),Rt,tt);
+ [[.15,1],[.15,-1],[-.16,1],[-.16,-1]].forEach(([x,s],i)=>{const [R,t]=child(Rt,tt,[x,-.03,s*.06],rz(P.legs[i]));put(V.leg(),R,t);put(V.paw(),R,t);});
+ const [Rn,tn]=child(Rt,tt,[.19,.06,0],M(yaw(P.head[0]),M(rz(P.head[1]),rx(P.head[2]))));put(V.neck(),Rn,tn);
+ const [Rh,th]=child(Rn,tn,[.02,.04,0],I3);for(const p of ['head','snout','nose','ears','eyes'])put(V[p](),Rh,th);
+ const [Ra,ta]=child(Rt,tt,[-.23,.06,0],M(rz(P.tail[0]),rx(P.tail[1])));put(V.tail(),Ra,ta);
+ for(const f of out){f.z=cen(f.pts)[2];f.c=shade(f.col,f.n);}
+ return {faces:out,mouth:add(th,ap(Rh,[.17,.06,0])),fwd:ap(Rh,[1,0,0]),tris,plane:!!P.plane};}
+const dogPartTris=v=>Object.fromEntries(Object.keys(DOG[v]).map(p=>[p,DOG[v][p]().reduce((s,f)=>s+f.tris,0)]));
+// vlaštovka v tlamě: střed vlaštovky v tlamě, nos po směru čenichu (sklon ±0,6), délka 0,5 m (M-2 se spodní mezí 0,5 m)
+function dogPlane(img,pr,k,s,len=.5){const c0=add(k.mouth,k.fwd.map(v=>v*len*.3)),e=add(c0,k.fwd.map(v=>v*len)),[sx,sy]=pr(c0),[ex,ey]=pr(e),[ax]=pr(add(c0,[len,0,0]));
+ const L=Math.max(.35*Math.abs(ax-sx),Math.hypot(ex-sx,ey-sy)),ang=Math.atan2(-(ey-sy),ex-sx)+.15;plane(img,sx,sy,L,ang,s);}
+const GROUNDS=PAPIR.city.districts.map(d=>d.ground.near);
+const shadowRing=(X=0,y=0)=>Array.from({length:16},(_,i)=>{const t=i/16*Math.PI*2;return [X+.03+.33*Math.cos(t),y,.13*Math.sin(t)];});
+function figureDog(v,pose,{W=220,H=200,height=.95,gray=false,fx=.42,fy=.6,pitch=6,ground=GROUNDS[0],planeOn=true}={}){
+ const w=W*SS,h=H*SS,img=new Img(w,h);skyFill(img,.45,.85);
+ const cam=anchored({aspect:W/H,height,P:[0,.3,0],fx,fy,pitch}),pr=p=>project(cam,p,w,h),k=buildDog(v,pose);
+ const gy=Math.max(0,pr([0,0,-6])[1]);img.rect(0,gy,w,h-gy,ground);
+ img.poly(shadowRing().map(p=>pr(p).slice(0,2)),T.shade,.28);
+ const items=k.faces.filter(f=>dot3(f.n,norm(cam.pos.map((c,i)=>c-cen(f.pts)[i])))>0).sort((a,b)=>a.z-b.z);
+ for(const f of items)img.poly(f.pts.map(p=>pr(p).slice(0,2)),f.c);
+ if(planeOn&&k.plane)dogPlane(img,pr,k,SS);
+ let out=img.down(SS);if(gray)out=grayOf(out);return {img:out,tris:k.tris};}
+// pes v px výšky na obrazovce (špička ucha ~0,6 m): zmenšit na cílovou velikost, zvětšit po pixelech
+const DOG_H=.6,dogBox=px=>{const H=Math.round(px*.95/DOG_H);return {W:Math.round(H*1.2),H};};
+const atPxDog=(v,pose,px,o={})=>blowUp(figureDog(v,pose,{...o,...dogBox(px)}).img,o.box??3);
+// pes ve světové scéně (ulice čtvrti 1) + náznak karty výsledku (02-ux §4.2: telefon zdola, desktop vpravo 420 px, na šířku vpravo 72 vw)
+function dogInScene(S,X,pose,v){const k=buildDog(v,pose,[X,0,0]);
+ S.face(shadowRing(X,.004),T.shade,{a:.28,haze:false,z:-.2,bias:2});
+ for(const f of k.faces)if(f.n[2]>-.05)S.face(f.pts,f.c,{haze:false,z:f.z,bias:-.001});return k;}
+function resultMock(img,W,H,mode,s){let x,y,w,h;const m=4*s;
+ if(mode==='phone'){x=m;w=W-2*m;y=Math.round(H*.42);h=H-y-m;}else if(mode==='land'){w=Math.round(W*.687);x=W-w-m;y=m;h=H-2*m;}else{w=210*s;x=W-12*s-w;h=Math.round(H*.74);y=Math.round((H-h)/2);}
+ card(img,x,y,w,h,T.card);img.rect(x+w/2-22*s,y-5*s,44*s,10*s,T.tape);text(img,'812 M',x+10*s,y+12*s,2*s,T.graphite);
+ for(let i=0;i<4;i++)img.rect(x+10*s,y+(36+i*14)*s,Math.round((w-20*s)*[.8,.55,.7,.45][i]),5*s,T.pencil,.55);
+ img.rect(x+10*s,y+h-30*s,w-20*s,20*s,T.tomato600);text(img,'THROW AGAIN',x+w/2-33*s,y+h-23*s,s,T.cream);}
+// záběry v CSS px (s = 1 skutečná velikost, 0,5 = poloviční náhled): krátká verze 10 m (telefon 5 m; 16 / 7 m jako míření dává psa 48 / 32 px, málo),
+// finále 8 m (telefon 3,6 m), pes vlevo, karta vpravo / dole; wide = dnešní záběr po dopadu (102 m, vlaštovka na 148/640)
+const DOG_SHOT={desk:{W:1280,H:800,w:10,fx:.3,fy:.64,card:'desk'},phone:{W:375,H:667,w:5,fx:.3,fy:.27,card:'phone'},land:{W:932,H:430,w:10,fx:.15,fy:.6,card:'land'},
+ fin:{W:1280,H:800,w:8,fx:.3,fy:.6,s:.5},finP:{W:375,H:667,w:3.6,fx:.4,fy:.3},wide:{W:1280,H:800,w:102,fx:.23,fy:.83,s:.5}};
+function dogShot(mode,X,pose){const D=DOG_SHOT[mode],s=D.s??1,W=Math.round(D.W*s),H=Math.round(D.H*s),ppm=D.W/D.w,lod=ppm<36.7?'L1':'H';
+ const cam=anchored({aspect:D.W/D.H,height:D.w*D.H/D.W,P:[X,.3,0],fx:D.fx,fy:D.fy,pitch:6});let k=null;
+ // vlastní zem: ground() začíná v z = 60 m, za blízkou kamerou, a celá by se ořízla
+ const img=shot(S=>{sky(S);city(S);const zn=Math.min(25,cam.dist-.5);S.face([[X-80,0,zn],[X+80,0,zn],[X+80,0,-45],[X-80,0,-45]],D1.ground.near,{z:-10,bias:1e5});k=dogInScene(S,X,pose,lod);},{W,H,cam});
+ if(k.plane)dogPlane(img,p=>project(cam,p,W,H),k,1);
+ if(D.card)resultMock(img,W,H,D.card,2);
+ return {img,px:Math.round(DOG_H*ppm),lod,s};}
+RES.dog={H:buildDog('H','drzi').tris,L1:buildDog('L1','drzi').tris,partsH:dogPartTris('H'),parts1:dogPartTris('L1')};
+// 1 pejsek.png: náčrt LOD H × LOD 1 × velikosti 96/64/37/25 px a šeď; ve hře (krátká verze 16 / 7 m s kartou, finále 8 m); barvy na zemi 4 čtvrtí
+{const X=420,row1=[{label:`PES LOD H ${RES.dog.H} TRI`,img:figureDog('H','drzi').img},{label:`LOD 1 ${RES.dog.L1} TRI`,img:figureDog('L1','drzi').img},
+  {label:'96 PX',img:atPxDog('H','drzi',96,{box:2})},{label:'64 PX',img:atPxDog('H','drzi',64,{box:2})},{label:'37 PX',img:atPxDog('H','drzi',37,{box:3})},
+  {label:'25 PX LOD 1',img:atPxDog('L1','drzi',25,{box:4})},{label:'25 SEDA',img:atPxDog('L1','drzi',25,{box:4,gray:true})}];
+ const d=dogShot('desk',X,'drzi'),p=dogShot('phone',X,'drzi'),l=dogShot('land',X,'drzi'),f=dogShot('fin',X,'naklon'),wd=dogShot('wide',X,'drzi');
+ const row2=[{label:`1280X800 KRATKA VERZE, ZABER 10 M: PES ${d.px} PX (SKUTECNA VELIKOST)`,img:d.img},{label:`375X667 5 M: PES ${p.px} PX`,img:p.img}],row2b=[{label:`932X430 10 M: PES ${l.px} PX`,img:l.img}];
+ const row3=[{label:`FINALE 8 M: PES ${f.px} PX, KARTA AZ PO UTEKU (POLOVINA)`,img:f.img},{label:`DNES PO DOPADU 102 M: PES ${wd.px} PX (POLOVINA)`,img:wd.img}];
+ const tiles=k=>{dogColors(k);const parts=GROUNDS.map(g=>figureDog('H','drzi',{...dogBox(37),ground:g}).img);dogColors('krem');
+  const o=new Img(parts.reduce((s,q)=>s+q.w*3+6,0)-6,parts[0].h*3);let x=0;for(const q of parts){o.blit(blowUp(q,3),x,0);x+=q.w*3+6;}return o;};
+ const row4=[{label:'A KREM (NAVRH) NA ZEMI CTVRTI 1-4, 37 PX',img:tiles('krem')},{label:'B KRAFT',img:tiles('kraft')}];
+ const row5=[{label:'C TUZKA',img:tiles('tuzka')},{label:'A KREM V SEDI',img:grayOf(tiles('krem'))}];
+ sheet('PEJSEK: PAPIROVY PES MISTO NALEZCE','TECHNIKA POSTAVICKY C (STENY PO JEDNE, BEZ OBRYSU), 0,6 M. PX = VYSKA PSA NA OBRAZOVCE (CSS). KREMOVY OBDELNIK = KARTA VYSLEDKU.',[row1,row2,row2b,row3,row4,row5],'pejsek.png');
+ RES.dogShots={desk:[d.px,d.lod],phone:[p.px,p.lod],land:[l.px,l.lod],fin:[f.px,f.lod],wide:[wd.px,wd.lod]};}
+// 2 pejsek-pozy.png: finále (příchod, čuch, zvednutí, útěk), tři varianty roztomilého momentu, krátká verze, reduced motion
+{const fig=p=>figureDog('H',p,{W:200,H:180}).img;
+ const row1=[['klus','1 PRICHOD 0,9-2,1 S'],['cuch','2 CUCH 2,1-2,7'],['drzi','3 ZVEDNUTI 2,7-3,1'],['cval','5 UTEK 4,9-5,9']].map(([p,l])=>({label:l,img:fig(p)}));
+ const row2=[['naklon','4A HLAVA NA STRANU'],['uklon','4B UKLON'],['poskok','4B POSKOK'],['predani','4C PREDANI']].map(([p,l])=>({label:l,img:fig(p)}));
+ const row3=[['klus','K 0-0,4 S'],['cuch','K CHNAP 0,4-0,65'],['poskok','K POSKOK -0,95'],['cval','K UTEK -1,45']].map(([p,l])=>({label:l,img:blowUp(figureDog('H',p,{W:100,H:90}).img,2)}));
+ row3.push({label:'REDUCED: STOJI (3)',img:fig('drzi')});
+ sheet('PEJSEK: KLICOVE POZY','1-5 FINALE (4 = ROZTOMILY MOMENT, VARIANTY A B C). K = KRATKA VERZE PRI DOPADU 1,45 S. POZY ON TWOS 12 FPS.',[row1,row2,row3],'pejsek-pozy.png');}
+console.log(JSON.stringify({dog:RES.dog,shots:RES.dogShots}));
