@@ -28,6 +28,7 @@ import { maxLevelOf } from '../src/atlas.js';
 import { random } from '../src/random.js';
 import { DT, NEW_EVENTS } from '../src/config.js';
 import { t } from '../src/i18n.js';
+import { isFirstMeet, meetScale } from '../src/juice.js';
 import {
   fly as simFly,
   press as simPress,
@@ -78,7 +79,7 @@ test('Paper: Copy from the start, the next kind opens on the 3rd place of a dist
   assert.equal(paperOpen(10 * SCREEN_METERS - 1), 9);
 });
 
-test('kitOf: Workshop, model, Atlas levels from p.best and p.atlas, pockets; new events stay out behind the flag', () => {
+test('kitOf: Workshop, model, Atlas levels from p.best and p.atlas, pockets; new events in once found (C2b)', () => {
   assert.deepEqual(kitOf(fresh()), {
     model: 'dart',
     power: 0,
@@ -94,8 +95,8 @@ test('kitOf: Workshop, model, Atlas levels from p.best and p.atlas, pockets; new
   });
   p.atlas.levels = { chain: 2, steam: 1 };
   p.atlas.pockets = { owned: 1, slots: ['sharp', null] };
-  const k = kitOf(p);
-  assert.equal(NEW_EVENTS, false);
+  const k = kitOf(p, { newEvents: false });
+  assert.equal(NEW_EVENTS, true);
   assert.deepEqual(k, {
     model: 'glider',
     power: 2,
@@ -104,8 +105,12 @@ test('kitOf: Workshop, model, Atlas levels from p.best and p.atlas, pockets; new
     atlas: { glider: 1, chain: 3, pinwheel: 1, tape: 1, crane: 1, skip: 1, gull: 1 },
     slots: ['sharp'],
   });
-  assert.equal(kitOf(p, { newEvents: true }).atlas.steam, 2);
-  for (const id of NEW_EVENT_TYPES) assert.ok(!(id in kitOf(save({ best: FINISH })).atlas), id);
+  assert.equal(kitOf(p).atlas.steam, 2);
+  for (const id of NEW_EVENT_TYPES) {
+    assert.ok(!(id in kitOf(save({ best: FINISH }), { newEvents: false }).atlas), id);
+    assert.equal(kitOf(save({ best: FINISH })).atlas[id], 1, id);
+    assert.ok(!(id in kitOf(save({ best: 0 })).atlas), id + ' only once found');
+  }
   assert.equal(kitOf(save({ model: 'glider', best: 99 })).model, 'dart', 'Glider only when found');
 });
 
@@ -175,7 +180,18 @@ test('advance: calm gliding runs 1.4× (real time), hitstop freezes only the phy
 
 // Kritérium přijetí M2: stejný let ve hře (smyčka snímků advance + vstupy mezi snímky) a ve fly simulátoru se stejnými vstupy.
 // Hra zapisuje, před kterým krokem fyziky vstup přišel; simulátor ho přehraje botem ve stejném kroku (profil bez plánu = bez vlastních stisků).
+// C2b: i se všemi novými událostmi (pára dva ťuky, termika, lampiony a dvojice, hvězda) a se zpomalením prvního setkání (juice.meetScale).
 test('M2: the game loop flies exactly like the simulator fly() with the same scripted inputs (x to 1e-9)', () => {
+  const allEvents = n => {
+    const p = save({
+      attempts: n - 1,
+      best: FINISH,
+      model: 'glider',
+      levels: { power: 3, paper: 12, folds: 3 },
+    });
+    for (const id of P.atlas.bonuses) p.atlas.levels[id] = maxLevelOf(id) - 1;
+    return [p, 26, 0.9];
+  };
   const cases = [
     [save({ attempts: 0 }), 18, 0.7],
     [
@@ -190,7 +206,10 @@ test('M2: the game loop flies exactly like the simulator fly() with the same scr
       0.95,
     ],
     [save({ attempts: 24, best: FINISH, levels: { power: 3, paper: 12, folds: 3 } }), 22, 1],
+    ...[21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32].map(allEvents),
   ];
+  const types = new Set(),
+    met = [];
   for (const [p, angle, charge] of cases) {
     const kit = kitOf(p),
       f = flightFor(p, angle, charge),
@@ -199,18 +218,26 @@ test('M2: the game loop flies exactly like the simulator fly() with the same scr
     let acc = 0,
       k = 0;
     const input = kind => log.push([k, kind, eventInput(f, kind)]);
+    let meet = null;
     while (!f.landed) {
       const e = activeEvent(f);
+      if (e && e !== meet && e.phase === 'warning' && isFirstMeet(e, met, NEW_EVENT_TYPES)) {
+        meet = e;
+        met.push(e.type);
+      }
+      if (e) types.add(e.type);
       if (e && !e.result) {
-        const off = (r() - 0.5) * 0.3;
+        const off = (r() - 0.5) * 0.3,
+          c = e.type === 'steam' ? e.w.c[e.puff] : e.w.c;
         if (e.phase === 'warning' && r() < 0.05) input('down');
         else if (e.phase === 'interaction') {
-          if (e.type !== 'bird' && f.t >= e.w.c + off) input('down');
+          if (e.type !== 'bird' && f.t >= c + off) input('down');
           if (e.type === 'bird' && e.heldAt === null && r() < 0.2) input('down');
           if (e.type === 'bird' && e.heldAt !== null && f.t - e.heldAt >= e.w.c + off) input('up');
         }
       }
-      ({ acc } = advance(f, acc, 0.004 + 0.05 * r(), r() < 0.02, (g, w) => w === 'after' && k++));
+      const dt = (0.004 + 0.05 * r()) * meetScale(e, meet, false);
+      ({ acc } = advance(f, acc, dt, r() < 0.02, (g, w) => w === 'after' && k++));
     }
     let i = 0;
     const replay = g => {
@@ -232,7 +259,14 @@ test('M2: the game loop flies exactly like the simulator fly() with the same scr
       f.events.map(e => e.result),
       s.events.map(e => e.result),
     );
+    assert.equal(f.combo, s.combo);
   }
+  for (const type of NEW_EVENT_TYPES) assert.ok(types.has(type), type);
+  assert.deepEqual(
+    [...met].sort(),
+    [...NEW_EVENT_TYPES].sort(),
+    'first meeting slowed once per type',
+  );
 });
 
 // Kritérium přijetí M2 (04 §Shrnutí: hod 0,95, 90 % zásahů, plná výbava): Dílna max, Atlas max podle PROGRESSION, bez kapes.

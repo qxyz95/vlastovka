@@ -12,5 +12,5 @@ export const MODELS = {
 export const STEEP_PENALTY = 0.0015;
 // QTE events never start below this height (m), same as PROGRESSION.physics.eventMinY.
 export const EVENT_MIN_Y = 8;
-// Steam, thermal, lantern (drone) and shooting star stay out of the game until C2 gives them a look and inputs (M2).
-export const NEW_EVENTS = false;
+// Steam, thermal, lantern (drone) and shooting star (C2b): in the game once their Atlas bonus is found (gear.kitOf).
+export const NEW_EVENTS = true;

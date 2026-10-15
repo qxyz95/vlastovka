@@ -19,7 +19,8 @@ import { mountAtlas } from './atlas-ui.js';
 import { clearUndo } from './atlas.js';
 import { noveltyLine } from './atlas-text.js';
 import { load, save } from './storage.js';
-import { createFx, fxEvent, stepFx } from './juice.js';
+import { createFx, fxEvent, stepFx, resultFx, isFirstMeet, meetScale, comboNews } from './juice.js';
+import { NEW_EVENT_TYPES } from './gear.js';
 import { lerp } from './motion.js';
 import { districtAt } from './scenes.js';
 import { chargeAt } from './throw.js';
@@ -84,6 +85,23 @@ let fx = null,
 // Obrazovky a panely řídí čistý automat screens.js (U3, 02-ux §1.2): S = {screen, title, panels, charging, shownAt}.
 // UI jen posílá události přes go() a podle změny stavu přepíná DOM (sync); vlastní příznaky obrazovek nemá.
 let S = initialState();
+// První setkání s novou událostí (C2b): zpomalení ve varování a jedna věta. met = potkané typy jen v paměti sezení
+// (uložení do save čeká na rozhodnutí, viz runs/2026-10-15-c2b-vstupy-udalosti.md), meet = událost prvního setkání v tomto letu.
+let met = [],
+  meet = null;
+// Kombo: kotva řetězu vpravo nahoře pod .hud-right (CSS px plátna, měří se při startu letu a změně velikosti) a hlášení pro čtečky.
+let comboAnchor = null,
+  comboSay = { n: 0, at: -Infinity };
+const comboLive = document.createElement('p');
+comboLive.className = 'sr-only';
+comboLive.setAttribute('role', 'status');
+comboLive.setAttribute('aria-live', 'polite');
+$('flight').append(comboLive);
+function measureCombo() {
+  const g = $('game').getBoundingClientRect(),
+    h = document.querySelector('.hud-right')?.getBoundingClientRect();
+  return h?.width ? { x: h.right - g.left, y: h.bottom - g.top + 20 } : null;
+}
 const store = (() => {
   try {
     return localStorage;
@@ -152,6 +170,7 @@ let redraw = true;
     const r = e.contentRect;
     redraw = true;
     if (r.width && r.height) Object.assign(gameSize, { width: r.width, height: r.height });
+    if (S.screen === 'flight') comboAnchor = measureCombo();
   }).observe($('game'));
 }
 // Language: ?lang= in the URL wins, then the last choice, otherwise English. Stored outside the save.
@@ -347,6 +366,7 @@ $('retry').onclick = () => go({ type: 'throwAgain' });
 $('confirm-delete').onclick = () => {
   p = fresh();
   lastThrow = null;
+  met = [];
   refund = 0;
   persist();
   refresh();
@@ -415,6 +435,10 @@ function startFlight({ angle, charge }) {
   banner = null;
   lastDistrict = 0;
   bestAtStart = p.best;
+  meet = null;
+  comboSay = { n: 0, at: -Infinity };
+  comboLive.textContent = '';
+  comboAnchor = measureCombo();
   $('event-help').textContent = t('throw.' + launch.grade);
   $('action').disabled = true;
   $('hud-best').hidden = true;
@@ -672,14 +696,19 @@ function frame(now) {
       // Klidné klouzání běží f.warp× rychleji (1,4×, flight.realTime), jako skutečný čas simulátoru.
       const frozen = fx.hitstop > 0;
       if (frozen) fx.hitstop = Math.max(0, fx.hitstop - elapsed);
-      ({ acc } = advance(f, acc, elapsed, frozen, onStep));
+      const ev = activeEvent(f);
+      if (ev && ev !== meet && ev.phase === 'warning' && isFirstMeet(ev, met, NEW_EVENT_TYPES)) {
+        meet = ev;
+        met.push(ev.type);
+      }
+      ({ acc } = advance(f, acc, elapsed * meetScale(ev, meet, reduced), frozen, onStep));
       juiceEvents();
       // Let the landing dust and shake play before the result card covers the scene.
       if (f.landed) {
         if (!landedAt) landedAt = now;
         if (now - landedAt > (reduced ? 300 : 850)) go({ type: 'landed', t: now, chapter: false });
       }
-      if (S.screen === 'flight') updateFlightUI();
+      if (S.screen === 'flight') updateFlightUI(now / 1000);
     }
     updateHud();
     // Draw between the last two physics steps so motion is smooth on 120 Hz screens too.
@@ -722,6 +751,7 @@ function frame(now) {
               intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
             best: p.best,
             style: STYLE,
+            combo: comboAnchor ?? true,
             touch: coarse.matches,
             aspect: gameSize.width / gameSize.height,
           },
@@ -749,12 +779,14 @@ const onStep = (g, when) => {
 let zoneEvent = null;
 // Turn resolved events and the landing into feedback (each only once).
 function juiceEvents() {
-  for (const e of f.events)
-    if (['success', 'perfect', 'miss'].includes(e.result) && !fx.seen.has(e)) {
+  for (const e of f.events) {
+    const kind = resultFx(e.result);
+    if (kind && !fx.seen.has(e)) {
       fx.seen.add(e);
-      fxEvent(fx, e.result);
+      fxEvent(fx, kind);
       if (e.type === 'gust' && e.result !== 'miss') fxEvent(fx, 'boost');
     }
+  }
   if (f.landed && !fx.landed)
     fxEvent(fx, 'land', { speed: prev ? Math.hypot(prev.vx, prev.vy) : 0, text: m(f.x, 1) });
 }
@@ -772,9 +804,10 @@ function qteVisual() {
     zones: zones(e),
   };
 }
-function updateFlightUI() {
+function updateFlightUI(now) {
   const e = activeEvent(f),
-    interactive = e && !e.result;
+    interactive = e && !e.result,
+    hint = interactive && e === meet ? t('hint.' + e.type) : '';
   // Časovací pruh pod scénou je volba Nastavení (settings.timingBar, přepínač přijde v U9); jinak jen kruh ve scéně.
   setHidden($('timing'), !settings.timingBar);
   // Okna se liší událost od události (plující střed, Folds), proto se pruh přepočítá pro každou novou událost.
@@ -800,9 +833,17 @@ function updateFlightUI() {
   if (settings.timingBar) $('needle').style.left = (e ? eventProgress(f, e) * 100 : 0) + '%';
   const help =
     e?.phase === 'warning'
-      ? t('help.ready')
+      ? hint || t('help.ready')
       : interactive
-        ? t(e.type === 'gust' ? 'help.gust' : e.heldAt !== null ? 'help.holding' : 'help.bird')
+        ? t(
+            e.type === 'gust'
+              ? 'help.gust'
+              : e.type !== 'bird'
+                ? 'hint.' + e.type
+                : e.heldAt !== null
+                  ? 'help.holding'
+                  : 'help.bird',
+          )
         : feedbackOf(f)
           ? t(feedbackOf(f))
           : t('help.idle');
@@ -822,8 +863,13 @@ function updateFlightUI() {
   }
   if (banner && f.t >= banner.until) banner = null;
   if (!e && !banner && bannerQueue.length) banner = { ...bannerQueue.shift(), until: f.t + 1.5 };
-  setHidden($('banner'), !!e || !banner || f.landed);
-  if (banner)
+  const say = comboNews(comboSay, f.combo, now);
+  comboSay = say.s;
+  if (say.say) comboLive.textContent = t(say.say.key, { n: say.say.n });
+  // Banner mimo událost; první setkání s novou událostí v něm ukáže svou větu (02-ux §1.4, U3).
+  setHidden($('banner'), hint ? f.landed : !!e || !banner || f.landed);
+  if (hint) setText($('banner'), hint);
+  else if (banner)
     setText(
       $('banner'),
       banner.kind === 'district'

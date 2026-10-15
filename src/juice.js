@@ -57,6 +57,11 @@ export function fxEvent(fx, type, info = {}) {
       fx.queue.push([2, 12]);
       popup(fx, t('popup.success'), 'success');
       break;
+    // Dílčí zásah (termika mimo jádro „half“, pára 1 ze 2 „partial“): popup ½, bez hitstopu a otřesu (05-art-udalosti kap. 1.3, 2).
+    case 'partial':
+      fx.stretch.v += 2;
+      popup(fx, t('popup.half'), 'half');
+      break;
     case 'miss':
       fx.stretch.v -= 3;
       popup(fx, t('popup.miss'), 'miss');
@@ -77,6 +82,30 @@ export function fxEvent(fx, type, info = {}) {
       fx.landed = true;
       break;
   }
+}
+// Výsledek události → druh zpětné vazby pro fxEvent (null = nic).
+export const resultFx = r =>
+  r === 'half' || r === 'partial'
+    ? 'partial'
+    : ['success', 'perfect', 'miss'].includes(r)
+      ? r
+      : null;
+// První setkání s novou událostí (C2b, 01-game-design U3): jen typy z gear.NEW_EVENT_TYPES, jednou; met = už potkané typy.
+// Během varování běží čas MEET_SLOW× (reduced motion: jen věta, bez zpomalení).
+export const MEET_SLOW = 0.5;
+export const isFirstMeet = (e, met, types) =>
+  !!e && types.includes(e.type) && !met.includes(e.type);
+export const meetScale = (e, meet, reduced) =>
+  e && e === meet && e.phase === 'warning' && !reduced ? MEET_SLOW : 1;
+// Hlášení komba pro aria-live (05-art-udalosti kap. 6.1): jen změna ×N a přetržení, nejvýš 1× za COMBO_SAY s.
+// s = {n, at} naposledy ohlášené; -> {s, say: null | {key, n}}. Při čekání se později ohlásí aktuální stav.
+export const COMBO_SAY = 2;
+export function comboNews(s, combo, now) {
+  if (combo === s.n || now - s.at < COMBO_SAY) return { s, say: null };
+  return {
+    s: { n: combo, at: now },
+    say: combo > 0 ? { key: 'qte.combo', n: combo } : { key: 'qte.comboBroken', n: 0 },
+  };
 }
 function emit(fx, kind, n, wx, y, rng) {
   for (let i = 0; i < n; i++) {
