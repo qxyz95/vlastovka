@@ -196,8 +196,8 @@ test('seeded generators are deterministic', () => {
         id + d,
       );
 });
-test('two directions × four districts: valid events, notes in the district mode, every layer used, BPM in range', () => {
-  assert.deepEqual(TRACK_IDS, ['B', 'E']);
+test('three candidates × four districts: valid events, notes in the district mode, every layer used, BPM in range', () => {
+  assert.deepEqual(TRACK_IDS, ['B', 'E', 'G']);
   for (const id of TRACK_IDS) {
     const t = TRACKS[id];
     assert.equal(t.districts.length, 4, id);
@@ -307,9 +307,9 @@ test('every district has a 4–6 note leitmotif filling one bar', () => {
     );
   }
 });
-test('blind mode: X1–X2 is a stable permutation of B and E per session, summary averages by direction', () => {
+test('blind mode: X1–X3 is a stable permutation of B, E and Diorama per session, summary averages by direction', () => {
   const m = blindMap(7);
-  assert.deepEqual(Object.keys(m), ['X1', 'X2']);
+  assert.deepEqual(Object.keys(m), ['X1', 'X2', 'X3']);
   assert.deepEqual(Object.values(m).sort(), TRACK_IDS);
   assert.deepEqual(blindMap(7), m);
   const s = summary({
@@ -327,9 +327,9 @@ test('blind mode: X1–X2 is a stable permutation of B and E per session, summar
   assert.equal(s.B.fatigue[10], 3);
   assert.equal(s.B.perfectRate, 0.25);
 });
-test('registry holds only B and E; neon voices are gone from the synth', () => {
-  assert.deepEqual(Object.keys(TRACKS), ['B', 'E']);
-  assert.deepEqual(TRACK_IDS, ['B', 'E']);
+test('registry holds B, E and Diorama (G); neon voices are gone from the synth', () => {
+  assert.deepEqual(Object.keys(TRACKS), ['B', 'E', 'G']);
+  assert.deepEqual(TRACK_IDS, ['B', 'E', 'G']);
   for (const v of ['pulse', 'chiparp', 'cnoise', 'ckick', 'brass', 'scratch'])
     assert.ok(!VOICE_NAMES.includes(v), v);
   for (const v of ['vinyl', 'rain', 'sax']) assert.ok(VOICE_NAMES.includes(v), v + ' is used by B');

@@ -1,6 +1,7 @@
 // Web Audio instruments and the bus graph for the procedural music and effects.
 // Presentation only: nothing touches Web Audio at import time, so tests can read VOICE_NAMES in Node.
 import { hz } from '../audio-mix.js';
+import { ksSamples } from './ks.js';
 const lcg = seed => {
   let s = seed;
   return () => (s = (s * 16807) % 2147483647) / 1073741823.5 - 1;
@@ -83,10 +84,12 @@ export function createGraph(ctx) {
   const master = G(ctx, 1, lim),
     music = G(ctx, 0.36, master),
     sfx = G(ctx, 0.64, master),
-    duck = G(ctx, 1, music),
+    trim = G(ctx, 1, music), // per-track loudness trim (blind comparison at equal LUFS)
+    duck = G(ctx, 1, trim),
     lp = F(ctx, 'lowpass', 18000, 0.6, duck);
-  const verb = ctx.createConvolver();
-  verb.buffer = impulse(ctx, 3.4, 3);
+  const verb = ctx.createConvolver(),
+    impulses = new Map([[3.4, impulse(ctx, 3.4, 3)]]);
+  verb.buffer = impulses.get(3.4);
   const verbOut = G(ctx, 0.3, lp);
   verb.connect(verbOut);
   const delay = ctx.createDelay(2);
@@ -123,9 +126,11 @@ export function createGraph(ctx) {
     master,
     music,
     sfx,
+    trim,
     duck,
     lp,
     verb,
+    impulses,
     verbOut,
     delay,
     layers,
@@ -136,7 +141,63 @@ export function createGraph(ctx) {
     noise: noiseBuffer(ctx),
     crackle: crackleBuffer(ctx),
     waves: {},
+    ks: new Map(), // Karplus–Strong buffers by MIDI note, built lazily (sample rate is fixed per graph)
+    crumples: new Map(),
   };
+}
+// Room reverb of a district (03 B.3): one impulse per length, cached; swapped only when the district changes.
+export function roomImpulse(g, sec = 3.4) {
+  const k = Math.round(sec * 10) / 10;
+  if (!g.impulses.has(k)) g.impulses.set(k, impulse(g.ctx, k, k < 2 ? 4 : 3));
+  return g.impulses.get(k);
+}
+// Bytes held by the KS cache (float32 mono).
+export const ksBytes = g => [...g.ks.values()].reduce((s, b) => s + b.length * 4, 0);
+function ksBuffer(g, n, o = {}) {
+  const key = `${n}|${o.t60 ?? 1.1}`;
+  if (!g.ks.has(key)) {
+    const rate = g.ctx.sampleRate,
+      data = ksSamples(hz(n), rate, 1.5, n, { t60: o.t60 ?? 1.1, bright: o.bright ?? 0.55 }),
+      b = g.ctx.createBuffer(1, data.length, rate);
+    b.getChannelData(0).set(data);
+    g.ks.set(key, b);
+  }
+  return g.ks.get(key);
+}
+// Crumpled paper: 20–60 tiny resonant clicks (1–4 ms, 1–6 kHz) at seeded times, denser at the start (Cirio et al. 2016).
+function crumpleBuffer(g, seed) {
+  const k = seed % 8;
+  if (g.crumples.has(k)) return g.crumples.get(k);
+  const rate = g.ctx.sampleRate,
+    len = Math.floor(rate * 0.45),
+    b = g.ctx.createBuffer(1, len, rate),
+    d = b.getChannelData(0),
+    r0 = lcg(k * 7919 + 11),
+    u = () => (r0() + 1) / 2,
+    n = 20 + Math.floor(u() * 41);
+  for (let j = 0; j < n; j++) {
+    const at = Math.floor(u() ** 1.6 * 0.38 * rate),
+      L = Math.floor((0.001 + 0.003 * u()) * rate),
+      w = (2 * Math.PI * 1000 * 6 ** u()) / rate,
+      R = 0.92,
+      c1 = 2 * R * Math.cos(w),
+      c2 = -R * R,
+      a = 0.3 + 0.7 * u();
+    let y1 = 0,
+      y2 = 0;
+    for (let i = 0; i < L * 3 && at + i < len; i++) {
+      const x = i < L ? r0() * a * (1 - i / L) : 0,
+        y = x + c1 * y1 + c2 * y2;
+      d[at + i] += y * 0.25;
+      y2 = y1;
+      y1 = y;
+    }
+  }
+  let p = 0;
+  for (const x of d) p = Math.max(p, Math.abs(x));
+  if (p > 0) for (let i = 0; i < len; i++) d[i] /= p;
+  g.crumples.set(k, b);
+  return b;
 }
 // Building blocks.
 function osc(g, type, f, t, end, to, det = 0) {
@@ -305,19 +366,141 @@ const V = {
     fm(g, t, t + 0.3, f, 14, 0.4, 0, 0.03, A);
     return end;
   },
+  // o.felt: felt piano (03 B.2), dull hammer: low-passed ~1.2 kHz, lower FM index, slower attack, a soft 90 Hz thump.
   piano(g, e, t, dur, out, o) {
+    const f = hz(e.n),
+      felt = !!o.felt,
+      dec = o.dec ?? (felt ? 1.1 : 0.9),
+      att = felt ? 0.007 : 0.003,
+      A = amp(g, felt ? filt(g, 'lowpass', o.cut ?? 1200, 0.5, out) : out),
+      end = t + Math.min(dur + 0.6, dec * 5);
+    A.gain.setValueAtTime(0, t);
+    A.gain.linearRampToValueAtTime(e.v * (felt ? 0.16 : 0.12), t + att);
+    A.gain.setTargetAtTime(0, t + att, dec);
+    A.gain.setTargetAtTime(0, t + dur, 0.12);
+    fm(g, t, end, f, 1, felt ? 1.2 : 2.5, 0.3, 0.15, A);
+    const tri = G(g.ctx, 0.35, A);
+    osc(g, 'triangle', f, t, end, tri);
+    if (felt) {
+      const T = amp(g, out);
+      perc(T.gain, t, e.v * 0.06, 0.01);
+      osc(g, 'sine', 90, t, t + 0.06, T);
+    }
+    return end;
+  },
+  // Music box: a steel tine, sine with two inharmonic partials (~3×, ~5.4×) dying faster, the click of the cylinder pin.
+  musicbox(g, e, t, dur, out, o) {
     const f = hz(e.n),
       dec = o.dec ?? 0.9,
       A = amp(g, out),
-      end = t + Math.min(dur + 0.6, dec * 5);
-    A.gain.setValueAtTime(0, t);
-    A.gain.linearRampToValueAtTime(e.v * 0.12, t + 0.003);
-    A.gain.setTargetAtTime(0, t + 0.003, dec);
-    A.gain.setTargetAtTime(0, t + dur, 0.12);
-    fm(g, t, end, f, 1, 2.5, 0.3, 0.15, A);
-    const tri = G(g.ctx, 0.35, A);
-    osc(g, 'triangle', f, t, end, tri);
+      end = t + dec * 2.4;
+    perc(A.gain, t, e.v * (o.lvl ?? 0.13), dec / 3);
+    osc(g, 'sine', f, t, end, A);
+    for (const [k, w, s] of [
+      [3, 0.3, 0.35],
+      [5.4, 0.16, 0.18],
+    ])
+      if (f * k < 14000) {
+        const P = G(g.ctx, 0, A);
+        perc(P.gain, t, w, (dec * s) / 3);
+        osc(g, 'sine', f * k, t, t + dec * s * 2.4, P);
+      }
+    const C = amp(g, out);
+    perc(C.gain, t, e.v * 0.04, 0.0015);
+    noise(g, t, t + 0.02, filt(g, 'bandpass', 4200, 2, C));
     return end;
+  },
+  // Plucked string (nylon guitar / harp): Karplus–Strong rendered in JS (ks.js), cached per note.
+  ks(g, e, t, dur, out, o) {
+    const b = ksBuffer(g, e.n, o),
+      A = amp(g, out),
+      s = src(g.ctx.createBufferSource()),
+      end = Math.min(t + b.duration, t + dur + 0.6);
+    s.buffer = b;
+    A.gain.setValueAtTime(e.v * (o.lvl ?? 0.2), t);
+    A.gain.setTargetAtTime(0, end - 0.15, 0.04);
+    s.connect(A);
+    s.start(t);
+    s.stop(end + 0.02);
+    return end;
+  },
+  // Flute / ocarina: sine + 15 % triangle, breath noise (band-pass at 2f) mostly on the attack, delayed 5 Hz vibrato.
+  flute(g, e, t, dur, out, o) {
+    const f = hz(e.n),
+      peak = e.v * (o.lvl ?? 0.12),
+      A = amp(g, out),
+      end = adsr(A.gain, t, o.a ?? 0.06, 0.2, 0.85, o.r ?? 0.12, peak, dur),
+      s = osc(g, 'sine', f, t, end, A),
+      tr = osc(g, 'triangle', f, t, end, G(g.ctx, 0.15, A));
+    vibrato(g, t, end, 8, 5, [s, tr], 0.35);
+    const B = amp(g, out);
+    B.gain.setValueAtTime(0, t);
+    B.gain.linearRampToValueAtTime(peak * 0.3, t + 0.06);
+    B.gain.setTargetAtTime(peak * 0.1, t + 0.06, 0.08);
+    B.gain.setTargetAtTime(0, t + dur, 0.05);
+    noise(g, t, end, filt(g, 'bandpass', Math.min(2 * f, 9000), 4, B));
+    return end;
+  },
+  // "Whispered paper": noise ringing on the chord tones through narrow band-passes, slow attack (no saw).
+  paperpad(g, e, t, dur, out, o) {
+    const A = amp(g, out),
+      end = adsr(A.gain, t, o.a ?? 1.5, 1, 0.9, o.r ?? 1.5, e.v * (o.lvl ?? 1.4), dur),
+      bus = G(g.ctx, 1);
+    noise(g, t, end, bus);
+    for (const n of (o.notes ?? [e.n]).slice(0, 4))
+      bus.connect(filt(g, 'bandpass', hz(n), o.q ?? 30, A));
+    return end;
+  },
+  // Finger on a shoe box: soft sine thump + a short cardboard knock (~350 Hz).
+  box(g, e, t, dur, out) {
+    const A = amp(g, out),
+      x = osc(g, 'sine', 75, t, t + 0.6, A);
+    x.frequency.exponentialRampToValueAtTime(48, t + 0.1);
+    perc(A.gain, t, e.v * 0.4, 0.1);
+    const C = amp(g, out);
+    perc(C.gain, t, e.v * 0.5, 0.008);
+    noise(g, t, t + 0.06, filt(g, 'bandpass', 350, 1.5, C));
+    return t + 0.65;
+  },
+  // Flat hand on a sheet of paper: band-passed noise, double hit (0 and 9 ms), 40 ms decay, no tone.
+  page(g, e, t, dur, out) {
+    const A = amp(g, out),
+      p = A.gain,
+      pk = e.v * 0.28;
+    p.setValueAtTime(0, t);
+    p.linearRampToValueAtTime(pk * 0.7, t + 0.001);
+    p.setTargetAtTime(0, t + 0.001, 0.003);
+    p.setValueAtTime(pk, t + 0.009);
+    p.setTargetAtTime(0, t + 0.009, 0.013);
+    noise(g, t, t + 0.15, filt(g, 'bandpass', 1800, 0.9, A));
+    return t + 0.15;
+  },
+  // Brush on paper: 20 ms attack, 3–4.5 kHz (above 5 kHz belongs to the plane's wind).
+  brush(g, e, t, dur, out) {
+    const A = amp(g, out),
+      p = A.gain;
+    p.setValueAtTime(0, t);
+    p.linearRampToValueAtTime(e.v * 0.08, t + 0.02);
+    p.setTargetAtTime(0, t + 0.02, 0.03);
+    noise(g, t, t + 0.2, filt(g, 'bandpass', 3700, 2.5, A));
+    return t + 0.2;
+  },
+  // Pencil tap on the table: 5 ms, 2.2 kHz, quiet (never inside a QTE window: audio.js drops it there).
+  pencil(g, e, t, dur, out) {
+    const A = amp(g, out),
+      end = perc(A.gain, t, e.v * 0.07, 0.0025);
+    osc(g, 'triangle', 2200, t, end, A);
+    noise(g, t, end, filt(g, 'bandpass', 3000, 2, A));
+    return end;
+  },
+  crumple(g, e, t, dur, out, o) {
+    const b = crumpleBuffer(g, o.seed ?? 1),
+      A = G(g.ctx, e.v * (o.lvl ?? 0.3), out),
+      s = src(g.ctx.createBufferSource());
+    s.buffer = b;
+    s.connect(A);
+    s.start(t);
+    return t + b.duration;
   },
   lead(g, e, t, dur, out, o) {
     const f = hz(e.n),
@@ -462,16 +645,32 @@ const V = {
     noise(g, t, end, filt(g, 'bandpass', 3200, 0.4, A), 1.3);
     return end;
   },
-  organ(g, e, t, dur, out) {
+  // o.reed: harmonium (reeds), extra odd harmonics, 80 ms attack, 5.5 Hz tremolo; the band's only warm drone.
+  organ(g, e, t, dur, out, o) {
     const f = hz(e.n),
+      reed = !!o.reed,
       A = amp(g, out),
-      end = adsr(A.gain, t, 0.004, 0.1, 0.9, 0.05, e.v * 0.045, dur);
-    [
-      [1, 1],
-      [2, 0.6],
-      [3, 0.35],
-      [4, 0.2],
-    ].forEach(([k, w]) => osc(g, 'sine', f * k, t, end, G(g.ctx, w, A)));
+      end = adsr(A.gain, t, reed ? 0.08 : 0.004, 0.1, 0.9, reed ? 0.3 : 0.05, e.v * 0.045, dur);
+    let to = A;
+    if (reed) {
+      to = G(g.ctx, 0.85, A);
+      osc(g, 'sine', 5.5, t, end, G(g.ctx, 0.15, to.gain));
+    }
+    (reed
+      ? [
+          [1, 1],
+          [2, 0.45],
+          [3, 0.4],
+          [4, 0.12],
+          [5, 0.2],
+        ]
+      : [
+          [1, 1],
+          [2, 0.6],
+          [3, 0.35],
+          [4, 0.2],
+        ]
+    ).forEach(([k, w]) => osc(g, 'sine', f * k, t, end, G(g.ctx, w, to)));
     return end;
   },
   choir(g, e, t, dur, out, o) {
@@ -516,10 +715,13 @@ const V = {
     const A = amp(g, out);
     perc(A.gain, t, e.v * 0.5, 0.06);
     noise(g, t, t + 0.4, filt(g, 'lowpass', 700, 0.8, A));
-    const B = amp(g, out),
-      x = osc(g, 'sine', 110, t, t + 0.4, B);
-    x.frequency.exponentialRampToValueAtTime(45, t + 0.12);
-    perc(B.gain, t, e.v * 0.6, 0.06);
+    // The deep thud (< 120 Hz) belongs to the screen shake: off with calm audio or reduced motion (o.deep false).
+    if (o.deep !== false) {
+      const B = amp(g, out),
+        x = osc(g, 'sine', 110, t, t + 0.4, B);
+      x.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+      perc(B.gain, t, e.v * 0.6, 0.06);
+    }
     if (o.water) {
       const W = amp(g, out);
       perc(W.gain, t + 0.02, e.v * 0.18, 0.09);

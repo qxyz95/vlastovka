@@ -1,6 +1,6 @@
 // Blind comparison: pure helpers (tested in tests/audio-mix.test.js). Ratings live in localStorage, never in the repo.
 import { rngFor } from '../../src/audio-mix.js';
-export const DIRS = ['B', 'E'];
+export const DIRS = ['B', 'E', 'G'];
 export const BLIND_KEY = 'just-throw-it-music-blind';
 // Criteria from research/hudba/01 §6 that can be rated by ear (7 cost/licence and 8 CPU are measured).
 export const CRITERIA = [
