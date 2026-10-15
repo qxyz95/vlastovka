@@ -222,3 +222,4 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Nové události — vzhled (15. 10., k `research/atlas/05-art-udalosti.md`):**
   1. **Ventilace s párou jen u Steam Hop** (dvojí ťuk); poryv bude jen papírové proužky větru podle bible kap. 7. Jeden objekt = jedno ovládání.
   2. **Větší kruh QTE pro všechny události** (min. 30 px poloměr na mobilu i pro poryv a holuba), na desktopu beze změny.
+- **Barvy čtvrtí v Atlasu (16. 10.):** denní doby z palety čtvrtí v bibli kap. 2.3 — 1 ranní břidlicová `#3d4f7a`, 2 mořská `#2c6e9b`, 3 rezavá `#7a3b2e`, 4 noční `#1d2b4d` se žlutou lampionů. Barvy rolí (rajčatová = perfekt, tyrkysová = úspěch, hořčicová = mince, kobalt = fokus) se v Atlasu pro čtvrti nepoužívají.
