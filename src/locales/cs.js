@@ -283,7 +283,8 @@ export default {
   'settings.resetHelp': 'Mince, vylepšení, místa a rekord. Nastavení zůstane.',
   'save.refund': 'Dílna je přestavěná: za stará vylepšení se ti vrátilo {coins} ◈.',
   'workshop.paperLater': 'Další papír se otevře na místě {place}.',
-  'branch.paper.effectSpeed': 'Rychlost letu ×{from} → ×{to}. Celý let je rychlejší, a proto doletí dál.',
+  'branch.paper.effectSpeed':
+    'Rychlost letu ×{from} → ×{to}. Celý let je rychlejší, a proto doletí dál.',
   'settings.devCoins': '+1000 mincí (vývoj)',
   'settings.saved': 'Uloženo v tomto zařízení.',
   'settings.fullscreen': 'Celá obrazovka',

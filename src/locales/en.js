@@ -253,7 +253,8 @@ export default {
   'settings.resetHelp': 'Coins, upgrades, places and best distance. Settings stay.',
   'save.refund': 'The Workshop was rebuilt: {coins} ◈ came back for your old upgrades.',
   'workshop.paperLater': 'The next paper opens at {place}.',
-  'branch.paper.effectSpeed': 'Flight speed ×{from} → ×{to}. The whole flight is faster, so it goes farther.',
+  'branch.paper.effectSpeed':
+    'Flight speed ×{from} → ×{to}. The whole flight is faster, so it goes farther.',
   'settings.devCoins': '+1000 coins (dev)',
   'settings.saved': 'Saved on this device.',
   'settings.fullscreen': 'Full screen',
