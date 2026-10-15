@@ -132,6 +132,9 @@ test('registr: G1, G2, G2b a G3 objekty, povinná pole, jednoznačné id, 3 LOD,
       'market-hall',
       'antenna',
       'laundry',
+      'sky-lantern',
+      'thermal',
+      'shooting-star',
     ],
   );
   assert.equal(modelById('workshop'), null, 'K4 workshop nahrazen G2b a ve hře zapojen (S4)');

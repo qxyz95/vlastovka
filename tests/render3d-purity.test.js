@@ -21,6 +21,7 @@ const PURE = [
   'paper-cards',
   'paper-shadow',
   'intro',
+  'event-fx',
 ]
   .map(n => n + '.js')
   .concat(

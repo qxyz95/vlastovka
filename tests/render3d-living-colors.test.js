@@ -34,7 +34,10 @@ test('H0: life3d bez kouře, mraků, dronů, robota, reklamy a holuba; pára ven
     'steam',
   ])
     assert.ok(!s.includes(w), w);
-  assert.match(src('companion3d.js'), /MeshToonMaterial\(\{color:K\.steam\b/);
+  // C2a (05-art-udalosti kap. 1.1): pára jako plochý krémový papír (osmiúhelníky a pruhy) s alfou ≤ 0,6, žádný toon ani ikosaedr.
+  assert.match(src('companion3d.js'), /color:K\.steam,transparent:true,opacity:K\.steamAlpha\b/);
+  assert.ok(!/IcosahedronGeometry/.test(src('companion3d.js')));
+  assert.ok(PAPIR.companion.steamAlpha <= 0.6);
   assert.equal(PAPIR.companion.steam, PAPER_TOKENS.cream);
   assert.equal(PAPIR.plane.fill, PAPER_TOKENS.paper);
 });

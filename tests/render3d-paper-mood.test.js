@@ -34,7 +34,9 @@ test('paleta: jediná PAPIR (palette() parametr ignoruje), klíče, které čtou
     assert.equal(palette(id), PAPIR, String(id));
   assert.deepEqual(Object.keys(PAPIR).sort(), [
     'aim',
+    'burst',
     'city',
+    'combo',
     'companion',
     'flash',
     'id',

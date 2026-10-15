@@ -24,6 +24,9 @@ import bunting from './bunting.js';
 import marketHall from './market-hall.js';
 import antenna from './antenna.js';
 import laundry from './laundry.js';
+import skyLantern from './sky-lantern.js';
+import thermal from './thermal.js';
+import shootingStar from './shooting-star.js';
 import { cardTriangles } from '../paper-cards.js';
 
 export { SCALE, LOD_LAYER, CARD_DEPTH } from './scale.js';
@@ -31,7 +34,8 @@ export { place, bounds } from './parts.js';
 export { LAUNCH, DIORAMA, AIM_SHOT, MENU_SHOT, INTRO_SHOT } from './launch-site.js';
 import { place } from './parts.js';
 import { DIORAMA } from './launch-site.js';
-// G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7; K4 workshop nahradily v S4), G3 trh (karty 9–13). Model s replacedBy je nahrazený, hero = LOD 0 je LOD H.
+// G1 hmota města (K3), G2 start hodu (K4), G2b místo odhodu (H1–H6, 11 kap. 3.7; K4 workshop nahradily v S4), G3 trh (karty 9–13),
+// C2a objekty událostí (research/atlas/05-art-udalosti.md: lampion, termika, hvězda; ve hře je kreslí companion3d.js, ne ulice). Model s replacedBy je nahrazený, hero = LOD 0 je LOD H.
 export const MODELS = Object.freeze([
   houseRow,
   houseGable,
@@ -51,7 +55,11 @@ export const MODELS = Object.freeze([
   marketHall,
   antenna,
   laundry,
+  skyLantern,
+  thermal,
+  shootingStar,
 ]);
+export const EVENT_MODELS = Object.freeze(['sky-lantern', 'thermal', 'shooting-star']);
 export const ACTIVE_MODELS = Object.freeze(MODELS.filter(m => !m.replacedBy));
 export const modelById = id => MODELS.find(m => m.id === id) ?? null;
 export const defaults = m =>

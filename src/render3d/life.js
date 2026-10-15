@@ -463,7 +463,7 @@ export function crowdPose(p, age, dx, cheerAge) {
     c = pose('cheer', cheerAge, dx, p.seed);
   return c.arm > a.arm ? c : a;
 }
-// Holub s bagetou (bird) a pára z tržnice (gust) kolem vlaštovky podle fáze události. Offset v metrech od vlaštovky.
+// Holub s bagetou (bird) kolem vlaštovky podle fáze události. Offset v metrech od vlaštovky; ostatní události null.
 export function companion(e, ft) {
   if (!e) return null;
   const age = ft - e.at;
@@ -478,12 +478,6 @@ export function companion(e, ft) {
       ? { dx: 0.6, dy: 2 + Math.min(1, k * 3) * 0.3, flap: true, hit }
       : { dx: 8 + k * 16, dy: 3 + k * 11, flap: true, hit };
   }
-  if (e.phase === 'warning' || e.phase === 'interaction')
-    return { dx: 10, dy: 0, steam: Math.min(1, age / TIMING.warning) };
-  return {
-    dx: 0,
-    dy: 0,
-    steam: Math.max(0, 1 - (ft - (e.resolvedAt ?? ft)) * 1.2),
-    hit: e.result === 'success' || e.result === 'perfect',
-  };
+  // Poryv nemá ventilaci (rozhodnutí 06 15. 10.: jen papírové proužky v UI vrstvě); páru a další nové události kreslí companion3d z plan.evs.
+  return null;
 }

@@ -7,6 +7,15 @@ import { PAPIR } from './palette.js';
 import { eventView } from './events-view.js';
 import { fxMap, gustStrips, scrapAngle, scrapTone, SCRAP } from './fx-map.js';
 import { t } from '../i18n.js';
+import {
+  ringZoom,
+  RING_WARN_ALPHA,
+  BURST_UI,
+  burstDash,
+  COMBO_UI,
+  comboLinks,
+  effectiveVx,
+} from './event-fx.js';
 // Papír (P3, bible 05 kap. 7, 8, 11): QTE mezikruží krémové se stínem zvednutého papíru, štítky a popupy jako natočené papírové štítky,
 // mířidla grafitová na krémové kartě, rychlostní čáry tenké grafitové, jiskry jako útržky papíru, poryv jako proužky.
 const TAU = Math.PI * 2,
@@ -65,6 +74,11 @@ export function fitLayer(canvas, aspect = VIEW.aspect) {
   if (canvas.height !== h) canvas.height = h;
   return (VIEW.w * canvas.height) / canvas.width;
 }
+// Kotva řetězu komba: z ui.js {x, y} v CSS px plátna (pravý konec a střed řetězu; C2b: pod #hud-dist), jinak COMBO_UI.at. Logické px rovnoměrně (× 640 / šířka).
+export const comboAt = (anchor, cssWidth = 640) =>
+  anchor && Number.isFinite(anchor.x) && Number.isFinite(anchor.y)
+    ? { x: (anchor.x * VIEW.w) / (cssWidth || 640), y: (anchor.y * VIEW.w) / (cssWidth || 640) }
+    : COMBO_UI.at;
 export function drawUi(c, plan = {}, visual = {}) {
   const lh = fitLayer(c.canvas, plan.camera?.aspect ?? visual.aspect ?? VIEW.aspect),
     s = (c.canvas?.width || 640) / 640,
@@ -74,7 +88,8 @@ export function drawUi(c, plan = {}, visual = {}) {
     reduced = ui.reduced ?? visual.reduced ?? false,
     t = plan.t ?? 0,
     p = PAPIR,
-    scale = ui.uiScale ?? 1;
+    scale = ui.uiScale ?? 1,
+    css = ui.cssWidth ?? visual.cssWidth ?? 640;
   // Vše kolem vlaštovky (částice, popupy, štítky, QTE, mířidla) má odsazení v rovnoměrných px: posune se jen kotva v y.
   const dy = (v.py ?? 0) * (lh / VIEW.h - 1);
   c.setTransform(s, 0, 0, s, 0, 0);
@@ -86,10 +101,13 @@ export function drawUi(c, plan = {}, visual = {}) {
       drawParticles(c, fx.particles, p, reduced);
       drawPopups(c, fx.popups, v, p, scale);
       for (const l of ui.labels ?? []) drawLabel(c, l, v, p, scale);
-      if (ui.qte) drawQte(c, ui.qte, v, t, reduced, p);
+      if (ui.burst) drawBurst(c, ui.burst, v, t, reduced, p);
+      if (ui.qte)
+        drawQte(c, ui.qte, v, t, reduced, p, ringZoom(eventView(ui.qte.type).ring.r, css));
     });
     if (ui.aim) drawAim(c, ui.aim, v, p);
     if (dy) c.translate(0, -dy);
+    if (ui.combo) drawCombo(c, ui.combo, comboAt(ui.comboAnchor, css), t, reduced, p, scale);
     if (!reduced) drawFlash(c, fx.flash, p, lh);
     if (ui.intro) {
       const cw = visual.cssWidth ?? c.canvas?.clientWidth ?? 640;
@@ -122,7 +140,7 @@ export function uiFrame({
       clock,
       settings,
       metersPerPx,
-      vx: f?.vx ?? 0,
+      vx: effectiveVx(f),
       frame: t,
       flying: !!f && !f.landed,
     }),
@@ -152,24 +170,57 @@ export function star(c, x, y, r, color, edge) {
   c.fill();
 }
 // Časovací kruh kolem vlaštovky: krémové mezikruží, stopa, oblouk úspěchu, perfekt s hvězdou, bod průběhu; varování čárkovaně, výsledek jednou barvou.
-export function drawQte(c, q, view = AIM_VIEW, time = 0, reduced = false, p = PAPIR) {
+// C2a (05-art-udalosti kap. 0.1–4.2): zoom zvětší celý kruh (event-fx.ringZoom: na mobilu poloměr ≥ 30 CSS px); q.zones je pole zón (pára dvě)
+// nebo starý tvar {success, perfect}; ve varování se zóny kreslí v alfě 0,5 pod čárkovaným kruhem (kromě holuba, jeho zóny jsou na délce držení).
+// Stav ne jen barvou: tloušťky 6 / 9 / 11, hvězda perfektu, pecky (tvar podle výsledku), zarážky jádra termiky a kontaktu lampionu.
+export function drawQte(c, q, view = AIM_VIEW, time = 0, reduced = false, p = PAPIR, zoom = 1) {
   const k = p.qte,
+    z = zoom > 0 ? zoom : 1,
     W = k.width,
     ring = eventView(q.type).ring,
-    R = ring.r,
+    R = ring.r * z,
     px = view.px,
     py = view.py,
     start = -Math.PI / 2,
     at = x => start + x * TAU,
+    Z = Array.isArray(q.zones) ? q.zones : q.zones ? [q.zones] : [],
     arc = (from, to, color, width) => {
       c.beginPath();
       c.arc(px, py, R, at(from), at(to));
       c.strokeStyle = color;
-      c.lineWidth = width;
+      c.lineWidth = width * z;
+      c.stroke();
+    },
+    radial = (x, inner, outer, color, width) => {
+      const a = at(x);
+      c.beginPath();
+      c.moveTo(px + Math.cos(a) * (R - inner * z), py + Math.sin(a) * (R - inner * z));
+      c.lineTo(px + Math.cos(a) * (R + outer * z), py + Math.sin(a) * (R + outer * z));
+      c.strokeStyle = color;
+      c.lineWidth = width * z;
       c.stroke();
     };
+  const zonesOf = () => {
+    Z.forEach((zn, i) => {
+      if (!zn?.success && !zn?.perfect) return;
+      const pulse = !reduced && q.pulse === i ? 2 : 0;
+      if (!q.only && zn.success) arc(zn.success[0], zn.success[1], k.success, W.success + pulse);
+      if (zn.perfect) {
+        arc(zn.perfect[0], zn.perfect[1], k.perfect, W.perfect + (q.only ? pulse : 0));
+        // perfekt se od úspěchu liší i tvarem, rajčatová hvězda uprostřed perfektní výseče na kruhu (střed kruhu patří vlaštovce)
+        const m = at((zn.perfect[0] + zn.perfect[1]) / 2);
+        star(c, px + Math.cos(m) * R, py + Math.sin(m) * R, QTE_STAR * z, k.perfect, k.disc);
+      }
+    });
+    // pára: krémový řez kartonu mezi zónami (při širokých oknech se slijí)
+    if (q.gap != null) radial(q.gap, 7, 7, k.disc, 2);
+  };
+  const marks = () => {
+    for (const x of q.stops ?? []) radial(x, 5, 5, k.stop, 2);
+    if (q.contact) radial(0, 7, 7, k.contact, 3);
+  };
   c.save();
-  if (q.phase === 'warning' || q.result || q.zones) {
+  if (q.phase === 'warning' || q.result || Z.length) {
     const ga = c.globalAlpha;
     if (k.shadow) {
       c.save();
@@ -178,8 +229,8 @@ export function drawQte(c, q, view = AIM_VIEW, time = 0, reduced = false, p = PA
     c.globalAlpha = ga * k.discAlpha;
     c.fillStyle = k.disc;
     c.beginPath();
-    c.arc(px, py, R + QTE_BASE, 0, TAU);
-    c.arc(px, py, Math.max(0, R - QTE_BASE), 0, TAU, true);
+    c.arc(px, py, R + QTE_BASE * z, 0, TAU);
+    c.arc(px, py, Math.max(0, R - QTE_BASE * z), 0, TAU, true);
     c.fill();
     c.globalAlpha = ga;
     if (k.shadow) c.restore();
@@ -211,34 +262,181 @@ export function drawQte(c, q, view = AIM_VIEW, time = 0, reduced = false, p = PA
     c.fillRect(px + 48, py - 33 + bob, 4, 2);
   }
   if (q.phase === 'warning') {
-    c.globalAlpha = reduced ? 0.8 : 0.5 + 0.4 * Math.sin(time * 12);
-    c.setLineDash([6, 6]);
+    const ga = c.globalAlpha;
+    if (q.type !== 'bird' && Z.length) {
+      c.globalAlpha = ga * RING_WARN_ALPHA;
+      zonesOf();
+      c.globalAlpha = ga;
+      marks();
+    }
+    c.globalAlpha = ga * (reduced ? 0.8 : 0.5 + 0.4 * Math.sin(time * 12));
+    c.setLineDash([6 * z, 6 * z]);
     arc(0, 1, k.warning, 3);
+    c.setLineDash([]);
+    c.globalAlpha = ga;
   } else if (q.result) arc(0, 1, k.result[q.result] ?? k.result.other, 5);
-  else if (q.zones) {
-    arc(0, 1, k.track, W.track);
-    arc(q.zones.success[0], q.zones.success[1], k.success, W.success);
-    arc(q.zones.perfect[0], q.zones.perfect[1], k.perfect, W.perfect);
-    // perfekt se od úspěchu liší i tvarem, rajčatová hvězda uprostřed perfektní výseče na kruhu (střed kruhu patří vlaštovce)
-    const m = at((q.zones.perfect[0] + q.zones.perfect[1]) / 2);
-    star(c, px + Math.cos(m) * R, py + Math.sin(m) * R, QTE_STAR, k.perfect, k.disc);
+  else if (Z.length) {
+    arc(0, 1, q.track === 'half' ? k.half : k.track, W.track);
+    zonesOf();
+    marks();
     const a = at(q.progress ?? 0),
       x = px + Math.cos(a) * R,
-      y = py + Math.sin(a) * R;
+      y = py + Math.sin(a) * R,
+      d = 5 * z;
     c.fillStyle = k.dot;
     if (ring.marker === 'dot') {
       c.beginPath();
-      c.arc(x, y, 4.5, 0, TAU);
+      c.arc(x, y, 4.5 * z, 0, TAU);
       c.fill();
     } else if (ring.marker === 'diamond') {
       c.beginPath();
-      c.moveTo(x, y - 5);
-      c.lineTo(x + 5, y);
-      c.lineTo(x, y + 5);
-      c.lineTo(x - 5, y);
+      c.moveTo(x, y - d);
+      c.lineTo(x + d, y);
+      c.lineTo(x, y + d);
+      c.lineTo(x - d, y);
       c.closePath();
       c.fill();
-    } else c.fillRect(Math.round(x - 4), Math.round(y - 4), 8, 8);
+    } else c.fillRect(Math.round(x - 4 * z), Math.round(y - 4 * z), 8 * z, 8 * z);
+  }
+  if (q.pegs) drawPegs(c, q, px, py - R - (QTE_BASE + 9.5) * z, z, p, q.contact ? 9 * z : 0);
+  c.restore();
+}
+// Pecky = počet stisků / kusů v řadě (kap. 1.2): terčík ⌀ 7 px vně kruhu ve 12 h. Prázdná = krém s grafitovým lemem (očekávaná o 1,5 px silnější),
+// perfekt = rajčatová hvězdička, úspěch = plný terčík teal, half/partial = plný kraftDark, minutí = prázdný kroužek miss.
+export const PEG = Object.freeze({ r: 3.5, gap: 10, edge: 1.5 });
+export function drawPegs(c, q, cx, cy, z = 1, p = PAPIR, shift = 0) {
+  const k = p.qte,
+    n = q.pegs.length,
+    r = PEG.r * z;
+  q.pegs.forEach((g, i) => {
+    const x = cx + shift + (i - (n - 1) / 2) * PEG.gap * z;
+    if (g === 'perfect') return star(c, x, cy, r * 1.3, k.perfect, k.disc);
+    c.beginPath();
+    c.arc(x, cy, r, 0, TAU);
+    if (g === 'success' || g === 'half' || g === 'partial') {
+      c.fillStyle = g === 'success' ? k.success : k.half;
+      c.fill();
+    } else if (g === 'miss') {
+      c.strokeStyle = k.track;
+      c.lineWidth = PEG.edge * z;
+      c.stroke();
+    } else {
+      c.fillStyle = k.peg;
+      c.fill();
+      c.strokeStyle = k.pegEdge;
+      c.lineWidth = (PEG.edge + (q.next === i ? 1.5 : 0)) * z;
+      c.stroke();
+    }
+  });
+}
+// Výtrysk (kap. 5): 3 vodorovné čárky tužkou za ocasem (délka podle síly, on twos), pára navíc krémové obláčky po 0,25 s.
+// b = event-fx.burstOf + tail (log. px od středu vlaštovky k ocasu). Reduced motion: čárky stojí, mění se jen délka.
+export function drawBurst(c, b, view = AIM_VIEW, time = 0, reduced = false, p = PAPIR) {
+  if (!b || !(b.k > 0)) return;
+  const B = BURST_UI,
+    x0 = view.px - (b.tail ?? 18) - 2,
+    len = burstDash(b.k),
+    j = reduced ? 0 : (Math.floor(time * 12) % 2) * 2;
+  c.save();
+  c.strokeStyle = p.burst.line;
+  c.lineCap = 'round';
+  c.lineWidth = 1;
+  c.beginPath();
+  for (let i = 0; i < B.n; i++) {
+    const y = view.py + (i - (B.n - 1) / 2) * B.gap,
+      x = x0 - (i === 1 ? 0 : 3) - j;
+    c.moveTo(x, y);
+    c.lineTo(x - len, y);
+  }
+  c.stroke();
+  if (b.tag === 'steam' && !reduced) {
+    c.fillStyle = p.burst.puff;
+    for (let i = 0; i < 3; i++) {
+      const a = ((b.age ?? 0) % B.puff) / B.puff + i;
+      c.globalAlpha = 0.5 * (1 - a / 3);
+      c.beginPath();
+      c.arc(x0 - 4 - a * 14, view.py + 2, B.puffR, 0, TAU);
+      c.fill();
+    }
+  }
+  c.restore();
+}
+// Papírový řetěz komba (kap. 6.1–6.2) vpravo nahoře: očka = strop comboSpec.max, vyplněná teal, prázdná čárkovaná miss, vlevo štítek ×N
+// (číslo vždy). Nové očko zacvakne (1,3 → 1 za 0,15 s), přetržení = očka padají 0,4 s; Chimes = zvoneček na konci při kombu ≥ 3.
+// at = {x (pravý konec), y (střed)} v logických px, s = uiScale. Reduced motion: bez měřítka, pádu a houpání.
+export function drawCombo(c, cb, at = COMBO_UI.at, time = 0, reduced = false, p = PAPIR, s = 1) {
+  if (!cb) return;
+  const C = COMBO_UI,
+    K = p.combo,
+    broke = cb.broke && !reduced,
+    links = comboLinks(cb.max, broke ? cb.broke : cb.n, at.x, at.y, s),
+    fall = broke ? Math.min(1, cb.age / C.fall) : 0,
+    last = Math.min(cb.n, cb.max) - 1;
+  c.save();
+  c.lineJoin = 'round';
+  links.forEach((l, i) => {
+    let rx = C.rx * s,
+      ry = C.ry * s,
+      y = l.y;
+    c.globalAlpha = 1;
+    if (broke && l.filled) {
+      y += 40 * fall * fall;
+      c.globalAlpha = 1 - fall;
+    }
+    if (!reduced && !broke && i === last && cb.n > cb.before && cb.age < C.snap) {
+      const g = C.pop - (C.pop - 1) * (cb.age / C.snap);
+      rx *= g;
+      ry *= g;
+    }
+    c.beginPath();
+    c.ellipse(l.x, y, rx, ry, 0, 0, TAU);
+    if (l.filled) {
+      c.setLineDash([]);
+      c.strokeStyle = broke && i % 2 ? K.tag : K.link;
+      c.lineWidth = C.width * s;
+    } else {
+      c.setLineDash([2 * s, 2 * s]);
+      c.strokeStyle = K.empty;
+      c.lineWidth = C.empty * s;
+    }
+    c.stroke();
+  });
+  c.setLineDash([]);
+  c.globalAlpha = 1;
+  // štítek s číslem vlevo od řetězu
+  const txt = '×' + (cb.broke ? 0 : cb.n),
+    fs = Math.round(C.font * s),
+    x1 = links[0].x - C.rx * s - 4 * s;
+  c.font = `bold ${fs}px ${p.popup.font}`;
+  const w = c.measureText(txt).width + 6 * s;
+  c.fillStyle = K.tag;
+  c.fillRect(x1 - w, at.y - fs * 0.65, w, fs * 1.3);
+  c.fillStyle = K.text;
+  c.textAlign = 'right';
+  c.textBaseline = 'middle';
+  c.fillText(txt, x1 - 3 * s, at.y);
+  if (cb.chimes) {
+    const end = links[links.length - 1],
+      [bw, bh] = C.bell,
+      u = cb.ring * C.hz,
+      a = reduced || !(u < C.cycles) ? 0 : C.swing * Math.sin(u * TAU) * (1 - u / C.cycles);
+    c.translate(end.x, end.y + C.ry * s);
+    c.rotate(a);
+    c.scale(s, s);
+    c.fillStyle = K.bell;
+    c.beginPath();
+    c.moveTo(-bw / 2 + 2, 0);
+    c.lineTo(bw / 2 - 2, 0);
+    c.lineTo(bw / 2, bh);
+    c.lineTo(-bw / 2, bh);
+    c.closePath();
+    c.fill();
+    c.fillStyle = K.bellCut;
+    c.fillRect(-bw / 2, bh - 1, bw, 1);
+    c.fillStyle = K.clapper;
+    c.beginPath();
+    c.arc(0, bh + 1, 1, 0, TAU);
+    c.fill();
   }
   c.restore();
 }
