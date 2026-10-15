@@ -104,7 +104,7 @@ export const INTENSITY = {
   boundaryRevisit: { level: null, switch: null, stinger: false },
   landing: { level: 1, layers: [0.75, 0, 0, 0], filter: 3500, enter: 'bar', duckDb: -3 },
   result: { level: 1, layers: [0.75, 0, 0, 0], filter: 3500, enter: 'bar', theme: 'piano' },
-  finale: { level: 3, cue: 'finale', enter: 'bar' },
+  finale: { level: 3, layers: [0.8, 0.85, 0, 0.8], filter: 18000, cue: 'finale', enter: 'bar' },
 };
 // The whole music is low-passed from the warning to the end of the effect + MUSIC_HOLD (E.3/1): no pumping inside one event.
 export const MUSIC_FILTER = 1800,
@@ -138,6 +138,9 @@ export function mixTargets(s = {}) {
   } else if (screen === 'aim') {
     [L[0], L[1]] = INTENSITY.aim.layers;
     filter = INTENSITY.aim.filter;
+  } else if (screen === 'finale') {
+    INTENSITY.finale.layers.forEach((v, l) => (L[l] = v));
+    filter = INTENSITY.finale.filter;
   } else if (flight) {
     const c = INTENSITY.calm.layers;
     L[0] = c[0];

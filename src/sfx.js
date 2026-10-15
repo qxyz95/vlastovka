@@ -12,6 +12,10 @@ export function createSfx(audio) {
   };
   let wind = null,
     charge = null;
+  // Combo tones follow the mode of the playing district (Lantern City dorian: F, not F#).
+  const mode = () =>
+      audio.track?.districts?.[audio.district]?.mode ?? ARC[audio.district ?? 0]?.mode ?? 'ionian',
+    reduced = () => !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const s = {
     // QTE tick: wooden click on the 5th (A), at the exact audio time of the window centre; cancellable.
     tick(when = now()) {
@@ -30,15 +34,15 @@ export function createSfx(audio) {
     },
     // Success: the combo tone (1-2-3-5-6-8 of D major pentatonic) with a soft pluck under it.
     success(combo = 1, t = now()) {
-      const n = comboNote(combo);
+      const n = comboNote(combo, 5, mode());
       v({ i: 'bell', n, d: 0.4, v: 0.7, o: { dec: 0.9, index: 1.5 } }, t);
       v({ i: 'pluck', n: n - 12, d: 0.15, v: 0.5, o: { cut: 3000, dec: 0.06 } }, t);
-      audio.cue('success', t, { combo });
+      audio.cue('success', t, { combo, note: n });
       if (combo >= 2) audio.cue('combo', t, { combo });
     },
     // Perfect: combo tone + its octave, glitter, dotted-eighth echo, music ducked −4 dB.
     perfect(combo = 1, t = now()) {
-      const n = comboNote(combo);
+      const n = comboNote(combo, 5, mode());
       v({ i: 'bell', n, d: 0.5, v: 0.8, o: { dec: 1.2 } }, t);
       v({ i: 'bell', n: n + 12, d: 0.5, v: 0.55, o: { dec: 1.4 } }, t + 0.01, g.sfxEchoIn);
       v({ i: 'bell', n: n + 12, d: 0.5, v: 0.4, o: { dec: 1.2 } }, t + 0.01);
@@ -50,7 +54,7 @@ export function createSfx(audio) {
         ),
       );
       audio.duck(t, { db: -4, hold: 0.2 });
-      audio.cue('perfect', t, { combo });
+      audio.cue('perfect', t, { combo, note: n });
       if (combo >= 2) audio.cue('combo', t, { combo });
     },
     // Miss: one quiet, muffled low tone. No sad trombone.
@@ -90,11 +94,27 @@ export function createSfx(audio) {
       audio.duck(start, { db: -5, attack: 0.1, hold: short ? 0.9 : 2, release: 0.6 });
       audio.cue('jingle', start, { district: d, short });
     },
+    // Stinger of a new district in flight (03 E.4/4, ≤ 1 s): crumpled paper, then the head of the theme on the music box
+    // in the new mode. Only together with the switch, never inside an event.
+    stinger(d = 0, t = now()) {
+      const a = ARC[Math.min(d, ARC.length - 1)];
+      v({ i: 'crumple', d: 0.4, v: 0.6, o: { seed: d + 3 } }, t);
+      let pos = 0;
+      a.motif.slice(0, 3).forEach((x, i) => {
+        v(
+          { i: 'musicbox', n: deg(a.mode, x, 5), d: 0.3, v: 0.6, o: { dec: 0.6 } },
+          t + 0.18 + pos * 0.11,
+        );
+        pos += a.rhythm[i];
+      });
+      audio.cue('stinger', t, { district: d });
+    },
     // Landing "flop" by speed; water places get a splash.
     land(speed = 10, surface = 'roof', t = now()) {
       const k = Math.min(1, speed / 30);
-      v({ i: 'flop', d: 0.3, v: 0.5 + 0.5 * k, o: { water: surface === 'water' } }, t);
-      audio.cue('land', t, { speed, surface });
+      const deep = !(audio.settings?.calm || reduced());
+      v({ i: 'flop', d: 0.3, v: 0.5 + 0.5 * k, o: { water: surface === 'water', deep } }, t);
+      audio.cue('land', t, { speed, surface, deep });
     },
     throw(power = 0.8, t = now()) {
       v({ i: 'whoosh', d: 0.35, v: 0.5 + 0.5 * power, o: { f0: 350, f1: 1800 + 1500 * power } }, t);
@@ -157,5 +177,8 @@ export function createSfx(audio) {
       audio.cue('charge', t, { level: 0 });
     },
   };
+  audio.on?.((type, info) => {
+    if (type === 'switch' && info.stinger) s.stinger(info.district, info.when);
+  });
   return s;
 }

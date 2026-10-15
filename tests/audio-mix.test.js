@@ -44,6 +44,9 @@ import { blindMap, summary } from '../prototype/music/blind.js';
 import { createFlight, step, eventInput, activeEvent } from '../src/core.js';
 import { windows, TIMING } from '../src/events.js';
 import { SECTION_METERS, SCREEN_METERS } from '../src/scenes.js';
+import { createAudio } from '../src/audio.js';
+import { createSfx } from '../src/sfx.js';
+import { fakeContext } from './helpers/fake-audio.js';
 
 test('mix states: workshop bed only, aim adds the pulse, flight adds groove after a hit or at speed', () => {
   const L = s => mixTargets(s).layers;
@@ -555,4 +558,174 @@ test('duckPlan: a duck during a running duck continues from its value, keeps the
   assert.equal(p.holdEnd, j.holdEnd, 'the jingle hold is kept');
   for (let t = 1; t < p.holdEnd; t += 0.01) assert.ok(duckValue(p, t) < 1 - 1e-6);
   assert.equal(duckPlan(a, 11, {}).state.v0, 1, 'after the end: a fresh duck');
+});
+
+// ---------- audio.js with a fake AudioContext (D-1…D-3) ----------
+const testTrack = evs => ({
+  id: 'T',
+  districts: [{ bpm: 60, mode: 'ionian' }],
+  bar: i => (i === 0 ? evs.map(e => ({ d: 0.2, n: 62, v: 0.5, i: 'sub', ...e })) : []),
+});
+function engine() {
+  const ctx = fakeContext(),
+    a = createAudio({ ctx, autoUnlock: false, autoStart: false });
+  return { ctx, a };
+}
+// Pump the scheduler every 25 ms like the real timer; st(t) gives the state for audio time t.
+function run(ctx, a, until, st) {
+  for (
+    ;
+    ctx.currentTime <= until;
+    ctx.currentTime = Math.round((ctx.currentTime + 0.025) * 1000) / 1000
+  ) {
+    if (st) a.update(st(ctx.currentTime));
+    a.pump();
+  }
+}
+const started = (ctx, t) => ctx.starts.some(s => Math.abs(s.t - t) < 1e-6);
+test('D-1 notes of L1/L2 inside the silence mask are not played, L0 notes are', () => {
+  const { ctx, a } = engine();
+  // Bar starts at 0.08 s, 1 beat = 1 s; the QTE centre is at audio time 0.6 → mask [0.48, 0.72].
+  a.play(
+    testTrack([
+      { b: 0.5, l: 0 },
+      { b: 0.52, l: 1 },
+      { b: 0.54, l: 2 },
+      { b: 2, l: 1 },
+    ]),
+  );
+  const st = t => ({ screen: 'flight', event: 'window', centres: [0.6], flightT: t, hits: 1 });
+  run(ctx, a, 3, st);
+  assert.ok(
+    close(a.mask[0][0], 0.48, 1e-6) && close(a.mask[0][1], 0.72, 1e-6),
+    JSON.stringify(a.mask),
+  );
+  assert.ok(started(ctx, 0.58), 'L0 bed note inside the mask plays');
+  assert.ok(!started(ctx, 0.6), 'L1 inside the mask dropped');
+  assert.ok(!started(ctx, 0.62), 'L2 inside the mask dropped');
+  assert.ok(started(ctx, 2.08), 'L1 outside the mask plays');
+  assert.equal(a.dropped, 2);
+});
+test('D-2 a centre re-planned after a hitstop moves the mask', () => {
+  const { ctx, a } = engine();
+  a.play(
+    testTrack([
+      { b: 0.87, l: 1 },
+      { b: 1.22, l: 1 },
+    ]),
+  );
+  // Centre at flight time 1.0; a hitstop freezes flight time from audio 0.2 to 0.5 → the centre is heard at 1.3.
+  const flightT = t => (t < 0.2 ? t : t < 0.5 ? 0.2 : t - 0.3);
+  run(ctx, a, 2, t => ({ screen: 'flight', event: 'window', centres: [1.0], flightT: flightT(t) }));
+  assert.ok(close(a.mask[0][0], 1.18, 1e-6), JSON.stringify(a.mask));
+  assert.ok(started(ctx, 0.95), 'the old mask position no longer silences');
+  assert.ok(!started(ctx, 1.3), 'the moved mask silences the note at the new centre');
+});
+test('D-3 ducks 0.5 s apart (steam) never rise to 1 between them and never go below −4 dB; overlapping ducks do not jump', () => {
+  const g4 = 10 ** (-4 / 20);
+  {
+    const { ctx, a } = engine();
+    ctx.currentTime = 9.9;
+    a.update({ screen: 'flight', event: 'window', centres: [10, 10.5], flightT: 9.9 });
+    ctx.currentTime = 10;
+    a.duck(10, { db: -4, hold: 0.2 });
+    ctx.currentTime = 10.5;
+    a.update({ screen: 'flight', event: 'window', centres: [10.5], flightT: 10.5 });
+    a.duck(10.5, { db: -4, hold: 0.2 });
+    const p = a.g.duck.gain;
+    for (let t = 10; t < 12; t += 0.005) {
+      const v = p.valueAt(t);
+      assert.ok(v >= g4 - 1e-9, `t ${t.toFixed(3)}: ${v}`);
+      if (t > 10.02 && t < 10.7) assert.ok(v < 1 - 1e-6, `back to 1 at ${t.toFixed(3)}`);
+    }
+    assert.ok(close(p.valueAt(12), 1), 'released after the second');
+  }
+  {
+    // A duck that starts while another holds (jingle + perfect) continues from the held level: no jump to 1.
+    const { a } = engine();
+    a.duck(0, { db: -4, hold: 1 });
+    a.duck(0.5, { db: -4, hold: 0.2 });
+    const p = a.g.duck.gain;
+    for (let t = 0.02; t < 1.0; t += 0.005) {
+      const v = p.valueAt(t);
+      assert.ok(v < 1 - 1e-6 && v >= g4 - 1e-9, `t ${t.toFixed(3)}: ${v}`);
+    }
+  }
+});
+test('a new district waits for calm: no switch in an event or < 0.5 s before the next warning, stinger once', () => {
+  const { ctx, a } = engine(),
+    A = testTrack([]),
+    B = testTrack([]),
+    switches = [];
+  a.on((type, info) => type === 'switch' && switches.push(info));
+  a.play(A);
+  a.update({ screen: 'flight', event: 'warning', flightT: 0 });
+  a.play(B, 0, 1, { calmOnly: true, stinger: true });
+  run(ctx, a, 9, t => ({
+    screen: 'flight',
+    event: t < 4.5 ? 'warning' : 'none',
+    flightT: t,
+    calmUntil: 30,
+  }));
+  assert.equal(switches.length, 1);
+  assert.ok(switches[0].when >= 4.5, `switched at ${switches[0].when}`);
+  assert.equal(switches[0].stinger, true);
+  a.play(A, 0, 1, { calmOnly: true, stinger: true });
+  run(ctx, a, 17, t => ({ screen: 'flight', flightT: t, calmUntil: 30 }));
+  assert.equal(switches.length, 2);
+  assert.equal(switches[1].stinger, false, 'one stinger per flight');
+});
+test('fatigue in the engine: after 12 min in one district the next Workshop visit rests, only wind plays', () => {
+  const { ctx, a } = engine(),
+    cues = [];
+  a.on((type, info) => type === 'cue' && cues.push(info.name));
+  a.play({
+    id: 'T',
+    districts: [{ bpm: 60 }],
+    bar: () => [
+      { b: 0, d: 4, n: null, i: 'air', l: 0, v: 0.5 },
+      { b: 1, d: 0.2, n: 62, i: 'sub', l: 0, v: 0.5 },
+    ],
+  });
+  a.update({ screen: 'flight' });
+  a.distSec = 12 * 60;
+  ctx.currentTime = 100;
+  a.update({ screen: 'workshop' });
+  assert.ok(a.resting(), 'rest started');
+  assert.ok(cues.includes('rest'));
+  const before = ctx.starts.length;
+  run(ctx, a, 106, () => ({ screen: 'workshop' }));
+  const kinds = ctx.starts.slice(before).map(s => s.kind);
+  assert.ok(kinds.length > 0 && kinds.every(k => k === 'buffer'), 'only the wind (noise) plays');
+});
+test('sfx: combo tones in the district mode, no deep landing thud with calm audio, stinger with a switch', () => {
+  const { ctx, a } = engine(),
+    sfx = createSfx(a),
+    cues = [];
+  a.on((type, info) => type === 'cue' && cues.push(info));
+  a.play(TRACKS.G, 3);
+  sfx.success(3);
+  sfx.perfect(3);
+  const notes = cues
+    .filter(c => c.name === 'success' || c.name === 'perfect')
+    .map(c => c.note % 12);
+  assert.deepEqual(notes, [5, 5], 'Lantern City (dorian): the 3rd combo tone is F');
+  a.play(TRACKS.G, 0);
+  ctx.currentTime = 1;
+  a.pump();
+  sfx.success(3);
+  assert.equal(cues.findLast(c => c.name === 'success').note % 12, 6, 'Sunrise Roofs (lydian): F#');
+  sfx.land(20);
+  assert.equal(cues.at(-1).deep, true);
+  a.setSettings({ calm: true });
+  sfx.land(20);
+  assert.equal(cues.at(-1).deep, false, 'calm audio: the < 120 Hz thud is off');
+  a.setSettings({ calm: false });
+  a.play(TRACKS.G, 1, 1, { calmOnly: true, stinger: true });
+  a.update({ screen: 'flight', flightT: 0 });
+  run(ctx, a, 12, t => ({ screen: 'flight', flightT: t }));
+  assert.ok(
+    cues.some(c => c.name === 'stinger' && c.district === 1),
+    'stinger played with the switch',
+  );
 });
