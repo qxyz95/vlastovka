@@ -352,7 +352,9 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
           applyDistrict(a.barTime);
           const stinger = p.stinger && a.stingers < 1;
           if (stinger) a.stingers++;
-          emit('switch', { track: p.track, district: p.district, when: a.barTime, stinger });
+          // Listeners (the stinger) run in their own task: the bar line is still >= 50 ms ahead.
+          const info = { track: p.track, district: p.district, when: a.barTime, stinger };
+          setTimeout(() => emit('switch', info), 0);
           a.cue('switch', a.barTime, { district: p.district, stinger });
         }
         const evs = a.track.bar(a.bar, a.district, {

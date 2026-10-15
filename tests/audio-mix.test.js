@@ -589,6 +589,7 @@ function run(ctx, a, until, st) {
     a.pump();
   }
 }
+const tick = () => new Promise(r => setTimeout(r, 0)); // listeners of a switch run in their own task
 const started = (ctx, t) => ctx.starts.some(s => Math.abs(s.t - t) < 1e-6);
 test('D-1 notes of L1/L2 inside the silence mask are not played, L0 notes are', () => {
   const { ctx, a } = engine();
@@ -659,7 +660,7 @@ test('D-3 ducks 0.5 s apart (steam) never rise to 1 between them and never go be
     }
   }
 });
-test('a new district waits for calm: no switch in an event or < 0.5 s before the next warning, stinger once', () => {
+test('a new district waits for calm: no switch in an event or < 0.5 s before the next warning, stinger once', async () => {
   const { ctx, a } = engine(),
     A = testTrack([]),
     B = testTrack([]),
@@ -674,11 +675,13 @@ test('a new district waits for calm: no switch in an event or < 0.5 s before the
     flightT: t,
     calmUntil: 30,
   }));
+  await tick();
   assert.equal(switches.length, 1);
   assert.ok(switches[0].when >= 4.5, `switched at ${switches[0].when}`);
   assert.equal(switches[0].stinger, true);
   a.play(A, 0, 1, { calmOnly: true, stinger: true });
   run(ctx, a, 17, t => ({ screen: 'flight', flightT: t, calmUntil: 30 }));
+  await tick();
   assert.equal(switches.length, 2);
   assert.equal(switches[1].stinger, false, 'one stinger per flight');
 });
@@ -705,7 +708,7 @@ test('fatigue in the engine: after 12 min in one district the next Workshop visi
   const kinds = ctx.starts.slice(before).map(s => s.kind);
   assert.ok(kinds.length > 0 && kinds.every(k => k === 'buffer'), 'only the wind (noise) plays');
 });
-test('sfx: combo tones in the district mode, no deep landing thud with calm audio, stinger with a switch', () => {
+test('sfx: combo tones in the district mode, no deep landing thud with calm audio, stinger with a switch', async () => {
   const { ctx, a } = engine(),
     sfx = createSfx(a),
     cues = [];
@@ -731,6 +734,7 @@ test('sfx: combo tones in the district mode, no deep landing thud with calm audi
   a.play(TRACKS.G, 1, 1, { calmOnly: true, stinger: true });
   a.update({ screen: 'flight', flightT: 0 });
   run(ctx, a, 12, t => ({ screen: 'flight', flightT: t }));
+  await tick();
   assert.ok(
     cues.some(c => c.name === 'stinger' && c.district === 1),
     'stinger played with the switch',
