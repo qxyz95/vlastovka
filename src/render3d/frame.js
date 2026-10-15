@@ -33,6 +33,16 @@ const KID_H = SCALE.person * 0.7;
 export const LOGICAL = { w: 640, h: 360 },
   ASPECT = 16 / 9,
   REST = { px: 148, py: 258 };
+// Skutečný poměr stran plátna (U5, 02-ux §1.5): ui.js posílá visual.aspect = šířka / výška #game v CSS px. Logické souřadnice zůstávají
+// 640 × 360 jako podíl šířky a výšky (smlouva view), kamera ale počítá s opravdovým poměrem, aby 3D i UI vrstva seděly na sebe.
+export const ASPECT_RANGE = [0.3, 4];
+export const aspectOf = visual => {
+  const a = Number(visual?.aspect);
+  return Number.isFinite(a) && a > 0
+    ? Math.min(ASPECT_RANGE[1], Math.max(ASPECT_RANGE[0], a))
+    : ASPECT;
+};
+const camAspect = cam => cam?.aspect ?? ASPECT;
 // Vlaštovka na scéně užší než `width` CSS px o 15 % větší (rozhodnutí 14. 10., spec 06 kap. 6), jen vzhled, fyzika ani kamera beze změny.
 // Jediný styl je Papírové město (R0): visual.style se ignoruje.
 export const PLANE_NARROW = Object.freeze({ width: 500, scale: 1.15 });
@@ -74,7 +84,7 @@ const tanV = cam => Math.tan((cam.fov * Math.PI) / 360);
 // Bod světa (m) → [sx,sy,depth] v logických px 640×360; depth = vzdálenost podél osy pohledu.
 export function project(p, cam) {
   if (cam.roll) {
-    const q = projectCam(cam, p, ASPECT);
+    const q = projectCam(cam, p, camAspect(cam));
     return [q.px, q.py, q.depth];
   }
   const f = norm(sub(cam.target, cam.position)),
@@ -84,20 +94,27 @@ export function project(p, cam) {
     z = dot(d, f),
     tv = tanV(cam);
   return [
-    (LOGICAL.w / 2) * (1 + dot(d, r) / (z * tv * ASPECT)),
+    (LOGICAL.w / 2) * (1 + dot(d, r) / (z * tv * camAspect(cam))),
     (LOGICAL.h / 2) * (1 - dot(d, u) / (z * tv)),
     z,
   ];
 }
 // Logické px na 1 m v hloubce depth.
-export const pxPerMeter = (depth, cam) => LOGICAL.w / 2 / (depth * tanV(cam) * ASPECT);
+export const pxPerMeter = (depth, cam) => LOGICAL.w / 2 / (depth * tanV(cam) * camAspect(cam));
 // Kamera Follow pro vlaštovku v (X,Y) m. zoom násobí šířku záběru (R5). Vrací tvar plan.camera.
 export function cameraFor(
   X,
   Y,
-  { width = CAMERA.width, zoom = 1, fov = CAMERA.fov, pitch = CAMERA.pitch, px = REST.px } = {},
+  {
+    width = CAMERA.width,
+    zoom = 1,
+    fov = CAMERA.fov,
+    pitch = CAMERA.pitch,
+    px = REST.px,
+    aspect = ASPECT,
+  } = {},
 ) {
-  const v = follow(X, Y, { width: width * zoom, aspect: ASPECT, px: px / LOGICAL.w }),
+  const v = follow(X, Y, { width: width * zoom, aspect, px: px / LOGICAL.w }),
     s = sideCamera(v, fov, pitch);
   const cam = {
     ...v,
@@ -106,6 +123,7 @@ export function cameraFor(
     dist: s.dist,
     fov,
     zoom,
+    aspect,
     lock: false,
     shake: [0, 0],
   };
@@ -132,6 +150,15 @@ export const DIRECTOR = {
   pitch: CAMERA.pitch,
   aspect: ASPECT,
 };
+const directorOpts = visual => {
+  const aspect = aspectOf(visual);
+  return aspect === ASPECT ? DIRECTOR : { ...DIRECTOR, aspect };
+};
+// Změna poměru za běhu (otočení telefonu, resize): režisér jede dál, jen s novým poměrem (bez mutace prev).
+const withAspect = (d, visual) => {
+  const aspect = aspectOf(visual);
+  return d.opts?.aspect === aspect ? d : { ...d, opts: { ...d.opts, aspect } };
+};
 // Klid (Dílna, míření): šířka aimWidth(cssWidth) × (1 − push·charge), ruka HAND, sklon REST.pitch; bez prev v klidu nový režisér (střih, např. Throw again pod kartou).
 // Úvod (H1, intro.js): visual.intro = {since: s od prvního stisku, nebo null = úvod stojí}, jen při míření. V u = 1 je záběr přesně
 // záběr míření (i střih při reduced motion / Calm camera), takže po zahození úvodu v ui.js míření navazuje bez skoku.
@@ -147,7 +174,7 @@ export function introOf(visual = {}) {
     since,
     calm,
     aimW,
-    shot: introShot(u, { aspect: ASPECT, aim: { width: aimW, pitch: AIM.pitch } }),
+    shot: introShot(u, { aspect: aspectOf(visual), aim: { width: aimW, pitch: AIM.pitch } }),
   };
 }
 const rests = new Map(),
@@ -171,10 +198,14 @@ const rests = new Map(),
   };
 const restDirector = (visual = {}) => {
   const i = restInput(visual, 0, 0),
-    key = i.aimW + '|' + i.calm;
-  if (i.at || i.aimW !== restWidth(visual)) return direct(createDirector(DIRECTOR), i); // cache jen bez nabití a bez úvodu
+    o = directorOpts(visual),
+    key = i.aimW + '|' + i.calm + '|' + o.aspect;
+  if (i.at || i.aimW !== restWidth(visual)) return direct(createDirector(o), i); // cache jen bez nabití a bez úvodu
   let r = rests.get(key);
-  if (!r) rests.set(key, (r = direct(createDirector(DIRECTOR), i)));
+  if (!r) {
+    if (rests.size >= 32) rests.clear(); // poměr stran je v klíči: resize okna nesmí cache nafukovat
+    rests.set(key, (r = direct(createDirector(o), i)));
+  }
   return r;
 };
 // Tempo π a cestovní rychlost výbavy (01 §3.3): nový systém nese π v f.d.pi a cestovní rychlost s β v f.cruise (simulation/progression/model.mjs),
@@ -190,7 +221,7 @@ export function directorFor({ f = null, prev = null, time, visual = {} } = {}) {
       t = visual.clock ?? time ?? 0;
     if (!base) return restDirector(visual);
     return nextDirector(
-      base,
+      withAspect(base, visual),
       restInput(visual, t, Math.max(0, Math.min(0.1, t - (prev.dirT ?? t)))),
     );
   }
@@ -216,7 +247,9 @@ export function directorFor({ f = null, prev = null, time, visual = {} } = {}) {
       best: visual.best,
       calm: calmOf(visual),
     };
-  return base ? nextDirector(base, input) : direct(createDirector(DIRECTOR), input);
+  return base
+    ? nextDirector(withAspect(base, visual), input)
+    : direct(createDirector(directorOpts(visual)), input);
 }
 export const cameraOf = f => directorFor({ f }).camera;
 // Smlouva view(f): {cam,px,py,ground,k} v logických px; cam = X·2,1 − px.
@@ -227,7 +260,7 @@ export function viewOf(f, camera) {
 // Místa, která kamera vidí (i panorama v hloubce LAYERS.far a zem za ní), seřazená od nejbližšího ke středu záběru.
 export function placesFor(cam, margin = 80) {
   const depth = cam.dist - LAYERS.far + 60,
-    reach = depth * tanV(cam) * ASPECT + margin,
+    reach = depth * tanV(cam) * camAspect(cam) + margin,
     a = Math.max(0, Math.floor((cam.cx - reach) / SCREEN_METERS)),
     b = Math.floor((cam.cx + reach) / SCREEN_METERS),
     out = [];

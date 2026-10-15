@@ -1,4 +1,4 @@
-// 2D UI vrstva nad 3D scénou (canvas #game, logické 640×360 přes setTransform). Čisté vůči kontextu: dostane ctx 2D, testy s falešným ctx.
+// 2D UI vrstva nad 3D scénou (canvas #game, logická šířka 640 přes setTransform, výška podle poměru stran). Čisté vůči kontextu: dostane ctx 2D, testy s falešným ctx.
 // Vlastní R2. QTE kruh 1:1 z render.js, štítky událostí (dřív atmosphere.js), částice, popupy a záblesk (dřív fx-render.js), rychlostní čáry
 // (themes-verse.js), mířidla (dřív natvrdo v ui.js), uiScale pro mobil. Barvy jen z palette.js.
 // plan = {t, view:{cam,px,py,ground,k}, fx:fxMap(...), ui:{qte, aim:{angle(°),held,charge}, labels:[eventView(e,t)], reduced, uiScale}}.
@@ -23,6 +23,25 @@ export function lift(c, sh) {
   c.shadowOffsetX = sh.dx * k;
   c.shadowOffsetY = sh.dy * k;
 }
+// ── Převod souřadnic (U5, 02-ux §1.5). Smlouva view() a plan dává polohy v logických 640 × 360 jako podíl šířky a výšky plátna
+// (px/640, py/360), i když plátno přes celé okno nemá 16 : 9. UI vrstva kreslí rovnoměrně: šířka 640, výška 640 / poměr stran.
+export const VIEW = Object.freeze({ w: 640, h: 360, aspect: 16 / 9 });
+export const layerHeight = (aspect = VIEW.aspect) => VIEW.w / (aspect > 0 ? aspect : VIEW.aspect);
+// Logické (640 × 360) → CSS px plátna {width, height} a zpět.
+export const viewToCss = ({ px, py }, { width, height }) => ({
+  x: (px / VIEW.w) * width,
+  y: (py / VIEW.h) * height,
+});
+export const cssToView = ({ x, y }, { width, height }) => ({
+  px: width > 0 ? (x * VIEW.w) / width : 0,
+  py: height > 0 ? (y * VIEW.h) / height : 0,
+});
+// Úhel míření (°) z bodu ukazatele {x,y} v CSS px plátna k vlaštovce view, ve skutečných (rovnoměrných) px, omezený na [min, max].
+export function aimAngleAt(point, view, size, [min, max] = [5, 40]) {
+  const o = viewToCss(view, size),
+    a = (Math.atan2(o.y - point.y, Math.max(1, point.x - o.x)) * 180) / Math.PI;
+  return Math.max(min, Math.min(max, a));
+}
 // Písmo na úzké obrazovce: 10px text v 640 logických px má na 360 css px jen 5,6 px; zvětší se, aby měl aspoň ~9 css px (strop 2×).
 export const uiScale = cssWidth => (cssWidth > 0 ? Math.min(2, Math.max(1, 576 / cssWidth)) : 1);
 // Otřes (shakeCamera: x,y v logických px, roll v rad) kolem středu plátna, vždy uvnitř save/restore.
@@ -39,8 +58,16 @@ export function withShake(c, sh, draw) {
     c.restore();
   }
 }
+// Plátno UI vrstvy dostane výšku podle poměru stran kamery (index.js nastavuje jen šířku podle DPR); vrací logickou výšku.
+export function fitLayer(canvas, aspect = VIEW.aspect) {
+  if (!canvas?.width) return VIEW.h;
+  const h = Math.max(1, Math.round(canvas.width / (aspect > 0 ? aspect : VIEW.aspect)));
+  if (canvas.height !== h) canvas.height = h;
+  return (VIEW.w * canvas.height) / canvas.width;
+}
 export function drawUi(c, plan = {}, visual = {}) {
-  const s = (c.canvas?.width || 640) / 640,
+  const lh = fitLayer(c.canvas, plan.camera?.aspect ?? visual.aspect ?? VIEW.aspect),
+    s = (c.canvas?.width || 640) / 640,
     ui = plan.ui ?? {},
     v = plan.view ?? AIM_VIEW,
     fx = plan.fx ?? {},
@@ -48,9 +75,12 @@ export function drawUi(c, plan = {}, visual = {}) {
     t = plan.t ?? 0,
     p = PAPIR,
     scale = ui.uiScale ?? 1;
+  // Vše kolem vlaštovky (částice, popupy, štítky, QTE, mířidla) má odsazení v rovnoměrných px: posune se jen kotva v y.
+  const dy = (v.py ?? 0) * (lh / VIEW.h - 1);
   c.setTransform(s, 0, 0, s, 0, 0);
   try {
-    if (ui.clear !== false) c.clearRect(0, 0, 640, 360);
+    if (ui.clear !== false) c.clearRect(0, 0, 640, lh);
+    if (dy) c.translate(0, dy);
     withShake(c, fx.shake, () => {
       if (!reduced) drawSpeedLines(c, fx.speedLines, p);
       drawParticles(c, fx.particles, p, reduced);
@@ -58,9 +88,10 @@ export function drawUi(c, plan = {}, visual = {}) {
       for (const l of ui.labels ?? []) drawLabel(c, l, v, p, scale);
       if (ui.qte) drawQte(c, ui.qte, v, t, reduced, p);
     });
-    if (!reduced) drawFlash(c, fx.flash, p);
-    if (ui.intro) drawIntro(c, ui.intro, p, scale);
     if (ui.aim) drawAim(c, ui.aim, v, p);
+    if (dy) c.translate(0, -dy);
+    if (!reduced) drawFlash(c, fx.flash, p, lh);
+    if (ui.intro) drawIntro(c, ui.intro, p, scale, lh);
   } finally {
     c.setTransform(1, 0, 0, 1, 0, 0);
   }
@@ -288,12 +319,12 @@ export function drawPopups(c, list = [], view = AIM_VIEW, p = PAPIR, scale = 1) 
   }
   c.restore();
 }
-export function drawFlash(c, alpha, p = PAPIR) {
+export function drawFlash(c, alpha, p = PAPIR, lh = VIEW.h) {
   if (!(alpha > 0)) return;
   c.save();
   c.globalAlpha = alpha;
   c.fillStyle = p.flash;
-  c.fillRect(-20, -20, 680, 400);
+  c.fillRect(-20, -20, 680, lh + 40);
   c.restore();
 }
 // Rychlostní čáry [x,y,délka] (fxMap.speedLines): tenké grafitové čárky tužkou (speed.width px, alfa speed.alpha).
@@ -315,9 +346,9 @@ export function drawSpeedLines(c, lines = [], p = PAPIR) {
 // Nápis úvodu (H1, 03-art kap. 2.2, bible 05 kap. 9.2): „Throw it“ a pod ním nápověda, grafit bez podkladu nahoře v nebi nad hřebenem,
 // vodorovně na střed, svisle v pásu band (podíl výšky, intro.js / launch-site INTRO_SHOT.text). intro = {alpha, band, touch}.
 export const INTRO_TITLE = Object.freeze({ size: 36, sub: 13, at: 0.42, subAt: 0.86 });
-export function drawIntro(c, intro, p = PAPIR, scale = 1) {
+export function drawIntro(c, intro, p = PAPIR, scale = 1, lh = VIEW.h) {
   if (!(intro?.alpha > 0)) return;
-  const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * 360),
+  const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * lh),
     k = INTRO_TITLE;
   c.save();
   c.globalAlpha = Math.min(1, intro.alpha);
