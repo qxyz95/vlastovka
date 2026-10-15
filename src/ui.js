@@ -15,6 +15,7 @@ import {
   angleHint,
   FINISH,
 } from './core.js';
+import { helpLiveKey, bannerIsNews } from './announce.js';
 import { PROGRESSION } from './progression-numbers.js';
 import { mountWorkshop } from './workshop-ui.js';
 import { mountAtlas } from './atlas-ui.js';
@@ -925,23 +926,8 @@ function updateFlightUI(now) {
   $('flight').dataset.kind = e?.type ?? 'none';
   $('flight').dataset.phase = e?.phase ?? 'idle';
   if (settings.timingBar) $('needle').style.left = (e ? eventProgress(f, e) * 100 : 0) + '%';
-  const help =
-    e?.phase === 'warning'
-      ? hint || t('help.ready')
-      : interactive
-        ? t(
-            e.type === 'gust'
-              ? 'help.gust'
-              : e.type !== 'bird'
-                ? 'hint.' + e.type
-                : e.heldAt !== null
-                  ? 'help.holding'
-                  : 'help.bird',
-          )
-        : feedbackOf(f)
-          ? t(feedbackOf(f))
-          : t('help.idle');
-  setText($('event-help'), help);
+  const helpKey = helpLiveKey(e, hint, feedbackOf(f));
+  setText($('event-help'), helpKey && t(helpKey));
   if (bestAtStart > 0 && f.x > bestAtStart) setHidden($('hud-best'), false);
   // Banner (02-ux §1.1, §1.4): nejvýš jeden, mimo událost; nová čtvrť má přednost před milníkem.
   for (const v of [100, 250, 500, FINISH])
@@ -962,6 +948,9 @@ function updateFlightUI(now) {
   if (say.say) comboLive.textContent = t(say.say.key, { n: say.say.n });
   // Banner mimo událost; první setkání s novou událostí v něm ukáže svou větu (02-ux §1.4, U3).
   setHidden($('banner'), hint ? f.landed : !!e || !banner || f.landed);
+  const bannerLive = bannerIsNews(banner, hint, f.x, bestAtStart, FINISH) ? 'polite' : 'off';
+  if ($('banner').getAttribute('aria-live') !== bannerLive)
+    $('banner').setAttribute('aria-live', bannerLive);
   if (hint) setText($('banner'), hint);
   else if (banner)
     setText(

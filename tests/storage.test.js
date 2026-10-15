@@ -117,13 +117,15 @@ test('broken levels in any version: the raw save is backed up, not lost', () => 
     assert.equal(refund, 0);
   }
 });
-test('load() reports the refund of a migrated save and does not write; loading again gives the same (no double refund)', () => {
+test('N-A: load() reports the refund of a migrated save and writes it at once; loading again gives no second refund', () => {
   const raw = JSON.stringify(old(4, L(1, 1, 1), { atlas: fresh().atlas })),
     store = mockStorage({ [KEY]: raw });
   const a = load();
   assert.equal(a.refund, 3 * 35);
   assert.equal(a.warning, '');
-  assert.equal(store[KEY], raw, 'load does not write');
+  assert.equal(JSON.parse(store[KEY]).version, 5, 'migrated save written at once');
   assert.ok(!(KEY + '-corrupt' in store));
-  assert.equal(load().refund, 3 * 35);
+  const b = load();
+  assert.equal(b.refund, 0);
+  assert.deepEqual(b.data, a.data, 'coins are not doubled');
 });

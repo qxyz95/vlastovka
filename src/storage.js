@@ -227,6 +227,8 @@ export function load() {
         localStorage.setItem(KEY + '-corrupt', raw);
         backup = true;
       } catch {}
+    // The migrated save is written at once, so the refund notice and the coins never repeat after a reload.
+    if (refund > 0) save(data);
     return {
       data,
       refund,
