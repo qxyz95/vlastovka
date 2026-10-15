@@ -391,7 +391,10 @@ test('C3 oprava: událost odložená drženým Dive má plné varování od skut
       if (e.start != null && e.start > e.at + 0.05) {
         checked++;
         assert.ok(e.w.open > e.start, 'okno se otevře až po varování od skutečného začátku');
-        assert.notEqual(e.result === 'miss' && e.doneAt != null && e.doneAt <= e.start + 1e-6, true);
+        assert.notEqual(
+          e.result === 'miss' && e.doneAt != null && e.doneAt <= e.start + 1e-6,
+          true,
+        );
       }
   }
   assert.ok(checked > 0, 'aspoň jedna událost byla odložená drženým Dive');
