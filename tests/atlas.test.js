@@ -246,20 +246,35 @@ test('paper opens on the openAtPlace-th place of a district', () => {
   );
   assert.equal(opensPaper(1, { ...N, paper: { ...N.paper, openAtPlace: 2 } }), 'kraft');
 });
+// Night Route is hidden and Autopilot waits for the 2nd wave (A2): neither is listed by default; the node logic is checked with both switched on.
+const CN = {
+  ...C,
+  NODES: {
+    nightRoute: { ...C.NODES.nightRoute, hidden: false },
+    autoQte: { ...C.NODES.autoQte, wave: 1 },
+  },
+};
+test('Night Route and Autopilot are not listed by default', () => {
+  const done = P(FINISH, 1e6, { finished: true });
+  assert.deepEqual(nodeStates(done), []);
+  assert.equal(buyNode(done, 'nightRoute'), false);
+  assert.equal(C.NODES.nightRoute.hidden, true);
+  assert.equal(C.NODES.autoQte.wave, 2);
+});
 test('Night Route only after the route is finished; Autopilot waits for a price', () => {
   const p = P(at(15), 1e6);
-  assert.ok(!nodeStates(p).some(x => x.id === 'nightRoute'));
-  assert.equal(nodeStates(p).find(x => x.id === 'autoQte').state, 'soon');
+  assert.ok(!nodeStates(p, CN).some(x => x.id === 'nightRoute'));
+  assert.equal(nodeStates(p, CN).find(x => x.id === 'autoQte').state, 'soon');
   const done = P(FINISH, 1e6, { finished: true });
-  assert.equal(nodeStates(done).find(x => x.id === 'nightRoute').state, 'soon');
-  assert.equal(buyNode(done, 'nightRoute'), false);
+  assert.equal(nodeStates(done, CN).find(x => x.id === 'nightRoute').state, 'soon');
+  assert.equal(buyNode(done, 'nightRoute', CN), false);
   const n = structuredClone(N);
   n.nodes.nightRoute.price = 2000;
-  assert.equal(buyNode(P(at(15), 1e6), 'nightRoute', C, n), false);
-  assert.ok(buyNode(done, 'nightRoute', C, n));
+  assert.equal(buyNode(P(at(15), 1e6), 'nightRoute', CN, n), false);
+  assert.ok(buyNode(done, 'nightRoute', CN, n));
   assert.equal(done.coins, 1e6 - 2000);
   assert.equal(done.atlas.nodes.nightRoute, true);
-  assert.equal(nodeStates(done, C, n).find(x => x.id === 'nightRoute').state, 'owned');
+  assert.equal(nodeStates(done, CN, n).find(x => x.id === 'nightRoute').state, 'owned');
 });
 test('atlas notice reacts to unseen things only, never to affordable purchases', () => {
   const p = P(50, 1e6);
@@ -280,7 +295,7 @@ test('atlas notice reacts to unseen things only, never to affordable purchases',
   assert.equal(atlasNotice(p), false);
   const n = structuredClone(N);
   n.nodes.autoQte.price = 10;
-  assert.equal(atlasNotice(p, C, n), true);
+  assert.equal(atlasNotice(p, CN, n), true);
 });
 test('hint collapses after three opens; functions tolerate a missing atlas', () => {
   const p = P(0);

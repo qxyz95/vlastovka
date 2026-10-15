@@ -137,7 +137,11 @@ export function placeStates(p, c = CONTENT, n = NUMBERS) {
 export function nextGoal(p, c = CONTENT, n = NUMBERS) {
   if (isDelivered(p.best, n)) return { delivered: true };
   const k = foundCount(p.best, n);
-  return { placeId: c.PLACES[k].id, index: k, metersToGo: placeStart(k, n) - (+p.best || 0) };
+  return {
+    placeId: c.PLACES[k]?.id ?? null,
+    index: k,
+    metersToGo: placeStart(k, n) - (+p.best || 0),
+  };
 }
 // Counts only for reached districts (P6, 08 N7).
 export function districtSummary(p, c = CONTENT, n = NUMBERS) {
@@ -232,7 +236,7 @@ export function specialsView(p, slot, c = CONTENT, n = NUMBERS) {
   };
 }
 
-// --- nodes not bound to a place (Night Route, Autopilot) ---
+// --- nodes not bound to a place (Night Route, Autopilot); hidden nodes and later release waves are not listed ---
 const nodeOpen = (p, req, c, n) =>
   req == null
     ? true
@@ -247,7 +251,7 @@ const nodeOpen = (p, req, c, n) =>
         : false;
 export function nodeStates(p, c = CONTENT, n = NUMBERS) {
   return Object.entries(c.NODES)
-    .filter(([, x]) => nodeOpen(p, x.requires, c, n))
+    .filter(([, x]) => !x.hidden && !(x.wave > 1) && nodeOpen(p, x.requires, c, n))
     .map(([id, x]) => {
       const price = n.nodes[id]?.price ?? null,
         owned = !!A(p).nodes?.[id];
