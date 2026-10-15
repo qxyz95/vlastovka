@@ -53,6 +53,7 @@ test('fresh save is v5 with an empty atlas and survives a round trip', () => {
   assert.deepEqual(p.atlas, {
     levels: {},
     seen: [],
+    met: [],
     pending: [],
     lines: {},
     pockets: { owned: 0, slots: [null, null] },
@@ -70,6 +71,7 @@ test('fresh save is v5 with an empty atlas and survives a round trip', () => {
   const full = v4({
     levels: { chain: 2, tape: 1 },
     seen: ['glider', 'chain'],
+    met: ['thermal'],
     pending: ['pinwheel'],
     lines: { bolts: 2 },
     pockets: { owned: 2, slots: ['cushion', 'sharp'] },

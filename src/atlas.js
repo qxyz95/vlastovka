@@ -8,6 +8,7 @@ const EPS = 1e-9,
 export const emptyAtlas = (n = NUMBERS) => ({
   levels: {},
   seen: [],
+  met: [],
   pending: [],
   lines: {},
   pockets: { owned: 0, slots: n.pockets.prices.map(() => null) },

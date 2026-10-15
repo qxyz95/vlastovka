@@ -85,10 +85,9 @@ let fx = null,
 // Obrazovky a panely řídí čistý automat screens.js (U3, 02-ux §1.2): S = {screen, title, panels, charging, shownAt}.
 // UI jen posílá události přes go() a podle změny stavu přepíná DOM (sync); vlastní příznaky obrazovek nemá.
 let S = initialState();
-// První setkání s novou událostí (C2b): zpomalení ve varování a jedna věta. met = potkané typy jen v paměti sezení
-// (uložení do save čeká na rozhodnutí, viz runs/2026-10-15-c2b-vstupy-udalosti.md), meet = událost prvního setkání v tomto letu.
-let met = [],
-  meet = null;
+// První setkání s novou událostí (C2b): zpomalení ve varování a jedna věta. Potkané typy jsou v save (p.atlas.met),
+// meet = událost prvního setkání v tomto letu.
+let meet = null;
 // Kombo: kotva řetězu vpravo nahoře pod .hud-right (CSS px plátna, měří se při startu letu a změně velikosti) a hlášení pro čtečky.
 let comboAnchor = null,
   comboSay = { n: 0, at: -Infinity };
@@ -366,7 +365,6 @@ $('retry').onclick = () => go({ type: 'throwAgain' });
 $('confirm-delete').onclick = () => {
   p = fresh();
   lastThrow = null;
-  met = [];
   refund = 0;
   persist();
   refresh();
@@ -697,9 +695,14 @@ function frame(now) {
       const frozen = fx.hitstop > 0;
       if (frozen) fx.hitstop = Math.max(0, fx.hitstop - elapsed);
       const ev = activeEvent(f);
-      if (ev && ev !== meet && ev.phase === 'warning' && isFirstMeet(ev, met, NEW_EVENT_TYPES)) {
+      if (
+        ev &&
+        ev !== meet &&
+        ev.phase === 'warning' &&
+        isFirstMeet(ev, p.atlas.met, NEW_EVENT_TYPES)
+      ) {
         meet = ev;
-        met.push(ev.type);
+        p.atlas.met.push(ev.type);
       }
       ({ acc } = advance(f, acc, elapsed * meetScale(ev, meet, reduced), frozen, onStep));
       juiceEvents();
@@ -750,6 +753,7 @@ function frame(now) {
             intro: home &&
               intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
             best: p.best,
+            paper: p.levels?.paper ?? 0,
             style: STYLE,
             combo: comboAnchor ?? true,
             touch: coarse.matches,

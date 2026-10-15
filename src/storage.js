@@ -1,5 +1,5 @@
 import { fresh, FINISH } from './core.js';
-import { BRANCH_IDS, maxLevel } from './gear.js';
+import { BRANCH_IDS, maxLevel, NEW_EVENT_TYPES } from './gear.js';
 import { routeAt, ROUTE } from './scenes.js';
 // ID lists, caps and rules come from the Atlas modules (no own copies). No import cycle: atlas.js imports only
 // atlas-content.js and atlas-numbers.js (→ scenes.js), none of which import storage.js or core.js.
@@ -73,6 +73,8 @@ export function sanitizeAtlas(a) {
     });
   };
   out.seen = ids(a.seen, x => KNOWN.includes(x));
+  // Potkané nové události (první setkání, C2b); chybějící pole ve starším save = prázdné, verze se nemění.
+  out.met = ids(a.met, x => NEW_EVENT_TYPES.includes(x));
   out.pending = ids(
     a.pending,
     x =>

@@ -185,7 +185,7 @@ test('ui.js: first meeting slows the loop, half/partial feedback, combo anchor a
   const ui = compact(readFileSync(new URL('../src/ui.js', import.meta.url), 'utf8'));
   for (const s of [
     'advance(f,acc,elapsed*meetScale(ev,meet,reduced),frozen,onStep)',
-    'isFirstMeet(ev,met,NEW_EVENT_TYPES)',
+    'isFirstMeet(ev,p.atlas.met,NEW_EVENT_TYPES)',
     'const kind=resultFx(e.result)',
     'combo:comboAnchor??true',
     "comboLive.setAttribute('aria-live','polite')",

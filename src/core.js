@@ -26,6 +26,7 @@ export function fresh() {
     atlas: {
       levels: {},
       seen: [],
+      met: [],
       pending: [],
       lines: {},
       pockets: { owned: 0, slots: [null, null] },
