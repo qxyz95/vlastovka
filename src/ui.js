@@ -27,6 +27,7 @@ import { eventProgress, eventStats, zones } from './events.js';
 import { createDecorations, stepDecorations } from './decorations.js';
 import { initialState, transition, loopRuns, PANELS } from './screens.js';
 import { reveal, coinLine, GLIDER_METERS, resultNovelty, atlasDot } from './reveal.js';
+import { throwRecord } from './workshop-preview.js';
 import { loadSettings, saveSettings, reducedMotion } from './settings.js';
 import { devEnabled, addDevCoins } from './dev.js';
 import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
@@ -200,8 +201,11 @@ function applyReveal() {
   $('title-status').textContent = p.completed ? t('menu.delivered') : '';
   return R;
 }
+// Náhled „≈ +X m“ v Dílně přehrává poslední hod (C4); záznam vzniká při dopadu, protože f se po „Hodit znovu“ maže.
+let lastThrow = null;
 const workshop = mountWorkshop($('workshop'), {
   getSave: () => p,
+  getLastThrow: () => lastThrow,
   onChange: () => {
     persist();
     refresh();
@@ -342,6 +346,7 @@ $('cancel-throw').onclick = () => go({ type: 'cancelThrow' });
 $('retry').onclick = () => go({ type: 'throwAgain' });
 $('confirm-delete').onclick = () => {
   p = fresh();
+  lastThrow = null;
   refund = 0;
   persist();
   refresh();
@@ -584,6 +589,7 @@ let outcome = null;
 function finish() {
   const previous = p.best;
   settle(p, f);
+  lastThrow = throwRecord(f);
   const novelty = resultNovelty(p, previous); // jedna novinka z Atlasu na kartu, zbytek fronty při dalších hodech
   persist();
   refresh();

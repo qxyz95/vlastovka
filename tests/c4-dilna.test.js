@@ -2,6 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { compact } from './helpers/compact.js';
 import { fresh, flightFor, step } from '../src/core.js';
 import { buy, buyUndoable, canUndo, undoBuy, paperOpen } from '../src/gear.js';
 import { opensPaper } from '../src/atlas.js';
@@ -155,4 +156,11 @@ test('workshop-ui.js and workshop-preview.js have no hard-coded player text', ()
       .filter(x => /^[A-Z][a-z]+ [a-z]+/.test(x) || /[À-ž]/.test(x));
     assert.deepEqual(bad, [], file);
   }
+});
+
+test('C4: ui.js předává Dílně záznam posledního hodu z dopadu, reset ho maže', () => {
+  const ui = compact(readFileSync(new URL('../src/ui.js', import.meta.url), 'utf8'));
+  assert.ok(ui.includes(compact('getLastThrow: () => lastThrow')));
+  assert.ok(ui.includes(compact('settle(p, f); lastThrow = throwRecord(f);')));
+  assert.ok(ui.includes(compact('p = fresh(); lastThrow = null;')));
 });
