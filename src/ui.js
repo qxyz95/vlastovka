@@ -43,6 +43,7 @@ import { reveal, coinLine, GLIDER_METERS, resultNovelty, atlasDot } from './reve
 import { throwRecord } from './workshop-preview.js';
 import { loadSettings, saveSettings, reducedMotion } from './settings.js';
 import { devEnabled, addDevCoins } from './dev.js';
+import { createGameAudio } from './game-audio.js';
 import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
 import { eventView } from './render3d/events-view.js';
 import { introAfter, introPress, introDone } from './render3d/intro.js';
@@ -132,6 +133,17 @@ const store = (() => {
 let settings = loadSettings(store);
 const systemReduce = matchMedia('(prefers-reduced-motion: reduce)'),
   isReduced = () => reducedMotion(settings, systemReduce.matches);
+// Hudba a efekty (krok 4 hudby): jediné napojení je gameAudio.frame() ve smyčce snímků; AudioContext vznikne až prvním gestem.
+const gameAudio = createGameAudio({
+  els: {
+    music: $('vol-music'),
+    sfx: $('vol-sfx'),
+    mute: $('mute'),
+    musicOut: $('vol-music-out'),
+    sfxOut: $('vol-sfx-out'),
+  },
+});
+window.__audio = gameAudio;
 // ?timer: ladicí smyčka ~60 Hz přes MessageChannel (skrytá záložka škrtí rAF i setTimeout) a skrytá záložka se nebere jako pauza
 // (automatické ověření ve skrytém okně prohlížeče; točí jedno jádro CPU, jen pro ladění).
 const TIMER = new URLSearchParams(location.search).has('timer'),
@@ -211,6 +223,7 @@ function applyLang(id) {
   if (S.screen === 'home') updateAim();
   if (S.screen === 'result' && f && outcome) fillResult();
   atlas?.refresh();
+  gameAudio.refresh();
 }
 for (const b of $$('[data-lang]')) b.onclick = () => applyLang(b.dataset.lang);
 // Pohyb: volba v Nastavení přebíjí systém (settings.js); CSS čte data-reduced, renderer visual.reduced.
@@ -780,6 +793,19 @@ function frame(now) {
       if (S.screen === 'flight') updateFlightUI(now / 1000);
     }
     updateHud();
+    gameAudio.frame({
+      screen: S.screen,
+      title: S.title,
+      panels: S.panels,
+      f,
+      acc,
+      best: p.best,
+      completed: p.completed,
+      held,
+      heldMs: heldTime * 1000,
+      charge: held ? chargeAt(heldTime) : 0,
+      reduced,
+    });
     // Draw between the last two physics steps so motion is smooth on 120 Hz screens too.
     const a = Math.min(1, acc / DT),
       shown =
