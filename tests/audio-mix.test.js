@@ -176,8 +176,8 @@ test('seeded generators are deterministic', () => {
         id + d,
       );
 });
-test('six directions × four districts: valid events, notes in the district mode, every layer used, BPM in range', () => {
-  assert.deepEqual(TRACK_IDS, ['A', 'B', 'C', 'D', 'E', 'F']);
+test('two directions × four districts: valid events, notes in the district mode, every layer used, BPM in range', () => {
+  assert.deepEqual(TRACK_IDS, ['B', 'E']);
   for (const id of TRACK_IDS) {
     const t = TRACKS[id];
     assert.equal(t.districts.length, 4, id);
@@ -282,23 +282,30 @@ test('every district has a 4–6 note leitmotif filling one bar', () => {
     );
   }
 });
-test('blind mode: X1–X6 is a stable permutation of A–F per session, summary averages by direction', () => {
+test('blind mode: X1–X2 is a stable permutation of B and E per session, summary averages by direction', () => {
   const m = blindMap(7);
-  assert.deepEqual(Object.keys(m), ['X1', 'X2', 'X3', 'X4', 'X5', 'X6']);
+  assert.deepEqual(Object.keys(m), ['X1', 'X2']);
   assert.deepEqual(Object.values(m).sort(), TRACK_IDS);
   assert.deepEqual(blindMap(7), m);
   const s = summary({
     ratings: [
-      { dir: 'A', scores: { mood: 4, fatigue: 2 } },
-      { dir: 'A', scores: { mood: 2, fatigue: 4 } },
+      { dir: 'B', scores: { mood: 4, fatigue: 2 } },
+      { dir: 'B', scores: { mood: 2, fatigue: 4 } },
       { dir: 'E', scores: { mood: 5 } },
     ],
-    fatigue: [{ dir: 'A', minute: 10, score: 3 }],
-    qte: { A: { n: 4, hit: 3, perfect: 1 } },
+    fatigue: [{ dir: 'B', minute: 10, score: 3 }],
+    qte: { B: { n: 4, hit: 3, perfect: 1 } },
   });
-  assert.deepEqual(s.A.scores, { mood: 3, fatigue: 3 });
-  assert.equal(s.A.n, 2);
+  assert.deepEqual(s.B.scores, { mood: 3, fatigue: 3 });
+  assert.equal(s.B.n, 2);
   assert.equal(s.E.scores.mood, 5);
-  assert.equal(s.A.fatigue[10], 3);
-  assert.equal(s.A.perfectRate, 0.25);
+  assert.equal(s.B.fatigue[10], 3);
+  assert.equal(s.B.perfectRate, 0.25);
+});
+test('registry holds only B and E; neon voices are gone from the synth', () => {
+  assert.deepEqual(Object.keys(TRACKS), ['B', 'E']);
+  assert.deepEqual(TRACK_IDS, ['B', 'E']);
+  for (const v of ['pulse', 'chiparp', 'cnoise', 'ckick', 'brass', 'scratch'])
+    assert.ok(!VOICE_NAMES.includes(v), v);
+  for (const v of ['vinyl', 'rain', 'sax']) assert.ok(VOICE_NAMES.includes(v), v + ' is used by B');
 });

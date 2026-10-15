@@ -1,4 +1,4 @@
-// Music prototype (research/hudba/01 §6): six procedural directions, a real flight from core.js rendered by render.js,
+// Music prototype (research/hudba/01 §6): two procedural directions (B, E), a real flight from core.js rendered by render.js,
 // blind rating, a 10-minute fatigue test, own-file comparison and load measurement. Not loaded by the game.
 import { createAudio, benchmark } from '../../src/audio.js';
 import { createSfx } from '../../src/sfx.js';
@@ -30,7 +30,7 @@ const audio = createAudio(),
   sfx = createSfx(audio),
   ctx = audio.ctx;
 let store = loadStore();
-const ui = { dir: 'A', district: 0, follow: false, blind: false, x: 'X1' };
+const ui = { dir: 'B', district: 0, follow: false, blind: false, x: 'X1' };
 let started = false; // music is on by default and starts on the first gesture
 // ---------- music selection ----------
 for (const id of TRACK_IDS)
