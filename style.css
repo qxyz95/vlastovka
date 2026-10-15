@@ -1364,6 +1364,22 @@ aside button {
     padding-block: 6px;
   }
   /* karta výsledku začíná pod řádkem HUD (základní top), ☰ a čip mincí zůstanou vidět a stisknutelné */
+  /* N-4: detail uzlu Dílny (Buy) zůstane vedle stromu na očích, Reset v Nastavení lepí k dolnímu okraji panelu */
+  #detail {
+    position: sticky;
+    bottom: 0;
+    align-self: end;
+  }
+  #detail > * {
+    margin-block: var(--s1);
+  }
+  #settings fieldset:has(#reset) {
+    position: sticky;
+    bottom: 0;
+    margin-bottom: 0;
+    padding-block: var(--s2);
+    background: var(--card);
+  }
 }
 /* velká okna: UI kontejnery ve větším měřítku jedním krokem (art review A2); ne na html ani #game, aby seděly souřadnice mířidel */
 @media (min-width: 1700px) and (min-height: 1000px) {

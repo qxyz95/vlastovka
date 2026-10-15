@@ -380,8 +380,8 @@ export default {
   'atlas.special.calm.tradeoff': 'Fewer events, each one stronger.',
   'atlas.special.calm.hint': 'CALM SKY · Fewer events, each one stronger',
   'atlas.special.whistle.name': 'Whistle',
-  'atlas.special.whistle.tradeoff': 'Call the next bird early. Its window is tighter.',
-  'atlas.special.whistle.hint': 'WHISTLE · Tap to call the next bird',
+  'atlas.special.whistle.tradeoff': 'Call the next event early. Its window is tighter.',
+  'atlas.special.whistle.hint': 'WHISTLE · Tap to call the next event',
   'atlas.special.rocket.name': 'Paper Rocket',
   'atlas.special.rocket.tradeoff': 'Two boosts per flight. You pick the moment.',
   'atlas.special.rocket.hint': 'PAPER ROCKET · Tap to boost (2 left)',
@@ -623,7 +623,7 @@ export default {
   'atlas.character.zippy.line1': 'Lamps on! ...Sorry. Habit. Hi.',
   'atlas.character.zippy.line2': "By trade, I light lamps. In my heart, I'm a pigeon.",
   'atlas.character.zippy.line3':
-    'Rooftop Harbor is right ahead. Fly well. Not for the lanterns. For you.',
+    'Rooftop Harbor is behind you. Well flown. Not for the lanterns. For you.',
   'atlas.paper.copy': 'Copy Paper',
   'atlas.node.autoQte.name': 'Autopilot',
   'atlas.node.autoQte.pitch':
@@ -631,7 +631,7 @@ export default {
   // C3 Kapsy a schopnosti: čip při míření a za letu, nápověda (08 §7.3), stav jako text, akční tlačítko.
   'ability.hint.dive': 'DIVE · Hold to dive, let go to pull up',
   'ability.hint.cushion': 'CUSHION · Tap just above the ground',
-  'ability.hint.whistle': 'WHISTLE · Tap to call the next bird',
+  'ability.hint.whistle': 'WHISTLE · Tap to call the next event',
   'ability.hint.rocket': {
     one: 'PAPER ROCKET · Tap to boost ({count} left)',
     other: 'PAPER ROCKET · Tap to boost ({count} left)',

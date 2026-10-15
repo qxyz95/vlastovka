@@ -409,8 +409,8 @@ export default {
   'atlas.special.calm.tradeoff': 'Méně událostí, každá silnější.',
   'atlas.special.calm.hint': 'KLIDNÉ NEBE · Méně událostí, každá silnější',
   'atlas.special.whistle.name': 'Píšťalka',
-  'atlas.special.whistle.tradeoff': 'Přivolá dalšího ptáka dřív. Jeho okno je užší.',
-  'atlas.special.whistle.hint': 'PÍŠŤALKA · Klepni a přivoláš dalšího ptáka',
+  'atlas.special.whistle.tradeoff': 'Přivolá další událost dřív. Její okno je užší.',
+  'atlas.special.whistle.hint': 'PÍŠŤALKA · Klepni a přivoláš další událost',
   'atlas.special.rocket.name': 'Papírová raketa',
   'atlas.special.rocket.tradeoff': 'Dvě zrychlení za let. Okamžik vybíráš ty.',
   'atlas.special.rocket.hint': 'PAPÍROVÁ RAKETA · Klepni a zrychli (zbývají 2)',
@@ -666,7 +666,7 @@ export default {
   'atlas.character.zippy.line1': 'Rozsvěcuji! …Pardon. Zvyk. Ahoj.',
   'atlas.character.zippy.line2': 'Živím se rozsvěcením lamp. V srdci jsem holub.',
   'atlas.character.zippy.line3':
-    'Střešní přístav je hned před tebou. Leť dobře. Ne kvůli lampionům. Kvůli sobě.',
+    'Střešní přístav máš za sebou. Dobrý let. Ne kvůli lampionům. Kvůli sobě.',
   'atlas.paper.copy': 'Kopírovací papír',
   'atlas.node.autoQte.name': 'Autopilot',
   'atlas.node.autoQte.pitch':
@@ -674,7 +674,7 @@ export default {
   // C3 Kapsy a schopnosti: čip při míření a za letu, nápověda (08 §7.3), stav jako text, akční tlačítko.
   'ability.hint.dive': 'STŘEMHLAV · Podrž a padej, pusť a vyrovnej',
   'ability.hint.cushion': 'POLŠTÁŘEK · Klepni těsně nad zemí',
-  'ability.hint.whistle': 'PÍŠŤALKA · Klepni a přivoláš dalšího ptáka',
+  'ability.hint.whistle': 'PÍŠŤALKA · Klepni a přivoláš další událost',
   'ability.hint.rocket': {
     one: 'PAPÍROVÁ RAKETA · Klepni a zrychli (zbývá {count})',
     few: 'PAPÍROVÁ RAKETA · Klepni a zrychli (zbývají {count})',
