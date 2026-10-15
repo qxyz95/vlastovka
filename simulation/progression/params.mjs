@@ -111,6 +111,8 @@ const DEFAULTS = {
   push: { base: 1.5, perfect: 1.25, scaleWithPace: true },
   events: {
     timing: { ...TIMING },
+    // Odložená událost (pod 8 m, držený Dive) má okna od skutečného začátku (15. 10., C3); false = stará okna od e.at.
+    delayedFromStart: true,
     maxEvents: 12,
     firstAt: 1.5,
     earlyGap: 3,

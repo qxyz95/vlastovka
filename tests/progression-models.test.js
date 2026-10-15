@@ -33,6 +33,7 @@ test('progression models: reward = base + floor(distance·perMeter), bit-identic
 
 // Snímky kampaní z HEAD 222b013 před změnou (out/k-sim-before.json, --raw): výchozí katalog = stejný výsledek.
 test('progression models: default catalog reproduces pre-change campaigns exactly', () => {
+  setParams({ events: { delayedFromStart: false } }); // snímek je z doby před opravou oken odložených událostí
   assert.deepEqual(Object.keys(P.models), ['dart', 'glider']);
   assert.deepEqual(paidModels(), []);
   const snap = [
@@ -73,6 +74,7 @@ test('progression models: default catalog reproduces pre-change campaigns exactl
     assert.equal(R.byModel.glider.throws, R.gliderThrows);
     assert.equal(R.byModel.dart.coins + R.byModel.glider.coins, inc);
   }
+  setParams();
 });
 
 test('progression models: catalog offer kind model after unlockPlace, strategies no-models / models-first', () => {

@@ -290,6 +290,7 @@ export function createFlightModel(P, hooks = {}) {
   // Událost přivolaná pískáním (e.whistled) má okna úspěchu i perfektu ×specials.whistle.window (rozhodnutí 14. 10., risk za odměnu);
   // časy (varování, střed, kontakt dronu) a sloup termiky zůstávají. window = 1 → chování F3.
   function windowsOf(f, e) {
+    const at0 = e.start ?? e.at;
     const T = P.events.timing,
       E = P.events,
       k = f.d.windowK * (f.assist?.window ?? 1) * (e.whistled ? P.specials.whistle.window : 1),
@@ -297,25 +298,25 @@ export function createFlightModel(P, hooks = {}) {
     switch (e.type) {
       case 'gust':
         return {
-          open: e.at + w,
-          close: e.at + w + T.bar,
-          c: e.at + T.gustCenter + e.off,
+          open: at0 + w,
+          close: at0 + w + T.bar,
+          c: at0 + T.gustCenter + e.off,
           s: T.gustSuccess * k,
           p: T.gustPerfect * k,
         };
       case 'bird':
         return {
-          open: e.at + w,
-          close: e.at + w + T.bar,
+          open: at0 + w,
+          close: at0 + w + T.bar,
           c: e.target,
           s: T.birdSuccess * k,
           p: T.birdPerfect * k,
         };
       case 'steam': {
-        const c1 = e.at + E.steam.firstPuff,
+        const c1 = at0 + E.steam.firstPuff,
           s = T.gustSuccess * E.steam.window * k;
         return {
-          open: e.at + w,
+          open: at0 + w,
           c: [c1, c1 + e.puffGap],
           close: c1 + e.puffGap + s,
           s,
@@ -323,7 +324,7 @@ export function createFlightModel(P, hooks = {}) {
         };
       }
       case 'thermal': {
-        const c = e.at + E.thermal.warning + E.thermal.column;
+        const c = at0 + E.thermal.warning + E.thermal.column;
         return {
           open: c - E.thermal.column,
           close: c + E.thermal.column,
@@ -334,10 +335,10 @@ export function createFlightModel(P, hooks = {}) {
         };
       } // p: perfekt termiky (14. 10.), 0 = bez perfektu
       case 'drone': {
-        const contact = e.at + w + T.bar,
+        const contact = at0 + w + T.bar,
           dk = lv(f.kit, 'drone') >= 2 ? E.drone.levelWindow : 1;
         return {
-          open: e.at + w,
+          open: at0 + w,
           close: contact,
           c: contact - E.drone.lead,
           s: T.gustSuccess * k * dk,
@@ -346,9 +347,9 @@ export function createFlightModel(P, hooks = {}) {
       }
       case 'star':
         return {
-          open: e.at + w,
-          close: e.at + w + T.bar,
-          c: e.at + T.gustCenter + e.off,
+          open: at0 + w,
+          close: at0 + w + T.bar,
+          c: at0 + T.gustCenter + e.off,
           s: T.gustPerfect * E.star.window * k,
           p: T.gustPerfect * E.star.window * k,
         };
@@ -534,6 +535,8 @@ export function createFlightModel(P, hooks = {}) {
 
   function startEvent(f, e) {
     if (f.dive) pullUp(f);
+    // Odložená událost (pod 8 m, držený Dive) dostane plné varování od skutečného začátku e.start, ne od plánovaného e.at.
+    if (P.events.delayedFromStart) e.start = Math.max(f.t, e.at);
     e.phase = 'warning';
     e.w = windowsOf(f, e);
     if (e.type === 'steam') {
@@ -641,7 +644,12 @@ export function createFlightModel(P, hooks = {}) {
     return true;
   }
   function whistle(f) {
-    if ((f.abil.whistle ?? 0) >= P.specials.whistle.uses || !canAct(f) || activeEvent(f))
+    if (
+      (f.abil.whistle ?? 0) >= P.specials.whistle.uses ||
+      !canAct(f) ||
+      activeEvent(f) ||
+      f.y < P.physics.eventMinY
+    )
       return false;
     const next = f.events.find(e => e.phase === 'waiting');
     if (!next || !(next.at > f.t)) return false;

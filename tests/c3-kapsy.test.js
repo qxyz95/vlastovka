@@ -368,3 +368,31 @@ test('C3 ui.js: one button routes through flightInput, release on cancel/blur, c
     'the chip itself is not live, only state changes are',
   );
 });
+
+test('C3 oprava: událost odložená drženým Dive má plné varování od skutečného začátku', async () => {
+  const { gameFlight, step, flightInput } = await import('../src/core.js');
+  const { fresh, kitOf } = await import('../src/gear.js').then(async g => ({
+    ...g,
+    fresh: (await import('../src/core.js')).fresh,
+  }));
+  let checked = 0;
+  for (let n = 2; n <= 40; n++) {
+    const p = fresh();
+    p.best = 5000;
+    p.levels = { power: 3, paper: 6, folds: 3 };
+    p.atlas.pockets = { owned: 2, slots: ['dive', 'sharp'] };
+    const f = gameFlight(kitOf(p), n, 24, 0.9);
+    let holding = false;
+    while (!f.landed && f.t < 6) {
+      if (!holding && f.t >= 0.52) holding = flightInput(f, 'down').id === 'dive';
+      step(f);
+    }
+    for (const e of f.events)
+      if (e.start != null && e.start > e.at + 0.05) {
+        checked++;
+        assert.ok(e.w.open > e.start, 'okno se otevře až po varování od skutečného začátku');
+        assert.notEqual(e.result === 'miss' && e.doneAt != null && e.doneAt <= e.start + 1e-6, true);
+      }
+  }
+  assert.ok(checked > 0, 'aspoň jedna událost byla odložená drženým Dive');
+});

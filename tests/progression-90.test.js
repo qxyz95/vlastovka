@@ -399,6 +399,7 @@ test('tricks: detectors on synthetic flights', () => {
 });
 
 test('tricks: detection does not change the campaign, intent changes pockets and bots', () => {
+  setParams({ events: { delayedFromStart: false } }); // srovnání botů platí pro okna před opravou C3
   const spec = { profile: 'average', strategy: 'realistic', seed: 1, id: 2 },
     a = campaign(spec),
     b = campaign({ ...spec, tricks: true });
@@ -425,6 +426,7 @@ test('tricks: detection does not change the campaign, intent changes pockets and
     undefined,
   );
   assert.ok(typeof lineRocketBot === 'function' && typeof rocketBot === 'function');
+  setParams();
 });
 
 test('t90 targets: 05 §7.2 bands, NOT ASSESSED rows only with the set', () => {
