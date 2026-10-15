@@ -1,7 +1,7 @@
 // Pure audio logic, no Web Audio: mix targets, track choice, quantisation, ducking, scales and seeded patterns.
 // audio.js, sfx.js and src/music/* build on it; tests run it in Node.
 import { random } from './random.js';
-import { SECTION_METERS, DISTRICTS } from './scenes.js';
+import { SECTION_METERS, SCREEN_METERS, DISTRICTS } from './scenes.js';
 export const KEY = 'D';
 const PC = {
   C: 0,
@@ -40,56 +40,79 @@ export const hz = m => 440 * 2 ** ((m - 69) / 12);
 export function inScale(m, key = KEY, mode = 'ionian') {
   return MODES[mode].includes((((m - PC[key]) % 12) + 12) % 12);
 }
-// Combo tones rise 1-2-3-5-6-8 (D major pentatonic), then stay on the octave.
-export const comboNote = (n, octave = 5) =>
-  scaleNote(KEY, 'majorPent', clamp(Math.round(n) - 1, 0, 5), octave);
-// Mood arc "after the sun": one tonic, the mode and colour change. Leitmotif = degrees + rhythm in eighths (sum 8).
+// Combo tones rise on degrees 1-2-3-5-6-8 of the district mode (Lantern City: F, not F#), then stay on the octave.
+const COMBO_DEGREES = [0, 1, 2, 4, 5, 7];
+export const comboNote = (n, octave = 5, mode = 'ionian') =>
+  scaleNote(KEY, mode, COMBO_DEGREES[clamp(Math.round(n) - 1, 0, 5)], octave);
+// One day "after the sun" (research/hudba/03 B.3, C.2): one tonic D, one sharp less per district, sunrise again in the finale.
+// One theme "Throw" (1-5-6-4-3-2: up a fifth, hang at the top, glide down, no landing) varied per district.
 export const ARC = [
   {
     id: 'violet',
-    name: 'Violet Suburbs',
-    mood: 'dusk, warm and intimate',
+    name: 'Sunrise Roofs',
+    mood: 'morning, a waking street',
     mode: 'lydian',
-    motif: [0, 1, 2, 4, 3],
-    rhythm: [1, 1, 2, 1, 3],
+    motif: [0, 4, 5, 3, 2, 1],
+    rhythm: [1, 1, 3, 1, 1, 1],
   },
   {
     id: 'moon',
-    name: 'Moon Docks',
-    mood: 'space and minor',
-    mode: 'aeolian',
-    motif: [4, 2, 3, 1, 0],
-    rhythm: [2, 1, 1, 2, 2],
+    name: 'Bright Harbor',
+    mood: 'bright noon by the sea, rocking',
+    mode: 'ionian',
+    motif: [0, 4, 5, 3, 2, 1],
+    rhythm: [1, 2, 2, 1, 1, 1],
   },
   {
     id: 'sunset',
-    name: 'Red Horizon',
-    mood: 'second sunset, opening up',
+    name: 'Golden Fields',
+    mood: 'golden afternoon, windmills',
     mode: 'mixolydian',
-    motif: [0, 4, 6, 7, 4],
-    rhythm: [1, 1, 1, 3, 2],
+    motif: [0, 4, 6, 5, 3, 1],
+    rhythm: [1, 1, 1, 1, 2, 2],
   },
   {
     id: 'core',
-    name: 'Neon Core',
-    mood: 'neon night, full groove',
+    name: 'Lantern City',
+    mood: 'evening with paper lanterns, the one warm minor',
     mode: 'dorian',
-    motif: [0, 2, 3, 5, 4],
-    rhythm: [1, 1, 1, 1, 4],
+    motif: [0, 4, 5, 3, 2, 1],
+    rhythm: [1, 2, 1, 2, 1, 1],
   },
   {
     id: 'finale',
-    name: 'Dawn',
-    mood: 'resolution',
-    mode: 'ionian',
-    motif: [0, 4, 7, 9, 8],
-    rhythm: [1, 1, 2, 2, 2],
+    name: 'Delivered',
+    mood: 'sunrise beyond the goal, resolved',
+    mode: 'lydian',
+    motif: [0, 4, 5, 3, 1, 0],
+    rhythm: [1, 1, 2, 1, 1, 2],
   },
 ];
 // Speed relative to cruise from which the groove layer joins even without a hit.
 export const FAST = 1.3;
+// Intensity map (research/hudba/03 E.2) as data: level 0–3, layer gains L0–L3, music filter (Hz or 'speed'), how layers enter.
+export const INTENSITY = {
+  workshop: { level: 1, layers: [0.6, 0, 0, 0], filter: 2400, enter: 'bar', theme: 'piano' },
+  aim: { level: 2, layers: [0.8, 0.6, 0, 0], filter: 7000, enter: 'bar' },
+  throw: { level: 2, layers: [0.8, 0.85, 0, 0], filter: 'speed', enter: 'beat' },
+  calm: { level: 3, layers: [0.8, 0.85, 0.8, 0.7], filter: 'speed', enter: 'beat' },
+  warning: { level: 1, layers: [0.56, 0.85, 0.096, 0], filter: 1800, enter: 'now' },
+  window: { level: 1, layers: [0.56, 0.85, 0.096, 0], filter: 1800, enter: 'now', mask: true },
+  effect: { level: 3, layers: [0.8, 0.85, 0.8, 0.7], filter: 1800, enter: 'beat' },
+  miss: { level: 2, layers: [0.8, 0.85, 0.8, 0], filter: 1800, enter: 'beat' },
+  boundaryNew: { level: null, switch: 'calm bar', stinger: true },
+  boundaryRevisit: { level: null, switch: null, stinger: false },
+  landing: { level: 1, layers: [0.75, 0, 0, 0], filter: 3500, enter: 'bar', duckDb: -3 },
+  result: { level: 1, layers: [0.75, 0, 0, 0], filter: 3500, enter: 'bar', theme: 'piano' },
+  finale: { level: 3, cue: 'finale', enter: 'bar' },
+};
+// The whole music is low-passed from the warning to the end of the effect + MUSIC_HOLD (E.3/1): no pumping inside one event.
+export const MUSIC_FILTER = 1800,
+  MUSIC_HOLD = 0.3,
+  MUSIC_OPEN = 20000;
 // Target gains of layers L0 bed, L1 pulse, L2 groove, L3 lead, plus filters, from the game state.
-// state: {screen workshop|aim|flight|result, event none|warning|window|effect, combo, hits (this flight), speed (vx/cruise), height (m), calm}
+// state: {screen workshop|aim|flight|result, event none|warning|window|effect, combo, hits (this flight), speed (vx/cruise),
+// height (m), calm, flightT, effectEnd}. musicFilter caps the whole music (MUSIC_OPEN = no cap).
 export function mixTargets(s = {}) {
   const screen = s.screen ?? 'workshop',
     ev = s.event ?? 'none',
@@ -100,33 +123,36 @@ export function mixTargets(s = {}) {
   let filter = 18000,
     padFilter = 6000,
     octave = false;
-  const urgent = screen === 'flight' && (ev === 'warning' || ev === 'window');
+  const flight = screen === 'flight',
+    urgent = flight && (ev === 'warning' || ev === 'window'),
+    held =
+      flight &&
+      (ev !== 'none' ||
+        (s.effectEnd != null && s.flightT != null && s.flightT < s.effectEnd + MUSIC_HOLD));
   if (screen === 'workshop') {
-    L[0] = 0.6;
-    filter = 2400;
-    padFilter = 2400;
+    L[0] = INTENSITY.workshop.layers[0];
+    filter = padFilter = INTENSITY.workshop.filter;
   } else if (screen === 'result') {
-    L[0] = 0.75;
-    filter = 3500;
-    padFilter = 3500;
+    L[0] = INTENSITY.result.layers[0];
+    filter = padFilter = INTENSITY.result.filter;
   } else if (screen === 'aim') {
-    L[0] = 0.8;
-    L[1] = 0.6;
-    filter = 7000;
-  } else if (screen === 'flight') {
-    L[0] = 0.8;
-    L[1] = 0.85;
-    L[2] = hits > 0 || speed >= FAST ? 0.8 : 0;
-    L[3] = combo >= 2 ? 0.7 : 0;
+    [L[0], L[1]] = INTENSITY.aim.layers;
+    filter = INTENSITY.aim.filter;
+  } else if (flight) {
+    const c = INTENSITY.calm.layers;
+    L[0] = c[0];
+    L[1] = c[1];
+    L[2] = hits > 0 || speed >= FAST ? c[2] : 0;
+    L[3] = combo >= 2 ? c[3] : 0;
     octave = combo >= 3;
     filter = clamp(4500 * 2 ** ((speed - 1) * 2), 2500, 18000);
   }
-  // Warning and window: thin out (pad low-passed, drums almost gone, lead quiet), bass pulse stays. Never add.
+  // Warning and window: thin out at once (pad low-passed, drums almost gone, lead silent), bass pulse stays. Never add.
   if (urgent) {
     L[0] *= 0.7;
     padFilter = 650;
     L[2] *= 0.12;
-    L[3] *= 0.35;
+    L[3] = 0;
   }
   if (s.calm) {
     L[2] *= 0.5;
@@ -137,9 +163,11 @@ export function mixTargets(s = {}) {
     layers: L,
     filter,
     padFilter,
+    musicFilter: held ? MUSIC_FILTER : MUSIC_OPEN,
     reverb: 0.25 + 0.35 * clamp01((s.height ?? 0) / 120),
     octave,
     urgent,
+    held,
   };
 }
 // Combo counts consecutive successes; a miss resets it, an interrupted event leaves it alone.
@@ -150,8 +178,12 @@ export const ROUTE_METERS = SECTION_METERS * DISTRICTS.length;
 export function trackFor(progress = {}, direction = 'E') {
   const best = Math.max(0, Number(progress.best) || 0),
     finale = best >= ROUTE_METERS,
-    district = Math.min(DISTRICTS.length - 1, Math.floor(best / SECTION_METERS));
-  return { direction, district, finale, id: direction + (finale ? 'F' : district) };
+    district = Math.min(DISTRICTS.length - 1, Math.floor(best / SECTION_METERS)),
+    // Place 0–3 inside the district (one place = one screen); the theme grows with it (03 C.2).
+    place = finale
+      ? 3
+      : Math.min(3, Math.floor((best - district * SECTION_METERS) / SCREEN_METERS + 1e-9));
+  return { direction, district, place, finale, id: direction + (finale ? 'F' : district) };
 }
 // District boundary crossed between two flight positions: 'new' past the frontier (stinger + switch), 'revisit' = short jingle. District 4 = finale.
 export function boundaryCue(prevX, x, best = 0) {
@@ -160,6 +192,48 @@ export function boundaryCue(prevX, x, best = 0) {
   if (b <= a) return null;
   const d = Math.min(b, DISTRICTS.length);
   return { district: d, type: b * SECTION_METERS > best ? 'new' : 'revisit' };
+}
+// Boundary plan for the music (03 E.4): a known district ('revisit') does nothing; a new one switches the track only in calm
+// (defer while an event holds the mix) with at most one stinger per flight. o = {held (event or hold running), stingers (played this flight)}.
+export function boundaryPlan(prevX, x, best = 0, { held = false, stingers = 0 } = {}) {
+  const c = boundaryCue(prevX, x, best);
+  if (!c || c.type !== 'new') return null;
+  return { ...c, defer: !!held, stinger: stingers < 1 };
+}
+// A pending switch may start on a bar line only in calm, at least `lead` s before the next warning (calmUntil).
+export function switchAllowed({
+  t = 0,
+  calmUntil = Infinity,
+  barTime,
+  urgent = false,
+  lead = 0.5,
+} = {}) {
+  if (urgent || !(barTime >= t)) return false;
+  return barTime <= calmUntil - lead;
+}
+// Silence mask around QTE centres (03 E.3/2): ±pad, masks closer than `merge` s merge into one. → sorted [from, to] intervals.
+export function silenceMask(centres = [], { pad = 0.12, merge = 0.4 } = {}) {
+  const out = [];
+  for (const c of [...centres].filter(Number.isFinite).sort((a, b) => a - b)) {
+    const last = out.at(-1);
+    if (last && c - pad - last[1] < merge) last[1] = Math.max(last[1], c + pad);
+    else out.push([c - pad, c + pad]);
+  }
+  return out;
+}
+export const inMask = (t, mask = []) => mask.some(([a, b]) => t >= a - 1e-9 && t <= b + 1e-9);
+// Pulse and groove notes starting inside a mask are dropped; the bed (L0) and lead (L3, silent in events anyway) are not.
+export const masked = (e, mask) => (e.l === 1 || e.l === 2) && inMask(e.t, mask);
+// Fatigue (03 E.5): after REST_AFTER min of one district, the next Workshop/Atlas visit rests 45–60 s (wind only);
+// every 3rd Result/Workshop visit plays the bed only, without the theme.
+export const REST_AFTER = 12;
+export function fatigue({ screen, minutesInDistrict = 0, visits = 0, seed = 1 } = {}) {
+  const rest =
+      (screen === 'workshop' || screen === 'atlas') && minutesInDistrict >= REST_AFTER
+        ? 45 + Math.floor(rngFor('rest', seed)() * 16)
+        : 0,
+    bedOnly = (screen === 'result' || screen === 'workshop') && visits > 0 && visits % 3 === 0;
+  return { rest, bedOnly };
 }
 // First grid point at or after `now` (unit in beats: 1 beat, 4 bar). Only ornaments and layer fades use it, never the QTE.
 export function nextBoundary(now, bpm, start = 0, unit = 1) {
@@ -186,14 +260,81 @@ export function duckPoints(at, o = {}) {
     duck(at + x, at, o),
   ]);
 }
+// Ducks merge instead of pumping (03 E.3/3): a duck that starts while another runs continues from its current value,
+// keeps the deeper level and the later hold end. prev/state = {at, v0, db, attackEnd, holdEnd, end}.
+export function duckValue(st, t) {
+  if (!st || t < st.at || t >= st.end) return 1;
+  const g = 10 ** (st.db / 20);
+  if (t < st.attackEnd) return st.v0 + ((g - st.v0) * (t - st.at)) / (st.attackEnd - st.at);
+  if (t < st.holdEnd) return g;
+  return g + ((1 - g) * (t - st.holdEnd)) / (st.end - st.holdEnd);
+}
+export function duckPlan(prev, at, o = {}) {
+  const { db, attack, hold, release } = { ...DUCK, ...o },
+    live = !!prev && at >= prev.at && at < prev.end,
+    st = {
+      at,
+      v0: live ? duckValue(prev, at) : 1,
+      db: live ? Math.min(prev.db, db) : db,
+      attackEnd: at + attack,
+    };
+  st.holdEnd = Math.max(live ? prev.holdEnd : 0, st.attackEnd + hold);
+  st.end = st.holdEnd + release;
+  const g = 10 ** (st.db / 20);
+  return {
+    state: st,
+    points: [
+      ['set', at, st.v0],
+      ['ramp', st.attackEnd, g],
+      ['ramp', st.holdEnd, g],
+      ['ramp', st.end, 1],
+    ],
+  };
+}
 // QTE tick: the real flight time of the window centre (gust: from event start, pigeon: from the hold), never the beat.
+// A running event knows its exact centres in e.w (flight.js: floating centre, steam puffs); without e.w the default windows apply.
 export function qteCenter(e, w) {
   if (!e || e.result) return null;
+  if (e.w) return eventCentres(e)[0] ?? null;
   return e.type === 'gust'
     ? e.at + w.gust.center
-    : e.heldAt !== null
+    : e.type === 'bird' && e.heldAt != null
       ? e.heldAt + w.bird.center
       : null;
+}
+// All centres of a running, unresolved event: steam has two puffs, the pigeon's centre is known once held.
+export function eventCentres(e) {
+  if (!e?.w || e.result || e.phase === 'waiting' || e.phase === 'done') return [];
+  if (e.type === 'bird') return e.heldAt != null ? [e.heldAt + e.w.c] : [];
+  return Array.isArray(e.w.c) ? e.w.c.slice(e.puff ?? 0) : [e.w.c];
+}
+// One audio state object per frame (03 F.2) from a flight (flight.js) and the model {best, combo, prevX, calm, reducedMotion}.
+const PHASE = { warning: 'warning', interaction: 'window', effect: 'effect' },
+  HITS = ['success', 'perfect', 'partial', 'half'];
+export function audioState(f, m = {}, screen = 'flight') {
+  const live = screen === 'flight' && !!f && !f.landed,
+    t = f?.t ?? 0,
+    ev = live ? (f.events.find(e => PHASE[e.phase]) ?? null) : null,
+    done = f ? f.events.filter(e => e.doneAt != null && e.result) : [],
+    next = live ? f.events.find(e => e.phase === 'waiting') : null;
+  return {
+    screen,
+    event: ev ? PHASE[ev.phase] : 'none',
+    eventType: ev?.type ?? null,
+    centres: live ? f.events.flatMap(eventCentres).filter(c => c > t) : [],
+    flightT: t,
+    effectEnd: done.length ? Math.max(...done.map(e => e.doneAt)) : null,
+    calmUntil: next && Number.isFinite(next.at) ? (next.start ?? next.at) : Infinity,
+    combo: m.combo ?? f?.combo ?? 0,
+    hits: f ? f.events.filter(e => HITS.includes(e.result)).length : 0,
+    speed: live ? f.vx / (f.cruise || 1) : 1,
+    height: live ? f.y : 0,
+    x: f?.x ?? 0,
+    prevX: m.prevX ?? f?.x ?? 0,
+    best: m.best ?? 0,
+    calm: !!m.calm,
+    reducedMotion: !!m.reducedMotion,
+  };
 }
 export const tickTime = (ctxTime, flightT, center, latency = 0) =>
   ctxTime + (center - flightT) - latency;
@@ -218,8 +359,12 @@ export function createTickPlanner(play, { tolerance = 0.02, lock = 0.03 } = {}) 
       }
       const when = tickTime(now, flightT, c, (ctx.outputLatency || 0) - offset);
       if (cur && cur.e === e) {
-        if (Math.abs(cur.when - when) < tolerance || cur.when - now < lock) return cur.when;
-        cur.handle?.cancel?.();
+        if (Math.abs(cur.when - when) < tolerance) return cur.when;
+        // A tick about to sound stays; a played one (steam: first puff) lets the next centre be planned.
+        if (cur.when > now) {
+          if (cur.when - now < lock) return cur.when;
+          cur.handle?.cancel?.();
+        }
       } else drop(now);
       if (when < now) {
         cur = { e, when, handle: null };

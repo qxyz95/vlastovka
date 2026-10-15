@@ -22,6 +22,20 @@ import {
   rngFor,
   euclid,
   FAST,
+  MUSIC_FILTER,
+  MUSIC_HOLD,
+  INTENSITY,
+  silenceMask,
+  inMask,
+  masked,
+  switchAllowed,
+  boundaryPlan,
+  fatigue,
+  duckPlan,
+  duckValue,
+  eventCentres,
+  audioState,
+  KEY,
 } from '../src/audio-mix.js';
 import { TRACKS, TRACK_IDS } from '../src/music/index.js';
 import { VOICE_NAMES } from '../src/music/synth.js';
@@ -29,7 +43,7 @@ import { phrase, swing, near, chord } from '../src/music/compose.js';
 import { blindMap, summary } from '../prototype/music/blind.js';
 import { createFlight, step, eventInput, activeEvent } from '../src/core.js';
 import { windows, TIMING } from '../src/events.js';
-import { SECTION_METERS } from '../src/scenes.js';
+import { SECTION_METERS, SCREEN_METERS } from '../src/scenes.js';
 
 test('mix states: workshop bed only, aim adds the pulse, flight adds groove after a hit or at speed', () => {
   const L = s => mixTargets(s).layers;
@@ -100,7 +114,13 @@ test('quantisation to the next beat or bar', () => {
   assert.equal(nextBoundary(3, 100, 5, 4), 5, 'before the start → start');
 });
 test('track choice follows the frontier, not the plane, and is stable', () => {
-  assert.deepEqual(trackFor({ best: 0 }), { direction: 'E', district: 0, finale: false, id: 'E0' });
+  assert.deepEqual(trackFor({ best: 0 }), {
+    direction: 'E',
+    district: 0,
+    place: 0,
+    finale: false,
+    id: 'E0',
+  });
   assert.equal(trackFor({ best: SECTION_METERS - 1 }).district, 0);
   assert.equal(trackFor({ best: SECTION_METERS }).district, 1);
   assert.equal(trackFor({ best: SECTION_METERS * 3.5 }, 'E').id, 'E3');
@@ -233,7 +253,12 @@ test('QTE tick planned on the window centre with a fake audio clock, re-planned 
   assert.equal(e.type, 'gust');
   assert.equal(e.phase, 'warning');
   const center = qteCenter(e, w);
-  assert.ok(Math.abs(center - (e.at + TIMING.gustCenter)) < 1e-9);
+  assert.equal(
+    center,
+    e.w.c,
+    'the exact centre of the running event (floating centre, real start)',
+  );
+  assert.ok(Math.abs(center - ((e.start ?? e.at) + TIMING.gustCenter + e.off)) < 1e-9);
   const when = planner.update(ctx, f.t, e, w);
   assert.ok(
     Math.abs(when - (10 + center - f.t - 0.02)) < 1e-9,
@@ -308,4 +333,226 @@ test('registry holds only B and E; neon voices are gone from the synth', () => {
   for (const v of ['pulse', 'chiparp', 'cnoise', 'ckick', 'brass', 'scratch'])
     assert.ok(!VOICE_NAMES.includes(v), v);
   for (const v of ['vinyl', 'rain', 'sax']) assert.ok(VOICE_NAMES.includes(v), v + ' is used by B');
+});
+
+// ---------- Diorama (research/hudba/03 F.3) ----------
+const close = (a, b, eps = 1e-9) => Math.abs(a - b) <= eps;
+test('T-1 every ARC theme: 4–6 notes in one bar, leaps up 4 degrees, peak after the first note, ends below the peak, only the finale lands on 0', () => {
+  for (const a of ARC) {
+    const m = a.motif,
+      top = Math.max(...m),
+      at = m.indexOf(top);
+    assert.ok(m.length >= 4 && m.length <= 6, a.id);
+    assert.equal(
+      a.rhythm.reduce((s, x) => s + x, 0),
+      8,
+      a.id,
+    );
+    assert.equal(m[1] - m[0], 4, a.id + ' first interval');
+    assert.ok(at > 0, a.id + ' peak after the first note');
+    assert.ok(m.at(-1) < top, a.id + ' ends below the peak');
+    assert.equal(m.at(-1) === 0, a.id === 'finale', a.id + ' landing on the tonic');
+  }
+});
+test('T-2 modes of the day: lydian, ionian, mixolydian, dorian, lydian on the tonic D', () => {
+  assert.equal(KEY, 'D');
+  assert.deepEqual(
+    ARC.map(a => a.mode),
+    ['lydian', 'ionian', 'mixolydian', 'dorian', 'lydian'],
+  );
+  assert.deepEqual(
+    ARC.map(a => a.id),
+    ['violet', 'moon', 'sunset', 'core', 'finale'],
+    'ids stay',
+  );
+  assert.deepEqual(
+    ARC.map(a => a.name),
+    ['Sunrise Roofs', 'Bright Harbor', 'Golden Fields', 'Lantern City', 'Delivered'],
+  );
+  for (const a of ARC) assert.ok(!/neon|moon|night|second sunset/i.test(a.name + a.mood), a.id);
+});
+test('T-8 comboNote(n, 5, mode) stays in the mode and never falls; Lantern City combo uses F', () => {
+  for (const mode of ['lydian', 'ionian', 'mixolydian', 'dorian']) {
+    let prev = -Infinity;
+    for (let n = 1; n <= 8; n++) {
+      const x = comboNote(n, 5, mode);
+      assert.ok(inScale(x, 'D', mode), `${mode} ${n}`);
+      assert.ok(x >= prev, `${mode} ${n} rises`);
+      prev = x;
+    }
+    assert.equal(comboNote(6, 5, mode) - comboNote(1, 5, mode), 12, mode + ' ends on the octave');
+  }
+  assert.deepEqual(
+    [1, 2, 3, 4, 5, 6].map(n => comboNote(n, 5, 'dorian') % 12),
+    [2, 4, 5, 9, 11, 2],
+    'D E F A B D',
+  );
+});
+test('M-1 warning and window: lead silent, whole music at 1.8 kHz; effect: layers back, filter still 1.8 kHz', () => {
+  const s = { screen: 'flight', hits: 2, combo: 3, speed: 1.2 },
+    calm = mixTargets(s);
+  assert.ok(calm.musicFilter > 10000, 'open in calm flight');
+  assert.equal(MUSIC_FILTER, 1800);
+  for (const event of ['warning', 'window']) {
+    const m = mixTargets({ ...s, event });
+    assert.equal(m.layers[3], 0, event);
+    assert.equal(m.musicFilter, 1800);
+    m.layers.forEach((v, i) => assert.ok(close(v, INTENSITY[event].layers[i]), `${event} L${i}`));
+  }
+  const fx = mixTargets({ ...s, event: 'effect' });
+  assert.deepEqual(fx.layers, calm.layers);
+  assert.equal(fx.musicFilter, 1800);
+  assert.equal(fx.urgent, false);
+  assert.ok(mixTargets({ screen: 'aim', event: 'warning' }).musicFilter > 1800, 'only a flight');
+  assert.deepEqual(mixTargets({ screen: 'workshop' }).layers, INTENSITY.workshop.layers);
+  assert.deepEqual(mixTargets({ screen: 'result' }).layers, INTENSITY.result.layers);
+  assert.deepEqual(mixTargets({ screen: 'aim' }).layers, INTENSITY.aim.layers);
+});
+test('M-2 hysteresis: a steam event (warning → window → window → effect) never opens the filter before effectEnd + 0.3 s', () => {
+  const effectEnd = 3.1,
+    phase = t => (t < 0.8 ? 'warning' : t < 2.5 ? 'window' : t < effectEnd ? 'effect' : 'none');
+  let opened = null;
+  for (let t = 0; t < 5; t += 1 / 60) {
+    const ev = phase(t),
+      m = mixTargets({
+        screen: 'flight',
+        event: ev,
+        flightT: t,
+        effectEnd: ev === 'effect' || ev === 'none' ? effectEnd : null,
+        hits: 1,
+      });
+    if (t < effectEnd + MUSIC_HOLD - 1e-9) assert.ok(m.musicFilter <= 1800, `t ${t.toFixed(3)}`);
+    else if (opened === null && m.musicFilter > 1800) opened = t;
+  }
+  assert.ok(
+    opened !== null && opened < effectEnd + MUSIC_HOLD + 0.02,
+    'opens right after the hold',
+  );
+});
+test('M-3 silence mask: ±120 ms, masks closer than 0.4 s merge, edges count', () => {
+  const m = silenceMask([8.63, 8.13]);
+  assert.equal(m.length, 1);
+  assert.ok(close(m[0][0], 8.01) && close(m[0][1], 8.75), JSON.stringify(m));
+  const two = silenceMask([2.0, 3.0]);
+  assert.equal(two.length, 2);
+  assert.ok(close(two[0][1], 2.12) && close(two[1][0], 2.88));
+  assert.ok(inMask(m[0][0], m) && inMask(m[0][1], m), 'edges are inside');
+  assert.ok(!inMask(m[0][0] - 0.001, m) && !inMask(m[0][1] + 0.001, m));
+  assert.ok(!inMask(2.5, two) && inMask(2.95, two));
+  assert.deepEqual(silenceMask([]), []);
+  assert.deepEqual(silenceMask([NaN, null]), []);
+  assert.ok(masked({ l: 1, t: 2 }, two) && masked({ l: 2, t: 2.1 }, two));
+  assert.ok(!masked({ l: 0, t: 2 }, two) && !masked({ l: 3, t: 2 }, two));
+  assert.ok(!masked({ l: 1, t: 2.5 }, two));
+});
+test('M-4 boundaryPlan: revisit → null, new in an event → defer, new in calm → stinger at most once per flight', () => {
+  const S = SECTION_METERS;
+  assert.equal(boundaryPlan(S - 1, S + 1, 5000), null, 'known district: nothing');
+  assert.equal(boundaryPlan(100, 200, 0), null);
+  const ev = boundaryPlan(S - 1, S + 1, 100, { held: true });
+  assert.equal(ev.type, 'new');
+  assert.equal(ev.defer, true);
+  const calm = boundaryPlan(S - 1, S + 1, 100, { held: false, stingers: 0 });
+  assert.equal(calm.defer, false);
+  assert.equal(calm.stinger, true);
+  assert.equal(calm.district, 1);
+  assert.equal(boundaryPlan(2 * S - 1, 2 * S + 1, 100, { stingers: 1 }).stinger, false);
+  let stingers = 0;
+  for (let x = 0; x < 3 * S; x += 7)
+    if (boundaryPlan(x, x + 7, 0, { stingers })?.stinger) stingers++;
+  assert.equal(stingers, 1, 'a flight over two new boundaries: one stinger');
+});
+test('M-5 switchAllowed: never in an event, never when the bar starts < 0.5 s before the next warning', () => {
+  assert.equal(switchAllowed({ t: 10, barTime: 10.5, urgent: true }), false);
+  assert.equal(switchAllowed({ t: 10, barTime: 10.5, calmUntil: 10.9 }), false);
+  assert.equal(switchAllowed({ t: 10, barTime: 10.5, calmUntil: 11.0 }), true);
+  assert.equal(switchAllowed({ t: 10, barTime: 10.5 }), true, 'no warning planned');
+  assert.equal(switchAllowed({ t: 10, barTime: 9.9 }), false, 'never into the past');
+});
+test('M-6 fatigue: 12 min in one district → the next Workshop visit rests 45–60 s; every 3rd Result visit is bed only', () => {
+  assert.equal(fatigue({ screen: 'workshop', minutesInDistrict: 11.9 }).rest, 0);
+  for (let seed = 1; seed < 40; seed++) {
+    const r = fatigue({ screen: 'workshop', minutesInDistrict: 12, seed }).rest;
+    assert.ok(r >= 45 && r <= 60, `${seed}: ${r}`);
+  }
+  assert.ok(fatigue({ screen: 'atlas', minutesInDistrict: 20 }).rest >= 45);
+  assert.equal(fatigue({ screen: 'flight', minutesInDistrict: 30 }).rest, 0, 'never in flight');
+  assert.equal(fatigue({ screen: 'result', minutesInDistrict: 30 }).rest, 0);
+  assert.deepEqual(
+    [1, 2, 3, 4, 5, 6].map(visits => fatigue({ screen: 'result', visits }).bedOnly),
+    [false, false, true, false, false, true],
+  );
+  assert.equal(fatigue({ screen: 'flight', visits: 3 }).bedOnly, false);
+});
+test('M-7 trackFor: place 0–3 on the 304.8 m boundaries, district unchanged', () => {
+  assert.ok(Math.abs(SCREEN_METERS - 304.8) < 0.05);
+  for (let d = 0; d < 4; d++)
+    for (let p = 0; p < 4; p++) {
+      const at = d * SECTION_METERS + p * SCREEN_METERS,
+        tr = trackFor({ best: at });
+      assert.deepEqual([tr.district, tr.place], [d, p], `${d}/${p}`);
+      if (at > 0)
+        assert.equal(trackFor({ best: at - 0.01 }).place, (p + 3) % 4, `before ${d}/${p}`);
+    }
+  assert.equal(trackFor({ best: ROUTE_METERS }).place, 3);
+  assert.equal(trackFor({ best: ROUTE_METERS }).finale, true);
+  assert.equal(trackFor({ best: SECTION_METERS * 2.6 }).district, 2);
+});
+test('steam: two centres, the planner ticks the second puff after the first one played', () => {
+  const e = { type: 'steam', phase: 'interaction', result: null, puff: 0, w: { c: [5, 5.5] } };
+  assert.deepEqual(eventCentres(e), [5, 5.5]);
+  assert.equal(qteCenter(e, windows(null)), 5);
+  const ctx = { currentTime: 100 },
+    played = [],
+    planner = createTickPlanner(when => {
+      played.push(when);
+      return { cancel() {} };
+    });
+  planner.update(ctx, 4, e, windows(null));
+  assert.deepEqual(played, [101]);
+  ctx.currentTime = 101.1;
+  e.puff = 1;
+  planner.update(ctx, 5.1, e, windows(null));
+  assert.ok(close(played[1], 101.5), JSON.stringify(played));
+  assert.deepEqual(eventCentres({ ...e, result: 'success' }), []);
+  const bird = { type: 'bird', phase: 'interaction', heldAt: null, w: { c: 0.8 } };
+  assert.deepEqual(eventCentres(bird), []);
+  assert.deepEqual(eventCentres({ ...bird, heldAt: 2 }), [2.8]);
+});
+test('audioState: one state object per frame from a real flight', () => {
+  const f = createFlight('dart', { power: 0, paper: 0, fold: 0 }, 1),
+    s0 = audioState(f, { best: 700 }, 'flight');
+  assert.equal(s0.event, 'none');
+  assert.deepEqual(s0.centres, []);
+  assert.equal(s0.best, 700);
+  while (!activeEvent(f)) step(f);
+  const s1 = audioState(f, {}, 'flight'),
+    e = activeEvent(f);
+  assert.equal(s1.event, 'warning');
+  assert.equal(s1.eventType, e.type);
+  assert.deepEqual(s1.centres, [e.w.c]);
+  assert.ok(close(s1.speed, f.vx / f.cruise));
+  while (e.phase !== 'interaction') step(f);
+  assert.equal(audioState(f).event, 'window');
+  while (!e.result) {
+    step(f);
+    if (f.t >= e.w.c) eventInput(f, 'down');
+  }
+  const s2 = audioState(f);
+  assert.equal(s2.event, 'effect');
+  assert.equal(s2.effectEnd, e.doneAt);
+  assert.equal(audioState(f, {}, 'result').event, 'none');
+});
+test('duckPlan: a duck during a running duck continues from its value, keeps the deeper level and the later hold', () => {
+  const a = duckPlan(null, 10, { db: -4, hold: 0.2 }).state;
+  assert.equal(a.v0, 1);
+  const b = duckPlan(a, 10.1, { db: -4, hold: 0.2 });
+  assert.ok(close(b.state.v0, 10 ** (-4 / 20)), 'no jump back to 1');
+  assert.ok(b.state.holdEnd > a.holdEnd);
+  const j = duckPlan(null, 0, { db: -5, attack: 0.1, hold: 2, release: 0.6 }).state,
+    p = duckPlan(j, 1, { db: -4, hold: 0.2 }).state;
+  assert.equal(p.db, -5, 'deeper wins');
+  assert.equal(p.holdEnd, j.holdEnd, 'the jingle hold is kept');
+  for (let t = 1; t < p.holdEnd; t += 0.01) assert.ok(duckValue(p, t) < 1 - 1e-6);
+  assert.equal(duckPlan(a, 11, {}).state.v0, 1, 'after the end: a fresh duck');
 });
