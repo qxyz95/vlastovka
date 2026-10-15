@@ -83,6 +83,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     stingers: 0,
     cueing: null,
     dropped: 0,
+    spikes: [],
   };
   const emit = (type, info) => {
     for (const f of listeners) f(type, info);
@@ -148,8 +149,10 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     });
     g.delay.delayTime.setTargetAtTime(0.75 * a.spb, t, 0.2);
     g.sfxDelay.delayTime.setTargetAtTime(0.75 * a.spb, t, 0.2);
-    // The room of the district (only on a switch, the buffer is cached).
-    room(d.verbSec ?? DEFAULT_ROOM);
+    // The room of the district (only on a switch, the buffer is cached). Setting a convolver buffer costs ~10 ms of main
+    // thread (measured), so it runs in its own task after the scheduler pump, not inside it.
+    const sec = d.verbSec ?? DEFAULT_ROOM;
+    setTimeout(() => room(sec), 0);
   };
   // Start or switch music; a running track changes on the next bar line. o.calmOnly: in flight only on a bar that
   // switchAllowed() accepts (03 E.4), o.stinger: crumple + theme head with the switch.
@@ -322,6 +325,8 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   function pump() {
     const t0 = performance.now(),
       now = ctx.currentTime;
+    let nb = 0,
+      np = 0;
     if (a.track && ctx.state === 'running') {
       if (lastPump !== null && !a.resting()) a.distSec += Math.max(0, now - lastPump);
       lastPump = now;
@@ -334,7 +339,8 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
             continue;
           }
           a.cueing = null;
-          room(a.track.districts[a.district].verbSec ?? DEFAULT_ROOM);
+          const sec = a.track.districts[a.district].verbSec ?? DEFAULT_ROOM;
+          setTimeout(() => room(sec), 0);
         }
         if (a.pending && canSwitch(a.barTime)) {
           const p = a.pending;
@@ -361,6 +367,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
         a.barTime += BEATS * a.spb;
         a.bar++;
         added = true;
+        nb++;
       }
       if (added) a.queue.sort((x, y) => x.t - y.t);
       const resting = a.resting();
@@ -374,11 +381,15 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
         }
         if (a.mix.layers[e.l] < 0.001 && g.layers[e.l].gain.gain.value < 0.001) continue;
         play(e);
+        np++;
       }
     } else lastPump = null;
     a.ends = a.ends.filter(x => x > now);
     a.peak = Math.max(a.peak, a.ends.length);
-    ms.push(performance.now() - t0);
+    const took = performance.now() - t0;
+    ms.push(took);
+    // Slow pumps (> 5 ms, 03 F.5) with what they did, for the load report.
+    if (took > 5) a.spikes = [...a.spikes.slice(-9), { ms: took, at: now, bars: nb, played: np }];
     if (ms.length > 200) ms.shift();
   }
   a.pump = pump;
@@ -401,6 +412,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
       schedMaxAll,
       queue: a.queue.length,
       dropped: a.dropped,
+      spikes: a.spikes.slice(),
       ksBytes: ksBytes(g),
       ksBuffers: g.ks.size,
       limiter: g.lim.reduction ?? null,

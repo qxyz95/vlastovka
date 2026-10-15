@@ -287,6 +287,7 @@ function enter(phase) {
   // Result card: the full jingle of a newly reached district plays here, not in flight (03 E.4/5).
   if (phase === 'result' && S.newDistrict != null) {
     if (S.newDistrict >= 4 && musicKey() === 'G') {
+      S.finaleDone = true;
       S.phase = 'finale';
       audio.playCue('finale', TRACKS.G);
     } else sfx.jingle(S.newDistrict);
@@ -386,6 +387,8 @@ function onBoundary(px, x) {
     until: performance.now() + 2000,
   };
   if (!plan) return;
+  // The finale is reached once; flights beyond the goal do not replay it.
+  if (plan.district >= 4 && S.finaleDone) return;
   S.newDistrict = Math.max(S.newDistrict ?? 0, plan.district);
   if (ui.follow && plan.district < 4) {
     S.best = Math.max(S.best, plan.district * SECTION_METERS);
