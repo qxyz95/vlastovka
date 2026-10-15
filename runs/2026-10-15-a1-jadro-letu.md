@@ -12,7 +12,7 @@ Zadání: mechaniku letu ze `simulation/progression/model.mjs` přesunout do či
 7. `npm run format`, `npm test`: 424/424.
 
 ## Rozpracovaný krok
-- Commit.
+- žádný (hotovo, commit 6d043b4)
 
 ## Změněné soubory
 - nové: `src/flight.js`, `src/progression-numbers.js`, `tests/flight.test.js`, `tests/progression-numbers.test.js`
