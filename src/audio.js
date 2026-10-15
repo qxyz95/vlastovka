@@ -13,7 +13,7 @@ import {
   duckPlan,
   DUCK,
 } from './audio-mix.js';
-import { createGraph, playVoice, roomImpulse, ksBytes } from './music/synth.js';
+import { createGraph, playVoice, roomImpulse, ksBytes, ksPrewarm } from './music/synth.js';
 export const AUDIO_KEY = 'just-throw-it-audio';
 export function loadAudioSettings() {
   try {
@@ -136,12 +136,15 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     const b = roomImpulse(g, sec);
     if (g.verb.buffer !== b) g.verb.buffer = b;
   };
+  // Layer balance of the playing district (diorama layerDb), multiplied into every layer target.
+  const trimL = l => 10 ** ((a.track?.districts[a.district]?.layerDb?.[l] ?? 0) / 20);
   const applyDistrict = t => {
     const d = a.track.districts[a.district];
     a.spb = 60 / d.bpm;
     g.layers.forEach((L, l) => {
       set(L.verbSend.gain, d.verb?.[l] ?? 0.2, t, 0.3);
       set(L.echoSend.gain, d.echo?.[l] ?? 0, t, 0.3);
+      if (a.mix.layers[l] > 0) set(L.gain.gain, a.mix.layers[l] * trimL(l), t, 0.3);
     });
     g.delay.delayTime.setTargetAtTime(0.75 * a.spb, t, 0.2);
     g.sfxDelay.delayTime.setTargetAtTime(0.75 * a.spb, t, 0.2);
@@ -160,9 +163,20 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
       a.barTime = ctx.currentTime + 0.08;
       a.distSec = 0;
       applyDistrict(ctx.currentTime);
-    } else if (track !== a.track || district !== a.district || seed !== a.seed)
-      a.pending = { track, district, seed, calmOnly: !!o.calmOnly, stinger: !!o.stinger };
-    else a.pending = null;
+    } else if (track !== a.track || district !== a.district || seed !== a.seed) {
+      // A repeated request for the same target keeps a stinger that is already waiting for calm.
+      const same = a.pending?.track === track && a.pending?.district === district;
+      a.pending = {
+        track,
+        district,
+        seed,
+        calmOnly: !!o.calmOnly,
+        stinger: !!o.stinger || (same && a.pending.stinger),
+      };
+    } else a.pending = null;
+    // Room impulse and string buffers are built here, not in the scheduler (keeps schedMax low).
+    roomImpulse(g, track.districts[district]?.verbSec ?? DEFAULT_ROOM);
+    ksPrewarm(g, track.ksNotes?.(district));
     emit('track', { track, district });
   };
   a.stop = () => {
@@ -181,7 +195,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     const t = ctx.currentTime;
     a.restUntil = t + sec;
     a.distSec = 0;
-    g.layers.forEach((L, l) => set(L.gain.gain, l ? 0 : REST_BED, t, 0.6));
+    g.layers.forEach((L, l) => set(L.gain.gain, l ? 0 : REST_BED * trimL(0), t, 0.6));
     a.mix = { ...a.mix, layers: [REST_BED, 0, 0, 0] };
     a.cue('rest', t, { sec });
   };
@@ -202,7 +216,11 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
         down = v < a.mix.layers[l];
       p.cancelScheduledValues(t);
       p.setValueAtTime(p.value, t);
-      p.setTargetAtTime(v, (down || m.urgent) && !back ? t : beat, m.urgent ? 0.04 : 0.2);
+      p.setTargetAtTime(
+        v * trimL(l),
+        (down || m.urgent) && !back ? t : beat,
+        m.urgent ? 0.04 : 0.2,
+      );
     });
     const rel = (x, y) => Math.abs(x - y) / y > 0.04,
       f = Math.min(m.filter, m.musicFilter),
@@ -425,7 +443,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
 }
 // Offline render of `sec` seconds of a track in a fixed mix state with the default settings (music 60 %, effects 80 %,
 // master 100 %), through the full graph incl. the limiter. For loudness (LUFS) of the content, not for CPU load.
-// o = {state (mixTargets state), place, density, seed, rate, music, sfx (bus on/off), centres (s, for the mask), extra(api)}.
+// o = {state (mixTargets state), layers (override), place, density, seed, rate, music, sfx (bus on/off), centres (s, for the mask), extra(api)}.
 // extra receives {ctx, g, track, district, settings, voice(), cue(), duck()} so sfx.js can schedule effects into the render.
 export async function renderOffline(track, district = 0, sec = 60, o = {}) {
   const rate = o.rate ?? 48000,
@@ -436,6 +454,7 @@ export async function renderOffline(track, district = 0, sec = 60, o = {}) {
     m = mixTargets({ screen: 'flight', combo: 3, hits: 3, speed: 1.2, ...o.state }),
     st = audioSettings(null),
     mask = silenceMask(o.centres ?? []);
+  if (o.layers) m.layers = o.layers; // diagnostics: one layer at a time
   g.master.gain.value = level(st.master);
   g.music.gain.value = o.music === false ? 0 : level(st.music);
   g.sfx.gain.value = o.sfx === false ? 0 : level(st.sfx);
@@ -444,7 +463,7 @@ export async function renderOffline(track, district = 0, sec = 60, o = {}) {
   g.verbOut.gain.value = m.reverb;
   g.verb.buffer = roomImpulse(g, d.verbSec ?? DEFAULT_ROOM);
   g.layers.forEach((L, l) => {
-    L.gain.gain.value = m.layers[l];
+    L.gain.gain.value = m.layers[l] * 10 ** ((d.layerDb?.[l] ?? 0) / 20);
     L.verbSend.gain.value = d.verb?.[l] ?? 0.2;
     L.echoSend.gain.value = d.echo?.[l] ?? 0;
   });

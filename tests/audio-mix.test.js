@@ -40,7 +40,14 @@ import {
 import { TRACKS, TRACK_IDS } from '../src/music/index.js';
 import { VOICE_NAMES } from '../src/music/synth.js';
 import { phrase, swing, near, chord } from '../src/music/compose.js';
-import { blindMap, summary } from '../prototype/music/blind.js';
+import {
+  blindMap,
+  summary,
+  TARGET_LUFS,
+  trimFor,
+  quizOrder,
+  motifQuiz,
+} from '../prototype/music/blind.js';
 import { createFlight, step, eventInput, activeEvent } from '../src/core.js';
 import { windows, TIMING } from '../src/events.js';
 import { SECTION_METERS, SCREEN_METERS } from '../src/scenes.js';
@@ -728,4 +735,47 @@ test('sfx: combo tones in the district mode, no deep landing thud with calm audi
     cues.some(c => c.name === 'stinger' && c.district === 1),
     'stinger played with the switch',
   );
+});
+test('blind listening by 03 F.6: equal-loudness trims, block 2 order, block 4 melodies', () => {
+  assert.equal(TARGET_LUFS, -22);
+  assert.equal(trimFor({ trims: { G2: -3.5 } }, 'G', 2), -3.5);
+  assert.equal(trimFor({}, 'B', 0), 0, 'not levelled yet');
+  for (let s = 0; s < 20; s++) assert.deepEqual([...quizOrder(s)].sort(), [0, 1, 2, 3]);
+  assert.deepEqual(quizOrder(4), quizOrder(4));
+  const orders = new Set(Array.from({ length: 20 }, (_, s) => quizOrder(s).join('')));
+  assert.ok(orders.size > 3, 'the order changes between sessions');
+  const q = motifQuiz(3),
+    by = Object.fromEntries(q.items.map(i => [i.kind, i.notes]));
+  assert.deepEqual(Object.keys(by).sort(), ['foreign', 'retro', 'theme']);
+  assert.deepEqual(
+    by.theme.map(n => n.n),
+    ARC[2].motif.map(x => scaleNote('D', 'mixolydian', x, 5)),
+  );
+  assert.deepEqual(
+    by.retro.map(n => n.n),
+    [...by.theme.map(n => n.n)].reverse(),
+  );
+  assert.equal(by.foreign.length, by.theme.length);
+  assert.notDeepEqual(
+    by.foreign.map(n => n.n),
+    by.theme.map(n => n.n),
+  );
+  for (const k of ['theme', 'retro', 'foreign'])
+    for (const n of by[k]) assert.ok(inScale(n.n, 'D', 'mixolydian'), k);
+  assert.ok(new Set(Array.from({ length: 12 }, (_, s) => motifQuiz(s).items[0].kind)).size > 1);
+});
+test('layer balance of a district (layerDb) multiplies the layer targets; tracks without it are unchanged', () => {
+  const { ctx, a } = engine();
+  a.play(TRACKS.G, 0);
+  a.update({ screen: 'workshop' });
+  const want = 0.6 * 10 ** (TRACKS.G.districts[0].layerDb[0] / 20),
+    p = a.g.layers[0].gain.gain,
+    last = p.events.at(-1);
+  assert.ok(close(last.v, want, 1e-9), `${last.v} vs ${want}`);
+  for (const d of TRACKS.G.districts) assert.equal(d.layerDb.length, 4);
+  const { a: b } = engine();
+  b.play(TRACKS.E, 0);
+  b.update({ screen: 'workshop' });
+  assert.ok(close(b.g.layers[0].gain.gain.events.at(-1).v, 0.6));
+  void ctx;
 });

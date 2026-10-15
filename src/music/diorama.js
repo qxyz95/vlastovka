@@ -14,6 +14,8 @@ export const districts = [
     lead: 'musicbox',
     keys: 'piano',
     verbSec: 1.2,
+    // Layer balance in dB, set by measured LUFS (03 F.4): the bed carries, the pulse stays under the thinning.
+    layerDb: [11.5, -13, 6.5, 9.5],
     verb: [0.35, 0.2, 0.08, 0.35],
     echo: [0, 0.05, 0, 0.1],
     pool: [0, 1, 0, 5, 4],
@@ -28,6 +30,7 @@ export const districts = [
     lead: 'flute',
     keys: 'ks',
     verbSec: 1.8,
+    layerDb: [11.5, -12.2, 5.5, 5.3],
     verb: [0.45, 0.25, 0.1, 0.4],
     echo: [0, 0.1, 0, 0.15],
     pool: [0, 3, 4, 5],
@@ -41,6 +44,7 @@ export const districts = [
     lead: 'flute',
     keys: 'piano',
     verbSec: 0.9,
+    layerDb: [11.5, -12.5, 5.5, 4.9],
     verb: [0.3, 0.15, 0.06, 0.28],
     echo: [0, 0, 0, 0.1],
     pool: [0, 6, 3, 0],
@@ -55,6 +59,7 @@ export const districts = [
     lead: 'piano',
     keys: 'piano',
     verbSec: 1.4,
+    layerDb: [10, -12.6, 5.2, 3.7],
     verb: [0.4, 0.2, 0.08, 0.35],
     echo: [0, 0.12, 0, 0.3],
     pool: [0, 3, 0, 6],
@@ -237,6 +242,21 @@ export function bar(i, d, { seed = 1, density = 0.5, place = 3, bedOnly = false 
     });
   return ev;
 }
+// Notes the plucked string can play in a district (for warming the KS cache before the music needs it, off the scheduler).
+const KS_NOTES = new Map();
+export function ksNotes(d) {
+  if (!KS_NOTES.has(d)) {
+    const s = new Set();
+    for (const seed of [1, 2, 3])
+      for (let i = 0; i < 64; i++)
+        for (const e of bar(i, d, { seed, density: 1, place: 3 })) if (e.i === 'ks') s.add(e.n);
+    KS_NOTES.set(
+      d,
+      [...s].sort((x, y) => x - y),
+    );
+  }
+  return KS_NOTES.get(d);
+}
 // Finale "Delivered." (C.2, E.2): every instrument plays one phrase of the resolved theme, 4 s of silence, a solo music box.
 // Returns events with b in beats from the start and a ritardando already applied.
 export function cue(name, { seed = 1 } = {}) {
@@ -278,4 +298,5 @@ export default {
   finale,
   bar,
   cue,
+  ksNotes,
 };

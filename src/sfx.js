@@ -17,11 +17,17 @@ export function createSfx(audio) {
       audio.track?.districts?.[audio.district]?.mode ?? ARC[audio.district ?? 0]?.mode ?? 'ionian',
     reduced = () => !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const s = {
+    // Any voice on the effects bus (e.d in seconds); used by the prototype's leitmotif test.
+    note: (e, t = now()) => v(e, t),
     // QTE tick: wooden click on the 5th (A), at the exact audio time of the window centre; cancellable.
     tick(when = now()) {
       const gate = ctx.createGain();
       gate.connect(g.sfxIn);
-      v({ i: 'wood', n: scaleNote(KEY, 'ionian', 4, 5), d: 0.05, v: 0.9 }, when, gate);
+      v(
+        { i: 'wood', n: scaleNote(KEY, 'ionian', 4, 5), d: 0.05, v: 1.27, o: { dec: 0.04 } },
+        when,
+        gate,
+      );
       const id = audio.cue('tick', when);
       return {
         when,
@@ -43,12 +49,12 @@ export function createSfx(audio) {
     // Perfect: combo tone + its octave, glitter, dotted-eighth echo, music ducked −4 dB.
     perfect(combo = 1, t = now()) {
       const n = comboNote(combo, 5, mode());
-      v({ i: 'bell', n, d: 0.5, v: 0.8, o: { dec: 1.2 } }, t);
-      v({ i: 'bell', n: n + 12, d: 0.5, v: 0.55, o: { dec: 1.4 } }, t + 0.01, g.sfxEchoIn);
-      v({ i: 'bell', n: n + 12, d: 0.5, v: 0.4, o: { dec: 1.2 } }, t + 0.01);
-      [0, 2, 4, 5].forEach((k, i) =>
+      v({ i: 'bell', n, d: 0.5, v: 1.2, o: { dec: 1.2 } }, t);
+      v({ i: 'bell', n: n + 12, d: 0.5, v: 0.8, o: { dec: 1.4 } }, t + 0.01, g.sfxEchoIn);
+      v({ i: 'bell', n: n + 12, d: 0.5, v: 0.6, o: { dec: 1.2 } }, t + 0.01);
+      [0, 2, 5, 7].forEach((k, i) =>
         v(
-          { i: 'glock', n: scaleNote(KEY, 'majorPent', k, 6), d: 0.2, v: 0.3 },
+          { i: 'glock', n: scaleNote(KEY, mode(), k, 6), d: 0.2, v: 0.45 },
           t + 0.05 + i * 0.035,
           g.sfxVerbIn,
         ),

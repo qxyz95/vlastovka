@@ -152,6 +152,7 @@ export function roomImpulse(g, sec = 3.4) {
   return g.impulses.get(k);
 }
 // Bytes held by the KS cache (float32 mono).
+export const ksPrewarm = (g, notes = []) => notes.forEach(n => ksBuffer(g, n));
 export const ksBytes = g => [...g.ks.values()].reduce((s, b) => s + b.length * 4, 0);
 function ksBuffer(g, n, o = {}) {
   const key = `${n}|${o.t60 ?? 1.1}`;
@@ -692,9 +693,9 @@ const V = {
     return end;
   },
   // Effects.
-  wood(g, e, t, dur, out) {
+  wood(g, e, t, dur, out, o) {
     const A = amp(g, out),
-      end = perc(A.gain, t, e.v * 0.5, 0.022);
+      end = perc(A.gain, t, e.v * 0.5, o.dec ?? 0.022);
     osc(g, 'sine', hz(e.n), t, end, A);
     osc(g, 'triangle', hz(e.n) * 2.76, t, end, G(g.ctx, 0.3, A));
     const C = amp(g, out);
