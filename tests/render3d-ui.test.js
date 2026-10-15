@@ -28,7 +28,7 @@ import { EVENT_VIEWS, eventView, GENERIC } from '../src/render3d/events-view.js'
 import { palette, PAPIR as P, PAPER_TOKENS } from '../src/render3d/palette.js';
 import { readFileSync } from 'node:fs';
 import { createFx, fxEvent, stepFx, STRIDE } from '../src/juice.js';
-import { createEvents } from '../src/events.js';
+import { createFlight } from '../src/core.js';
 
 // Owned by R2 (UI layer). Fake 2D context: records every call with the style state at that moment and tracks the transform.
 function fakeCtx(width = 1280) {
@@ -261,7 +261,7 @@ test('drawUi: logical 640×360 via setTransform, ends on the identity transform,
   fxEvent(fx, 'throw', { power: 1 });
   fxEvent(fx, 'perfect');
   stepFx(fx, 1 / 60, { x: 10, y: 12, vx: 30, vy: 2, t: 1, landed: false }, view, () => 0.5);
-  const f = { x: 10, y: 12, vx: 120, vy: 2, t: 2, landed: false, events: createEvents(1) };
+  const f = { x: 10, y: 12, vx: 120, vy: 2, t: 2, landed: false, events: createFlight().events };
   Object.assign(f.events[0], { type: 'gust', phase: 'interaction', at: 1.5 });
   const plan = uiFrame({
     f,

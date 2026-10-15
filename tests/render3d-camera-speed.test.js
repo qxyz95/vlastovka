@@ -15,7 +15,7 @@ import {
 import { planFrame, directorFor, paceOf, cruiseOf, calmOf, CAMERA } from '../src/render3d/frame.js';
 import { tempoZoom } from '../src/render3d/geometry.js';
 import { createFlight, step } from '../src/core.js';
-import { eventInput } from '../src/events.js';
+import { eventInput } from '../src/core.js';
 import { autoInput } from './helpers/auto-input.js';
 
 // S1 kamera letu (research/start/01 §3.3–§3.4): šířka z přebytku rychlosti nad cestovní rychlostí výbavy a z tempa π.
@@ -61,7 +61,7 @@ test('excess: s = max(0,(vx − c)/c), W × (1 + 0,35·smooth(s/0,8)); Dart thro
 test('pace π and cruise from the kit: frame.js passes real k and c (no k:1), Calm and reduced motion share the camera rule', () => {
   const f = createFlight('dart', undefined, 4);
   assert.equal(paceOf(f), 1);
-  assert.equal(cruiseOf(f), f.p.cruise);
+  assert.equal(cruiseOf(f), f.cruise); // M2: let hry nese π v f.d.pi a cestovní rychlost v f.cruise
   const g = { ...f, d: { pi: 2 }, cruise: 30 };
   assert.equal(paceOf(g), 2);
   assert.equal(cruiseOf(g), 30);

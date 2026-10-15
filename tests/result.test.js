@@ -14,10 +14,12 @@ import {
   FOCUS_ORDER,
   throwReasons,
   dryRun,
+  throwFacts,
 } from '../src/result.js';
+import { flightFor, step, kitOf } from '../src/core.js';
 
 const gear = (power = 0, extra = {}) => ({
-  levels: { power, paper: 0, fold: 0 },
+  levels: { power, paper: 0, folds: 0 },
   model: 'dart',
   ...extra,
 });
@@ -222,4 +224,32 @@ test('determinismus: bez Math.random a času, vstupy se nemění', () => {
   chapterTrigger(10, 4000);
   assert.equal(JSON.stringify([a, b, p, s]), snap);
   assert.deepEqual(throwDiff(a, b), d1);
+});
+
+// M2: fakta hodu z letu hry (src/flight.js). Paper = úroveň papíru (tempo π), vítr v m/s se škáluje s π.
+test('throwFacts: gear from the flight kit (levels power/paper/folds, model, Atlas), wind in m/s, stats from events', () => {
+  const p = { ...fresh(), attempts: 5, best: 700, levels: { power: 1, paper: 4, folds: 2 } },
+    f = flightFor(p, 20, 0.8);
+  while (!f.landed) step(f);
+  const a = throwFacts(f, { hint: 'angle.ok', record: true });
+  assert.deepEqual(a.gear, {
+    levels: { power: 1, paper: 4, folds: 2 },
+    model: 'dart',
+    atlas: kitOf(p).atlas,
+  });
+  assert.equal(a.dist, f.x);
+  assert.equal(a.grade, 'strong');
+  assert.equal(a.record, true);
+  assert.equal(a.hint, 'angle.ok');
+  assert.ok(Math.abs(a.wind - f.w * 11 * f.d.pi) < 1e-9, 'Dart cruise 11 m/s × π');
+  const fast = { ...f, d: { ...f.d, pi: 2 * f.d.pi } };
+  assert.ok(Math.abs(throwFacts(fast).wind - 2 * a.wind) < 1e-9 || a.wind === 0);
+  const b = {
+    ...a,
+    gear: { ...a.gear, levels: { ...a.gear.levels, paper: 5 } },
+    dist: a.dist + 200,
+    record: false,
+  };
+  const d = throwDiff(a, b);
+  assert.deepEqual(d.causes[0].params, { item: 'level:paper:5' });
 });

@@ -2,7 +2,7 @@
 // vítr se střihem, události (poryv, holub, pára, termika, dron, hvězda), plující střed, kombo, Atlas a schopnosti.
 // Čistý modul bez DOM a three.js, pevný krok P.physics.dt, seedované RNG streamy. Čísla P předává volající
 // (simulátor simulation/progression/params.mjs, hra src/progression-numbers.js); čtou se až při volání, takže setParams na místě platí hned.
-// Boti (plán stisků, QTE bot, skutečný čas) jsou v simulation/progression/model.mjs a abilities.mjs.
+// Boti (plán stisků, QTE bot) jsou v simulation/progression/model.mjs a abilities.mjs; skutečný čas (realTime) má obě strany stejný.
 import { random } from './random.js';
 import { throwSettings, AIM_MIN, AIM_MAX } from './throw.js';
 
@@ -767,6 +767,23 @@ export function createFlightModel(P, hooks = {}) {
       }
     }
   }
+  // Skutečný čas (M2, totéž co realTime v simulation/progression/model.mjs): klidné klouzání (žádná událost, další nezačne
+  // do lookahead s, vlaštovka klesá) běží warp×, náběh ramp s. Hra podle f.warp zrychluje akumulátor fyziky.
+  function realTime(f) {
+    const W = P.warp,
+      dt = P.physics.dt,
+      e = activeEvent(f),
+      next = f.events.find(x => x.phase === 'waiting');
+    const calm = !e && !f.dive && f.vy < 0 && (!next || next.at > f.t + W.lookahead),
+      target = calm ? W.factor : 1,
+      rate = ((W.factor - 1) / W.ramp) * dt;
+    f.warp = target > f.warp ? Math.min(target, f.warp + rate) : Math.max(target, f.warp - rate);
+    const slow =
+      f.assist?.slow && e && (e.phase === 'warning' || e.phase === 'interaction')
+        ? f.assist.slow
+        : 1;
+    f.real += dt / f.warp / slow;
+  }
   // Celý hod: before = funkce (f)=>void volané každý krok před fyzikou (vstupy, boti), after = po vyhodnocení událostí.
   function fly(kit, ctx, before = [], after = []) {
     const f = createFlight(kit, ctx);
@@ -834,6 +851,7 @@ export function createFlightModel(P, hooks = {}) {
     rocket,
     burstLeft,
     step,
+    realTime,
     fly,
     bestAngle,
   };

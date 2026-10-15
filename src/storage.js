@@ -1,4 +1,5 @@
-import { fresh } from './core.js';
+import { fresh, FINISH } from './core.js';
+import { BRANCH_IDS, maxLevel } from './gear.js';
 import { routeAt, ROUTE } from './scenes.js';
 // ID lists, caps and rules come from the Atlas modules (no own copies). No import cycle: atlas.js imports only
 // atlas-content.js and atlas-numbers.js (→ scenes.js), none of which import storage.js or core.js.
@@ -147,13 +148,24 @@ export function sanitizeAtlas(a) {
   else if (u !== null && u !== undefined) drop();
   return r;
 }
-// Like decode(), but also reports whether the atlas lost data (load() then backs up the raw save).
+// Old Workshop (v1–v4): 3 branches × 5 levels at these prices. Only the migration to v5 needs them (refund).
+export const LEGACY_PRICES = [35, 105, 195, 300, 420];
+const LEGACY_BRANCHES = ['power', 'paper', 'fold'],
+  legacyValid = l =>
+    obj(l) && LEGACY_BRANCHES.every(b => Number.isInteger(l[b]) && l[b] >= 0 && l[b] <= 5),
+  spent = l =>
+    LEGACY_BRANCHES.reduce(
+      (a, b) => a + LEGACY_PRICES.slice(0, l[b]).reduce((x, y) => x + y, 0),
+      0,
+    );
+// Like decode(), but also reports whether the atlas lost data (load() then backs up the raw save)
+// and how many coins the v1–v4 → v5 migration returned for the old Workshop (refund).
 export function decodeSave(raw) {
-  if (raw === null) return { data: fresh(), lossy: false, broken: false };
+  if (raw === null) return { data: fresh(), lossy: false, broken: false, refund: 0 };
   const p = JSON.parse(raw);
   if (
     !p ||
-    ![1, 2, 3, 4].includes(p.version) ||
+    ![1, 2, 3, 4, 5].includes(p.version) ||
     !Number.isSafeInteger(p.coins) ||
     p.coins < 0 ||
     !Number.isFinite(p.best) ||
@@ -162,20 +174,28 @@ export function decodeSave(raw) {
     p.attempts < 0 ||
     typeof p.completed !== 'boolean' ||
     !['dart', 'glider'].includes(p.model) ||
-    !p.levels
+    !obj(p.levels)
   )
     throw Error('Invalid save');
-  const branches = ['power', 'paper', 'fold'],
-    valid = l => l && branches.every(b => Number.isInteger(l[b]) && l[b] >= 0 && l[b] <= 5);
-  // v2 had separate trees per model; shared tree keeps the better level of each branch.
-  if (p.version === 2) {
-    if (!valid(p.levels.dart) || !valid(p.levels.glider)) throw Error('Invalid levels');
-    p.levels = Object.fromEntries(
-      branches.map(b => [b, Math.max(p.levels.dart[b], p.levels.glider[b])]),
-    );
+  let refund = 0;
+  if (p.version < 5) {
+    // v1–v4 → v5 (decision 06, 15. 10.): coins spent on the old Workshop come back, its levels are reset, the rest stays.
+    // v2 had separate trees per model, both were paid for.
+    const trees = p.version === 2 ? [p.levels.dart, p.levels.glider] : [p.levels];
+    if (!trees.every(legacyValid)) throw Error('Invalid levels');
+    refund = trees.reduce((a, l) => a + spent(l), 0);
+    if (!Number.isSafeInteger(p.coins + refund)) throw Error('Invalid coins');
+    p.coins += refund;
+    p.levels = fresh().levels;
+  } else {
+    const l = p.levels;
+    if (
+      Object.keys(l).length !== BRANCH_IDS.length ||
+      !BRANCH_IDS.every(b => Number.isInteger(l[b]) && l[b] >= 0 && l[b] <= maxLevel(b))
+    )
+      throw Error('Invalid levels');
+    p.levels = Object.fromEntries(BRANCH_IDS.map(b => [b, l[b]]));
   }
-  if (!valid(p.levels)) throw Error('Invalid levels');
-  p.levels = Object.fromEntries(branches.map(b => [b, p.levels[b]]));
   let lossy = false,
     broken = false;
   // v3 → v4: empty atlas; discoveries are derived from p.best, so past flights get one summary notice instead of N.
@@ -184,10 +204,10 @@ export function decodeSave(raw) {
     const n = placesFound(p.best);
     if (n >= 2) p.atlas.pending = [{ kind: PAST, places: n }];
   } else ({ atlas: p.atlas, lossy, broken } = sanitizeAtlas(p.atlas));
-  p.version = 4;
-  if (p.model === 'glider' && p.best < 100) p.model = 'dart';
-  p.completed = p.best >= 500;
-  return { data: p, lossy, broken };
+  p.version = 5;
+  if (p.model === 'glider' && p.best < NUMBERS.gliderAt) p.model = 'dart';
+  p.completed = p.best >= FINISH - 1e-9;
+  return { data: p, lossy, broken, refund };
 }
 export function decode(raw) {
   return decodeSave(raw).data;
@@ -198,7 +218,7 @@ export function load() {
   let raw = null;
   try {
     raw = localStorage.getItem(KEY);
-    const { data, lossy, broken } = decodeSave(raw);
+    const { data, lossy, broken, refund } = decodeSave(raw);
     let backup = false;
     if (lossy || broken)
       try {
@@ -207,6 +227,7 @@ export function load() {
       } catch {}
     return {
       data,
+      refund,
       warning: broken
         ? backup
           ? 'Atlas data was damaged and has been reset. The original save is backed up.'
@@ -222,6 +243,7 @@ export function load() {
       } catch {}
     return {
       data: fresh(),
+      refund: 0,
       warning: backup
         ? 'Uložení je poškozené. Hraješ od začátku, původní data jsou zálohovaná.'
         : 'Uložení není dostupné nebo je poškozené. Hraješ od začátku.',

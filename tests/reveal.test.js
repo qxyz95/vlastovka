@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fresh } from '../src/core.js';
-import { PRICES } from '../src/config.js';
+import { SCREEN_METERS } from '../src/scenes.js';
 import { reveal, coinLine, promptHint, ATLAS_OPEN_METERS, GLIDER_METERS } from '../src/reveal.js';
 
 const save = o => ({ ...fresh(), ...o });
@@ -18,7 +18,7 @@ test('throw 0: only Throw and Settings, nothing else', () => {
     branchesNextOnly: true,
     titleButtons: ['throw', 'settings'],
   });
-  assert.equal(coinLine(fresh(), PRICES), null);
+  assert.equal(coinLine(fresh()), null);
 });
 
 test('after throw 1: coin chip and Workshop, still no Atlas or models', () => {
@@ -53,28 +53,41 @@ test('old save with 500 m: everything visible, nothing missing, input not mutate
   assert.equal(reveal(null).workshop, false);
 });
 
+// M2: Dílna Power 3 (50/160/350), Folds 3 (50/160/350), Paper 12 (180/320/520 | 500/…), druh papíru otevírá dolet (gear.js).
 test('coinLine: empty wallet gives the cheapest next level', () => {
   const p = save({ attempts: 1, best: 30, coins: 0 });
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'toNext', coins: 35 });
+  assert.deepEqual(coinLine(p), { kind: 'toNext', coins: 50 });
   p.coins = 23;
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'toNext', coins: 12 });
+  assert.deepEqual(coinLine(p), { kind: 'toNext', coins: 27 });
 });
 
 test('coinLine: counts branches, at most one level per branch', () => {
-  const p = save({ attempts: 1, best: 30, coins: 40 });
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'canBuy', count: 3 });
-  p.coins = 5000; // plenty of coins still means 3 branches, not 15 levels
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'canBuy', count: 3 });
-  p.levels = { power: 1, paper: 0, fold: 5 }; // power next 105, fold maxed
-  p.coins = 50;
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'canBuy', count: 1 });
+  const p = save({ attempts: 1, best: 30, coins: 60 });
+  assert.deepEqual(coinLine(p), { kind: 'canBuy', count: 2 }); // Power and Folds, Paper costs 180
+  p.coins = 5000; // plenty of coins still means 3 branches, not 18 levels
+  assert.deepEqual(coinLine(p), { kind: 'canBuy', count: 3 });
+  p.levels = { power: 1, paper: 0, folds: 3 }; // power next 160, folds maxed, paper 180
+  p.coins = 170;
+  assert.deepEqual(coinLine(p), { kind: 'canBuy', count: 1 });
   p.coins = 0;
-  assert.deepEqual(coinLine(p, PRICES), { kind: 'toNext', coins: 35 });
+  assert.deepEqual(coinLine(p), { kind: 'toNext', coins: 160 });
+});
+
+test('coinLine: a paper kind that is not open yet does not count; it counts once the place opens it', () => {
+  const p = save({ attempts: 9, best: 30, coins: 9999, levels: { power: 3, paper: 3, folds: 3 } });
+  assert.equal(coinLine(p), null);
+  p.best = 2 * SCREEN_METERS; // 3rd place opens Kraft
+  p.coins = 100;
+  assert.deepEqual(coinLine(p), { kind: 'toNext', coins: 400 });
 });
 
 test('coinLine: everything bought gives null; has no buy/undo helpers', () => {
-  const p = save({ attempts: 99, best: 500, coins: 9999, levels: { power: 5, paper: 5, fold: 5 } });
-  assert.equal(coinLine(p, PRICES), null);
+  const p = save({
+    attempts: 99,
+    best: 5000,
+    coins: 9999,
+    levels: { power: 3, paper: 12, folds: 3 },
+  });
   assert.equal(coinLine(p), null);
 });
 

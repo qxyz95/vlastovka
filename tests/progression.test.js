@@ -126,7 +126,7 @@ test('progression audit: passive flight at π=1 matches the game exactly', () =>
   ]) {
     const g = gameFlight(
       'dart',
-      { power: 0, paper: 0, fold: 0 },
+      { power: 0, paper: 0, folds: 0 },
       1,
       { x: 0, y: 0 },
       throwSettings(a, c),
