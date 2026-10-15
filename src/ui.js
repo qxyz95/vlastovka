@@ -104,7 +104,8 @@ let comboAnchor = null,
   comboSay = { n: 0, at: -Infinity };
 // Kapsy (C3): čip při míření s nápovědou na POCKET_HINT s po vstupu na Domov, za letu stav aktivní schopnosti; čtečka hlásí jen změnu
 // stavu (bez „počkej“ a „níž“, které se střídají s každou událostí). Ikony jsou jen ozdoba (aria-hidden), název a stav jsou text.
-const POCKET_ICON = { dive: '↘', cushion: '◡', whistle: '♪', rocket: '»', sharp: '◆', calm: '≈' },
+// sharp ◣ (ostrý roh) a calm ◠ (klenba nebe): ◆ patří minci a bodu průběhu QTE, ≈ odhadu v Dílně (F2 B4).
+const POCKET_ICON = { dive: '↘', cushion: '◡', whistle: '♪', rocket: '»', sharp: '◣', calm: '◠' },
   POCKET_HINT = 6;
 let pocketKey = '',
   pocketHintUntil = 0,

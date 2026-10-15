@@ -47,8 +47,8 @@ else if(pKind==1){vec2 q=vec2(uv.x*14.,uv.y*150.);float far=smoothstep(.5,1.5,fw
 c*=mix(vec3(1.),pA,.4*mix(smoothstep(.7,.9,pNoise(q)),.1,far));
 float k=(x+s)/.09,ph=fract(k),fa=smoothstep(.25,.6,fwidth(k)),band=1.-smoothstep(.055,.055+ax,x);
 vec3 m=ph<.25?pB:(ph>=.5&&ph<.75?pC:vec3(1.));c*=mix(vec3(1.),mix(m,(pB+pC)*.25+.5,fa),.85*band);}
-else if(pKind==2){vec2 p=vec2(s,x)/.06;float far=smoothstep(.3,.9,fwidth(p.x));
-c*=mix(vec3(1.),pA,.16*(1.-far)*pStripe(pSeig(p),1./3.,.035));
+else if(pKind==2){vec2 p=vec2(s,x)/.085;float far=smoothstep(.3,.9,fwidth(p.x));
+c*=mix(vec3(1.),pA,.28*(1.-far)*pStripe(pSeig(p),1./3.,.035));
 vec2 q=vec2(uv.x*3.+uv.y*1.3,uv.y*70.-uv.x*9.);float g=smoothstep(.5,1.5,fwidth(q.y));
 c*=1.+.07*mix(smoothstep(.55,.85,pNoise(q))-.25,0.,g);}
 else{float f=abs(dot(normalize(vPNv),normalize(vPV))),h=clamp(.5+1.2*(f-.6)+.35*uv.x,0.,1.);

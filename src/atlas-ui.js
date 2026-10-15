@@ -8,8 +8,9 @@ import * as X from './atlas-text.js';
 import { altKey, imageUrl, silhouette } from './atlas-postcards.js';
 import { t } from './i18n.js';
 
-// Paper tones of the districts (CSS tokens in style.css: tomato, teal, mustard, cobalt); decoration only, the name always carries identity.
-export const TONES = ['tomato', 'teal', 'mustard', 'cobalt'];
+// District tones = time of day (bible 05 kap. 2.3, decision 06 16. 10.; CSS --district-1…4 in style.css), never role colours.
+// Decoration only, the name always carries identity.
+export const TONES = ['morning', 'noon', 'afternoon', 'evening'];
 const titleOf = (d, c) => t(`atlas.district.${c.DISTRICTS[d].id}.title`);
 const meters = m => X.fmtMeters(Math.max(1, Math.ceil(m)));
 

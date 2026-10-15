@@ -283,9 +283,17 @@ const fakeCtx = () => {
     get: (o, k) =>
       k === 'ops'
         ? ops
-        : k in o
-          ? o[k]
-          : (...args) => ops.push({ name: k, args, fill: o.fillStyle }),
+        : k === 'createLinearGradient'
+          ? (...args) => ({
+              args,
+              stops: [],
+              addColorStop(at, color) {
+                this.stops.push([at, color]);
+              },
+            })
+          : k in o
+            ? o[k]
+            : (...args) => ops.push({ name: k, args, fill: o.fillStyle }),
     set: (o, k, v) => ((o[k] = v), true),
   });
   return c;
@@ -305,7 +313,15 @@ test('C3 scene: Dive shows the low-pass band, Cushion the height bands and then 
   drawAbility(c, a, view);
   const fills = c.ops.filter(o => o.name === 'fillRect');
   assert.equal(fills.length, 1);
-  assert.equal(fills[0].fill, PAPIR.qte.success);
+  // F2 B6: pás jen před vlaštovkou (px − 40 … px + 260), konce zeslabené gradientem tyrkysové (role úspěchu), čáry bez grafitu
+  const [x0, , w] = fills[0].args,
+    rgb = [1, 3, 5].map(i => parseInt(PAPIR.qte.success.slice(i, i + 2), 16)).join(',');
+  assert.deepEqual([x0, x0 + w], [view.px - 40, view.px + 260]);
+  assert.deepEqual(
+    fills[0].fill.stops.map(([, col]) => col),
+    [0, 1, 1, 0].map(a => `rgba(${rgb},${a})`),
+  );
+  assert.ok(Math.abs(fills[0].fill.stops[1][0] * 300 - 30) < 1e-9, 'fade 30 px');
   assert.ok(planFrame({ f: d, visual: { cssWidth: 640 } }).ui.ability?.kind === 'lowPass');
 
   const cu = flightWith(['cushion']);
@@ -323,7 +339,14 @@ test('C3 scene: Dive shows the low-pass band, Cushion the height bands and then 
   assert.ok(pillow.k > 0.9);
   const c2 = fakeCtx();
   drawAbility(c2, pillow, view);
-  assert.equal(c2.ops.filter(o => o.name === 'ellipse').length, 1);
+  const el = c2.ops.filter(o => o.name === 'ellipse');
+  assert.equal(el.length, 1);
+  // F2 B5: polštář z pásky (ne bílý), kraftový čárkovaný obrys [3, 2], 4 px pod vlaštovkou
+  assert.equal(el[0].args[1], pillow.y + 4);
+  assert.equal(c2.ops.find(o => o.name === 'fill').fill, PAPIR.ability.pillow);
+  assert.equal(PAPIR.ability.pillow, '#efe0a8');
+  assert.equal(PAPIR.ability.pillowEdge, '#9c7a55');
+  assert.ok(c2.ops.some(o => o.name === 'setLineDash' && o.args[0].join() === '3,2'));
 
   const r = flightWith(['rocket']);
   run(r, g => GAME.canAct(g) && g.t > 0.5);

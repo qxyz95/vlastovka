@@ -226,6 +226,8 @@ export const PAPIR = {
     eye: PT.graphite,
     steam: PT.cream,
     steamAlpha: 0.55,
+    // spodní polovina obláčku páry ve stínu papíru jako boky karet (kap. 3, F2 B10)
+    steamShade: mix(PT.cream, '#5b4f7a', 0.25),
     vent: PT.pencil,
     grate: PT.pencil,
     // C2a (05-art-udalosti kap. 2–4): termika (stužky kraftDark, tělo páska / ve čtvrti 4 lampion, útržky kraft a cihlová D1.roof[1]),
@@ -244,7 +246,9 @@ export const PAPIR = {
       night: CARDS[3].lantern,
       nightRib: CARDS[2].roof[0],
       wire: PT.kraftDark,
-      glowAlpha: 0.22,
+      // měkký kotouč záře ve čtvrti 4 (F2 B7): alfa ve vrcholech střed glowCore → okraj 0, světlejší než plášť
+      glow: mix(CARDS[3].lantern, '#fffaf0', 0.3),
+      glowCore: 0.3,
     },
     star: { day: D1C.window, night: PT.cream, cut: PAPER_DISC, tailAlpha: 0.6 },
   },
@@ -260,6 +264,8 @@ export const PAPIR = {
     clapper: D1C.window,
   },
   burst: { line: PT.graphite, puff: PT.cream },
+  // Polštář Cushion (F2 B5): páska s kraftovým čárkovaným obrysem, ve výšce letu nic bílého s grafitem (kap. 6 bod 2).
+  ability: { pillow: PT.tape, pillowEdge: PT.kraftDark },
   // Život čtvrti z papírových modelů (models/*, paper-cards.lifeCards).
   life: {
     people: {

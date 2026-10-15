@@ -119,12 +119,15 @@ export const SHAPES = {
     poly('main', ['68,22', '80,10', '92,22']),
     poly('accent', ['92,24', '160,6', '160,40', '92,28']),
   ],
+  // grain silo and barn above the field strips (F2 B12)
   fields: [
     hills,
-    poly('accent', ['0,80', '0,64', '50,56', '160,66', '160,80']),
-    poly('main', ['0,80', '0,72', '60,66', '160,74', '160,80']),
-    poly('light', ['0,74', '60,68', '160,76', '160,77', '60,69.5', '0,75.5']),
-    poly('main', ['112,60', '112,38', '120,38', '120,60']),
+    poly('accent', ['0,80', '0,70', '160,64', '160,80']),
+    poly('ground', ['0,80', '0,75', '160,71', '160,80']),
+    rect('main', 106, 30, 16, 40),
+    S('path', 'main', { d: 'M106 30A8 8 0 0 1 122 30Z' }),
+    poly('accent', ['56,72', '56,52', '74,40', '92,52', '92,72']),
+    rect('far', 68, 58, 12, 14),
   ],
   turbines: [hills, ...turbine(34, 46), ...turbine(84, 56), ...turbine(130, 40)],
   peaks: [
@@ -157,6 +160,13 @@ export const SHAPES = {
     rect('main', 44, 30, 72, 16),
     rect('light', 62, 14, 36, 16),
     rect('accent', 76, 6, 8, 8),
+    // round trees on the terrace edges and a railing on the top terrace (F2 B12)
+    circle('accent', 16, 57, 5),
+    circle('accent', 34, 41, 5),
+    circle('accent', 126, 41, 5),
+    ...['M62 14V10H76V14', 'M84 14V10H98V14'].map(d =>
+      S('path', 'main', { d, fill: 'none', 'stroke-width': 1 }),
+    ),
   ],
   tower: [
     hills,
@@ -168,13 +178,17 @@ export const SHAPES = {
     rect('far', 24, 56, 32, 24),
     rect('far', 104, 52, 32, 28),
   ],
+  // Rooftop Harbor: roofs with a mooring mast and a lantern airship, a lantern string below (F2 B12)
   port: [
     hills,
-    poly('main', ['24,66', '136,66', '124,80', '36,80']),
-    rect('main', 78, 20, 3, 46),
-    poly('light', ['76,24', '76,62', '42,62']),
-    poly('accent', ['84,28', '84,62', '116,62']),
-    rect('far', 0, 80, 160, 4),
+    poly('main', ['0,80', '0,60', '20,48', '40,60', '40,80']),
+    poly('main', ['36,80', '36,54', '62,40', '88,54', '88,80']),
+    poly('main', ['84,80', '84,62', '104,50', '124,62', '124,80']),
+    rect('main', 61, 18, 2.4, 24),
+    S('path', 'accent', { d: 'M66 22A30 9 0 0 1 126 22A30 9 0 0 1 66 22Z' }),
+    rect('main', 90, 31, 12, 4),
+    S('path', 'main', { d: 'M63 20L70 22', fill: 'none', 'stroke-width': 1 }),
+    ...[10, 26, 50, 74].map(x => circle('accent', x, 58, 2)),
   ],
 };
 

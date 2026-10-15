@@ -102,7 +102,7 @@ export const STEAM_FX = Object.freeze({
   bloom: 1.3,
   rise: 3,
   puffs: Object.freeze([0.8, 1.1, 1.3]),
-  jet: Object.freeze([1.2, 0.6]),
+  jet: Object.freeze([2.0, 1.0]),
   z: -1.2,
 });
 export function steamHead(w, i, t, top, grade = null, reduced = false) {
@@ -154,6 +154,8 @@ export const THERMAL_FX = Object.freeze({
   orbitT: 0.6,
   fade: 0.5,
   stretch: 1.2,
+  inset: 0.5,
+  solid: 2 / 3,
   z: -3,
 });
 export const columnSpan = (w, vx) => ({ width: 2 * (w.col ?? 0) * vx, core: 2 * w.s * vx });
@@ -206,13 +208,14 @@ export function columnLook(Y, grade, age, reduced = false) {
 }
 
 // ── Sky Lantern (kap. 3.1): lampion se stáčí do dráhy. Základ = bod, kde bude vlaštovka v close podle současné rychlosti (X + vx·Δ, Y + vy·Δ),
-// takže se odhad plynule zpřesňuje a kontakt nosu s pláštěm nastane přesně v close (střed lampionu ahead m před a lift m nad vlaštovkou);
+// takže se odhad plynule zpřesňuje a kontakt nosu s pláštěm nastane přesně v close (střed lampionu ahead m před a lift m nad vlaštovkou,
+// uvnitř volného středu kruhu QTE; z < 0 = za vlaštovkou, vlaštovka se kreslí přes něj, F2 B1);
 // po kontaktu nebo vyhodnocení základ stojí (drží ho companion3d). Pevná kotva z varování by při stoupání a zpomalení minula o 7–8 m. Zásah = odraz (náklon 25°, +2 m, −3 m po x za 0,4 s,
 // tlumené houpání), perfekt navíc otočka kolem svislé osy 0,5 s; minutí = zhoupne se o 10° a odplouvá nahoru 1 m/s, za 1 s zmizí.
 export const LANTERN_FX = Object.freeze({
-  ahead: 5.5,
+  ahead: 3.5,
   lift: 1.7,
-  z: 0.8,
+  z: -0.8,
   sway: 4 * DEG,
   swayHz: 1.2,
   bob: 0.3,
@@ -228,6 +231,7 @@ export const LANTERN_FX = Object.freeze({
   pairScale: 0.9,
   pairYaw: 0.6,
   lodPx: 20,
+  glow: 1,
 });
 export function lanternBase(X, Y, vx, vy, close, t) {
   const d = Math.max(0, close - t);
@@ -357,7 +361,21 @@ export const COMBO_UI = Object.freeze({
   cycles: 2,
   font: 11,
   at: Object.freeze({ x: 628, y: 40 }),
+  minText: 13,
+  minBell: Object.freeze([14, 16]),
+  backAlpha: 0.9,
 });
+// Zvětšení řetězu na úzké obrazovce (F2 B3, vzor ringZoom): štítek ×N má aspoň minText CSS px (360 px: × 1,31). s = uiScale.
+export const comboZoom = (cssWidth = 640, s = 1) =>
+  Math.max(
+    1,
+    COMBO_UI.minText / (COMBO_UI.font * (s > 0 ? s : 1) * ((cssWidth > 0 ? cssWidth : 640) / 640)),
+  );
+// Zvoneček Chimes zvlášť: aspoň minBell CSS px (šířka × výška, 360 px: 14 × 16). s = výsledné měřítko řetězu.
+export const bellZoom = (cssWidth = 640, s = 1) => {
+  const k = (s > 0 ? s : 1) * ((cssWidth > 0 ? cssWidth : 640) / 640);
+  return Math.max(1, ...COMBO_UI.minBell.map((m, i) => m / (COMBO_UI.bell[i] * k)));
+};
 export function comboOf(f) {
   if (!f || f.landed || !f.comboSpec) return null;
   const owned = (f.kit?.atlas?.chain ?? 0) > 0,
@@ -384,7 +402,13 @@ export function comboOf(f) {
 // Dive: pás nízkého průletu nad zemí (specials.dive.low), in = vlaštovka v pásu (puštění dá výtrysk). Cushion: pásma výšky pod
 // vlaštovkou, dokud je polštář k dispozici a vlaštovka je pod maxY + 1 m (perfekt / střed / vysoko); po klepnutí polštář pod vlaštovkou
 // (k = zbývající podíl hoverT / glideT, doznívá).
-export const ABILITY_UI = Object.freeze({ guideW: 36, pillowW: 22, pillowH: 5, bandAlpha: 0.18 });
+export const ABILITY_UI = Object.freeze({
+  guideW: 36,
+  pillowW: 22,
+  pillowH: 5,
+  pillowGap: 4,
+  bandAlpha: 0.18,
+});
 export function abilityFx(f, view, ppm) {
   if (!f || f.landed || !view || !(view.k > 0)) return null;
   const S = P.specials,
