@@ -303,7 +303,9 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   // calm window for a pending switch, screen visits for fatigue, then the mix.
   a.update = (s = {}) => {
     const now = ctx.currentTime,
-      toCtx = c => now + (c - (s.flightT ?? 0));
+      // Same mapping as the tick (tickTime): a centre is heard at its flight time, so masks sit around the planned tick.
+      lat = (ctx.outputLatency || 0) - settings.latency,
+      toCtx = c => now + (c - (s.flightT ?? 0)) - lat;
     const landing = s.screen === 'result' && a.screen === 'flight';
     a.state = s;
     a.centres = (s.centres ?? []).map(toCtx);

@@ -119,8 +119,13 @@ export function createGameAudio(opts = {}) {
     planner = createTickPlanner(when => (audio.settings.tick ? sfx.tick(when) : null));
     audio.on((type, info) => {
       if (type === 'cue' && !NOISY_CUES.includes(info.name)) {
-        const { id, name, when, ...rest } = info;
-        log('cue', { name, at: rec?.at(when), ...rest });
+        const { name, when, until, ...rest } = info;
+        log('cue', {
+          name,
+          at: rec?.at(when),
+          ...(until != null && { until: rec?.at(until) }),
+          ...rest,
+        });
       } else if (type === 'uncue') log('uncue', info);
       else if (type === 'switch')
         log('district', { district: info.district, stinger: info.stinger });
