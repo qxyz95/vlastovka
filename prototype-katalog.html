@@ -50,6 +50,86 @@
   <p class="note">Karty dioramatu mají jen čelo, vršek a boky (záda a spodek se ve hře nevidí), proto „Dokola“ ukáže otevřená záda. Klávesy ←/→ otočí podstavec po 15°. Ladění: <code>__katalog.info()</code>, <code>__katalog.set({model,lod,view,spin,params})</code>.</p>
  </aside>
 </main>
+<!-- G1: vlaštovka na 4 druzích papíru (bible 05 kap. 17.3) přes src/render3d/plane.js makePlane, stejný materiál jako ve hře. -->
+<section class="paper-kinds" aria-labelledby="pk-h" style="padding:0 16px 16px">
+ <h2 id="pk-h" style="font-size:15px">Vlaštovka: druhy papíru <small style="font-weight:400;color:#b3aa9e">bible 05 kap. 17.3 · zleva Copy, Kraft, Washi, Stříbrná fólie</small></h2>
+ <div class="bar" style="background:none;border:0;padding:0 0 8px">
+  <div class="picks" role="group" aria-label="Model vlaštovky">
+   <button type="button" data-pk="model" data-value="dart">Dart</button>
+   <button type="button" data-pk="model" data-value="glider">Glider</button>
+  </div>
+  <div class="picks" role="group" aria-label="Velikost vlaštovky">
+   <button type="button" data-pk="size" data-value="close">Zblízka</button>
+   <button type="button" data-pk="size" data-value="hand">V ruce 40 px</button>
+   <button type="button" data-pk="size" data-value="flight">Let na telefonu 24 px</button>
+  </div>
+  <div class="picks" role="group" aria-label="Pohyb">
+   <button type="button" data-pk="spin" data-value="swing">Kývat (lesk fólie)</button>
+   <button type="button" data-pk="spin" data-value="still">Stát</button>
+  </div>
+ </div>
+ <canvas id="paper-kinds" aria-label="Vlaštovka na čtyřech druzích papíru" style="display:block;width:100%;height:280px;border-radius:6px"></canvas>
+ <p class="note" id="pk-info"></p>
+</section>
+<script type="module">
+import * as THREE from 'three';
+import { makePlane, applyPose } from './src/render3d/plane.js';
+import { stampOutlineMaterial } from './src/render3d/toon.js';
+import { PLANE_PAPER, PLANE_PAPER_IDS, PAPER_TOKENS } from './src/render3d/palette.js';
+const canvas = document.getElementById('paper-kinds'),
+  info = document.getElementById('pk-info'),
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true }),
+  scene = new THREE.Scene(),
+  camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 50),
+  hull = stampOutlineMaterial({ color: PAPER_TOKENS.graphite }),
+  reduced = matchMedia('(prefers-reduced-motion: reduce)').matches,
+  SIZE = { close: 0, hand: 40, flight: 24 },
+  state = { model: 'dart', size: 'close', spin: reduced ? 'still' : 'swing' };
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+scene.background = new THREE.Color('#9ec2d6');
+camera.position.set(0, 0, 10);
+let planes = [],
+  loop = false;
+function build() {
+  for (const p of planes) (p.root.removeFromParent(), p.dispose());
+  planes = PLANE_PAPER_IDS.map(k => makePlane(state.model, { planeHull: hull, scale: 1 }, k));
+  for (const p of planes) scene.add(p.root);
+}
+function layout() {
+  const w = canvas.clientWidth, h = canvas.clientHeight, dpr = renderer.getPixelRatio();
+  renderer.setSize(w, h, false);
+  // délka vlaštovky v CSS px: zblízka čtvrtina šířky, jinak pevně (ruka 40 px, let 24 px)
+  const len = SIZE[state.size] || Math.min(w / 4.6, h * 0.9), ppm = len, hw = w / 2 / ppm, hh = h / 2 / ppm;
+  Object.assign(camera, { left: -hw, right: hw, top: hh, bottom: -hh });
+  camera.updateProjectionMatrix();
+  hull.uniforms.thickness.value = 2.6 * dpr;
+  hull.uniforms.resolution.value.set(w * dpr, h * dpr);
+  const gap = Math.min(hw * 2 / 4, 1.5);
+  planes.forEach((p, i) => (p.x = (i - 1.5) * gap));
+}
+function frame(t) {
+  const a = state.spin === 'swing' ? Math.sin(t / 1400) * 0.5 : 0;
+  for (const p of planes)
+    applyPose(p, { x: p.x ?? 0, y: 0, angle: 0.08, yaw: -0.2 + a, roll: 0.42 + a * 0.4 });
+  renderer.render(scene, camera);
+  const m = renderer.info.memory;
+  info.textContent = `${state.model}: ${planes[0].mesh.geometry.attributes.position.count / 3} △ výplně na každém druhu · draw calls ${renderer.info.render.calls} (4 × výplň, obrys, přehyb) · geometrie ${m.geometries}, textury ${m.textures} · obrys Kraft ${PLANE_PAPER.kraft.outlinePx} px · __paperKinds.set({model,size,spin})`;
+  loop = state.spin === 'swing';
+  if (loop) requestAnimationFrame(frame);
+}
+function set(o = {}) {
+  const rebuild = o.model && o.model !== state.model;
+  Object.assign(state, o);
+  for (const b of document.querySelectorAll('[data-pk]')) b.setAttribute('aria-pressed', String(state[b.dataset.pk] === b.dataset.value));
+  if (rebuild || !planes.length) build();
+  layout();
+  if (!loop) requestAnimationFrame(frame);
+}
+for (const b of document.querySelectorAll('[data-pk]')) b.addEventListener('click', () => set({ [b.dataset.pk]: b.dataset.value }));
+addEventListener('resize', () => set());
+window.__paperKinds = { set, state, info: () => ({ ...state, memory: { ...renderer.info.memory }, calls: renderer.info.render.calls }) };
+set();
+</script>
 <script type="module" src="./prototype/katalog/main.js"></script>
 </body>
 </html>
