@@ -12,6 +12,7 @@ import {
   RING_WARN_ALPHA,
   BURST_UI,
   burstDash,
+  ABILITY_UI,
   COMBO_UI,
   comboLinks,
   effectiveVx,
@@ -101,6 +102,7 @@ export function drawUi(c, plan = {}, visual = {}) {
       drawParticles(c, fx.particles, p, reduced);
       drawPopups(c, fx.popups, v, p, scale);
       for (const l of ui.labels ?? []) drawLabel(c, l, v, p, scale);
+      if (ui.ability) drawAbility(c, ui.ability, v, p);
       if (ui.burst) drawBurst(c, ui.burst, v, t, reduced, p);
       if (ui.qte)
         drawQte(c, ui.qte, v, t, reduced, p, ringZoom(eventView(ui.qte.type).ring.r, css));
@@ -358,6 +360,51 @@ export function drawBurst(c, b, view = AIM_VIEW, time = 0, reduced = false, p = 
       c.arc(x0 - 4 - a * 14, view.py + 2, B.puffR, 0, TAU);
       c.fill();
     }
+  }
+  c.restore();
+}
+// Schopnosti z kapes (C3, event-fx.abilityFx): barvy jen z rolí QTE (perfekt, úspěch, stopa, tuš, krém), tužkou 1 px, bez pohybu
+// (reduced motion beze změny). lowPass = pás nízkého průletu přes celou šířku, v pásu sytější; cushion = pásma výšky pod vlaštovkou;
+// pillow = krémový polštář s tuší pod vlaštovkou, mizí s k.
+export function drawAbility(c, a, view = AIM_VIEW, p = PAPIR) {
+  if (!a) return;
+  const A = ABILITY_UI,
+    q = p.qte;
+  c.save();
+  c.lineWidth = 1;
+  c.strokeStyle = q.dot;
+  c.setLineDash?.([4, 3]);
+  if (a.kind === 'lowPass') {
+    c.globalAlpha = a.in ? A.bandAlpha * 1.8 : A.bandAlpha;
+    c.fillStyle = q.success;
+    c.fillRect(-20, a.top, 680, a.bottom - a.top);
+    c.globalAlpha = 0.5;
+    c.beginPath();
+    for (const y of [a.top, a.bottom]) {
+      c.moveTo(-20, y);
+      c.lineTo(660, y);
+    }
+    c.stroke();
+  } else if (a.kind === 'cushion') {
+    const x = view.px - A.guideW;
+    for (const [top, bottom, role] of a.bands) {
+      c.globalAlpha = A.bandAlpha * 1.5;
+      c.fillStyle = q[role];
+      c.fillRect(x, top, 2 * A.guideW, bottom - top);
+      c.globalAlpha = 0.5;
+      c.beginPath();
+      c.moveTo(x, top);
+      c.lineTo(x + 2 * A.guideW, top);
+      c.stroke();
+    }
+  } else if (a.kind === 'pillow' && a.k > 0) {
+    c.setLineDash?.([]);
+    c.globalAlpha = 0.4 + 0.5 * a.k;
+    c.fillStyle = q.disc;
+    c.beginPath();
+    c.ellipse(view.px, a.y, A.pillowW, A.pillowH, 0, 0, TAU);
+    c.fill();
+    c.stroke();
   }
   c.restore();
 }

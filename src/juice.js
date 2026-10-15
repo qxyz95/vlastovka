@@ -70,6 +70,21 @@ export function fxEvent(fx, type, info = {}) {
       fx.speedLines = 1;
       fx.queue.push([3, 10]);
       break;
+    // Schopnosti z kapes (C3): nízký průlet Dive = odměna (popup a útržky úspěchu, bez hitstopu); Rocket = rychlostní čáry jako poryv;
+    // Whistle = papírový štítek ♪ (bez textu, jazyk nezávislý).
+    case 'lowPass':
+      fx.stretch.v += 4;
+      fx.queue.push([2, 10]);
+      popup(fx, t('popup.lowPass'), 'success');
+      break;
+    case 'rocket':
+      fx.speedLines = 1;
+      fx.stretch.v += 5;
+      fx.queue.push([3, 12]);
+      break;
+    case 'whistle':
+      popup(fx, '♪', 'note'); // neznámý styl = grafitový text, malý štítek (ui-layer.drawPopups)
+      break;
     case 'milestone':
       fx.queue.push([4, 14]);
       if (info.text) popup(fx, info.text, 'milestone');
@@ -90,6 +105,17 @@ export const resultFx = r =>
     : ['success', 'perfect', 'miss'].includes(r)
       ? r
       : null;
+// Nová použití schopností od posledního snímku → druhy fxEvent (C3). seen = {low, rocket, whistle} počty už oznámené, mutuje se.
+export function abilityNews(seen, stats) {
+  const out = [];
+  for (const [k, n, kind] of [
+    ['low', stats?.dive?.low ?? 0, 'lowPass'],
+    ['rocket', stats?.rocket ?? 0, 'rocket'],
+    ['whistle', stats?.whistle ?? 0, 'whistle'],
+  ])
+    for (; (seen[k] ?? 0) < n; seen[k] = (seen[k] ?? 0) + 1) out.push(kind);
+  return out;
+}
 // První setkání s novou událostí (C2b, 01-game-design U3): jen typy z gear.NEW_EVENT_TYPES, jednou; met = už potkané typy.
 // Během varování běží čas MEET_SLOW× (reduced motion: jen věta, bez zpomalení).
 export const MEET_SLOW = 0.5;

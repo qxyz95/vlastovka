@@ -107,6 +107,72 @@ export function eventInput(f, kind) {
   return null;
 }
 export const action = f => eventInput(f, 'down');
+// Jedno tlačítko (08 Z6, C3): během varování a interakce patří vstup události (stisk ve varování se ignoruje), jinak aktivní schopnosti
+// z kapsy (derive(kit).active), když flight.canAct (mimo událost a 0,3 s po vyhodnocení). Dive = držení, puštění nebo ztráta ukazatele
+// = vybrání; Cushion, Whistle, Rocket = ťuk. Whistle jen od whistle.minY (pod 8 m by přivolaná událost nezačala; totéž hlídá bot).
+// -> {to: 'event' | 'ability' | null, id: schopnost | undefined, res: výsledek stisku události | true/false schopnosti}
+const busy = f => f.events.some(e => e.phase === 'warning' || e.phase === 'interaction');
+export const abilityOf = f => f?.d?.active ?? null;
+export function flightInput(f, kind) {
+  if (!f || f.landed) return { to: null };
+  if (f.dive && (kind === 'up' || kind === 'cancel')) {
+    GAME.pullUp(f);
+    return { to: 'ability', id: 'dive', res: true };
+  }
+  if (kind !== 'down' || busy(f)) {
+    const res = eventInput(f, kind);
+    return { to: kind === 'down' || res !== null ? 'event' : null, res };
+  }
+  const id = abilityOf(f);
+  if (!id || !GAME.canAct(f)) return { to: null };
+  const res =
+    id === 'dive'
+      ? GAME.startDive(f)
+      : id === 'cushion'
+        ? GAME.cushion(f)
+        : id === 'rocket'
+          ? GAME.rocket(f)
+          : id === 'whistle' && f.y >= P.specials.whistle.minY && GAME.whistle(f);
+  return { to: 'ability', id, res: !!res };
+}
+// Stav aktivní schopnosti pro čip za letu (text, ne jen barva). state: 'ready' | 'diving' | 'used' | 'wait' (tlačítko patří události
+// nebo 0,3 s po ní) | 'high' (Cushion nad maxY, Whistle bez další události nebo pod minY); left = zbývající použití (null = bez omezení).
+export function abilityState(f) {
+  const id = abilityOf(f);
+  if (!id) return null;
+  const S = P.specials,
+    used = id === 'cushion' ? (f.abil.cushion ? 1 : 0) : (f.abil[id] ?? 0),
+    max =
+      id === 'rocket'
+        ? S.rocket.charges
+        : id === 'whistle'
+          ? S.whistle.uses
+          : id === 'cushion'
+            ? 1
+            : null,
+    left = max === null ? null : Math.max(0, max - used),
+    state = f.dive
+      ? 'diving'
+      : left === 0
+        ? 'used'
+        : f.landed || !GAME.canAct(f)
+          ? 'wait'
+          : id === 'cushion'
+            ? f.y > S.cushion.maxY
+              ? 'high'
+              : 'ready'
+            : id === 'whistle'
+              ? f.y < S.whistle.minY || activeEvent(f) || !f.events.some(e => e.phase === 'waiting')
+                ? 'wait'
+                : 'ready'
+              : 'ready';
+  return { id, state, left };
+}
+// Kapsy z save pro čip při míření: nasazené speciály v pořadí kapes, active = aktivní schopnost (jinak pasivní).
+export const pocketsOf = p =>
+  (p?.atlas?.pockets?.slots ?? [])
+    .filter(Boolean)
+    .map(id => ({ id, active: P.pockets.active.includes(id) }));
 // Zpráva po vyhodnocení (i18n klíč), 1 s od zásahu.
 export const feedbackOf = f =>
   f.lastEv && f.t < f.lastEv.resolvedAt + 1 && f.lastEv.result ? 'feedback.' + f.lastEv.result : '';

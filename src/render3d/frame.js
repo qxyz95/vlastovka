@@ -26,7 +26,7 @@ import { comicLook } from './comic.js';
 import { fxMap } from './fx-map.js';
 import { eventView } from './events-view.js';
 import { uiScale } from './ui-layer.js';
-import { qteRing, eventScene, burstOf, effectiveVx, comboOf } from './event-fx.js';
+import { qteRing, eventScene, burstOf, effectiveVx, comboOf, abilityFx } from './event-fx.js';
 import { initialQuality } from './quality.js';
 import { introProgress, introShot, introTitleAlpha, introIdle } from './intro.js';
 import { PLANE_PAPER } from './palette.js';
@@ -456,6 +456,7 @@ export function planFrame({
     ui: {
       qte: e ? qteRing(e, f) : null,
       burst: burst && { ...burst, tail },
+      ability: flying ? abilityFx(f, v, PPM) : null,
       combo,
       comboAnchor: typeof visual.combo === 'object' ? visual.combo : null,
       cssWidth,

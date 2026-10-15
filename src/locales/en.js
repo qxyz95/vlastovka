@@ -628,4 +628,27 @@ export default {
   'atlas.node.autoQte.name': 'Autopilot',
   'atlas.node.autoQte.pitch':
     'Events handle themselves with a plain hit. Perfects and combos stay yours.',
+  // C3 Kapsy a schopnosti: čip při míření a za letu, nápověda (08 §7.3), stav jako text, akční tlačítko.
+  'ability.hint.dive': 'DIVE · Hold to dive, let go to pull up',
+  'ability.hint.cushion': 'CUSHION · Tap just above the ground',
+  'ability.hint.whistle': 'WHISTLE · Tap to call the next bird',
+  'ability.hint.rocket': {
+    one: 'PAPER ROCKET · Tap to boost ({count} left)',
+    other: 'PAPER ROCKET · Tap to boost ({count} left)',
+  },
+  'ability.hint.sharp': 'SHARP EDGE · Narrower windows, stronger hits',
+  'ability.hint.calm': 'CALM SKY · Fewer events, each one stronger',
+  'ability.state.ready': 'Ready',
+  'ability.state.diving': 'Diving',
+  'ability.state.used': 'Used',
+  'ability.state.wait': 'Wait',
+  'ability.state.high': 'Get lower',
+  'ability.state.left': { one: '{count} left', other: '{count} left' },
+  'ability.passive': 'Passive',
+  'ability.chip': '{name} · {state}',
+  'ability.live': '{name}: {state}',
+  'ability.pockets': 'Pockets: {list}',
+  'ability.button': '{name} · Space',
+  'ability.pullUp': 'Let go to pull up',
+  'popup.lowPass': 'LOW PASS!',
 };
