@@ -225,6 +225,7 @@ test('hidden tab or pagehide: master fades to 0 and the context suspends; visibl
   doc.hidden = true;
   doc.dispatchEvent(new Event('visibilitychange'));
   assert.equal(a.g.master.gain.events.at(-1).v, 0, 'faded before suspend');
+  assert.ok(a.g.master.gain.valueAt(ctx.currentTime + 0.06) < 0.01, 'silent before the suspend');
   await wait(90);
   assert.equal(ctx.state, 'suspended');
   doc.hidden = false;

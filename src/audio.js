@@ -124,10 +124,11 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     return id;
   };
   a.uncue = id => emit('uncue', { id });
-  const applyVolumes = () => {
+  // Going to sleep fades with a 12 ms time constant: < 1 % is left when the context suspends after SLEEP_MS.
+  const applyVolumes = (fade = 0.05) => {
     const t = ctx.currentTime,
       s = settings;
-    set(g.master.gain, s.muted || a.asleep.size ? 0 : level(s.master), t);
+    set(g.master.gain, s.muted || a.asleep.size ? 0 : level(s.master), t, fade);
     set(g.music.gain, level(s.music), t);
     set(g.sfx.gain, level(s.sfx), t);
   };
@@ -140,7 +141,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   a.sleep = why => {
     if (a.asleep.has(why)) return;
     a.asleep.add(why);
-    applyVolumes();
+    applyVolumes(0.012);
     clearTimeout(sleepTimer);
     sleepTimer = setTimeout(() => {
       if (a.asleep.size && ctx.state === 'running')
@@ -172,7 +173,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     saveAudioSettings(settings);
     if (settings.muted) a.sleep('muted');
     else a.wake('muted');
-    applyVolumes();
+    applyVolumes(a.asleep.size ? 0.012 : 0.05);
     emit('settings', settings);
     return settings;
   };
