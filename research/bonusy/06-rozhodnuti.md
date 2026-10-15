@@ -213,3 +213,9 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
 - **Pejsek místo nálezce (15. 10.):** druhé dítě na konci nahradí **malý papírový pejsek**: vlaštovku zvedne ze země, udělá krátkou roztomilou animaci a uteče ze záběru doprava. Dítě, které hází z pavlače (postavička C), zůstává. **Kdy:** velká scéna ve finále + občas krátká verze při dopadu (např. nový rekord), souběžně s kartou výsledku, nikdy neblokuje další hod (K1). Mění rozhodnutí „nálezce až ve finále“ a K9 („druhé dítě chytí vlaštovku“). Návrh (model, pózy, kdy přesně „občas“) připraví art-director a game-designer.
 - **Monte Carlo přes noc (15. 10.):** dnes ne — bonusy ještě nejsou ve hře a platí pravidlo „ladit až po spokojenosti s obsahem“. Po schválení obsahu poběží ladění jako noční workflow.
 - **Bonusy do hry ještě dnes (15. 10.):** uživatel chce Atlas s bonusy (B1 a vše, co k němu nutně patří) zapojit do hry před hraním, **pořádně a bez ořezávání rozsahu** („neřeš rozsah, udělej to pořádně“). Plán dávek připraví architekt (Opus), dvě souběžné dávky max., kontrola orchestrátora jako vždy.
+- **Atlas s bonusy — rozhodnutí k plánu `research/atlas/04-plan-zapojeni.md` (15. 10.):**
+  1. **QS1 až se simulací:** do hry jde ověřený model F5 bez síly zásahu Q (přepínač vypnutý); QS1 jako samostatná dávka se simulací po schválení obsahu.
+  2. **Drony a robot:** Ad Drone → **Sky Lantern** (odraz od papírového lampionu v Městě lampionů, ID `drone` zůstává), On Air → **Chimes** (Hodinová věž), Bolts → **vysloužilý listonoš**, Zippy → **lampář**; Marge a Stella zůstávají. Místní: Paper Pigeon, Lantern Draft, Windmill Wake.
+  3. **Starý save:** utracené mince za starou Dílnu se vrátí, úrovně se vynulují, rekord zůstane (místa v Atlasu se objeví podle doletu).
+  4. **Uzly bez ceny** (orchestrátor podle 06): Night Route skrytý, Autopilot až ve 2. vlně, žádné „Coming soon“.
+  5. **Pohlednice:** čtvrť 1 snímky z 3D, čtvrti 2–4 papírová silueta dominanty, dokud nebudou modely.
