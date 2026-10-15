@@ -1,6 +1,6 @@
 // Gradual reveal (02-ux §4.1, §4.4, §2.2): what the UI shows for a given save, the coin line and the prompt hint.
 // Pure functions of data, no DOM and no texts: the UI maps the returned ids and kinds to i18n keys.
-import { BRANCHES, PRICES } from './config.js';
+import { BRANCH_IDS, branchStatus } from './gear.js';
 import { NUMBERS } from './atlas-numbers.js';
 import { SCREEN_METERS } from './scenes.js';
 
@@ -40,14 +40,17 @@ export function reveal(p) {
 
 // Coin line of the result card (02-ux §4.2): how many branches have their next level affordable (at most one per branch),
 // otherwise how many coins are missing to the cheapest next level; null when hidden or everything is bought.
+// Workshop prices from gear.js (Power 3, Folds 3, Paper 12); a paper kind that is not open yet does not count.
 // The chip only informs, it does not buy (decision 06, 15. 10.).
-export function coinLine(p, prices = PRICES) {
+export function coinLine(p) {
   if (!reveal(p).coins) return null;
-  const coins = num(p.coins),
-    next = BRANCHES.map(b => prices[num(p.levels?.[b.id])]).filter(Number.isFinite);
+  const q = { ...p, coins: num(p.coins), best: num(p.best) },
+    next = BRANCH_IDS.map(id => branchStatus(q, id).next).filter(n => n && n.reason !== 'later');
   if (!next.length) return null;
-  const count = next.filter(c => c <= coins).length;
-  return count ? { kind: 'canBuy', count } : { kind: 'toNext', coins: Math.min(...next) - coins };
+  const count = next.filter(n => n.ok).length;
+  return count
+    ? { kind: 'canBuy', count }
+    : { kind: 'toNext', coins: Math.min(...next.map(n => n.missing)) };
 }
 
 // Hint below the prompt (02-ux §2.2). history: throws oldest first, each {power: 0..1} or {tap: true} for a tap too short to throw.

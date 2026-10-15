@@ -231,7 +231,7 @@ test('U5: ui.js řídí obrazovky a panely přes screens.js (žádné vlastní p
   assert.match(ui, /go\(\{ type: 'press', t: performance\.now\(\) \}\)/);
   assert.match(ui, /go\(\{ type: 'release', heldMs \}\)/);
   // odkrývání, nastavení pohybu a skutečný poměr plátna
-  assert.match(ui, /import \{ reveal, coinLine \} from '\.\/reveal\.js';/);
+  assert.match(ui, /import \{ reveal, coinLine(, \w+)* \} from '\.\/reveal\.js';/);
   assert.match(ui, /reducedMotion\(settings, systemReduce\.matches\)/);
   assert.match(ui, /aspect: gameSize\.width \/ gameSize\.height/);
   assert.match(ui, /aimAngleAt\(/);

@@ -45,10 +45,11 @@ const v3 = o => ({
   attempts: 5,
   ...o,
 });
-const v4 = atlas => ({ ...fresh(), coins: 40, best: 700, completed: true, atlas });
-test('fresh save is v4 with an empty atlas and survives a round trip', () => {
+// Současná verze save (v5 od M2) s daným atlasem.
+const v4 = atlas => ({ ...fresh(), coins: 40, best: 700, completed: false, atlas });
+test('fresh save is v5 with an empty atlas and survives a round trip', () => {
   const p = fresh();
-  assert.equal(p.version, 4);
+  assert.equal(p.version, 5);
   assert.deepEqual(p.atlas, {
     levels: {},
     seen: [],
@@ -60,7 +61,12 @@ test('fresh save is v4 with an empty atlas and survives a round trip', () => {
     hintOpens: 0,
     undo: null,
   });
-  assert.deepEqual(decodeSave(JSON.stringify(p)), { data: p, lossy: false, broken: false });
+  assert.deepEqual(decodeSave(JSON.stringify(p)), {
+    data: p,
+    lossy: false,
+    broken: false,
+    refund: 0,
+  });
   const full = v4({
     levels: { chain: 2, tape: 1 },
     seen: ['glider', 'chain'],
@@ -72,7 +78,12 @@ test('fresh save is v4 with an empty atlas and survives a round trip', () => {
     hintOpens: 3,
     undo: { id: 'tape', level: 2, price: 170 },
   });
-  assert.deepEqual(decodeSave(JSON.stringify(full)), { data: full, lossy: false, broken: false });
+  assert.deepEqual(decodeSave(JSON.stringify(full)), {
+    data: full,
+    lossy: false,
+    broken: false,
+    refund: 0,
+  });
 });
 test('ID lists come from the Atlas modules and match the progression simulator', () => {
   assert.deepEqual(ATLAS_BONUSES, Object.keys(BONUSES));
@@ -94,11 +105,12 @@ test('ID lists come from the Atlas modules and match the progression simulator',
   assert.deepEqual(ATLAS_EXCLUSIVE, P.pockets.exclusive);
   assert.equal(MAX_POCKETS, P.pockets.prices.length);
 });
-test('v3 → v4: empty atlas, one summary notice for records over several places', () => {
+test('v3 → v5: empty atlas, one summary notice for records over several places', () => {
   const a = decode(JSON.stringify(v3({ best: 50 })));
-  assert.equal(a.version, 4);
+  assert.equal(a.version, 5);
   assert.deepEqual(a.atlas, fresh().atlas);
-  assert.deepEqual(a.levels, { power: 1, paper: 0, fold: 2 });
+  assert.deepEqual(a.levels, fresh().levels); // stará Dílna vynulovaná, mince vrácené (tests/storage.test.js)
+  assert.equal(a.coins, 40 + 35 + 35 + 105);
   const b = decode(JSON.stringify(v3({ best: 3 * SCREEN_METERS + 1 })));
   assert.deepEqual(b.atlas.pending, [{ kind: 'pastFlights', places: 4 }]);
   assert.deepEqual({ ...b.atlas, pending: [] }, fresh().atlas);

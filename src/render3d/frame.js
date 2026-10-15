@@ -4,6 +4,7 @@
 // další snímek ho dostane přes prev (nextDirector, bez mutace). Bez prev začíná režisér znovu (první snímek bez dojezdu).
 import { PIXELS_PER_METER as PPM, SCREEN_METERS } from '../scenes.js';
 import { activeEvent } from '../events.js';
+import { EVENT_MIN_Y } from '../config.js';
 import { noise1, damp } from '../motion.js';
 import {
   createDirector,
@@ -215,7 +216,17 @@ export const cruiseOf = (f, k = paceOf(f)) => f?.cruise ?? (f?.p?.cruise ?? CRUI
 export const calmOf = visual => !!(visual?.settings?.calm || visual?.reduced);
 // Jeden krok režiséra pro let f (bez f = klid). time = hodiny scény (za letu f.t, po dopadu f.t + čas od dopadu, v klidu visual.clock).
 // prev = předchozí plan (jeho director a dirT); bez prev nový režisér. Čisté: prev.director se nemutuje.
-export function directorFor({ f = null, prev = null, time, visual = {} } = {}) {
+// Adaptér M2: v src/flight.js čeká splatná událost pod prahem 8 m s původním e.at (dřív at = Infinity). Kamera a tlumení
+// (qteLock, nextEventIn) ji nemají brát jako běžící QTE, proto ji vidí s at = Infinity. Kopie jen v tom případě, let se nemění.
+export function floorHeld(f) {
+  if (!f?.events || f.landed || !(f.y < EVENT_MIN_Y)) return f;
+  const held = e => e.phase === 'waiting' && f.t >= e.at;
+  return f.events.some(held)
+    ? { ...f, events: f.events.map(e => (held(e) ? { ...e, at: Infinity } : e)) }
+    : f;
+}
+export function directorFor({ f: raw = null, prev = null, time, visual = {} } = {}) {
+  const f = floorHeld(raw);
   if (!f) {
     const base = prev?.director?.state === 'rest' ? prev.director : null,
       t = visual.clock ?? time ?? 0;
@@ -289,13 +300,14 @@ const cheerAge = f => {
 };
 
 export function planFrame({
-  f = null,
+  f: raw = null,
   model = 'dart',
   time = 0,
   visual = {},
   state,
   prev = null,
 } = {}) {
+  const f = floorHeld(raw);
   const cssWidth = visual.cssWidth ?? 640;
   // Kvalita: výchozí z quality.js (pokles podle P95 drží volající přes nextQuality).
   const quality = visual.quality ?? initialQuality({ touch: !!visual.touch, cssWidth });

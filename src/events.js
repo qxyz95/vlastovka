@@ -1,9 +1,6 @@
-import { random } from './random.js';
-import { EVENT_MIN_Y } from './config.js';
-// Effect sizes before the model's `qte` multiplier.
-export const HELP = { gustX: 1.5, gustY: 2, perfect: 1.25, birdTime: 0.8, birdPerfect: 1.1 };
-// Timing in seconds. Gust: tap relative to event start (warning .8 s, then 1.2 s bar).
-// Bird: hold length. Half-widths scale with the fold upgrade (f.p.window).
+// Pohled hry na události letu. Rozvrh, okna a účinky jsou v src/flight.js (M2); tady jsou jen časy pro vzhled a čtení stavu.
+// Timing in seconds. Gust: tap relative to event start (warning .8 s, then 1.2 s bar). Bird: hold length.
+// The half-widths of a running event are in e.w (flight.js windowsOf: folds, Sharp Edge, floating centre).
 export const TIMING = {
   warning: 0.8,
   bar: 1.2,
@@ -15,29 +12,15 @@ export const TIMING = {
   birdPerfect: 0.1,
   maxEvents: 10,
 };
-export function createEvents(seed, tutorial = false) {
-  const rng = random(seed),
-    events = [];
-  for (let i = 0; i < TIMING.maxEvents; i++) {
-    let type = rng() < 0.5 ? 'gust' : 'bird';
-    if (tutorial && i < 2) type = i ? 'bird' : 'gust';
-    if (i >= 2 && events[i - 1].type === type && events[i - 2].type === type)
-      type = type === 'gust' ? 'bird' : 'gust';
-    events.push({
-      type,
-      at: i === 0 ? 1.5 : Infinity,
-      gap: i < 3 ? 3 : 4 + 3 * rng(),
-      phase: 'waiting',
-      heldAt: null,
-      owner: null,
-      result: null,
-      doneAt: null,
-    });
-  }
-  return events;
+const ACTIVE = ['warning', 'interaction', 'effect'],
+  HIT = ['success', 'perfect', 'partial', 'half'];
+export function activeEvent(f) {
+  return f && !f.landed ? (f.events.find(e => ACTIVE.includes(e.phase)) ?? null) : null;
 }
+// Výchozí okna bez plujícího středu (tvar pro audio-mix.qteCenter): poloviční šířky × f.d.windowK (Folds, Sharp Edge).
+// Přesná okna běžící události jsou v e.w.
 export function windows(f) {
-  const k = f?.p?.window ?? 1;
+  const k = f?.d?.windowK ?? 1;
   return {
     gust: {
       center: TIMING.gustCenter,
@@ -51,112 +34,31 @@ export function windows(f) {
     },
   };
 }
-const grade = (delta, w) =>
-  delta <= w.perfect + 1e-9 ? 'perfect' : delta <= w.success + 1e-9 ? 'success' : 'miss';
-export function activeEvent(f) {
-  return f && !f.landed
-    ? (f.events.find(e => ['warning', 'interaction', 'effect'].includes(e.phase)) ?? null)
-    : null;
-}
-function resolve(f, e, result) {
-  if (e.result) return null;
-  e.result = result;
-  e.owner = null;
-  e.phase = 'effect';
-  e.resolvedAt = f.t;
-  if (result === 'success' || result === 'perfect') {
-    const q = f.p.qte ?? 1;
-    if (e.type === 'gust') {
-      const k = (result === 'perfect' ? HELP.perfect : 1) * q;
-      f.vx += HELP.gustX * k;
-      f.vy += HELP.gustY * k;
-    } else {
-      f.carry = (result === 'perfect' ? HELP.birdPerfect : HELP.birdTime) * q;
-      f.vx = Math.max(10, f.vx);
-      f.vy = Math.max(0.4, f.vy);
-    }
-  }
-  e.doneAt = f.t + Math.max(1, e.type === 'bird' ? f.carry : 0);
-  f.feedback = 'feedback.' + result; // i18n key, ui.js translatesf.feedbackUntil=f.t+1;
-  return result;
-}
-export function updateEvents(f) {
-  if (f.landed) {
-    for (const e of f.events)
-      if (e.phase !== 'done') {
-        if (!e.result) e.result = 'interrupted';
-        e.phase = 'done';
-        e.owner = null;
-      }
-    f.carry = 0;
-    return;
-  }
-  for (let i = 0; i < f.events.length; i++) {
-    const e = f.events[i];
-    // Below EVENT_MIN_Y a due event keeps waiting with at=Infinity (no warning, marker or camera lock); if the plane climbs back, it starts then with a full warning.
-    if (e.phase === 'waiting' && (f.t >= e.at || e.floorWait)) {
-      if (f.y < EVENT_MIN_Y) {
-        e.floorWait = true;
-        e.at = Infinity;
-      } else {
-        if (e.floorWait) {
-          e.at = f.t;
-          e.floorWait = false;
-        }
-        e.phase = 'warning';
-      }
-    }
-    if (e.phase === 'warning' && f.t >= e.at + TIMING.warning) e.phase = 'interaction';
-    if (
-      e.phase === 'interaction' &&
-      !e.result &&
-      f.t > (e.heldAt === null ? e.at + TIMING.warning + TIMING.bar : e.heldAt + TIMING.bar) + 1e-9
-    )
-      resolve(f, e, 'miss');
-    if (e.phase === 'effect' && f.t >= e.doneAt) {
-      e.phase = 'done';
-      const next = f.events[i + 1];
-      if (next) next.at = e.doneAt + next.gap;
-    }
-  }
-}
-export function eventInput(f, kind, owner = 'key') {
-  if (!f || f.landed) return null;
-  updateEvents(f);
-  const e = activeEvent(f);
-  if (!e || e.result) return null;
-  if (kind === 'cancel') {
-    return e.heldAt !== null && e.owner === owner ? resolve(f, e, 'miss') : null;
-  }
-  if (kind === 'down') {
-    // Pressing during the warning is ignored, so anticipating never costs the attempt.
-    if (e.heldAt !== null || e.phase !== 'interaction') return null;
-    if (e.type === 'bird') {
-      e.heldAt = f.t;
-      e.owner = owner;
-      return 'holding';
-    }
-    const w = windows(f).gust;
-    return resolve(f, e, grade(Math.abs(f.t - e.at - w.center), w));
-  }
-  if (kind === 'up' && e.type === 'bird' && e.heldAt !== null && e.owner === owner) {
-    const w = windows(f).bird;
-    return resolve(f, e, grade(Math.abs(f.t - e.heldAt - w.center), w));
-  }
-  return null;
+// Bar position of a running event's success/perfect windows, as fractions of the bar (gust: from the end of the warning, bird: hold length).
+export function zones(e) {
+  const w = e?.w;
+  if (!w) return { success: [0, 0], perfect: [0, 0] };
+  const len =
+      Number.isFinite(w.close - w.open) && e.type !== 'bird' ? w.close - w.open : TIMING.bar,
+    c = (e.type === 'bird' ? w.c : (Array.isArray(w.c) ? w.c[e.puff ?? 0] : w.c) - w.open) / len,
+    s = w.s / len,
+    p = w.p / len;
+  return { success: [c - s, c + s], perfect: [c - p, c + p] };
 }
 export function eventProgress(f, e) {
-  return Math.max(
-    0,
-    Math.min(
-      1,
-      (e.type === 'bird' ? (e.heldAt === null ? 0 : f.t - e.heldAt) : f.t - e.at - TIMING.warning) /
-        TIMING.bar,
-    ),
-  );
+  const w = e.w,
+    v =
+      e.type === 'bird'
+        ? e.heldAt === null
+          ? 0
+          : (f.t - e.heldAt) / TIMING.bar
+        : w
+          ? (f.t - w.open) / (w.close - w.open)
+          : (f.t - e.at - TIMING.warning) / TIMING.bar;
+  return Math.max(0, Math.min(1, v));
 }
 export function eventStats(f) {
-  const done = f.events.filter(e => ['success', 'perfect', 'miss'].includes(e.result));
+  const done = f.events.filter(e => e.result === 'miss' || HIT.includes(e.result));
   return {
     completed: done.length,
     hits: done.filter(e => e.result !== 'miss').length,

@@ -46,34 +46,29 @@ globalThis.document ??= {
   }),
 };
 
-// Lety z HEAD 4df47a7 (před S4), autopilot QTE, 60 Hz: [model, seed, x, t, kroky]. Fyzika (core.js, throw.js) se v S4 nemění.
-// QS2 (15. 10.): glider 1 a 7 přepočteny, poslední událost by začala pod EVENT_MIN_Y = 8 m, a proto se nespustí.
-const GOLDEN = [
-  ['dart', 1, 260.769395, 16.978006, 1019],
-  ['dart', 2, 181.505597, 11.272374, 677],
-  ['dart', 3, 181.505597, 11.272374, 677],
-  ['dart', 7, 197.433978, 11.899052, 714],
-  ['glider', 1, 250.043541, 24.736751, 1485],
-  ['glider', 2, 210.111989, 19.878887, 1193],
-  ['glider', 3, 210.111989, 19.878887, 1193],
-  ['glider', 7, 242.417458, 22.795524, 1368],
-];
-test('physics unchanged by S4: same flights as before (golden from HEAD 4df47a7), the paper renderer does not touch the flight', () => {
-  for (const [model, seed, x, t, n] of GOLDEN) {
-    const f = createFlight(model, undefined, seed);
-    let k = 0,
-      p = null;
-    while (!f.landed && k < 60 * 120) {
-      const c = autoInput(f);
-      if (c) eventInput(f, c, 'auto');
-      step(f);
-      k++;
-      if (seed === 1) p = planFrame({ f, prev: p, time: f.t, visual: { cssWidth: 1280 } });
-    }
-    assert.equal(k, n, `${model} ${seed} steps`);
-    near(f.x, x, 1e-6, `${model} ${seed} x`);
-    near(f.t, t, 1e-6, `${model} ${seed} t`);
+// M2: hra létá na src/flight.js, proto místo zlatých hodnot staré fyziky srovnání téhož letu s planFrame a bez něj
+// (renderer let nemění) a s autopilotem QTE, 60 Hz.
+const fly = (model, seed, plan) => {
+  const f = createFlight(model, undefined, seed);
+  let k = 0,
+    p = null;
+  while (!f.landed && k < 60 * 180) {
+    const c = autoInput(f);
+    if (c) eventInput(f, c);
+    step(f);
+    k++;
+    if (plan) p = planFrame({ f, prev: p, time: f.t, visual: { cssWidth: 1280 } });
   }
+  return { x: f.x, t: f.t, k, hits: f.stats.hits };
+};
+test('physics untouched by the paper renderer: the same flight with and without planFrame', () => {
+  for (const model of ['dart', 'glider'])
+    for (const seed of [1, 2, 7]) {
+      const a = fly(model, seed, true),
+        b = fly(model, seed, false);
+      assert.deepEqual(a, b, `${model} ${seed}`);
+      assert.ok(a.x > 50 && Number.isFinite(a.t), `${model} ${seed} flies`);
+    }
   assert.equal(
     createFlight('dart', undefined, 5).y,
     HAND.y,

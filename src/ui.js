@@ -1,26 +1,29 @@
-import { BRANCHES, PRICES, DT, UPGRADE, VERSION } from './config.js';
+import { DT, VERSION } from './config.js';
 import { t, num, unit, pct, setLang, pickLang, LANG_KEY, translateMessage } from './i18n.js';
 import {
   fresh,
-  buy,
-  createFlight,
-  step,
+  flightFor,
+  advance,
   activeEvent,
   eventInput,
+  feedbackOf,
   settle,
   reward,
   bestAngle,
   angleHint,
+  FINISH,
 } from './core.js';
+import { PROGRESSION } from './progression-numbers.js';
+import { mountWorkshop } from './workshop-ui.js';
 import { load, save } from './storage.js';
 import { createFx, fxEvent, stepFx } from './juice.js';
 import { lerp } from './motion.js';
 import { districtAt } from './scenes.js';
-import { chargeAt, throwSettings } from './throw.js';
-import { eventProgress, eventStats, windows, TIMING } from './events.js';
+import { chargeAt } from './throw.js';
+import { eventProgress, eventStats, zones } from './events.js';
 import { createDecorations, stepDecorations } from './decorations.js';
 import { initialState, transition, loopRuns, PANELS } from './screens.js';
-import { reveal, coinLine } from './reveal.js';
+import { reveal, coinLine, GLIDER_METERS } from './reveal.js';
 import { loadSettings, saveSettings, reducedMotion } from './settings.js';
 import { devEnabled, addDevCoins } from './dev.js';
 import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
@@ -62,7 +65,6 @@ const $ = id => document.getElementById(id),
   loaded = load();
 let p = loaded.data,
   f = null,
-  picked = { branch: 'power', level: 1 },
   last = 0,
   acc = 0;
 let fx = null,
@@ -103,10 +105,14 @@ if (mc)
     } else mc.port2.postMessage(0);
   };
 const tick = () => (mc ? mc.port2.postMessage(0) : requestAnimationFrame(frame));
+// Vrácené mince za starou Dílnu (migrace save v5) se oznámí jednou po načtení, v aktuálním jazyce.
 let warning = loaded.warning,
+  refund = loaded.refund ?? 0,
   warningClosed = false;
 const showWarning = () => {
-  const text = translateMessage(warning);
+  const text = [translateMessage(warning), refund ? t('save.refund', { coins: num(refund) }) : '']
+    .filter(Boolean)
+    .join(' ');
   $('warning-text').textContent = text;
   $('warning').hidden = !text || warningClosed;
 };
@@ -180,118 +186,18 @@ function applyReveal() {
   $('title-status').textContent = p.completed ? t('menu.delivered') : '';
   return R;
 }
+const workshop = mountWorkshop($('workshop'), {
+  getSave: () => p,
+  onChange: () => {
+    persist();
+    refresh();
+  },
+});
 function refresh() {
   applyReveal();
   $('coins').textContent = num(p.coins);
   $('hud-coins').setAttribute('aria-label', t('menu.coins', { count: p.coins }));
-  for (const m of ['dart', 'glider']) {
-    $(m).classList.toggle('selected', p.model === m);
-    $(m).setAttribute('aria-pressed', p.model === m);
-  }
-  $('glider').disabled = p.best < 100;
-  $('glider-description').textContent =
-    p.best < 100 ? t('model.glider.locked', { distance: m(100) }) : t('model.glider.desc');
-  $('tree').replaceChildren();
-  for (const b of BRANCHES) {
-    const row = document.createElement('div');
-    row.className = 'branch';
-    const label = document.createElement('div');
-    label.className = 'branch-label';
-    label.textContent = b.icon + '  ' + t('branch.' + b.id);
-    row.append(label);
-    const nodes = document.createElement('div');
-    nodes.className = 'nodes';
-    for (let l = 1; l <= 5; l++) {
-      const node = document.createElement('button'),
-        owned = l <= p.levels[b.id],
-        locked = l > p.levels[b.id] + 1;
-      node.className =
-        'node' +
-        (owned ? ' owned' : locked ? ' locked' : '') +
-        (picked.branch === b.id && picked.level === l ? ' picked' : '');
-      const small = document.createElement('small');
-      small.textContent = owned ? t('node.done') : num(PRICES[l - 1]) + ' ◈';
-      node.append(`${owned ? '✓' : locked ? '·' : b.icon} ${l}`, small);
-      node.setAttribute(
-        'aria-label',
-        t('node.aria', {
-          branch: t('branch.' + b.id),
-          level: l,
-          status: t(
-            owned
-              ? 'node.owned'
-              : locked
-                ? 'node.locked'
-                : p.coins < PRICES[l - 1]
-                  ? 'node.poor'
-                  : 'node.available',
-          ),
-        }),
-      );
-      node.onclick = () => {
-        picked = { branch: b.id, level: l };
-        refresh();
-        focusPicked();
-      };
-      nodes.append(node);
-    }
-    row.append(nodes);
-    $('tree').append(row);
-  }
-  const b = BRANCHES.find(b => b.id === picked.branch),
-    l = picked.level,
-    owned = l <= p.levels[b.id],
-    locked = l > p.levels[b.id] + 1;
-  const price = PRICES[l - 1],
-    el = (tag, text, cls) => {
-      const e = document.createElement(tag);
-      e.textContent = text;
-      if (cls) e.className = cls;
-      return e;
-    },
-    buyButton = el('button', owned ? t('detail.bought') : t('detail.buy', { price }));
-  buyButton.id = 'buy';
-  buyButton.disabled = owned || locked || p.coins < price;
-  $('detail').replaceChildren(
-    el('span', t('detail.eyebrow', { level: l }), 'eyebrow'),
-    el('h3', b.icon + ' ' + t('branch.' + b.id)),
-    el('p', effectText(b.id)),
-    el(
-      'p',
-      owned
-        ? t('detail.owned')
-        : locked
-          ? t('detail.locked', { level: l - 1 })
-          : t('detail.price', { price }) +
-            ' · ' +
-            (p.coins < price ? t('detail.missing', { count: price - p.coins }) : t('detail.ready')),
-    ),
-    buyButton,
-  );
-  $('buy').onclick = () => {
-    if (buy(p, b.id, l)) {
-      persist();
-      refresh();
-      focusPicked();
-    }
-  };
-}
-const focusPicked = () =>
-  $('tree')
-    .querySelectorAll('.branch')
-    [BRANCHES.findIndex(b => b.id === picked.branch)]?.querySelectorAll('button')
-    [picked.level - 1]?.focus();
-// Effect numbers come from config (UPGRADE), so the text follows any rebalance.
-function effectText(id) {
-  const plus = x => '+' + pct(x);
-  return t(
-    'branch.' + id + '.effect',
-    id === 'power'
-      ? { speed: plus(UPGRADE.power) }
-      : id === 'paper'
-        ? { glide: plus(UPGRADE.paper) }
-        : { steady: plus(UPGRADE.steady), window: plus(UPGRADE.window), qte: plus(UPGRADE.qte) },
-  );
+  workshop.refresh();
 }
 // Úvod (H1): {pressed: s | null} nebo null. Ukáže se po načtení ('loaded') a po zavření Dílny, Atlasu nebo Menu zpět na Domov
 // (introAfter podle zavřeného panelu), ne po „Hodit znovu“ ('throwAgain', stisk na kartě výsledku) ani po zrušení hodu.
@@ -402,6 +308,7 @@ $('cancel-throw').onclick = () => go({ type: 'cancelThrow' });
 $('retry').onclick = () => go({ type: 'throwAgain' });
 $('confirm-delete').onclick = () => {
   p = fresh();
+  refund = 0;
   persist();
   refresh();
   go({ type: 'resetProgress' });
@@ -442,23 +349,24 @@ function begin(source) {
 // Puštění: automat rozhodne, jestli to byl hod (≥ HOLD_MIN_MS), nebo jen ťuknutí (Domov zůstane).
 function release(source) {
   if (!held || owner !== source || S.screen !== 'home') return;
-  pending = throwSettings(angle, chargeAt(heldTime));
+  pending = { angle, charge: chargeAt(heldTime) };
   const heldMs = heldTime * 1000;
   held = false;
   owner = null;
   go({ type: 'release', heldMs });
   heldTime = 0;
 }
-function startFlight(launch) {
+function startFlight({ angle, charge }) {
   intro = null;
-  f = createFlight(p.model, p.levels, p.attempts + 1, { x: 0, y: 0 }, launch);
+  f = flightFor(p, angle, charge);
+  const launch = f.launch;
   acc = 0;
   prev = null;
   landedAt = 0;
   fx = createFx();
   fxEvent(fx, 'throw', { power: launch.power });
   decorations = createDecorations(f.seed);
-  zoneKind = null;
+  zoneEvent = null;
   inputOwner = null;
   bannerQueue = [];
   seenMilestones = new Set();
@@ -538,27 +446,20 @@ $('angle').oninput = () => {
   angle = Number($('angle').value);
   updateAim();
 };
-for (const m of ['dart', 'glider'])
-  $(m).onclick = () => {
-    if (m === 'glider' && p.best < 100) return;
-    p.model = m;
-    persist();
-    refresh();
-  };
 function flightDown(source) {
   if (S.screen !== 'flight' || !loopRuns(S) || hidden() || inputOwner !== null) return;
   const e = activeEvent(f);
   if (!e || e.result) return;
   inputOwner = source;
-  eventInput(f, 'down', source);
+  eventInput(f, 'down');
 }
 function flightUp(source) {
   if (inputOwner !== source) return;
-  eventInput(f, 'up', source);
+  eventInput(f, 'up');
   inputOwner = null;
 }
 function flightCancel() {
-  if (inputOwner !== null && f) eventInput(f, 'cancel', inputOwner);
+  if (inputOwner !== null && f) eventInput(f, 'cancel');
   inputOwner = null;
 }
 $('action').addEventListener('pointerdown', e => {
@@ -649,13 +550,13 @@ function finish() {
   refresh();
   outcome = {
     record: f.x > previous,
-    glider: previous < 100 && p.best >= 100,
-    hint: angleHint((f.launch.angle * 180) / Math.PI, bestAngle(f.model, p.levels, f.launch.power)),
+    glider: previous < GLIDER_METERS && p.best >= GLIDER_METERS,
+    hint: angleHint(f.angle, bestAngle(f.kit, f.charge)),
   };
   fillResult();
 }
 function fillResult() {
-  $('result-title').textContent = t(f.x >= 500 ? 'result.goal' : 'result.title');
+  $('result-title').textContent = t(f.x >= FINISH - 1e-9 ? 'result.goal' : 'result.title');
   $('stat-distance').textContent = m(f.x, 1);
   $('stat-time').textContent = unit(f.t, 's', 1);
   $('stat-power').textContent = pct(Math.round(f.launch.power * 100) / 100);
@@ -663,13 +564,15 @@ function fillResult() {
   const stats = eventStats(f);
   $('stat-events').textContent = stats.hits + ' / ' + stats.completed + ' · ★ ' + stats.perfect;
   $('stat-best').textContent = m(p.best, 1);
-  $('reward-breakdown').textContent = t('result.breakdown', { base: 10, distance: reward(f) - 10 });
+  const base = PROGRESSION.economy.reward.base;
+  $('reward-breakdown').textContent = t('result.breakdown', { base, distance: reward(f) - base });
   $('stat-reward').textContent = num(reward(f));
-  $('result-progress').value = Math.min(500, p.best);
-  $('result-progress-label').textContent =
-    p.best >= 500
-      ? t('result.goalDone', { distance: m(p.best) })
-      : t('result.progress', { best: num(Math.floor(p.best)), goal: m(500) });
+  // Cíl = konec trasy (4 876 m, p.completed), ne dřívějších 500 m.
+  $('result-progress').max = FINISH;
+  $('result-progress').value = Math.min(FINISH, p.best);
+  $('result-progress-label').textContent = p.completed
+    ? t('result.goalDone', { distance: m(p.best) })
+    : t('result.progress', { best: num(Math.floor(p.best)), goal: m(FINISH) });
   // Řádek mincí (reveal.coinLine): jen informuje, kupuje se v Dílně (06, 15. 10.). Pořadí řádků karty je U7.
   const coins = coinLine(p);
   $('result-coins').hidden = !coins;
@@ -716,14 +619,10 @@ function frame(now) {
     }
     if (S.screen === 'flight' && f && runs) {
       // Hitstop freezes physics for a few frames; QTE timing runs on flight time, so it is unaffected.
-      if (fx.hitstop > 0) fx.hitstop = Math.max(0, fx.hitstop - elapsed);
-      else acc += elapsed;
-      while (acc >= DT && !f.landed) {
-        prev = { x: f.x, y: f.y, vx: f.vx, vy: f.vy, t: f.t };
-        step(f);
-        stepDecorations(decorations, f);
-        acc -= DT;
-      }
+      // Klidné klouzání běží f.warp× rychleji (1,4×, flight.realTime), jako skutečný čas simulátoru.
+      const frozen = fx.hitstop > 0;
+      if (frozen) fx.hitstop = Math.max(0, fx.hitstop - elapsed);
+      ({ acc } = advance(f, acc, elapsed, frozen, onStep));
       juiceEvents();
       // Let the landing dust and shake play before the result card covers the scene.
       if (f.landed) {
@@ -789,15 +688,12 @@ function frame(now) {
   }
   tick();
 }
-// Bar position of an event's success/perfect windows, as fractions of the bar.
-function zonesFor(kind) {
-  const w = windows(f)[kind],
-    c = (kind === 'gust' ? w.center - TIMING.warning : w.center) / TIMING.bar,
-    s = w.success / TIMING.bar,
-    pf = w.perfect / TIMING.bar;
-  return { success: [c - s, c + s], perfect: [c - pf, c + pf] };
-}
-let zoneKind = null;
+// Před každým krokem fyziky snímek pro interpolaci, po něm ozdoby scény.
+const onStep = (g, when) => {
+  if (when === 'before') prev = { x: g.x, y: g.y, vx: g.vx, vy: g.vy, t: g.t };
+  else stepDecorations(decorations, g);
+};
+let zoneEvent = null;
 // Turn resolved events and the landing into feedback (each only once).
 function juiceEvents() {
   for (const e of f.events)
@@ -820,7 +716,7 @@ function qteVisual() {
     result: e.result,
     held: e.heldAt !== null,
     progress: eventProgress(f, e),
-    zones: zonesFor(e.type),
+    zones: zones(e),
   };
 }
 function updateFlightUI() {
@@ -828,9 +724,10 @@ function updateFlightUI() {
     interactive = e && !e.result;
   // Časovací pruh pod scénou je volba Nastavení (settings.timingBar, přepínač přijde v U9); jinak jen kruh ve scéně.
   setHidden($('timing'), !settings.timingBar);
-  if (e && e.type !== zoneKind) {
-    zoneKind = e.type;
-    const z = zonesFor(zoneKind);
+  // Okna se liší událost od události (plující střed, Folds), proto se pruh přepočítá pro každou novou událost.
+  if (e && e !== zoneEvent && e.w) {
+    zoneEvent = e;
+    const z = zones(e);
     for (const [cls, [a, b]] of [
       ['success-zone', z.success],
       ['perfect-zone', z.perfect],
@@ -853,13 +750,13 @@ function updateFlightUI() {
       ? t('help.ready')
       : interactive
         ? t(e.type === 'gust' ? 'help.gust' : e.heldAt !== null ? 'help.holding' : 'help.bird')
-        : f.t < f.feedbackUntil
-          ? t(f.feedback)
+        : feedbackOf(f)
+          ? t(feedbackOf(f))
           : t('help.idle');
   setText($('event-help'), help);
   if (bestAtStart > 0 && f.x > bestAtStart) setHidden($('hud-best'), false);
   // Banner (02-ux §1.1, §1.4): nejvýš jeden, mimo událost; nová čtvrť má přednost před milníkem.
-  for (const v of [100, 250, 500])
+  for (const v of [100, 250, 500, FINISH])
     if (f.x >= v && !seenMilestones.has(v)) {
       seenMilestones.add(v);
       bannerQueue.push({ kind: 'milestone', value: v });
@@ -878,7 +775,7 @@ function updateFlightUI() {
       $('banner'),
       banner.kind === 'district'
         ? districtAt(banner.x).name
-        : t(banner.value === 500 ? 'banner.goal' : 'banner.milestone', {
+        : t(banner.value === FINISH ? 'banner.goal' : 'banner.milestone', {
             distance: m(banner.value),
           }),
     );

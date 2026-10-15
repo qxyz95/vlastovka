@@ -4,6 +4,7 @@
 import { SCREEN_METERS, SECTION_METERS, ROUTE } from './scenes.js';
 import { coinLine } from './reveal.js';
 import { LOCK_MS, HOLD_MIN_MS } from './screens.js';
+import { eventStats } from './events.js';
 
 // Zástupné, doladí balance-analyst (05 karty, čísla jsou zástupná do schválení obsahu).
 export const DIFF_MIN_M = 5; // K2 pravidlo 4: Δ pod max(5 m, 4 % minulého doletu) se mlčí
@@ -27,7 +28,7 @@ export function resultInput(msSinceShown, target, heldMs = null) {
   return num(heldMs) >= HOLD_MIN_MS ? 'throw' : 'tap';
 }
 
-// Změna výbavy: prev/cur = {levels:{power,paper,fold}, model, atlas:{id:úroveň}} -> seznam odkazů 'level:power:2', 'model:glider'.
+// Změna výbavy: prev/cur = {levels:{power,paper,folds}, model, atlas:{id:úroveň}} -> seznam odkazů 'level:power:2', 'level:paper:5', 'model:glider'.
 function gearChanges(a = {}, b = {}) {
   const out = [];
   for (const id of Object.keys({ ...a.levels, ...b.levels }))
@@ -85,6 +86,28 @@ export function throwDiff(prev, cur) {
     key: delta > 0 ? 'result.diff.up' : 'result.diff.down',
     params: { m: Math.round(Math.abs(delta)) },
     causes: shown,
+  };
+}
+
+// Fakta hodu pro throwDiff z letu hry (M2, src/flight.js): výbava z kitu letu (Paper = úroveň papíru 0–12, tedy tempo π, ne klouzavost),
+// vítr v m/s ve výšce plného střihu (podíl f.w × cestovní rychlost modelu × π, kladný do zad). extra: {hint, chargeT, record}.
+export function throwFacts(f, extra = {}) {
+  const k = f.kit ?? {},
+    m = f.d?.m ?? {},
+    st = eventStats(f);
+  return {
+    dist: num(f.x) - num(f.startX),
+    gear: {
+      levels: { power: num(k.power), paper: num(k.paper), folds: num(k.folds) },
+      model: k.model,
+      atlas: { ...k.atlas },
+    },
+    hits: st.hits,
+    perfects: st.perfect,
+    grade: f.launch?.grade,
+    wind: num(f.w) * (m.windK ?? 1) * num(m.cruise) * (f.d?.pi ?? 1),
+    record: false,
+    ...extra,
   };
 }
 

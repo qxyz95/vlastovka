@@ -8,7 +8,7 @@ import {
   PLANE_NARROW,
 } from '../src/render3d/frame.js';
 import { createFlight, step } from '../src/core.js';
-import { eventInput } from '../src/events.js';
+import { eventInput } from '../src/core.js';
 import { autoInput } from './helpers/auto-input.js';
 
 // S3 velikost vlaštovky (research/start/02 M-2, 01 §3.7): délka podle šířky záběru, na úzké scéně aspoň 24 CSS px.

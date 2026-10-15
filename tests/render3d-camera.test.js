@@ -67,7 +67,7 @@ import {
 import { PLANE_OFFSET, tempoZoom } from '../src/render3d/geometry.js';
 import { restCamera, REST as POSE_REST } from '../src/render3d/pose.js';
 import { createFlight, step } from '../src/core.js';
-import { eventInput } from '../src/events.js';
+import { eventInput } from '../src/core.js';
 import { autoInput } from './helpers/auto-input.js';
 import { SCREEN_METERS } from '../src/scenes.js';
 const DT = 1 / 60;
