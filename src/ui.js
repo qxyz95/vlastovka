@@ -656,7 +656,8 @@ window.addEventListener('keydown', e => {
   }
 });
 window.addEventListener('keyup', e => {
-  if (otherButton(e)) return;
+  // V otevřeném panelu patří mezerník ovládacím prvkům (Ztlumit vše se přepíná až na keyup); držení hodu tam už neběží.
+  if (otherButton(e) || S.panels.length) return;
   if (e.code === 'Space' || e.code === 'Enter') {
     if (S.screen === 'home') {
       e.preventDefault();

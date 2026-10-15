@@ -460,4 +460,20 @@ test('one place drives the audio: ui.js calls gameAudio.frame once, before rende
   ])
     assert.ok(!/game-audio|audio\.js|AudioContext/.test(read(p)), p + ' knows nothing about audio');
   assert.ok(!/createAudio\(|new AudioContext/.test(ui), 'ui.js has no Web Audio of its own');
+  // Space in an open panel belongs to its controls (Mute all toggles on keyup), the game keyup must not prevent it.
+  assert.match(
+    ui.slice(ui.indexOf("addEventListener('keyup'")).split('\n')[2],
+    /otherButton\(e\) \|\| S\.panels\.length\) return/,
+  );
+});
+test('the silence mask sits around the planned tick, which is early by the output latency (and the calibration)', () => {
+  const ctx = Object.assign(fakeContext(), { outputLatency: 0.2 }),
+    a = createAudio({ ctx, autoUnlock: false, autoStart: false }),
+    near = (x, y) => Math.abs(x - y) < 1e-9;
+  a.update({ screen: 'flight', event: 'window', centres: [1], flightT: 0 });
+  assert.ok(near(a.mask[0][0], 0.68) && near(a.mask[0][1], 0.92), JSON.stringify(a.mask));
+  a.setSettings({ latency: 0.05 }); // calibration: + = later
+  a.update({ screen: 'flight', event: 'window', centres: [1], flightT: 0 });
+  assert.ok(near(a.mask[0][0], 0.73), JSON.stringify(a.mask));
+  a.setSettings({ latency: 0 });
 });
