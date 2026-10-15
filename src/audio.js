@@ -1,6 +1,6 @@
 // Audio engine (presentation): AudioContext unlocked on the first gesture, master/music/sfx buses, look-ahead scheduler
-// ("A Tale of Two Clocks"), layer mixing from audio-mix.js, suspend while the tab is hidden, settings in localStorage.
-// The game does not load it yet; only prototype-music.html uses it. One state object per frame: audio.update(state) (03 F.2).
+// ("A Tale of Two Clocks"), layer mixing from audio-mix.js, sleep (fade + suspend) while hidden or muted, settings in
+// localStorage. The game drives it through game-audio.js, the prototype directly. One state per frame: audio.update(state) (03 F.2).
 import {
   mixTargets,
   audioSettings,
@@ -32,12 +32,33 @@ const LOOK = 0.12,
   PUMP_MS = 25,
   BEATS = 4,
   DEFAULT_ROOM = 3.4,
-  REST_BED = 0.35;
+  REST_BED = 0.35,
+  SLEEP_MS = 60; // master fade before suspend, so a hidden tab or mute never cuts a note with a click
 const set = (p, v, t, tc = 0.05) => {
   p.cancelScheduledValues(t);
   p.setValueAtTime(p.value, t);
   p.setTargetAtTime(v, t, tc);
 };
+// Page lifecycle of the context: unlock on every gesture (also after an iOS interruption), sleep while the tab is
+// hidden or the page is in the back/forward cache, retry on focus. win/doc are injectable for tests. → unbind().
+export function bindLifecycle(a, { win = globalThis, doc = globalThis.document } = {}) {
+  const on = (t, ev, f, o) => {
+      t?.addEventListener?.(ev, f, o);
+      return () => t?.removeEventListener?.(ev, f, o);
+    },
+    vis = () => (doc?.hidden ? a.sleep('hidden') : a.wake('hidden')),
+    opt = { capture: true, passive: true };
+  const offs = [
+    ...['pointerdown', 'keydown', 'touchend'].map(ev => on(win, ev, a.unlock, opt)),
+    on(doc, 'visibilitychange', vis),
+    on(win, 'pagehide', () => a.sleep('hidden')),
+    on(win, 'pageshow', vis),
+    on(win, 'focus', a.revive),
+    on(a.ctx, 'statechange', a.onState),
+  ];
+  if (doc?.hidden) a.sleep('hidden');
+  return () => offs.forEach(f => f());
+}
 export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   const AC = globalThis.AudioContext ?? globalThis.webkitAudioContext;
   ctx ??= new AC({ latencyHint: 'interactive' });
@@ -46,6 +67,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     ms = [];
   let settings = loadAudioSettings(),
     unlocked = false,
+    sleepTimer = null,
     timer = null,
     cueId = 0,
     lastPump = null;
@@ -84,6 +106,9 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
     cueing: null,
     dropped: 0,
     spikes: [],
+    asleep: new Set(), // why the context sleeps: 'hidden', 'muted'
+    interruptions: 0, // iOS 'interrupted' (call, Siri), counted for the debug overlay
+    reducedMotion: null, // set by the game (motion setting); null = the system preference (sfx.js)
   };
   const emit = (type, info) => {
     for (const f of listeners) f(type, info);
@@ -102,34 +127,66 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   const applyVolumes = () => {
     const t = ctx.currentTime,
       s = settings;
-    set(g.master.gain, s.muted ? 0 : level(s.master), t);
+    set(g.master.gain, s.muted || a.asleep.size ? 0 : level(s.master), t);
     set(g.music.gain, level(s.music), t);
     set(g.sfx.gain, level(s.sfx), t);
+  };
+  const resume = () => {
+    if (ctx.state !== 'running' && ctx.state !== 'closed')
+      Promise.resolve(ctx.resume?.()).catch(() => {});
+  };
+  // Sleep: master fades out, then the context suspends (CPU and battery). Wake: resume and fade in, only after a gesture
+  // unlocked the context and no other reason to sleep is left.
+  a.sleep = why => {
+    if (a.asleep.has(why)) return;
+    a.asleep.add(why);
+    applyVolumes();
+    clearTimeout(sleepTimer);
+    sleepTimer = setTimeout(() => {
+      if (a.asleep.size && ctx.state === 'running')
+        Promise.resolve(ctx.suspend?.()).catch(() => {});
+    }, SLEEP_MS);
+    emit('sleep', why);
+  };
+  a.wake = why => {
+    if (!a.asleep.delete(why) && why) return false;
+    if (a.asleep.size || !unlocked) return false;
+    clearTimeout(sleepTimer);
+    resume();
+    applyVolumes();
+    emit('wake', why);
+    return true;
+  };
+  // State changes not asked for: iOS 'interrupted' (a call) waits; a context suspended by the system while it should
+  // run is resumed (may need the next gesture, which unlock() retries).
+  a.onState = () => {
+    if (ctx.state === 'interrupted') a.interruptions++;
+    else if (ctx.state === 'suspended' && unlocked && !a.asleep.size) resume();
+    emit('state', ctx.state);
+  };
+  a.revive = () => {
+    if (unlocked && !a.asleep.size) resume();
   };
   a.setSettings = patch => {
     settings = audioSettings({ ...settings, ...patch });
     saveAudioSettings(settings);
+    if (settings.muted) a.sleep('muted');
+    else a.wake('muted');
     applyVolumes();
     emit('settings', settings);
     return settings;
   };
+  if (settings.muted) a.asleep.add('muted');
   applyVolumes();
   a.unlock = () => {
     try {
       if (navigator.audioSession) navigator.audioSession.type = 'playback';
     } catch {}
     unlocked = true;
-    if (ctx.state === 'suspended' && !document.hidden) ctx.resume();
+    if (!a.asleep.size) resume();
     emit('unlock');
   };
-  if (autoUnlock && globalThis.addEventListener) {
-    for (const t of ['pointerdown', 'keydown', 'touchend'])
-      addEventListener(t, a.unlock, { capture: true, passive: true });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) ctx.suspend();
-      else if (unlocked) ctx.resume();
-    });
-  }
+  if (autoUnlock) bindLifecycle(a);
   a.unlocked = () => unlocked && ctx.state === 'running';
   // Loudness trim of the music (blind comparison at equal LUFS), in dB.
   a.setTrim = db => set(g.trim.gain, 10 ** (db / 20), ctx.currentTime, 0.1);
@@ -204,12 +261,13 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   };
   // Mix from the game state: thinning (warning/window) is immediate, everything else fades in on the next beat
   // (after a rest on the next bar). The whole music is capped by musicFilter: attack 40 ms, release 0.4 s (03 E.3/1).
-  a.setMix = state => {
+  // landing: the groove and lead fade out to the end of the bar, not at once (03 E.2 "Dopad").
+  a.setMix = (state, landing = false) => {
     const m = mixTargets({ ...state, calm: settings.calm }),
       t = ctx.currentTime,
       resting = a.resting(),
       back = !resting && a.mix.rested,
-      beat = a.track ? a.nextBeat(back ? 4 : 1) : t;
+      beat = a.track ? a.nextBeat(back || landing ? 4 : 1) : t;
     a.density = Math.min(1, Math.max(0, ((state.speed ?? 1) - 0.6) / 1.4));
     if (resting) m.layers = [REST_BED, 0, 0, 0];
     m.rested = resting;
@@ -221,7 +279,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
       p.setValueAtTime(p.value, t);
       p.setTargetAtTime(
         v * trimL(l),
-        (down || m.urgent) && !back ? t : beat,
+        (down || m.urgent) && !back && !landing ? t : beat,
         m.urgent ? 0.04 : 0.2,
       );
     });
@@ -246,6 +304,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
   a.update = (s = {}) => {
     const now = ctx.currentTime,
       toCtx = c => now + (c - (s.flightT ?? 0));
+    const landing = s.screen === 'result' && a.screen === 'flight';
     a.state = s;
     a.centres = (s.centres ?? []).map(toCtx);
     const mask = silenceMask(a.centres);
@@ -270,7 +329,7 @@ export function createAudio({ ctx, autoUnlock = true, autoStart = true } = {}) {
       }
       a.screen = s.screen;
     }
-    return a.setMix(s);
+    return a.setMix(s, landing);
   };
   // Ducks merge (03 E.3/3): a planned centre right after this one (steam) extends the hold instead of a second dip.
   a.duck = (when = ctx.currentTime, o = {}) => {

@@ -15,7 +15,9 @@ export function createSfx(audio) {
   // Combo tones follow the mode of the playing district (Lantern City dorian: F, not F#).
   const mode = () =>
       audio.track?.districts?.[audio.district]?.mode ?? ARC[audio.district ?? 0]?.mode ?? 'ionian',
-    reduced = () => !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    // The game's motion setting (audio.reducedMotion) wins over the system preference.
+    reduced = () =>
+      audio.reducedMotion ?? !!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const s = {
     // Any voice on the effects bus (e.d in seconds); used by the prototype's leitmotif test.
     note: (e, t = now()) => v(e, t),

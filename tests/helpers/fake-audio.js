@@ -67,11 +67,37 @@ export function fakeContext(rate = 48000) {
       stop() {},
       ...extra,
     });
+  const listeners = new Map(),
+    calls = [];
   const ctx = {
     currentTime: 0,
     sampleRate: rate,
     state: 'running',
     starts,
+    calls, // 'suspend' / 'resume' in order
+    addEventListener(type, f) {
+      (listeners.get(type) ?? listeners.set(type, new Set()).get(type)).add(f);
+    },
+    removeEventListener(type, f) {
+      listeners.get(type)?.delete(f);
+    },
+    // Test helper: change the state like the browser would and fire statechange.
+    setState(s) {
+      if (ctx.state === s) return;
+      ctx.state = s;
+      for (const f of listeners.get('statechange') ?? []) f();
+    },
+    suspend() {
+      calls.push('suspend');
+      ctx.setState('suspended');
+      return Promise.resolve();
+    },
+    resume() {
+      calls.push('resume');
+      if (!ctx.blockResume) ctx.setState('running');
+      return Promise.resolve();
+    },
+    createPeriodicWave: () => ({}),
     createGain: () => node({ gain: fakeParam(1) }),
     createBiquadFilter: () =>
       node({ type: 'lowpass', frequency: fakeParam(350), Q: fakeParam(1), gain: fakeParam(0) }),
@@ -98,7 +124,13 @@ export function fakeContext(rate = 48000) {
       };
     },
     createOscillator: () =>
-      source({ kind: 'osc', type: 'sine', frequency: fakeParam(440), detune: fakeParam(0) }),
+      source({
+        kind: 'osc',
+        type: 'sine',
+        frequency: fakeParam(440),
+        detune: fakeParam(0),
+        setPeriodicWave() {},
+      }),
     createBufferSource: () =>
       source({ kind: 'buffer', buffer: null, loop: false, playbackRate: fakeParam(1) }),
     destination: node(),

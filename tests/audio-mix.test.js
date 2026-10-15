@@ -303,7 +303,7 @@ test('audio settings: defaults music 60 %, effects 80 %, invalid values ignored,
   assert.equal(AUDIO_DEFAULTS.muted, false);
   assert.deepEqual(
     audioSettings({ music: 2, sfx: -1, tick: 'no', latency: 5, master: NaN, muted: true, x: 1 }),
-    { ...AUDIO_DEFAULTS, music: 1, sfx: 0, latency: 0.3, muted: true },
+    { ...AUDIO_DEFAULTS, latency: 0.3, muted: true },
   );
   assert.deepEqual(audioSettings('garbage'), AUDIO_DEFAULTS);
 });

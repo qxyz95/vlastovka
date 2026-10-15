@@ -129,7 +129,7 @@ export function mixTargets(s = {}) {
       flight &&
       (ev !== 'none' ||
         (s.effectEnd != null && s.flightT != null && s.flightT < s.effectEnd + MUSIC_HOLD));
-  if (screen === 'workshop') {
+  if (screen === 'workshop' || screen === 'atlas') {
     L[0] = INTENSITY.workshop.layers[0];
     filter = padFilter = INTENSITY.workshop.filter;
   } else if (screen === 'result') {
@@ -172,6 +172,38 @@ export function mixTargets(s = {}) {
     urgent,
     held,
   };
+}
+// Audio screen (03 E.2) from the game's screen machine (screens.js {screen, title, panels}): the main menu, Settings and
+// Workshop play the Workshop intensity, the Atlas its own visit (fatigue), Pause keeps the frozen flight, a landed flight
+// already fades to the Result, and a running finale cue replaces the Result.
+const MENU_PANELS = ['menu', 'settings', 'confirm'];
+export function audioScreen({
+  screen,
+  title = false,
+  panels = [],
+  landed = false,
+  finale = false,
+} = {}) {
+  const top = panels.at(-1);
+  if (top === 'workshop' || top === 'atlas') return top;
+  if (screen === 'flight') return landed ? 'result' : 'flight';
+  if (screen === 'result' || screen === 'chapter') return finale ? 'finale' : 'result';
+  if (screen === 'home') return title || MENU_PANELS.includes(top) ? 'workshop' : 'aim';
+  return 'workshop';
+}
+// Row of the intensity map (INTENSITY key) for a state of audioState(); flight without an event is 'throw' until the groove
+// joins (first hit or FAST), then 'calm'. intensityOf → level 0–3 (calm: 2, from combo 2 with the lead 3).
+export function phaseOf(s = {}) {
+  const sc = s.screen ?? 'workshop';
+  if (sc === 'atlas') return 'workshop';
+  if (sc !== 'flight') return INTENSITY[sc] ? sc : 'workshop';
+  const ev = s.event ?? 'none';
+  if (ev === 'warning' || ev === 'window' || ev === 'effect') return ev;
+  return (s.hits ?? 0) > 0 || (s.speed ?? 1) >= FAST ? 'calm' : 'throw';
+}
+export function intensityOf(s = {}) {
+  const k = phaseOf(s);
+  return k === 'calm' ? ((s.combo ?? 0) >= 2 ? 3 : 2) : INTENSITY[k].level;
 }
 // Combo counts consecutive successes; a miss resets it, an interrupted event leaves it alone.
 export const comboAfter = (c, r) =>
@@ -381,7 +413,7 @@ export function createTickPlanner(play, { tolerance = 0.02, lock = 0.03 } = {}) 
     },
   };
 }
-// Settings in localStorage['just-throw-it-audio']; music 60 %, effects 80 % by default (decision 14. 10.).
+// Settings in localStorage['just-throw-it-audio'] (device settings, outside the game save); music 60 %, effects 80 % by default (decision 14. 10.).
 export const AUDIO_DEFAULTS = {
   master: 1,
   music: 0.6,
@@ -396,9 +428,11 @@ export function audioSettings(raw) {
   if (raw && typeof raw === 'object')
     for (const k of Object.keys(o)) {
       const v = raw[k];
-      if (typeof o[k] === 'number' && typeof v === 'number' && Number.isFinite(v))
-        o[k] = k === 'latency' ? clamp(v, -0.3, 0.3) : clamp01(v);
-      else if (typeof o[k] === 'boolean' && typeof v === 'boolean') o[k] = v;
+      // A volume outside 0–1 is a damaged value → default (not a clamp to full volume); latency is clamped.
+      if (typeof o[k] === 'number' && typeof v === 'number' && Number.isFinite(v)) {
+        if (k === 'latency') o[k] = clamp(v, -0.3, 0.3);
+        else if (v >= 0 && v <= 1) o[k] = v;
+      } else if (typeof o[k] === 'boolean' && typeof v === 'boolean') o[k] = v;
     }
   return o;
 }
