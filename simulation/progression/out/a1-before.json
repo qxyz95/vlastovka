@@ -1,0 +1,2690 @@
+{
+ "name": "a1-before",
+ "date": "2026-10-15T00:55:33.056Z",
+ "n": 3,
+ "seed": 1,
+ "over": {},
+ "groups": {
+  "weak|balanced|auto|better": {
+   "n": 3,
+   "doneRate": 1,
+   "throws": 103,
+   "throwsP90": 106,
+   "throwsMax": 106,
+   "minutes": 53.576578236430535,
+   "district": [
+    {
+     "throws": 34,
+     "minutes": 14.646772584305593
+    },
+    {
+     "throws": 21,
+     "minutes": 11.768674965674757
+    },
+    {
+     "throws": 28,
+     "minutes": 16.01172910285731
+    },
+    {
+     "throws": 16,
+     "minutes": 9.723636457275546
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.44,
+     "p90": 24.78,
+     "max": 29.3
+    },
+    {
+     "median": 25.19,
+     "p90": 30.08,
+     "max": 32.98
+    },
+    {
+     "median": 25.98,
+     "p90": 32.79,
+     "max": 38.47
+    },
+    {
+     "median": 27.57,
+     "p90": 33.92,
+     "max": 37.14
+    }
+   ],
+   "flightP90": 30.82,
+   "flightMax": 38.47,
+   "simMax": 42.22,
+   "droughtMedian": 2,
+   "droughtMax": 12,
+   "droughtMaxMedian": 10,
+   "droughtMaxP90": 12,
+   "placeGapMedian": 8,
+   "placeGapP90": 15,
+   "firstPocket": 40,
+   "levelsBought": 0.717391304347826,
+   "gliderShare": 0.6407766990291263,
+   "eCap": 0.09120521172638436,
+   "betaCap": 0,
+   "craneTugRate": 0.003257328990228013,
+   "craneNewPlace": 0,
+   "qteHit": 0.917910447761194,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     2351,
+     3531.3333333333335,
+     8166.333333333333,
+     6550
+    ],
+    "spend": [
+     1933.3333333333333,
+     3603.3333333333335,
+     7173.333333333333,
+     5473.333333333333
+    ],
+    "kind": {
+     "paper": 9820,
+     "workshop": 1120,
+     "atlas": 5263.333333333333,
+     "pocket": 1980
+    },
+    "left": 3016,
+    "models": {
+     "dart": {
+      "share": 0.36482084690553745,
+      "coins": 191.49107142857142,
+      "x": 1820.121671692478,
+      "coinsPerMin": 406.458405440778,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.6351791530944625,
+      "coins": 206.91794871794872,
+      "x": 1973.8084289335936,
+      "coinsPerMin": 378.6744315182728,
+      "bought": 0,
+      "buyThrow": null
+     }
+    }
+   },
+   "droughtA": {
+    "median": 6,
+    "p90": 12,
+    "maxP90": 22
+   },
+   "droughtP90": 6,
+   "repeat": [
+    0.9431438127090301,
+    0.7808219178082192,
+    0.6899696048632219,
+    0.5288888888888889
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     4
+    ],
+    "p90": 7
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 307,
+      "rate": 0,
+      "campaigns": 3,
+      "share": 1,
+      "cap": 0.46905537459283386,
+      "byD": [
+       0,
+       0,
+       0,
+       0
+      ],
+      "dMax": 0,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.317,
+      "gapMed": 5.817
+     },
+     "kettleSong": {
+      "flights": 1,
+      "rate": 0,
+      "campaigns": 1,
+      "share": 0.003257328990228013,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "overTheLine": {
+      "flights": 143,
+      "rate": 0.027972027972027972,
+      "campaigns": 3,
+      "share": 0.46579804560260585,
+      "byD": [
+       null,
+       null,
+       0.045454545454545456,
+       0
+      ],
+      "dMax": 0.045454545454545456,
+      "first": 19,
+      "never": 0.33333333333333337,
+      "firstIng": 19,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 201,
+      "rate": 0.1044776119402985,
+      "campaigns": 3,
+      "share": 0.6547231270358306,
+      "byD": [
+       null,
+       0.06896551724137931,
+       0.06818181818181818,
+       0.2
+      ],
+      "dMax": 0.2,
+      "first": 8,
+      "never": 0,
+      "firstIng": 8,
+      "firstIngP90": 19
+     },
+     "whistleStop": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "wish": {
+      "flights": 77,
+      "rate": 0.025974025974025976,
+      "campaigns": 3,
+      "share": 0.250814332247557,
+      "cap": 0.11688311688311688,
+      "byD": [
+       null,
+       null,
+       null,
+       0.01818181818181818
+      ],
+      "dMax": 0.01818181818181818,
+      "first": 2,
+      "never": 0.6666666666666667,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "allTheVerbs": {
+      "flights": 119,
+      "rate": 0.06722689075630252,
+      "campaigns": 3,
+      "share": 0.38762214983713356,
+      "byD": [
+       null,
+       null,
+       0.078125,
+       0.05454545454545454
+      ],
+      "dMax": 0.078125,
+      "first": 2,
+      "never": 0,
+      "firstIng": 2,
+      "firstIngP90": 8
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 42,
+    "found": 0.23076923076923078,
+    "foundMin": 0.15384615384615385,
+    "corrMax": {
+     "a": "wish",
+     "b": "allTheVerbs",
+     "phi": 0.2883220935509966,
+     "n": 77
+    },
+    "corrHigh": [],
+    "corr": [
+     {
+      "a": "wish",
+      "b": "allTheVerbs",
+      "phi": 0.2883220935509966,
+      "n": 77
+     },
+     {
+      "a": "overTheLine",
+      "b": "allTheVerbs",
+      "phi": -0.050068499885334336,
+      "n": 119
+     },
+     {
+      "a": "overTheLine",
+      "b": "tapeSave",
+      "phi": -0.06231057854935197,
+      "n": 143
+     },
+     {
+      "a": "tapeSave",
+      "b": "wish",
+      "phi": -0.07359800721939873,
+      "n": 77
+     },
+     {
+      "a": "tapeSave",
+      "b": "allTheVerbs",
+      "phi": -0.1019559237857732,
+      "n": 119
+     }
+    ]
+   }
+  },
+  "average|balanced|auto|better": {
+   "n": 3,
+   "doneRate": 1,
+   "throws": 93,
+   "throwsP90": 100,
+   "throwsMax": 100,
+   "minutes": 50.32740726458202,
+   "district": [
+    {
+     "throws": 28,
+     "minutes": 12.216620394946602
+    },
+    {
+     "throws": 21,
+     "minutes": 10.841320632635949
+    },
+    {
+     "throws": 25,
+     "minutes": 15.330055198282764
+    },
+    {
+     "throws": 19,
+     "minutes": 11.526606008010859
+    }
+   ],
+   "flight": [
+    {
+     "median": 17.77,
+     "p90": 23.8,
+     "max": 28.55
+    },
+    {
+     "median": 23.21,
+     "p90": 28.62,
+     "max": 32.82
+    },
+    {
+     "median": 28.66,
+     "p90": 33.36,
+     "max": 38.6
+    },
+    {
+     "median": 29.04,
+     "p90": 32.75,
+     "max": 37.4
+    }
+   ],
+   "flightP90": 32.16,
+   "flightMax": 38.6,
+   "simMax": 42.07,
+   "droughtMedian": 3,
+   "droughtMax": 11,
+   "droughtMaxMedian": 9,
+   "droughtMaxP90": 11,
+   "placeGapMedian": 7,
+   "placeGapP90": 14,
+   "firstPocket": 38,
+   "levelsBought": 0.6521739130434783,
+   "gliderShare": 0.54,
+   "eCap": 0.13043478260869565,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9693564862104188,
+   "diveCrash": null,
+   "econ": {
+    "income": [
+     1907,
+     3967.6666666666665,
+     7851,
+     6657.333333333333
+    ],
+    "spend": [
+     1606.6666666666667,
+     3833.3333333333335,
+     5813.333333333333,
+     6423.333333333333
+    ],
+    "kind": {
+     "paper": 11286.666666666666,
+     "workshop": 1120,
+     "atlas": 4970,
+     "pocket": 300
+    },
+    "left": 2636,
+    "models": {
+     "dart": {
+      "share": 0.4673913043478261,
+      "coins": 205.28682170542635,
+      "x": 1957.906133458249,
+      "coinsPerMin": 414.4248362903367,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.532608695652174,
+      "coins": 235.82993197278913,
+      "x": 2263.212799623979,
+      "coinsPerMin": 412.52272561825845,
+      "bought": 0,
+      "buyThrow": null
+     }
+    }
+   },
+   "droughtA": {
+    "median": 5,
+    "p90": 8,
+    "maxP90": 10
+   },
+   "droughtP90": 7,
+   "repeat": [
+    0.928,
+    0.8209606986899564,
+    0.652317880794702,
+    0.5151515151515151
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     2,
+     4
+    ],
+    "p90": 6
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 276,
+      "rate": 0,
+      "campaigns": 3,
+      "share": 1,
+      "cap": 0.4746376811594203,
+      "byD": [
+       0,
+       0,
+       0,
+       0
+      ],
+      "dMax": 0,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.317,
+      "gapMed": 6.083
+     },
+     "kettleSong": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "overTheLine": {
+      "flights": 127,
+      "rate": 0.015748031496062992,
+      "campaigns": 3,
+      "share": 0.4601449275362319,
+      "byD": [
+       null,
+       null,
+       0.012987012987012988,
+       0.02
+      ],
+      "dMax": 0.02,
+      "first": 28,
+      "never": 0.33333333333333337,
+      "firstIng": 28,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 193,
+      "rate": 0.04145077720207254,
+      "campaigns": 3,
+      "share": 0.6992753623188406,
+      "byD": [
+       null,
+       0.015151515151515152,
+       0.012987012987012988,
+       0.12
+      ],
+      "dMax": 0.12,
+      "first": 47,
+      "never": 0.33333333333333337,
+      "firstIng": 47,
+      "firstIngP90": null
+     },
+     "whistleStop": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "wish": {
+      "flights": 77,
+      "rate": 0.03896103896103896,
+      "campaigns": 3,
+      "share": 0.27898550724637683,
+      "cap": 0.07792207792207792,
+      "byD": [
+       null,
+       null,
+       null,
+       0.04
+      ],
+      "dMax": 0.04,
+      "first": 22,
+      "never": 0.33333333333333337,
+      "firstIng": 22,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 15,
+      "rate": 0,
+      "campaigns": 1,
+      "share": 0.05434782608695652,
+      "cap": 0.26666666666666666,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 3.083,
+      "gapMed": 3.167
+     },
+     "allTheVerbs": {
+      "flights": 119,
+      "rate": 0.08403361344537816,
+      "campaigns": 3,
+      "share": 0.4311594202898551,
+      "byD": [
+       null,
+       null,
+       0.07246376811594203,
+       0.1
+      ],
+      "dMax": 0.1,
+      "first": 10,
+      "never": 0,
+      "firstIng": 10,
+      "firstIngP90": 17
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 51,
+    "found": 0.23076923076923078,
+    "foundMin": 0.23076923076923078,
+    "corrMax": {
+     "a": "wish",
+     "b": "allTheVerbs",
+     "phi": 0.16979054399120358,
+     "n": 77
+    },
+    "corrHigh": [],
+    "corr": [
+     {
+      "a": "wish",
+      "b": "allTheVerbs",
+      "phi": 0.16979054399120358,
+      "n": 77
+     },
+     {
+      "a": "overTheLine",
+      "b": "wish",
+      "phi": -0.023096063842289506,
+      "n": 77
+     },
+     {
+      "a": "overTheLine",
+      "b": "allTheVerbs",
+      "phi": -0.02788340118379997,
+      "n": 119
+     },
+     {
+      "a": "overTheLine",
+      "b": "tapeSave",
+      "phi": -0.030550504633038936,
+      "n": 127
+     },
+     {
+      "a": "tapeSave",
+      "b": "wish",
+      "phi": -0.05853171082789265,
+      "n": 77
+     },
+     {
+      "a": "tapeSave",
+      "b": "allTheVerbs",
+      "phi": -0.07572281660192284,
+      "n": 119
+     }
+    ]
+   }
+  },
+  "expert|balanced|auto|better": {
+   "n": 3,
+   "doneRate": 1,
+   "throws": 76,
+   "throwsP90": 78,
+   "throwsMax": 78,
+   "minutes": 41.93421189856686,
+   "district": [
+    {
+     "throws": 20,
+     "minutes": 9.882653056123768
+    },
+    {
+     "throws": 15,
+     "minutes": 8.80237334198726
+    },
+    {
+     "throws": 27,
+     "minutes": 14.50617881140652
+    },
+    {
+     "throws": 11,
+     "minutes": 6.790486229379987
+    }
+   ],
+   "flight": [
+    {
+     "median": 19.55,
+     "p90": 26.18,
+     "max": 30.56
+    },
+    {
+     "median": 25.64,
+     "p90": 30.94,
+     "max": 34.83
+    },
+    {
+     "median": 28.45,
+     "p90": 35.31,
+     "max": 40.79
+    },
+    {
+     "median": 29.68,
+     "p90": 39.06,
+     "max": 42.47
+    }
+   ],
+   "flightP90": 34.59,
+   "flightMax": 42.47,
+   "simMax": 43.43,
+   "droughtMedian": 2,
+   "droughtMax": 11,
+   "droughtMaxMedian": 8,
+   "droughtMaxP90": 11,
+   "placeGapMedian": 5,
+   "placeGapP90": 9,
+   "firstPocket": 39,
+   "levelsBought": 0.6304347826086957,
+   "gliderShare": 0.4358974358974359,
+   "eCap": 0.1527777777777778,
+   "betaCap": 0,
+   "craneTugRate": 0,
+   "craneNewPlace": null,
+   "qteHit": 0.9360100376411543,
+   "diveCrash": 0,
+   "econ": {
+    "income": [
+     1596.6666666666667,
+     2714.6666666666665,
+     7375.333333333333,
+     3855.3333333333335
+    ],
+    "spend": [
+     1403.3333333333333,
+     2496.6666666666665,
+     5896.666666666667,
+     4593.333333333333
+    ],
+    "kind": {
+     "paper": 7420,
+     "workshop": 1120,
+     "atlas": 3870,
+     "pocket": 1980
+    },
+    "left": 1282,
+    "models": {
+     "dart": {
+      "share": 0.4722222222222222,
+      "coins": 213.68627450980392,
+      "x": 2042.0183862368037,
+      "coinsPerMin": 410.6334241349687,
+      "bought": 0,
+      "buyThrow": null
+     },
+     "glider": {
+      "share": 0.5277777777777778,
+      "coins": 217.80701754385964,
+      "x": 2082.5837719475244,
+      "coinsPerMin": 365.13645382450795,
+      "bought": 0,
+      "buyThrow": null
+     }
+    }
+   },
+   "droughtA": {
+    "median": 3,
+    "p90": 8,
+    "maxP90": 15
+   },
+   "droughtP90": 4,
+   "repeat": [
+    0.9245283018867925,
+    0.770949720670391,
+    0.702054794520548,
+    0.5789473684210527
+   ],
+   "buyGap": {
+    "median": [
+     3,
+     2,
+     1,
+     7
+    ],
+    "p90": 5
+   },
+   "tricks": {
+    "per": {
+     "pigeonExpress": {
+      "flights": 216,
+      "rate": 0,
+      "campaigns": 3,
+      "share": 1,
+      "cap": 0.5,
+      "byD": [
+       0,
+       0,
+       0,
+       0
+      ],
+      "dMax": 0,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null,
+      "gapMin": 5.3,
+      "gapMed": 5.75
+     },
+     "kettleSong": {
+      "flights": 2,
+      "rate": 0,
+      "campaigns": 1,
+      "share": 0.009259259259259259,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "overTheLine": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "tapeSave": {
+      "flights": 153,
+      "rate": 0.13725490196078433,
+      "campaigns": 3,
+      "share": 0.7083333333333334,
+      "byD": [
+       null,
+       0.022222222222222223,
+       0.15384615384615385,
+       0.26666666666666666
+      ],
+      "dMax": 0.26666666666666666,
+      "first": 19,
+      "never": 0,
+      "firstIng": 19,
+      "firstIngP90": 25
+     },
+     "whistleStop": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "wish": {
+      "flights": 56,
+      "rate": 0,
+      "campaigns": 3,
+      "share": 0.25925925925925924,
+      "cap": 0.05357142857142857,
+      "byD": [
+       null,
+       null,
+       null,
+       0
+      ],
+      "dMax": 0,
+      "first": null,
+      "never": 1,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "dronePingPong": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "allTheVerbs": {
+      "flights": 82,
+      "rate": 0.036585365853658534,
+      "campaigns": 3,
+      "share": 0.37962962962962965,
+      "byD": [
+       null,
+       null,
+       0.038461538461538464,
+       0.03333333333333333
+      ],
+      "dMax": 0.038461538461538464,
+      "first": 23,
+      "never": 0.33333333333333337,
+      "firstIng": 23,
+      "firstIngP90": null
+     },
+     "hawkFeather": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "kiteTail": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "skimmerRipples": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "sailStripes": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     },
+     "needleThread": {
+      "flights": 0,
+      "rate": null,
+      "campaigns": 0,
+      "share": 0,
+      "byD": [
+       null,
+       null,
+       null,
+       null
+      ],
+      "dMax": null,
+      "first": null,
+      "never": null,
+      "firstIng": null,
+      "firstIngP90": null
+     }
+    },
+    "firstTrick": 42,
+    "found": 0.15384615384615385,
+    "foundMin": 0.07692307692307693,
+    "corrMax": {
+     "a": "tapeSave",
+     "b": "allTheVerbs",
+     "phi": -0.09965861885249637,
+     "n": 82
+    },
+    "corrHigh": [],
+    "corr": [
+     {
+      "a": "tapeSave",
+      "b": "allTheVerbs",
+      "phi": -0.09965861885249637,
+      "n": 82
+     }
+    ]
+   }
+  }
+ },
+ "tricks": {
+  "combo": "balanced|auto|better",
+  "rows": [
+   {
+    "id": "pigeonExpress",
+    "name": "Pigeon Express",
+    "model": false,
+    "note": "holub a hned další běžná událost poryv, obě perfekt (hvězda se přeskočí); „hned další“ = tricks.pigeonWindow 99, jinak okno v s mezi vyhodnoceními; strop = dvojice holub → poryv",
+    "rate": 0,
+    "flights": 276,
+    "weak": 0,
+    "expert": 0,
+    "intent": null,
+    "first": null,
+    "never": 1,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": 5.317,
+    "gapMed": 6.083,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "dovednost",
+    "share": 1,
+    "cap": 0.4746376811594203,
+    "byD": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "dMax": 0,
+    "ratio": null,
+    "ew": null,
+    "vRate": "vzácný",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "vzácný",
+    "vEW": "–",
+    "vDist": "zdravý",
+    "vSkill": "NOT ASSESSED",
+    "vClass": "NOT ASSESSED",
+    "verdictIntent": "CRITICAL",
+    "verdictClass": "CRITICAL",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "kettleSong",
+    "name": "Kettle Song",
+    "model": false,
+    "note": "pára perfektně se Sharp Edge v kapse; záměr = Sharp Edge místo výchozí druhé kapsy",
+    "rate": null,
+    "flights": 0,
+    "weak": 0,
+    "expert": 0,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "vClass": "NOT ASSESSED (neběželo)",
+    "verdictIntent": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED"
+   },
+   {
+    "id": "overTheLine",
+    "name": "Over the Line",
+    "model": false,
+    "note": "jen Paper Rocket (od D3); Boost tap v simulátoru není, část „od místa 1“ NOT ASSESSED; „poslední sekunda“ = do 1 s před dotykem země (i před odrazem Stone Skip), přes hranici se hodnotí konečný dolet",
+    "rate": 0.015748031496062992,
+    "flights": 127,
+    "weak": 0.027972027972027972,
+    "expert": null,
+    "intent": null,
+    "first": 28,
+    "never": 0.33333333333333337,
+    "firstIng": 28,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0.4601449275362319,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     0.012987012987012988,
+     0.02
+    ],
+    "dMax": 0.02,
+    "ratio": null,
+    "ew": null,
+    "vRate": "hraniční",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "hraniční",
+    "vEW": "–",
+    "vDist": "zdravý",
+    "vSkill": "NOT ASSESSED",
+    "vClass": "NOT ASSESSED (neběželo)",
+    "verdictIntent": "CONCERNS",
+    "verdictClass": "CONCERNS",
+    "verdict": "CONCERNS"
+   },
+   {
+    "id": "tapeSave",
+    "name": "Tape Save",
+    "model": false,
+    "note": "záměr: hráč si minutí nevybírá, simulátor nemá páku",
+    "rate": 0.04145077720207254,
+    "flights": 193,
+    "weak": 0.1044776119402985,
+    "expert": 0.13725490196078433,
+    "intent": null,
+    "first": 47,
+    "never": 0.33333333333333337,
+    "firstIng": 47,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "dovednost",
+    "share": 0.6992753623188406,
+    "cap": null,
+    "byD": [
+     null,
+     0.015151515151515152,
+     0.012987012987012988,
+     0.12
+    ],
+    "dMax": 0.12,
+    "ratio": null,
+    "ew": 1.3137254901960786,
+    "vRate": "zdravý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "vzácný",
+    "vEW": "zdravý",
+    "vDist": "zdravý",
+    "vSkill": "zdravý",
+    "vClass": "zdravý",
+    "verdictIntent": "CRITICAL",
+    "verdictClass": "CRITICAL",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "whistleStop",
+    "name": "Whistle Stop",
+    "model": false,
+    "note": "přivolaná událost perfektně, předchozí běžná perfektně, pískání do tricks.whistleGap s od konce jejího účinku; bez záměru = bot Whistle (kombo ≥ 2), záměr = píská po každém perfektu běžné události; strop = let s přivolanou událostí",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "vClass": "NOT ASSESSED (neběželo)",
+    "verdictIntent": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED"
+   },
+   {
+    "id": "wish",
+    "name": "Wish",
+    "model": false,
+    "note": "kombo ≥ tricks.wishCombo; strop = podíl letů s hvězdou",
+    "rate": 0.03896103896103896,
+    "flights": 77,
+    "weak": 0.025974025974025976,
+    "expert": 0,
+    "intent": null,
+    "first": 22,
+    "never": 0.33333333333333337,
+    "firstIng": 22,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "dovednost",
+    "share": 0.27898550724637683,
+    "cap": 0.07792207792207792,
+    "byD": [
+     null,
+     null,
+     null,
+     0.04
+    ],
+    "dMax": 0.04,
+    "ratio": null,
+    "ew": 0,
+    "vRate": "zdravý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "vDist": "zdravý",
+    "vSkill": "náhoda",
+    "vClass": "náhoda",
+    "verdictIntent": "HEALTHY (záměr NOT ASSESSED)",
+    "verdictClass": "CONCERNS",
+    "verdict": "CONCERNS"
+   },
+   {
+    "id": "dronePingPong",
+    "name": "Drone Ping-Pong",
+    "model": false,
+    "note": "dron a hned další běžná událost dron, oba perfekt; přísada Gates úr. ≥ tricks.droneLevel; „hned další“ = droneWindow 99; strop = dvojice dronů",
+    "rate": 0,
+    "flights": 15,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": 1,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": 3.083,
+    "gapMed": 3.167,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "dovednost",
+    "share": 0.05434782608695652,
+    "cap": 0.26666666666666666,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "vzácný",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "vzácný",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "vClass": "NOT ASSESSED",
+    "verdictIntent": "CRITICAL",
+    "verdictClass": "CRITICAL",
+    "verdict": "CRITICAL"
+   },
+   {
+    "id": "allTheVerbs",
+    "name": "All the Verbs",
+    "model": false,
+    "note": "tap = poryv/hvězda, hold = holub, tap-tap = pára, tap in place = termika/dron (08 §8 slovesa); záměr: simulátor nemá páku",
+    "rate": 0.08403361344537816,
+    "flights": 119,
+    "weak": 0.06722689075630252,
+    "expert": 0.036585365853658534,
+    "intent": null,
+    "first": 10,
+    "never": 0,
+    "firstIng": 10,
+    "firstIngP90": 17,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "pestrost",
+    "share": 0.4311594202898551,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     0.07246376811594203,
+     0.1
+    ],
+    "dMax": 0.1,
+    "ratio": null,
+    "ew": 0.5442073170731707,
+    "vRate": "zdravý",
+    "vIntent": "NOT ASSESSED (bez páky)",
+    "vFirst": "zdravý",
+    "vEW": "zdravý",
+    "vDist": "zdravý",
+    "vSkill": "náhoda",
+    "vClass": "zdravý",
+    "verdictIntent": "HEALTHY (záměr NOT ASSESSED)",
+    "verdictClass": "HEALTHY",
+    "verdict": "HEALTHY"
+   },
+   {
+    "id": "hawkFeather",
+    "name": "Hawk: 3 perfekty za sebou",
+    "model": true,
+    "note": "hvězda řadu nepřerušuje ani nepočítá",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdictIntent": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED",
+    "vClass": "01 §6.1 b. 15"
+   },
+   {
+    "id": "kiteTail",
+    "name": "Kite: perfekt termiky nebo 40 m",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdictIntent": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED",
+    "vClass": "01 §6.1 b. 15"
+   },
+   {
+    "id": "skimmerRipples",
+    "name": "Skimmer: dvojitý odraz",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdictIntent": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED",
+    "vClass": "01 §6.1 b. 15"
+   },
+   {
+    "id": "sailStripes",
+    "name": "Sail: zadní vítr",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdictIntent": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED",
+    "vClass": "01 §6.1 b. 15"
+   },
+   {
+    "id": "needleThread",
+    "name": "Needle: drony (needleDrones)",
+    "model": true,
+    "note": "",
+    "rate": null,
+    "flights": 0,
+    "weak": null,
+    "expert": null,
+    "intent": null,
+    "first": null,
+    "never": null,
+    "firstIng": null,
+    "firstIngP90": null,
+    "firstFrom": "",
+    "gapMin": null,
+    "gapMed": null,
+    "gapIntent": null,
+    "baseFrom": "",
+    "cls": "volba",
+    "share": 0,
+    "cap": null,
+    "byD": [
+     null,
+     null,
+     null,
+     null
+    ],
+    "dMax": null,
+    "ratio": null,
+    "ew": null,
+    "vRate": "NOT ASSESSED",
+    "vIntent": "NOT ASSESSED (neběželo)",
+    "vFirst": "NOT ASSESSED",
+    "vEW": "–",
+    "vDist": "–",
+    "vSkill": "NOT ASSESSED",
+    "verdictClass": "NOT ASSESSED",
+    "verdictIntent": "NOT ASSESSED",
+    "verdict": "NOT ASSESSED",
+    "vClass": "01 §6.1 b. 15"
+   }
+  ],
+  "gate": {
+   "strict": 0,
+   "lenient": 2,
+   "byClass": 1,
+   "by": "class",
+   "of": 8,
+   "need": 6,
+   "build": {
+    "mode": "4.7",
+    "tricks": [],
+    "models": [
+     "hawkFeather",
+     "kiteTail",
+     "skimmerRipples",
+     "sailStripes",
+     "needleThread"
+    ],
+    "healthy": [
+     "allTheVerbs"
+    ]
+   }
+  },
+  "system": {
+   "firstTrick": 51,
+   "found": 0.23076923076923078,
+   "foundWeak": 0.23076923076923078,
+   "corrMax": {
+    "a": "wish",
+    "b": "allTheVerbs",
+    "phi": 0.16979054399120358,
+    "n": 77
+   },
+   "corrHigh": [],
+   "corrList": []
+  }
+ },
+ "curve": [
+  {
+   "name": "1. hod (nic)",
+   "pi": 1,
+   "cells": {
+    "weak": {
+     "x": 177.94433272493777,
+     "xMed": 187.3374581485336,
+     "t": 13.238397507045676,
+     "real": 12.361495807527724,
+     "realMax": 13.163876759908717,
+     "speed": 13.954018790945668,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 214.82296490874774,
+     "xMed": 218.10341955733972,
+     "t": 14.145377678208646,
+     "real": 13.382924378956346,
+     "realMax": 16.343731809896024,
+     "speed": 14.730376919604943,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 286.79548077334147,
+     "xMed": 288.93270482211113,
+     "t": 18.659804373523162,
+     "real": 17.311869785252743,
+     "realMax": 17.802345975728983,
+     "speed": 15.805218429695227,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "po Power 1",
+   "pi": 1,
+   "cells": {
+    "weak": {
+     "x": 220.92109611964955,
+     "xMed": 221.28792311810207,
+     "t": 14.681318602043751,
+     "real": 13.997210093242092,
+     "realMax": 16.840441213824143,
+     "speed": 14.915893015290258,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 268.4451164779047,
+     "xMed": 284.73237715609685,
+     "t": 18.539894148586537,
+     "real": 17.256745561650252,
+     "realMax": 17.86425073763374,
+     "speed": 15.642941592989835,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 341.77603208398006,
+     "xMed": 344.24016314534293,
+     "t": 21.298183348204763,
+     "real": 19.67101961705176,
+     "realMax": 20.50197199800412,
+     "speed": 16.563432846275237,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "po Paper 1",
+   "pi": 1.62,
+   "cells": {
+    "weak": {
+     "x": 288.26981901439905,
+     "xMed": 303.4866822006245,
+     "t": 13.238397507045674,
+     "real": 12.361495807527724,
+     "realMax": 13.163876759908717,
+     "speed": 22.60551044133197,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 348.0132031521714,
+     "xMed": 353.32753968289035,
+     "t": 14.145377678208673,
+     "real": 13.382924378956346,
+     "realMax": 16.343731809896024,
+     "speed": 23.863210609759996,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 464.6086788528114,
+     "xMed": 468.07098181181595,
+     "t": 18.659804373523237,
+     "real": 17.311869785252743,
+     "realMax": 17.802345975728983,
+     "speed": 25.604453856106158,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "střed D1",
+   "pi": 1.62,
+   "cells": {
+    "weak": {
+     "x": 476.8951488232653,
+     "xMed": 491.8220726196576,
+     "t": 20.236905547546936,
+     "real": 18.211495807528024,
+     "realMax": 19.725781521813676,
+     "speed": 26.722684895475584,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 559.4736820376239,
+     "xMed": 584.797172219837,
+     "t": 21.49328051815213,
+     "real": 19.871019617051758,
+     "realMax": 21.17316889703783,
+     "speed": 27.619837066421724,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 701.6246050340038,
+     "xMed": 720.3452499983091,
+     "t": 25.15850745339614,
+     "real": 22.990417896055803,
+     "realMax": 23.095179800817625,
+     "speed": 28.875525281405952,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D1",
+   "pi": 2.86,
+   "cells": {
+    "weak": {
+     "x": 1207.5524412546915,
+     "xMed": 1221.5356962848848,
+     "t": 22.139250545191164,
+     "real": 20.292448188480325,
+     "realMax": 24.555477954981555,
+     "speed": 54.545890113668754,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 1338.0878431242402,
+     "xMed": 1308.2579144662739,
+     "t": 23.171969515424262,
+     "real": 21.404703610341375,
+     "realMax": 24.95671058499775,
+     "speed": 55.961656641175615,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 1416.6631378324446,
+     "xMed": 1454.143133892475,
+     "t": 25.720763112653785,
+     "real": 23.46623439452147,
+     "realMax": 25.3638534421406,
+     "speed": 57.12730447422604,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D2",
+   "pi": 4.210000000000001,
+   "cells": {
+    "weak": {
+     "x": 1946.8603184529268,
+     "xMed": 1956.180436643477,
+     "t": 26.193060612948546,
+     "real": 23.49517980081774,
+     "realMax": 26.668615346902442,
+     "speed": 80.93973011119382,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 2181.8939866704063,
+     "xMed": 2166.9682489940437,
+     "t": 27.172385895568304,
+     "real": 25.228513134151186,
+     "realMax": 27.11861534690244,
+     "speed": 81.47029239695127,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 2288.9866972005148,
+     "xMed": 2345.748527121018,
+     "t": 29.098726283817932,
+     "real": 25.932901061188346,
+     "realMax": 27.597186775473883,
+     "speed": 84.09803944796772,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.16666666666666666,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "konec D3",
+   "pi": 6.3100000000000005,
+   "cells": {
+    "weak": {
+     "x": 3228.5311470921265,
+     "xMed": 3548.0211946929035,
+     "t": 26.49358535574756,
+     "real": 23.649941705579657,
+     "realMax": 27.063830124372036,
+     "speed": 129.21053631338822,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.5,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 3505.6645253965266,
+     "xMed": 3613.908594356035,
+     "t": 27.969827070874416,
+     "real": 24.918989324627354,
+     "realMax": 27.11383012437204,
+     "speed": 137.1556942418835,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0,
+     "eCap": 0.3333333333333333,
+     "star": 0
+    },
+    "expert": {
+     "x": 3737.614063382298,
+     "xMed": 3869.5435631766645,
+     "t": 27.902391463900184,
+     "real": 25.309465515103565,
+     "realMax": 25.718989324627255,
+     "speed": 143.94215270828676,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0,
+     "eCap": 0.5,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "střed D4",
+   "pi": 7.16,
+   "cells": {
+    "weak": {
+     "x": 4102.598187850557,
+     "xMed": 4212.340773576161,
+     "t": 29.015630585941572,
+     "real": 26.271370277008245,
+     "realMax": 32.03528201356877,
+     "speed": 153.0956889616307,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 4409.414233371762,
+     "xMed": 4451.227947285823,
+     "t": 29.107369952328984,
+     "real": 26.285655991293986,
+     "realMax": 32.15194868023544,
+     "speed": 160.3023989258789,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0,
+     "eCap": 0.16666666666666666,
+     "star": 0
+    },
+    "expert": {
+     "x": 5459.199404015049,
+     "xMed": 4946.745762463569,
+     "t": 32.730596298460476,
+     "real": 29.868592029133964,
+     "realMax": 35.23087076876277,
+     "speed": 168.87381672353922,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.8333333333333334,
+     "tug": 0,
+     "eCap": 0.3333333333333333,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "plná výbava",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 5284.862803424306,
+     "xMed": 5485.7242857142855,
+     "t": 28.78388028694184,
+     "real": 25.98052010880726,
+     "realMax": 28.009114855146617,
+     "speed": 200.19720020541322,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.16666666666666666,
+     "tug": 0.16666666666666666,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 5693.58140809858,
+     "xMed": 5887.069471935413,
+     "t": 28.807329437641584,
+     "real": 26.068801238274233,
+     "realMax": 28.609114855146583,
+     "speed": 209.50021792951569,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.16666666666666666,
+     "tug": 0,
+     "eCap": 0.16666666666666666,
+     "star": 0
+    },
+    "expert": {
+     "x": 6627.93567315755,
+     "xMed": 6539.918946654593,
+     "t": 30.596120097954067,
+     "real": 28.92578152181323,
+     "realMax": 32.09956772785449,
+     "speed": 220.58016903899986,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.5,
+     "tug": 0.3333333333333333,
+     "eCap": 0.3333333333333333,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "plná bez Atlasu",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 3906.2074452696,
+     "xMed": 4175.31468244442,
+     "t": 25.759519750205655,
+     "real": 23.55470361034149,
+     "realMax": 24.678325047798026,
+     "speed": 163.51731853120697,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 4335.47692236438,
+     "xMed": 4377.5705070089825,
+     "t": 27.634912564919897,
+     "real": 24.55727657501142,
+     "realMax": 25.15671058499774,
+     "speed": 165.91069104079833,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    },
+    "expert": {
+     "x": 4595.587370121835,
+     "xMed": 4713.288309048872,
+     "t": 28.36159446009515,
+     "real": 25.365917365536166,
+     "realMax": 26.902299340191995,
+     "speed": 167.90453434761173,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0,
+     "tug": 0,
+     "eCap": 0,
+     "star": 0
+    }
+   }
+  },
+  {
+   "name": "plná, kluzák",
+   "pi": 8.86,
+   "cells": {
+    "weak": {
+     "x": 5723.325874267431,
+     "xMed": 5485.7242857142855,
+     "t": 34.004976478094505,
+     "real": 31.628139156425988,
+     "realMax": 32.147186775473365,
+     "speed": 178.66472633550387,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.16666666666666666,
+     "tug": 0.16666666666666666,
+     "eCap": 0,
+     "star": 0
+    },
+    "average": {
+     "x": 6489.700829704126,
+     "xMed": 6157.43027032294,
+     "t": 35.42900382446677,
+     "real": 31.921346959239834,
+     "realMax": 39.3273181762488,
+     "speed": 189.34900067491125,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.3333333333333333,
+     "tug": 0.16666666666666666,
+     "eCap": 0.16666666666666666,
+     "star": 0
+    },
+    "expert": {
+     "x": 7184.705026530319,
+     "xMed": 7131.866604911167,
+     "t": 36.06829313250392,
+     "real": 33.8257582040448,
+     "realMax": 37.713853442139985,
+     "speed": 202.5705062149827,
+     "crash": 0,
+     "uses": 0,
+     "skip": 0.5,
+     "tug": 0,
+     "eCap": 0.3333333333333333,
+     "star": 0
+    }
+   }
+  }
+ ],
+ "probes": {
+  "abilities": [
+   {
+    "profile": "weak",
+    "base": 3228.5311470921265,
+    "baseReal": 23.649941705579657,
+    "cushion": {
+     "gain": 0.05026099910241144,
+     "real": 25.54716345770557,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.057164279903636706,
+     "real": 23.114227419865333,
+     "crash": null
+    },
+    "calm": {
+     "gain": -0.01706605442967668,
+     "real": 22.21660837224627,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.07052736340147858,
+     "real": 20.01684248829072,
+     "crash": 0.25
+    },
+    "whistle": {
+     "gain": 0.014987678526495296,
+     "real": 23.17780015535406,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.09937303924502716,
+     "real": 23.697560753198708,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": -0.04972286867033959,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "average",
+    "base": 3505.6645253965266,
+    "baseReal": 24.918989324627354,
+    "cushion": {
+     "gain": 0.05752316978537242,
+     "real": 27.359091537378657,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.034960440029003115,
+     "real": 25.36184646748427,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.025633750882463113,
+     "real": 23.238060261443415,
+     "crash": null
+    },
+    "dive": {
+     "gain": -0.04940743282244231,
+     "real": 21.768299663598476,
+     "crash": 0.125
+    },
+    "whistle": {
+     "gain": 0.0564109468553442,
+     "real": 23.98528201356888,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.09137096028908309,
+     "real": 24.918989324627354,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": -0.006815748461910021,
+     "crash": 0
+    }
+   },
+   {
+    "profile": "expert",
+    "base": 3737.614063382298,
+    "baseReal": 25.309465515103565,
+    "cushion": {
+     "gain": 0.05880931174089876,
+     "real": 27.57099629928323,
+     "crash": null
+    },
+    "sharp": {
+     "gain": 0.09272081461687898,
+     "real": 23.109114855146895,
+     "crash": null
+    },
+    "calm": {
+     "gain": 0.05647615908299475,
+     "real": 23.608667852694914,
+     "crash": null
+    },
+    "dive": {
+     "gain": 0.0177314839609628,
+     "real": 24.418299663598294,
+     "crash": 0
+    },
+    "whistle": {
+     "gain": 0.12216785419726217,
+     "real": 24.844829140861027,
+     "crash": null
+    },
+    "rocket": {
+     "gain": 0.14267987121658088,
+     "real": 25.559465515103323,
+     "crash": null
+    },
+    "diveHigh": {
+     "gain": -0.06023738491949915,
+     "crash": 0
+    }
+   }
+  ],
+  "atlas": [
+   {
+    "bonus": "chain",
+    "gain": 0.032906417445373704
+   },
+   {
+    "bonus": "pinwheel",
+    "gain": 0.01254741307732865
+   },
+   {
+    "bonus": "steam",
+    "gain": 0.00898130990617041
+   },
+   {
+    "bonus": "tape",
+    "gain": 0.03512825928242003
+   },
+   {
+    "bonus": "crane",
+    "gain": 0.031126934559237762
+   },
+   {
+    "bonus": "skip",
+    "gain": 0.015728512203884826,
+    "rate": 0.16666666666666666
+   },
+   {
+    "bonus": "gull",
+    "gain": 0.05496777240508388
+   },
+   {
+    "bonus": "momentum",
+    "gain": 0.04829953685809829
+   },
+   {
+    "bonus": "thermal",
+    "gain": -0.009715856228326047
+   },
+   {
+    "bonus": "echo",
+    "gain": 0.05093889690721576
+   },
+   {
+    "bonus": "star",
+    "gain": 0,
+    "rate": 0
+   },
+   {
+    "bonus": "drone",
+    "gain": 0.0033663514282915585
+   },
+   {
+    "bonus": "paperCrane",
+    "gain": 0,
+    "rate": 0
+   },
+   {
+    "bonus": "onAir",
+    "gain": 0.03925657743289679
+   }
+  ],
+  "atlasWeak": [
+   {
+    "bonus": "chain",
+    "gain": 0.03078287852383399
+   },
+   {
+    "bonus": "pinwheel",
+    "gain": 0.013452336733575931
+   },
+   {
+    "bonus": "steam",
+    "gain": 0.03549544321290421
+   },
+   {
+    "bonus": "tape",
+    "gain": 0.03721278896231728
+   },
+   {
+    "bonus": "crane",
+    "gain": 0.03506475095608064
+   },
+   {
+    "bonus": "skip",
+    "gain": 0.017285794203120375,
+    "rate": 0.16666666666666666
+   },
+   {
+    "bonus": "gull",
+    "gain": 0.05288875103717072
+   },
+   {
+    "bonus": "momentum",
+    "gain": 0.04806139457065117
+   },
+   {
+    "bonus": "thermal",
+    "gain": 0.04341598833329763
+   },
+   {
+    "bonus": "echo",
+    "gain": 0.04274109055901332
+   },
+   {
+    "bonus": "star",
+    "gain": 0,
+    "rate": 0
+   },
+   {
+    "bonus": "drone",
+    "gain": 0.016170734977478896
+   },
+   {
+    "bonus": "paperCrane",
+    "gain": 0.0006601484897676979,
+    "rate": 0.16666666666666666
+   },
+   {
+    "bonus": "onAir",
+    "gain": 0.03649162983677923
+   }
+  ],
+  "star": {
+   "bonus": "star",
+   "level": 3,
+   "flights": 6,
+   "keys": 38,
+   "scheduled": 0.15789473684210525,
+   "seen": 1,
+   "x": 7053.92064652835,
+   "x0": 6665.174911922877,
+   "gain": 0.05832491116025662
+  }
+ },
+ "checks": [
+  {
+   "name": "Žádný let > 60 s (skutečný)",
+   "value": "42.5",
+   "goal": "≤ 60",
+   "ok": true
+  },
+  {
+   "name": "Dive pády (weak)",
+   "value": "25 %",
+   "goal": "≤ 15 %",
+   "ok": false
+  },
+  {
+   "name": "Dive vysoké vybrání (průměrný)",
+   "value": "-0.7 %",
+   "goal": "±2 %",
+   "ok": true
+  },
+  {
+   "name": "Dive pády (expert)",
+   "value": "0 %",
+   "goal": "≤ 3 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas chain na úr. 3",
+   "value": "3.3 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas pinwheel na úr. 3",
+   "value": "1.3 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas steam na úr. 3",
+   "value": "0.9 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas tape na úr. 3 (info)",
+   "value": "3.5 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas crane na úr. 3",
+   "value": "3.1 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas skip na úr. 3",
+   "value": "1.6 % (v 17 % letů)",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas gull na úr. 3",
+   "value": "5.5 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas momentum na úr. 3",
+   "value": "4.8 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas thermal na úr. 3",
+   "value": "-1.0 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas echo na úr. 3",
+   "value": "5.1 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Atlas star na úr. 3 (info)",
+   "value": "0.0 % (v 0 % letů)",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas drone na úr. 3",
+   "value": "0.3 %",
+   "goal": "3 %–15 %",
+   "ok": false
+  },
+  {
+   "name": "Atlas paperCrane na úr. 3 (info)",
+   "value": "0.0 % (v 0 % letů)",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Atlas onAir na úr. 3",
+   "value": "3.9 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Paper Crane úr. 3: podíl letů s tahem (průměrný, plná, info)",
+   "value": "0 %",
+   "goal": "–",
+   "ok": null
+  },
+  {
+   "name": "Shooting Star úr. 3: zisk v letu s hvězdou (průměrný, plná)",
+   "value": "5.8 % (6 letů)",
+   "goal": "≥ 3 %",
+   "ok": true
+  },
+  {
+   "name": "Packing Tape úr. 3 (slabý, plná)",
+   "value": "3.7 %",
+   "goal": "3 %–15 %",
+   "ok": true
+  },
+  {
+   "name": "Stone Skip úr. 3: podíl letů s odrazem (průměrný, plná)",
+   "value": "17 %",
+   "goal": "30 %–50 %",
+   "ok": false
+  }
+ ],
+ "seconds": 13.144
+}

@@ -1,64 +1,52 @@
-// Tunable numbers of the Atlas (research/atlas/01-navrh-atlasu.md §6.2). PROVISIONAL = copy of simulation/progression/params.mjs
-// as of 14. 10. 2026 (before F5). Step C1 replaces it with the tuned set and a parity test; nothing else may hardcode levels or prices.
-import { SCREEN_METERS, ROUTE } from './scenes.js';
+// Tunable numbers of the Atlas (research/atlas/01-navrh-atlasu.md §6.2). PROVISIONAL: derived from src/progression-numbers.js
+// (copy of simulation/progression/params.mjs with a parity test). Step C1 replaces it with the tuned set; nothing else may hardcode levels or prices.
+import { SCREEN_METERS } from './scenes.js';
+import { PROGRESSION as G } from './progression-numbers.js';
 
+const A = G.atlas,
+  E = G.events;
 // Same order as params.mjs atlas.bonuses (place 1..16).
-const BONUS_IDS = [
-  'glider',
-  'chain',
-  'pinwheel',
-  'steam',
-  'tape',
-  'crane',
-  'skip',
-  'gull',
-  'momentum',
-  'thermal',
-  'echo',
-  'star',
-  'drone',
-  'paperCrane',
-  'onAir',
-  'encore',
-];
-const UNLEVELLED = ['glider', 'encore'];
-const DISTRICT_PRICES = [
-  [40, 90],
-  [170, 340],
-  [500, 1000],
-  [500, 1000],
-]; // params atlas.prices: [level 2, level 3] by district of the place
+const BONUS_IDS = [...A.bonuses];
+const UNLEVELLED = [...A.unlevelled];
+const DISTRICT_PRICES = A.prices; // [level 2, level 3] by district of the place
 const lv = (a, i) => a[Math.min(i, a.length - 1)];
+const r9 = v => Math.round(v * 1e9) / 1e9;
+const L3 = [1, 2, 3];
 // values[id][level-1] = template values for that level (params atlas.* and events.*).
 const VALUES = {
-  chain: [
-    { step: 0.1, max: 4 },
-    { step: 0.13, max: 5 },
-    { step: 0.21, max: 5 },
-  ],
-  pinwheel: [1, 2, 3].map((r, i) => ({ rerolls: r, noHeadwind: [false, false, true][i] })),
-  steam: [1, 2, 3].map(l => ({ push: l >= 2 ? 0.7 : 0, burst: l >= 3 ? 0.3 : 0, dur: 2 })),
-  tape: [0.3, 0.5, 0.75].map(keep => ({ keep })),
-  crane: [1, 2, 3].map(l => ({ lift: 1.5 * l })),
-  skip: [0, 1, 2].map(i => ({ keep: [0.3, 0.45, 0.45][i], bounces: [1, 1, 2][i] })),
-  gull: [0, 1, 2].map(i => ({ carry: [0.2, 0.35, 0.5][i], push: [0.1, 0.15, 0.22][i] })),
-  momentum: [0, 1, 2].map(i => ({ step: [0.004, 0.014, 0.022][i], cap: [0.04, 0.12, 0.18][i] })),
-  thermal: [1, 2, 3].map(l => ({ push: l >= 2 ? 0.7 : 0, second: l >= 3 ? 0.4 : 0 })),
-  echo: [0.1, 0.4, 0.5].map(share => ({ share, delay: 0.6 })),
-  star: [0.08, 0.12, 0.16].map(chance => ({ chance, amp: 1, dur: 4 })),
-  drone: [1, 2, 3].map(l => ({ wider: l >= 2 ? 0.3 : 0, pair: l >= 3 ? 0.5 : 0 })),
-  paperCrane: [0.03, 0.05, 0.08].map(r => ({ reach: Math.round(r * SCREEN_METERS) })),
-  onAir: [0.1, 0.15, 0.2].map(beta => ({ beta, combo: 3 })),
+  chain: A.chain.map(c => ({ step: c.step, max: c.max })),
+  pinwheel: L3.map((l, i) => ({
+    rerolls: A.pinwheel.rerolls[i],
+    noHeadwind: A.pinwheel.noHeadwind[i],
+  })),
+  steam: L3.map(l => ({
+    push: l >= 2 ? E.steam.levelPush : 0,
+    burst: l >= 3 ? E.steam.burst.amp : 0,
+    dur: E.steam.burst.dur,
+  })),
+  tape: A.tape.map(keep => ({ keep })),
+  crane: L3.map(l => ({ lift: A.crane * l })),
+  skip: L3.map((l, i) => ({ keep: A.skip.keep[i], bounces: A.skip.bounces[i] })),
+  gull: L3.map((l, i) => ({ carry: A.gull.carry[i], push: A.gull.push[i] })),
+  momentum: L3.map((l, i) => ({ step: A.momentum.step[i], cap: A.momentum.cap[i] })),
+  thermal: L3.map(l => ({
+    push: l >= 2 ? E.thermal.levelPush : 0,
+    second: l >= 3 ? E.thermal.secondChance : 0,
+  })),
+  echo: A.echo.share.map(share => ({ share, delay: A.echo.delay })),
+  star: E.star.chance.map(chance => ({ chance, amp: E.star.burst.amp, dur: E.star.burst.dur })),
+  drone: L3.map(l => ({
+    wider: l >= 2 ? r9(E.drone.levelWindow - 1) : 0,
+    pair: l >= 3 ? E.drone.pairChance : 0,
+  })),
+  paperCrane: A.paperCrane.reach.map(r => ({ reach: Math.round(r * SCREEN_METERS) })),
+  onAir: A.onAir.beta.map(beta => ({ beta, combo: A.onAir.combo })),
 };
 const levelled = BONUS_IDS.filter(id => !UNLEVELLED.includes(id));
+const Pk = G.pockets;
 export const PROVISIONAL = {
   provisional: true,
-  route: {
-    place: SCREEN_METERS,
-    places: ROUTE.length,
-    perDistrict: 4,
-    finish: SCREEN_METERS * ROUTE.length,
-  },
+  route: { ...G.route },
   atlas: {
     bonuses: BONUS_IDS,
     maxLevel: Object.fromEntries(BONUS_IDS.map(id => [id, UNLEVELLED.includes(id) ? 1 : 3])),
@@ -72,15 +60,15 @@ export const PROVISIONAL = {
     values: Object.fromEntries(levelled.map(id => [id, VALUES[id]])),
   },
   pockets: {
-    prices: [300, 5040],
-    secondFromDistrict: 2,
-    unlock: { cushion: 0, sharp: 0, dive: 1, calm: 1, whistle: 2, rocket: 2 },
-    active: ['dive', 'cushion', 'whistle', 'rocket'],
-    exclusive: [['sharp', 'calm']],
+    prices: [...Pk.prices],
+    secondFromDistrict: Pk.secondFromDistrict,
+    unlock: { ...Pk.unlock },
+    active: [...Pk.active],
+    exclusive: Pk.exclusive.map(g => [...g]),
     oneActive: true,
   },
-  paper: { kinds: ['copy', 'kraft', 'washi', 'neon'], openAtPlace: 3 },
-  gliderAt: 100,
+  paper: { kinds: ['copy', 'kraft', 'washi', 'neon'], openAtPlace: G.workshop.paper.openAtPlace },
+  gliderAt: A.gliderAt,
   coinMultiplier: null,
   // Nodes not bound to a place (or bound optionally). price null = not tuned yet → "Coming soon".
   nodes: { nightRoute: { price: null }, autoQte: { price: null } },
