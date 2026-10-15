@@ -198,10 +198,9 @@ function metrics(F) {
     }
   }
   if (d0 != null) hold += T - d0;
-  const acts = [
-    ...evs.flatMap(e => e.taps.map(t => ({ t, what: e.type }))),
-    ...rec.acts,
-  ].sort((a, b) => a.t - b.t);
+  const acts = [...evs.flatMap(e => e.taps.map(t => ({ t, what: e.type }))), ...rec.acts].sort(
+    (a, b) => a.t - b.t,
+  );
   const gaps = acts.slice(1).map((a, i) => a.t - acts[i].t),
     calm = evs.slice(1).map((e, i) => e.warn - evs[i].end);
   return {
@@ -280,7 +279,9 @@ for (const S of stages) {
   log('');
   log(`### ${S.id} stádium (minuta ${S.minute}; ${kitLine(S)})`);
   log('');
-  log('| seed (hod č.) | model | co | t / varování | okno od | okno do | střed | stisk | výsledek | účinek do |');
+  log(
+    '| seed (hod č.) | model | co | t / varování | okno od | okno do | střed | stisk | výsledek | účinek do |',
+  );
   log('|---:|---|---|---:|---:|---:|---|---|---|---:|');
   for (const F of results[S.id].slice(0, TABLE_FLIGHTS)) {
     const pre = `${F.n} | ${F.model}`;
@@ -307,7 +308,9 @@ for (const S of stages) {
 }
 
 log('');
-log(`## C. Souhrny za stádium (${SAMPLE} letů na stádium, hody č. ${stages.map(s => s.n).join(' / ')} a dál)`);
+log(
+  `## C. Souhrny za stádium (${SAMPLE} letů na stádium, hody č. ${stages.map(s => s.n).join(' / ')} a dál)`,
+);
 log('');
 const cell = (v, f = r1) => f(v);
 const agg = {};
@@ -324,18 +327,39 @@ for (const S of stages) {
     Tp10: q(all('T'), 0.1),
     Tp90: q(all('T'), 0.9),
     real: q(all('real'), 0.5),
-    ratio: q(M.map(m => m.real / m.T), 0.5),
+    ratio: q(
+      M.map(m => m.real / m.T),
+      0.5,
+    ),
     n: q(all('n'), 0.5),
     nMean: nT / M.length,
     nMin: Math.min(...all('n')),
     nMax: Math.max(...all('n')),
     resolved: q(all('resolved'), 0.5),
-    span: q(M.map(m => m.span / m.T), 0.5),
-    win: q(M.map(m => m.win / m.T), 0.5),
-    free: q(M.map(m => m.free / m.T), 0.5),
-    freeP10: q(M.map(m => m.free / m.T), 0.1),
-    freeP90: q(M.map(m => m.free / m.T), 0.9),
-    hands: q(M.map(m => m.hands / m.T), 0.5),
+    span: q(
+      M.map(m => m.span / m.T),
+      0.5,
+    ),
+    win: q(
+      M.map(m => m.win / m.T),
+      0.5,
+    ),
+    free: q(
+      M.map(m => m.free / m.T),
+      0.5,
+    ),
+    freeP10: q(
+      M.map(m => m.free / m.T),
+      0.1,
+    ),
+    freeP90: q(
+      M.map(m => m.free / m.T),
+      0.9,
+    ),
+    hands: q(
+      M.map(m => m.hands / m.T),
+      0.5,
+    ),
     freeAll: M.reduce((a, m) => a + m.free, 0) / M.reduce((a, m) => a + m.T, 0),
     firstEv: q(all('firstEv'), 0.5),
     first: q(all('first'), 0.5),
@@ -349,7 +373,10 @@ for (const S of stages) {
     acts: q(all('acts'), 0.5),
     x: q(all('x'), 0.5),
     places: q(all('places'), 0.5),
-    speed: q(M.map(m => m.x / m.T), 0.5),
+    speed: q(
+      M.map(m => m.x / m.T),
+      0.5,
+    ),
     crossShare: M.filter(m => m.cross > 0).length / M.length,
     crossMed: q(all('cross'), 0.5),
     firstCross: q(all('firstCross'), 0.5),
@@ -369,13 +396,23 @@ row('skutečný / letový čas, medián', a => r2(a.ratio));
 row('dolet, medián [m]', a => String(Math.round(a.x)));
 row('průměrná rychlost, medián [m/s]', a => r1(a.speed));
 row('míst přejitých za let (hranice po 304,8 m), medián', a => String(a.places));
-row('podíl letů, kde se přejde hranice čtvrti (1 219 m)', a => Math.round(a.crossShare * 100) + ' %');
+row(
+  'podíl letů, kde se přejde hranice čtvrti (1 219 m)',
+  a => Math.round(a.crossShare * 100) + ' %',
+);
 row('hranic čtvrtí za let, medián', a => String(a.crossMed));
 row('QTE začatých za let: medián (min–max)', a => `${a.n} (${a.nMin}–${a.nMax})`);
 row('QTE dokončených za let, medián', a => String(a.resolved));
-row('podíl času v události (varování až konec účinku), medián', a => Math.round(a.span * 100) + ' %');
+row(
+  'podíl času v události (varování až konec účinku), medián',
+  a => Math.round(a.span * 100) + ' %',
+);
 row('podíl času v okně QTE (otevření až zavření), medián', a => Math.round(a.win * 100) + ' %');
-row('podíl času mimo událost, medián (P10–P90)', a => `${Math.round(a.free * 100)} % (${Math.round(a.freeP10 * 100)}–${Math.round(a.freeP90 * 100)})`);
+row(
+  'podíl času mimo událost, medián (P10–P90)',
+  a =>
+    `${Math.round(a.free * 100)} % (${Math.round(a.freeP10 * 100)}–${Math.round(a.freeP90 * 100)})`,
+);
 row('z toho bez držení Dive (nic se nemačká), medián', a => Math.round(a.hands * 100) + ' %');
 row('akcí hráče za let (stisky QTE + schopnosti), medián', a => String(a.acts));
 row('1. varování po výhozu, medián [s]', a => r1(a.firstEv));
@@ -392,14 +429,19 @@ log('## D. Čas mimo let (z kampaní simulátoru)');
 log('');
 const tot = runs.reduce((a, R) => a + R.real, 0),
   thr = runs.reduce((a, R) => a + R.throws, 0),
-  cards = runs.reduce((a, R) => a + (R.minutes * 60 - R.flights.reduce((s, f) => s + f[1] + P.time.ui, 0)), 0);
+  cards = runs.reduce(
+    (a, R) => a + (R.minutes * 60 - R.flights.reduce((s, f) => s + f[1] + P.time.ui, 0)),
+    0,
+  );
 log(
   `Simulátor má jednu konstantu \`time.ui\` = ${P.time.ui} s na hod (míření + výsledek + Dílna dohromady, nerozdělené) a \`time.districtCard\` = ${P.time.districtCard} s za kartu čtvrti. V ${runs.length} referenčních kampaních: ${thr} hodů, celkem ${r1(tot / 60)} min, z toho mimo let ${r1((thr * P.time.ui + cards) / 60)} min (${Math.round(((thr * P.time.ui + cards) / tot) * 100)} %), v letu ${r1((tot - thr * P.time.ui - cards) / 60)} min; průměrně ${r1(tot / thr)} s na hod včetně letu.`,
 );
 log('');
 // --- mc-plna ---
 log('');
-log('## E. Čas ve čtvrtích podle mc-plna (z `simulation/progression/out/mc-plna.json`, 300 kampaní na skupinu)');
+log(
+  '## E. Čas ve čtvrtích podle mc-plna (z `simulation/progression/out/mc-plna.json`, 300 kampaní na skupinu)',
+);
 log('');
 const here = dirname(fileURLToPath(import.meta.url)),
   mc = JSON.parse(readFileSync(join(here, '../progression/out/mc-plna.json'), 'utf8'));
@@ -407,7 +449,9 @@ log(
   `Soubor: ${mc.name}, ${mc.date}, n = ${mc.n}, seed ${mc.seed}. Čtvrť = nejvzdálenější dosažený dolet (rekord) po hranicích 1 219,2 m; hody a minuty jsou medián kampaní skupiny pro tu čtvrť (rozdíl mezi dosažením hranic, \`summarize\` v run.mjs; minuty včetně ${P.time.ui} s UI na hod a ${P.time.districtCard} s karty čtvrti).`,
 );
 log('');
-log('| Skupina | hody D1 / D2 / D3 / D4 | minuty D1 / D2 / D3 / D4 | celkem hody / minuty | dokončeno |');
+log(
+  '| Skupina | hody D1 / D2 / D3 / D4 | minuty D1 / D2 / D3 / D4 | celkem hody / minuty | dokončeno |',
+);
 log('|---|---|---|---|---:|');
 const sum = [0, 0, 0, 0],
   summ = [0, 0, 0, 0];
