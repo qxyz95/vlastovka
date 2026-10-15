@@ -10,6 +10,9 @@
  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,sans-serif;padding:16px}
  h1{font-size:18px;margin:0 0 4px} h2{font-size:13px;margin:0 0 6px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
  p.note{margin:0 0 12px;color:var(--dim);max-width:1100px}
+ #timeline{display:block;width:min(100%,1100px);height:34px;margin-top:4px;border:1px solid #2a2260}
+ #quiz-box,#motif-box{background:#2a1450;border:1px solid var(--accent);padding:8px;border-radius:4px;margin-top:6px}
+ button{min-height:32px}
  #stage{position:relative;width:min(100%,1100px);aspect-ratio:16/9;background:#120e30;border:2px solid #2a2260;touch-action:none;user-select:none;overflow:hidden;cursor:pointer}
  #stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
  .overlay{position:absolute;pointer-events:none;white-space:pre;font:12px/1.35 ui-monospace,Consolas,monospace;background:#0b0820cc;padding:6px 8px;border-radius:4px}
@@ -33,15 +36,17 @@
 </style>
 </head>
 <body>
-<h1>Hudební prototyp · 6 směrů, procedurálně ve Web Audio</h1>
+<h1>Hudební prototyp · B, E a Diorama, procedurálně ve Web Audio</h1>
 <p class="note">Vše generuje kód (rozpočet 0, žádné nahrávky). Skladba se vybírá podle postupu, QTE tik je na přesném čase středu okna, kvantují se jen ozdoby a náběhy vrstev. <b>Auto flight</b> přehrává skutečný let z <code>core.js</code>; <kbd>mezerník</kbd> nebo klepnutí do scény = QTE (režim „Hraju já“), <kbd>M</kbd> ztlumí. Každý zvuk má rozsvícenou kontrolku dole ve scéně. <a href="./">Zpět do hry</a></p>
 <div id="stage"><canvas id="game" width="640" height="360" aria-label="Let vlaštovky"></canvas><div id="hud" class="overlay"></div><div id="banner" class="overlay" hidden></div><div id="cues"></div><button id="unlock">▶ Klepni pro zapnutí zvuku</button></div>
+<canvas id="timeline" width="1100" height="34" aria-label="Časová osa: doby, takty, středy QTE a maska ticha (růžově)"></canvas>
 <div id="panel">
  <section class="box"><h2>Hudba</h2>
   <label>Směr <select id="dir"></select></label>
   <div id="blind-picks" class="row" hidden></div>
   <label>Čtvrť <select id="district"></select></label>
-  <label><input type="checkbox" id="follow"> Podle postupu (čtvrť z nejdelšího doletu)</label>
+  <label>Místo ve čtvrti (téma roste) <output id="place-out"></output><input type="range" id="place" min="1" max="4" step="1" value="4"></label>
+  <label><input type="checkbox" id="follow"> Podle postupu (čtvrť a místo z nejdelšího doletu)</label>
   <label>Postup / nejdelší dolet <output id="best-out"></output><input type="range" id="best" min="0" max="4876" step="1" value="0"></label>
   <label>Intenzita (bez Auto flight) <output id="int-out"></output><input type="range" id="intensity" min="0" max="4" step="1" value="2"></label>
  </section>
@@ -63,15 +68,19 @@
  </section>
  <section class="box"><h2>Vrstvy a zátěž</h2>
   <div id="layers"></div><pre id="load"></pre><button id="bench">Benchmark CPU (offline, 8 s / směr)</button><pre id="bench-out"></pre>
+  <button id="lufs">LUFS (offline 60 s / čtvrť, BS.1770)</button><pre id="lufs-out"></pre>
  </section>
  <section class="box"><h2>Slepý režim</h2>
-  <div class="row"><label><input type="checkbox" id="blind"> Zapnout (X1–X2)</label><button id="new-session">Nové zamíchání</button><button id="reveal">Odhalit</button><button id="export">Export JSON</button></div>
+  <div class="row"><label><input type="checkbox" id="blind"> Zapnout (X1–X3, vyrovnáno na −22 LUFS)</label><button id="new-session">Nové zamíchání</button><button id="reveal">Odhalit</button><button id="export">Export JSON</button></div>
   <div id="rate-form" class="rate"></div>
   <input type="text" id="rate-note" placeholder="Poznámka" style="width:100%;margin-top:6px"><button id="rate-save">Uložit hodnocení</button>
+  <pre id="blind-status"></pre>
+  <div class="row"><button id="quiz">▶ Blok 2: rozlišení čtvrtí</button><button id="motif">▶ Blok 4: leitmotiv</button></div>
+  <pre id="quiz-status"></pre><div id="quiz-box" hidden></div><div id="motif-box" hidden></div>
   <pre id="ratings"></pre>
  </section>
- <section class="box"><h2>Únavový test (10 min)</h2>
-  <button id="fatigue">▶ Spustit únavový test</button><pre id="fatigue-status"></pre><div id="fatigue-ask" hidden></div>
+ <section class="box"><h2>Únavový test</h2>
+  <div class="row"><button id="fatigue">▶ Spustit únavový test (10 min)</button><button id="block3">▶ Blok 3: únava 3:30 (čtvrť 3, místo 4)</button></div><pre id="fatigue-status"></pre><div id="fatigue-ask" hidden></div>
  </section>
  <section class="box"><h2>Vlastní soubor pro srovnání</h2>
   <div id="drop">Přetáhni sem audio soubor (nebo <input type="file" id="file" accept="audio/*">)<br><small>Zůstane jen v paměti prohlížeče, nic se neukládá.</small></div><pre id="file-out"></pre>

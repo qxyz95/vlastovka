@@ -1,16 +1,19 @@
-// Music prototype (research/hudba/01 §6): two procedural directions (B, E), a real flight from core.js rendered by render.js,
-// blind rating, a 10-minute fatigue test, own-file comparison and load measurement. Not loaded by the game.
-import { createAudio, benchmark } from '../../src/audio.js';
+// Music prototype (research/hudba/01 §6, 03 F): three procedural candidates (B, E, Diorama G), a real flight from core.js
+// rendered by render.js, blind listening by 03 F.6 at equal loudness, LUFS by BS.1770, fatigue test, own-file comparison
+// and load measurement. Not loaded by the game.
+import { createAudio, benchmark, renderOffline } from '../../src/audio.js';
 import { createSfx } from '../../src/sfx.js';
 import {
   trackFor,
-  boundaryCue,
+  boundaryPlan,
   comboAfter,
   createTickPlanner,
+  audioState,
   rngFor,
   ARC,
   ROUTE_METERS,
 } from '../../src/audio-mix.js';
+import { lufs, momentaryAt, samplePeak } from '../../src/audio-loudness.js';
 import { TRACKS, TRACK_IDS } from '../../src/music/index.js';
 import { createFlight, step, activeEvent, eventInput } from '../../src/core.js';
 import { windows, TIMING, eventProgress } from '../../src/events.js';
@@ -18,11 +21,21 @@ import { DT } from '../../src/config.js';
 import { render, view } from '../../src/render.js';
 import { createFx, fxEvent, stepFx } from '../../src/juice.js';
 import { THEMES, setTheme } from '../../src/themes.js';
-import { verse } from '../../src/themes-verse.js';
-import { SECTION_METERS, routeAt, districtAt } from '../../src/scenes.js';
+import { SECTION_METERS, SCREEN_METERS, routeAt, districtAt } from '../../src/scenes.js';
 import { throwSettings, chargeAt } from '../../src/throw.js';
 import { lerp } from '../../src/motion.js';
-import { CRITERIA, DIRS, blindMap, loadStore, saveStore, summary } from './blind.js';
+import {
+  CRITERIA,
+  DIRS,
+  blindMap,
+  loadStore,
+  saveStore,
+  summary,
+  TARGET_LUFS,
+  trimFor,
+  quizOrder,
+  motifQuiz,
+} from './blind.js';
 const $ = id => document.getElementById(id),
   canvas = $('game'),
   reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -30,7 +43,7 @@ const audio = createAudio(),
   sfx = createSfx(audio),
   ctx = audio.ctx;
 let store = loadStore();
-const ui = { dir: 'B', district: 0, follow: false, blind: false, x: 'X1' };
+const ui = { dir: 'G', district: 0, place: 3, follow: false, blind: false, x: 'X1', quiz: null };
 let started = false; // music is on by default and starts on the first gesture
 // ---------- music selection ----------
 for (const id of TRACK_IDS)
@@ -42,16 +55,27 @@ for (const id of TRACK_IDS)
   );
 $('dir').add(new Option('Bez hudby (jen efekty)', 'off'));
 $('dir').add(new Option('Vlastní soubor', 'file'));
+$('dir').value = ui.dir;
 ARC.slice(0, 4).forEach((a, i) =>
   $('district').add(new Option(`${i + 1} · ${a.name} (D ${a.mode})`, i)),
 );
-const musicKey = () => (ui.blind ? store.map[ui.x] : ui.dir); // the actual direction
-const label = () => (ui.blind ? ui.x : ui.dir); // what the page may show
-const district = () => (ui.follow ? trackFor({ best: S.best }).district : ui.district);
-function applyMusic() {
+const musicKey = () => (ui.quiz ? 'G' : ui.blind ? store.map[ui.x] : ui.dir); // the actual direction
+const label = () => (ui.quiz ? '?' : ui.blind ? ui.x : ui.dir); // what the page may show
+const district = () =>
+  ui.quiz
+    ? ui.quiz.order[ui.quiz.i]
+    : ui.follow
+      ? trackFor({ best: S.best }).district
+      : ui.district;
+const place = () => (ui.follow ? trackFor({ best: S.best }).place : ui.place);
+// In blind mode every candidate plays at the same integrated loudness (03 F.4: −22 LUFS), otherwise the louder wins.
+const trimOf = k => (ui.blind && !ui.quiz ? trimFor(store, k, district()) : 0);
+function applyMusic(o = {}) {
   const k = musicKey();
-  if (TRACKS[k]) audio.play(TRACKS[k], district());
-  else if (k === 'off') audio.stop();
+  if (TRACKS[k]) {
+    audio.play(TRACKS[k], district(), audio.seed, o);
+    audio.setTrim(trimOf(k));
+  } else if (k === 'off') audio.stop();
 }
 $('dir').onchange = () => {
   ui.dir = $('dir').value;
@@ -62,16 +86,21 @@ $('district').onchange = () => {
   ui.district = Number($('district').value);
   applyMusic();
 };
+$('place').oninput = () => {
+  ui.place = Number($('place').value) - 1;
+  $('place-out').value = ui.place + 1;
+};
+$('place').oninput();
 $('follow').onchange = () => {
   ui.follow = $('follow').checked;
-  $('district').disabled = ui.follow;
+  $('district').disabled = $('place').disabled = ui.follow;
   applyMusic();
 };
 $('best').oninput = () => {
   S.best = Number($('best').value);
   if (ui.follow) applyMusic();
 };
-const INTENSITY = [
+const MANUAL = [
   ['Dílna', { screen: 'workshop' }],
   ['Míření', { screen: 'aim' }],
   ['Let, klid', { screen: 'flight', speed: 1 }],
@@ -79,7 +108,7 @@ const INTENSITY = [
   ['Kombo 3, rychle', { screen: 'flight', speed: 1.6, hits: 3, combo: 3 }],
 ];
 $('intensity').oninput = () => {
-  $('int-out').value = INTENSITY[$('intensity').value][0];
+  $('int-out').value = MANUAL[$('intensity').value][0];
 };
 $('intensity').oninput();
 // ---------- settings ----------
@@ -113,11 +142,13 @@ const LAMPS = {
   beat: '♩ beat',
   bar: '▮ bar',
   tick: '⏱ tik',
+  mask: '◌ ticho',
   success: '✓ success',
   perfect: '★ perfect',
   combo: '↗ kombo',
   miss: '○ miss',
   jingle: '♫ znělka',
+  stinger: '✶ nová čtvrť',
   duck: '▼ duck',
   throw: '➶ hod',
   boost: '» boost',
@@ -125,6 +156,8 @@ const LAMPS = {
   wind: '≈ vítr',
   charge: '⚡ nabití',
   switch: '⇄ skladba',
+  rest: '… pauza',
+  finale: '☀ finále',
 };
 const lamps = {};
 for (const [k, t] of Object.entries(LAMPS)) {
@@ -140,7 +173,7 @@ const meterLamp = (k, v) => {
   lamps[k].style.color = v > 0.3 ? '#000' : '';
 };
 const timers = new Map(),
-  flash = (k, text) => {
+  flash = (k, text, ms) => {
     const l = lamps[k];
     if (!l) return;
     if (text) l.textContent = text;
@@ -150,7 +183,7 @@ const timers = new Map(),
       () => {
         l.classList.remove('on');
       },
-      k === 'jingle' ? 1500 : 180,
+      ms ?? (k === 'jingle' || k === 'finale' ? 1500 : 180),
     );
   };
 const at = (when, fn) =>
@@ -172,6 +205,11 @@ audio.on((type, info) => {
             : info.name === 'jingle'
               ? `♫ ${ARC[info.district]?.name ?? ''}`
               : null,
+          info.name === 'mask'
+            ? (info.until - info.when) * 1000
+            : info.name === 'rest'
+              ? info.sec * 1000
+              : undefined,
         );
       }),
     );
@@ -184,7 +222,6 @@ audio.on((type, info) => {
     at(info.when, () => flash('bar'));
     for (let b = 0; b < 4; b++) at(info.when + b * info.spb, () => flash('beat'));
   }
-  if (type === 'switch') at(info.when, () => flash('switch'));
   if (type === 'unlock') {
     $('unlock').hidden = true;
     if (!started) {
@@ -213,6 +250,7 @@ const S = {
   throws: 0,
   best: 0,
   preBest: 0,
+  newDistrict: null,
   landedAt: 0,
   power: 0,
   release: 1,
@@ -246,6 +284,14 @@ function enter(phase) {
     S.power = 0;
     S.release = 0.85 + 0.3 * Math.random();
   }
+  // Result card: the full jingle of a newly reached district plays here, not in flight (03 E.4/5).
+  if (phase === 'result' && S.newDistrict != null) {
+    if (S.newDistrict >= 4 && musicKey() === 'G') {
+      S.phase = 'finale';
+      audio.playCue('finale', TRACKS.G);
+    } else sfx.jingle(S.newDistrict);
+    S.newDistrict = null;
+  }
 }
 function throwPlane() {
   const k = musicKey() ?? 'off';
@@ -261,12 +307,12 @@ function throwPlane() {
   );
   const start = ui.follow
     ? Math.max(0, S.best - 150)
-    : ui.district * SECTION_METERS + ((seed * 173) % 700);
+    : district() * SECTION_METERS + place() * SCREEN_METERS + ((seed * 173) % 200);
   f.x = f.startX = start;
   const p = $('qte').value,
     rate = p === 'bot70' ? 0.7 : p === 'bot95' ? 0.95 : 0,
     br = rngFor('bot', seed);
-  S.decisions = f.events.map(() => ({ hit: br() < rate, perfect: br() < rate * 0.6 }));
+  S.decisions = f.events.map(() => ({ hit: br() < rate, perfect: br() < rate * 0.6, off: br() }));
   Object.assign(S, {
     f,
     prev: null,
@@ -276,6 +322,7 @@ function throwPlane() {
     hits: 0,
     landedAt: 0,
     preBest: Math.max(S.best, start),
+    newDistrict: null,
     seen: new Set(),
   });
   S.throws++;
@@ -284,17 +331,19 @@ function throwPlane() {
   sfx.throw(S.power);
   enter('flight');
 }
+// Bot: presses on the exact centre (perfect) or inside the success window, from the running event's windows e.w.
 function bot(f) {
   if ($('qte').value === 'player') return;
   f.events.forEach((e, i) => {
     const d = S.decisions[i];
-    if (!d?.hit || e.result) return;
-    if (e.type === 'gust' && f.t >= e.at + (d.perfect ? TIMING.gustCenter : 1.2))
-      eventInput(f, 'down', 'sim');
+    if (!d?.hit || e.result || e.phase !== 'interaction' || !e.w) return;
+    const off = d.perfect ? 0 : (0.4 + 0.5 * d.off) * e.w.s;
     if (e.type === 'bird') {
-      if (e.heldAt === null && f.t >= e.at + 1) eventInput(f, 'down', 'sim');
-      if (e.heldAt !== null && f.t >= e.heldAt + (d.perfect ? TIMING.birdCenter : 0.55))
-        eventInput(f, 'up', 'sim');
+      if (e.heldAt === null) eventInput(f, 'down', 'sim');
+      else if (f.t >= e.heldAt + e.w.c + off) eventInput(f, 'up', 'sim');
+    } else {
+      const c = Array.isArray(e.w.c) ? e.w.c[e.puff ?? 0] : e.w.c;
+      if (f.t >= c + off) eventInput(f, 'down', 'sim');
     }
   });
 }
@@ -324,19 +373,24 @@ function feedback(e) {
     showQte();
   }
 }
-function onBoundary(c) {
-  const name = c.district >= 4 ? 'Finale' : ARC[c.district].name;
+// District boundary in flight (03 E.4): a known district does nothing in the music (banner only), a new one switches in calm.
+function onBoundary(px, x) {
+  const plan = boundaryPlan(px, x, S.preBest, {
+      held: !!audio.mix.held,
+      stingers: audio.stingers,
+    }),
+    d = Math.floor(x / SECTION_METERS);
+  const name = d >= 4 ? 'Finale' : ARC[d].name;
   S.banner = {
-    text: (c.type === 'new' ? 'NEW DISTRICT · ' : '') + name,
+    text: (plan ? 'NEW DISTRICT · ' : '') + name,
     until: performance.now() + 2000,
   };
-  if (c.type === 'new') {
-    sfx.jingle(c.district);
-    if (ui.follow && c.district < 4) {
-      S.best = Math.max(S.best, c.district * SECTION_METERS);
-      applyMusic();
-    }
-  } else sfx.jingle(c.district, { short: true });
+  if (!plan) return;
+  S.newDistrict = Math.max(S.newDistrict ?? 0, plan.district);
+  if (ui.follow && plan.district < 4) {
+    S.best = Math.max(S.best, plan.district * SECTION_METERS);
+    applyMusic({ calmOnly: true, stinger: plan.stinger });
+  }
 }
 function simulate(dt, now) {
   S.t += dt;
@@ -347,20 +401,20 @@ function simulate(dt, now) {
     if (held >= S.release) throwPlane();
     return;
   }
+  if (S.phase === 'finale' && !audio.cueing && S.t > 3) enter('workshop');
   if (S.phase === 'result' && S.t > 2.5) enter(S.throws % 4 === 0 ? 'workshop' : 'aim');
   if (S.phase === 'workshop' && S.t > 4) enter('aim');
   if (S.phase !== 'flight') return;
   const f = S.f;
   if (S.fx.hitstop > 0) S.fx.hitstop = Math.max(0, S.fx.hitstop - dt);
-  else S.acc += dt;
+  else S.acc += dt * (f.warp ?? 1);
   while (S.acc >= DT && !f.landed) {
     S.prev = { x: f.x, y: f.y, vx: f.vx, vy: f.vy, t: f.t };
     bot(f);
     const px = f.x;
     step(f);
     S.acc -= DT;
-    const c = boundaryCue(px, f.x, S.preBest);
-    if (c) onBoundary(c);
+    if (Math.floor(px / SECTION_METERS) !== Math.floor(f.x / SECTION_METERS)) onBoundary(px, f.x);
   }
   for (const e of f.events)
     if (['success', 'perfect', 'miss'].includes(e.result) && !S.seen.has(e)) {
@@ -379,6 +433,7 @@ function simulate(dt, now) {
     const sp = S.prev ? Math.hypot(S.prev.vx, S.prev.vy) : 0,
       kind = routeAt(f.x).kind;
     sfx.land(sp, ['bridge', 'lighthouse'].includes(kind) ? 'water' : 'roof');
+    audio.duck(ctx.currentTime, { db: -3, hold: 0.15, release: 0.15 });
     fxEvent(S.fx, 'land', { speed: sp, text: Math.floor(f.x - f.startX) + ' m' });
     if (f.x > S.best) {
       S.best = Math.min(ROUTE_METERS, f.x);
@@ -418,16 +473,16 @@ const EVENTS = {
     sfx.miss();
     fxEvent(manualFx, 'miss');
   },
-  'Znělka čtvrti': () => sfx.jingle(district()),
-  'Krátká znělka': () => sfx.jingle(district(), { short: true }),
+  'Znělka čtvrti (karta)': () => sfx.jingle(district()),
+  'Stinger nové čtvrti': () => sfx.stinger((district() + 1) % 4),
   'Hranice (nová čtvrť)': () => {
     const d = (district() + 1) % 4;
-    sfx.jingle(d);
     ui.district = d;
     $('district').value = d;
-    applyMusic();
+    applyMusic({ stinger: true });
   },
-  'Finále (znělka)': () => sfx.jingle(4),
+  'Finále (Diorama)': () => audio.playCue('finale', TRACKS.G),
+  'Pauza proti únavě (10 s)': () => audio.rest(10),
   Hod: () => {
     sfx.throw(0.9);
     fxEvent(manualFx, 'throw', { power: 0.9 });
@@ -511,12 +566,13 @@ addEventListener('keyup', e => {
 });
 canvas.addEventListener('pointerdown', () => press('down'));
 addEventListener('pointerup', () => press('up'));
+addEventListener('pointercancel', () => press('up'));
+addEventListener('blur', () => press('up'));
 // ---------- theme ----------
-const STYLES = { ...THEMES, verse };
-for (const id of Object.keys(STYLES)) $('theme').add(new Option(STYLES[id].name, id));
-$('theme').value = 'verse';
-setTheme(verse);
-$('theme').onchange = () => setTheme(STYLES[$('theme').value]);
+for (const id of Object.keys(THEMES)) $('theme').add(new Option(THEMES[id].name ?? id, id));
+$('theme').value = 'paper';
+setTheme('paper');
+$('theme').onchange = () => setTheme($('theme').value);
 // ---------- frame loop ----------
 const zones = (f, kind) => {
   const w = windows(f)[kind],
@@ -530,7 +586,8 @@ const TIMER = new URLSearchParams(location.search).has('timer'),
   nextFrame = TIMER ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
 let last = 0,
   glide = 0,
-  frameMs = 0;
+  frameMs = 0,
+  prevX = 0;
 function frame(now) {
   const dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
   last = now;
@@ -540,22 +597,34 @@ function frame(now) {
     const f = S.on ? S.f : null,
       inFlight = S.on && S.phase === 'flight' && f,
       e = inFlight ? activeEvent(f) : null;
-    // Mix state: from the auto flight, or from the intensity slider and manual QTE.
-    const st = S.on
-      ? {
-          screen: S.phase,
-          event: e
-            ? ({ warning: 'warning', interaction: 'window', effect: 'effect' }[e.phase] ?? 'none')
-            : 'none',
+    // One audio state per frame (03 F.2): from the auto flight, or from the manual slider and manual QTE.
+    let st;
+    if (S.on) {
+      st = audioState(
+        inFlight ? { ...f, t: f.t + (f.landed ? 0 : S.acc) } : f,
+        {
+          best: S.best,
           combo: S.combo,
-          hits: S.hits,
-          speed: inFlight ? f.vx / f.p.cruise : 1,
-          height: inFlight ? f.y : 0,
-        }
-      : { ...INTENSITY[$('intensity').value][1], event: manualPhase() };
-    if (!S.on && st.event !== 'none') st.screen = 'flight'; // a manual QTE always thins like in flight
-    audio.setMix(st);
-    sfx.wind(inFlight && !f.landed ? Math.max(0, Math.min(1, (f.vx / f.p.cruise - 0.8) / 1.6)) : 0);
+          prevX,
+          calm: audio.settings.calm,
+          reducedMotion: reduced.matches,
+        },
+        S.phase,
+      );
+      st.combo = S.combo;
+      st.hits = S.hits;
+      prevX = f?.x ?? 0;
+    } else {
+      st = { ...MANUAL[$('intensity').value][1], event: manualPhase() };
+      if (st.event !== 'none') {
+        st.screen = 'flight'; // a manual QTE always thins like in flight
+        if (manualQte) st.centres = [manualQte.start + windows(null).gust.center];
+        st.flightT = ctx.currentTime;
+      }
+    }
+    st.place = place();
+    audio.update(st);
+    sfx.wind(inFlight && !f.landed ? Math.max(0, Math.min(1, (f.vx / f.cruise - 0.8) / 1.6)) : 0);
     // Draw: the flight (interpolated between physics steps) or a gentle glide in manual mode.
     const t0 = performance.now();
     let shown,
@@ -582,7 +651,7 @@ function frame(now) {
           result: e.result,
           held: e.heldAt !== null,
           progress: eventProgress(f, e),
-          zones: zones(f, e.type),
+          zones: zones(f, e.type === 'bird' ? 'bird' : 'gust'),
         };
     } else if (S.on) {
       shown = S.phase === 'result' ? f : null;
@@ -615,48 +684,87 @@ function frame(now) {
         };
       }
     }
-    stepFx(fx, dt, shown, view(shown));
-    render(canvas, shown, 'dart', now / 1000, {
-      reduced: reduced.matches,
-      qte,
-      fx,
-      charge,
-      clock: now / 1000,
-    });
+    if (!ui.quiz) {
+      stepFx(fx, dt, shown, view(shown));
+      render(canvas, shown, 'dart', now / 1000, {
+        reduced: reduced.matches,
+        qte,
+        fx,
+        charge,
+        clock: now / 1000,
+      });
+    }
     frameMs = frameMs * 0.95 + (performance.now() - t0) * 0.05;
     hud(st, shown);
+    timeline();
   }
   nextFrame(frame);
 }
 function hud(st, shown) {
   const k = musicKey(),
     tr = TRACKS[k],
-    d = district(),
-    name = ui.blind
+    hide = ui.blind || ui.quiz,
+    name = hide
       ? label()
       : tr
         ? `${k} · ${tr.name}`
         : k === 'file'
           ? `soubor: ${audio.file?.name ?? '—'}`
           : 'bez hudby';
-  const dd = tr?.districts[audio.district] ?? null,
-    m = audio.mix;
+  const dd = tr?.districts[audio.district] ?? null;
   $('hud').textContent = [
-    `${name}${dd && !ui.blind ? ` · ${dd.name} · ${dd.bpm} BPM · D ${dd.mode}` : dd ? ` · čtvrť ${audio.district + 1}` : ''}`,
-    `stav ${st.screen}${st.event && st.event !== 'none' ? ' · ' + st.event : ''} · kombo ${st.combo ?? 0} · zásahy ${st.hits ?? 0}`,
-    shown ? `${Math.floor(shown.x)} m · ${districtAt(shown.x).name}` : '',
-    S.on && S.f
-      ? `rychlost ${(S.f.vx / S.f.p.cruise).toFixed(2)}× · výška ${S.f.y.toFixed(0)} m · seed ${S.f.seed}`
+    `${name}${dd && !hide ? ` · ${dd.name} · ${dd.bpm} BPM · D ${dd.mode} · místo ${audio.place + 1}` : dd && !ui.quiz ? ` · čtvrť ${audio.district + 1}` : ''}`,
+    `stav ${st.screen}${st.event && st.event !== 'none' ? ' · ' + st.event : ''} · kombo ${st.combo ?? 0} · zásahy ${st.hits ?? 0}${audio.resting() ? ' · pauza proti únavě' : ''}${audio.bedOnly ? ' · jen plocha' : ''}`,
+    shown && !ui.quiz ? `${Math.floor(shown.x)} m · ${districtAt(shown.x).name}` : '',
+    S.on && S.f && !ui.quiz
+      ? `rychlost ${(S.f.vx / S.f.cruise).toFixed(2)}× · výška ${S.f.y.toFixed(0)} m · seed ${S.f.seed}`
       : '',
     S.on && S.phase === 'flight' && $('qte').value === 'player' ? 'MEZERNÍK = QTE' : '',
   ]
     .filter(Boolean)
     .join('\n');
-  $('best-out').value =
-    Math.floor(S.best) + ' m → ' + ARC[trackFor({ best: S.best }).district].name;
+  const tf = trackFor({ best: S.best });
+  $('best-out').value = `${Math.floor(S.best)} m → ${ARC[tf.district].name}, místo ${tf.place + 1}`;
   const b = S.banner && performance.now() < S.banner.until;
   $('banner').hidden = !b;
   if (b) $('banner').textContent = S.banner.text;
+}
+// Timeline of the next 4 s (visual equivalent of the silence mask): beats, bar lines, QTE centres and masks.
+const tl = $('timeline'),
+  tlc = tl.getContext('2d');
+function timeline() {
+  const W = tl.width,
+    H = tl.height,
+    t0 = ctx.currentTime,
+    span = 4,
+    X = t => ((t - t0) / span) * W;
+  tlc.fillStyle = '#120e30';
+  tlc.fillRect(0, 0, W, H);
+  for (const [a, b] of audio.mask) {
+    tlc.fillStyle = '#ff4fc355';
+    tlc.fillRect(X(a), 0, Math.max(2, X(b) - X(a)), H);
+  }
+  if (audio.track) {
+    const spb = audio.spb;
+    for (
+      let k = Math.ceil((t0 - audio.barStart) / spb);
+      audio.barStart + k * spb < t0 + span;
+      k++
+    ) {
+      const x = X(audio.barStart + k * spb);
+      tlc.fillStyle = k % 4 === 0 ? '#ffd166' : '#3a2f80';
+      tlc.fillRect(x, k % 4 === 0 ? 0 : H / 2, 2, k % 4 === 0 ? H : H / 2);
+    }
+  }
+  tlc.fillStyle = '#53e6ff';
+  for (const c of audio.centres) tlc.fillRect(X(c) - 1, 0, 3, H);
+  tlc.fillStyle = '#e8e6ff';
+  tlc.font = '11px ui-monospace,Consolas,monospace';
+  tlc.fillText(
+    `${audio.mix.held ? 'filtr 1,8 kHz' : 'filtr otevřený'}${audio.pending ? ' · čeká přepnutí' : ''}`,
+    4,
+    12,
+  );
 }
 // ---------- layer meters and load ----------
 $('layers').innerHTML =
@@ -682,9 +790,54 @@ setInterval(() => {
   for (const x of buf) s += x * x;
   $('rms').style.width = Math.min(100, Math.sqrt(s / buf.length) * 300) + '%';
   const st = audio.stats();
+  monitor.sample(st);
   $('load').textContent =
-    `hlasy ${st.voices} (špička ${st.peak}) · fronta ${st.queue}\nplánovač ${st.schedAvg.toFixed(3)} ms prům. / ${st.schedMax.toFixed(2)} ms max (každých 25 ms)\nrender ${frameMs.toFixed(2)} ms/snímek · ${st.state} · ${st.rate} Hz · latence ${(st.base * 1000).toFixed(0)}+${(st.output * 1000).toFixed(0)} ms${st.underruns != null ? ` · výpadky ${st.underruns} (${st.underrunMs.toFixed(0)} ms)` : ''}`;
+    `hlasy ${st.voices} (špička ${st.peak}) · fronta ${st.queue} · zahozeno maskou ${st.dropped}\nplánovač ${st.schedAvg.toFixed(3)} ms prům. / ${st.schedMax.toFixed(2)} ms max (celkem ${st.schedMaxAll.toFixed(2)})\nrender ${frameMs.toFixed(2)} ms/snímek · ${st.state} · ${st.rate} Hz · latence ${(st.base * 1000).toFixed(0)}+${(st.output * 1000).toFixed(0)} ms${st.underruns != null ? ` · výpadky ${st.underruns} (${st.underrunMs.toFixed(0)} ms)` : ''}\nKS cache ${st.ksBuffers} not = ${(st.ksBytes / 1048576).toFixed(2)} MB · limiter ${st.limiter?.toFixed(1) ?? '–'} dB`;
 }, 100);
+// Long-run load monitor (03 F.5): underruns since start, worst scheduler pump, voices peak, limiter, hidden time.
+const monitor = {
+  on: false,
+  sample(st) {
+    if (!this.on) return;
+    const m = this.data;
+    m.samples++;
+    m.underruns = st.underruns != null ? st.underruns - m.underruns0 : null;
+    m.underrunMs = st.underrunMs != null ? st.underrunMs - m.underrunMs0 : null;
+    m.schedMax = Math.max(m.schedMax, st.schedMax);
+    m.peak = Math.max(m.peak, st.voices);
+    if (st.limiter != null && S.phase === 'flight') {
+      m.limMin = Math.min(m.limMin, st.limiter);
+      m.limSum += st.limiter;
+      m.limN++;
+    }
+    if (document.hidden) m.hiddenSamples++;
+    m.ksBytes = st.ksBytes;
+    m.ksBuffers = st.ksBuffers;
+    m.sec = ctx.currentTime - m.t0;
+  },
+  start() {
+    const st = audio.stats();
+    this.data = {
+      t0: ctx.currentTime,
+      started: new Date().toISOString(),
+      ua: navigator.userAgent,
+      underruns0: st.underruns ?? 0,
+      underrunMs0: st.underrunMs ?? 0,
+      samples: 0,
+      hiddenSamples: 0,
+      schedMax: 0,
+      peak: 0,
+      limMin: 0,
+      limSum: 0,
+      limN: 0,
+    };
+    this.on = true;
+  },
+  report() {
+    const m = this.data;
+    return m && { ...m, limAvg: m.limN ? m.limSum / m.limN : null };
+  },
+};
 $('bench').onclick = async () => {
   $('bench-out').textContent = 'běží…';
   const rows = [];
@@ -697,7 +850,83 @@ $('bench').onclick = async () => {
   }
   $('bench-out').textContent = rows.join('\n');
 };
-// ---------- blind mode ----------
+// ---------- loudness (03 F.4) ----------
+const CALM = { screen: 'flight', combo: 3, hits: 3, speed: 1.2 },
+  chans = b => [b.getChannelData(0), b.getChannelData(1)];
+async function measureTrack(id, d, sec = 60, state = CALM, o = {}) {
+  const b = await renderOffline(TRACKS[id], d, sec, { state, density: 0.7, place: 3, ...o });
+  return { lufs: lufs(chans(b), b.sampleRate), peak: samplePeak(chans(b)), buffer: b };
+}
+// Effects over the music at the same moment: momentary loudness (400 ms) of the effect alone vs the music alone.
+async function overMusic(id, d, state, fire, at = 6) {
+  const opts = { state, density: 0.7, place: 3 },
+    music = await renderOffline(TRACKS[id], d, 10, {
+      ...opts,
+      sfx: false,
+      centres: state.centres,
+      extra: api => fire(createSfx(api), at),
+    }),
+    fx = await renderOffline(TRACKS[id], d, 10, {
+      ...opts,
+      music: false,
+      extra: api => fire(createSfx(api), at),
+    });
+  const m = momentaryAt(chans(music), music.sampleRate, at + 0.15),
+    e = momentaryAt(chans(fx), fx.sampleRate, at + 0.15);
+  return { music: m, effect: e, diff: e - m, effectPeak: samplePeak(chans(fx)) };
+}
+async function lufsAll(ids = TRACK_IDS, sec = 60) {
+  const rows = [],
+    out = $('lufs-out'),
+    show = () => (out.textContent = rows.map(r => r.text).join('\n') + '\nběží…');
+  for (const id of ids)
+    for (let d = 0; d < 4; d++) {
+      const r = await measureTrack(id, d, sec);
+      rows.push({
+        id,
+        d,
+        lufs: r.lufs,
+        peak: r.peak,
+        text: `${ui.blind ? '?' : id} čtvrť ${d + 1}: ${r.lufs.toFixed(1)} LUFS · vrchol ${r.peak.toFixed(1)} dBFS`,
+      });
+      show();
+    }
+  const extra = {};
+  if (ids.includes('G')) {
+    const calm = rows.find(r => r.id === 'G' && r.d === 0).lufs,
+      ws = (await measureTrack('G', 0, sec, { screen: 'workshop' })).lufs,
+      res = (await measureTrack('G', 0, sec, { screen: 'result' })).lufs,
+      win = (await measureTrack('G', 0, sec, { ...CALM, event: 'window' })).lufs,
+      perfect = await overMusic('G', 0, CALM, (s, t) => s.perfect(3, t)),
+      tick = await overMusic('G', 0, { ...CALM, event: 'window', centres: [6] }, (s, t) =>
+        s.tick(t),
+      ),
+      g = rows.filter(r => r.id === 'G').map(r => r.lufs);
+    Object.assign(extra, {
+      calm,
+      workshop: ws,
+      result: res,
+      window: win,
+      spread: Math.max(...g) - Math.min(...g),
+      perfect,
+      tick,
+    });
+    rows.push({
+      text: [
+        `G rozdíl čtvrtí ${extra.spread.toFixed(1)} LU`,
+        `G Dílna ${(calm - ws).toFixed(1)} LU tišší, výsledek ${(calm - res).toFixed(1)} LU tišší než klidný let`,
+        `G okno QTE ${(calm - win).toFixed(1)} LU tišší než klidný let`,
+        `G perfekt nad hudbou ${perfect.diff.toFixed(1)} LU (momentary), tik nad hudbou v okně ${tick.diff.toFixed(1)} LU`,
+      ].join('\n'),
+    });
+  }
+  out.textContent = rows.map(r => r.text).join('\n');
+  const result = { at: new Date().toISOString(), sec, rate: 48000, rows, extra };
+  globalThis.musicProto.lufs = result;
+  return result;
+}
+$('lufs').onclick = () => lufsAll();
+// ---------- blind mode (03 F.6) ----------
 for (const x of Object.keys(store.map)) {
   const b = document.createElement('button');
   b.textContent = x;
@@ -713,12 +942,28 @@ const pickX = () => {
   for (const b of $('blind-picks').children) b.setAttribute('aria-pressed', b.dataset.x === ui.x);
 };
 pickX();
-$('blind').onchange = () => {
+// Equal loudness: 30 s offline per candidate and district, trims cached in the store (localStorage).
+async function equalize() {
+  store.trims ??= {};
+  const todo = DIRS.flatMap(id => [0, 1, 2, 3].map(d => [id, d])).filter(
+    ([id, d]) => store.trims[id + d] == null,
+  );
+  for (const [i, [id, d]] of todo.entries()) {
+    $('blind-status').textContent = `vyrovnávám hlasitost ${i + 1}/${todo.length}…`;
+    const l = (await measureTrack(id, d, 30)).lufs;
+    store.trims[id + d] = Number.isFinite(l) ? TARGET_LUFS - l : 0;
+  }
+  saveStore(store);
+  $('blind-status').textContent = `vyrovnáno na ${TARGET_LUFS} LUFS`;
+  applyMusic();
+}
+$('blind').onchange = async () => {
   ui.blind = $('blind').checked;
   $('dir').disabled = ui.blind;
   $('blind-picks').hidden = !ui.blind;
   showRatings();
   applyMusic();
+  if (ui.blind) await equalize();
 };
 $('rate-form').innerHTML = CRITERIA.map(
   c =>
@@ -808,6 +1053,10 @@ function showRatings() {
               : ''),
         )
         .join('\n');
+    if (store.quiz?.length)
+      out += `\nRozlišení čtvrtí: ${store.quiz.map(q => q.correct + '/4').join(', ')}`;
+    if (store.motif?.length)
+      out += `\nLeitmotiv: ${store.motif.map(q => (q.correct ? 'správně' : 'špatně')).join(', ')}`;
   }
   $('ratings').textContent = out;
 }
@@ -825,10 +1074,106 @@ function showQte() {
     : 'Zapni Auto flight v režimu „Hraju já“. Zásahy se počítají zvlášť pro každý směr a pro „off“ (ztlumeno / bez hudby), na stejných seedech.';
 }
 showQte();
+// Block 2: which district is it? 4 × 45 s of Diorama in a seeded order, no picture, names hidden.
+const QUIZ_SEC = 45,
+  DAYTIME = ['ráno', 'poledne u moře', 'zlaté odpoledne', 'večer s lampiony'];
+$('quiz').onclick = () => {
+  if (ui.quiz) return stopQuiz();
+  audio.unlock();
+  ui.quiz = { order: quizOrder(store.seed + (store.quiz?.length ?? 0)), i: 0, t0: 0, answers: [] };
+  ui.quiz.t0 = performance.now();
+  canvas.style.visibility = 'hidden';
+  $('quiz').textContent = '■ Přerušit blok 2';
+  applyMusic();
+  showQuiz();
+};
+function showQuiz() {
+  const q = ui.quiz,
+    box = $('quiz-box');
+  box.hidden = false;
+  box.innerHTML = `<b>Ukázka ${q.i + 1}/4</b> (${QUIZ_SEC} s): která denní doba to je? `;
+  DAYTIME.forEach((name, d) => {
+    const b = document.createElement('button');
+    b.textContent = name;
+    b.onclick = () => {
+      q.answers.push(d);
+      if (++q.i >= 4) finishQuiz();
+      else {
+        q.t0 = performance.now();
+        applyMusic();
+        showQuiz();
+      }
+    };
+    box.append(b);
+  });
+}
+function finishQuiz() {
+  const q = ui.quiz,
+    correct = q.answers.filter((a, i) => a === q.order[i]).length;
+  (store.quiz ??= []).push({
+    at: new Date().toISOString(),
+    order: q.order,
+    answers: q.answers,
+    correct,
+  });
+  saveStore(store);
+  stopQuiz(`hotovo: ${correct}/4 správně`);
+}
+function stopQuiz(msg = 'přerušeno') {
+  ui.quiz = null;
+  canvas.style.visibility = '';
+  $('quiz').textContent = '▶ Blok 2: rozlišení čtvrtí';
+  $('quiz-box').hidden = true;
+  $('quiz-status').textContent = msg;
+  applyMusic();
+  showRatings();
+}
+setInterval(() => {
+  if (!ui.quiz) return;
+  const left = QUIZ_SEC - (performance.now() - ui.quiz.t0) / 1000;
+  $('quiz-status').textContent =
+    left > 0 ? `zbývá ${Math.ceil(left)} s` : 'čas vypršel, vyber odpověď';
+}, 250);
+// Block 4: leitmotif, three short melodies on the same instrument in a seeded order.
+const motifPlays = () => motifQuiz(store.seed + (store.motif?.length ?? 0));
+$('motif').onclick = () => {
+  audio.unlock();
+  const q = motifPlays(),
+    box = $('motif-box');
+  box.hidden = false;
+  box.innerHTML = '<b>Která je melodie vlaštovky, kterou už znáš?</b> ';
+  q.items.forEach((it, k) => {
+    const play = document.createElement('button');
+    play.textContent = `▶ Z${k + 1}`;
+    play.onclick = () => playMelody(it.notes);
+    const pick = document.createElement('button');
+    pick.textContent = `vybrat Z${k + 1}`;
+    pick.onclick = () => {
+      (store.motif ??= []).push({
+        at: new Date().toISOString(),
+        order: q.items.map(i => i.kind),
+        pick: q.items[k].kind,
+        correct: q.items[k].kind === 'theme',
+      });
+      saveStore(store);
+      box.hidden = true;
+      showRatings();
+    };
+    box.append(play, pick);
+  });
+};
+// Same instrument and tempo for all three melodies (a beat = 0.55 s).
+function playMelody(notes) {
+  const t = ctx.currentTime + 0.1,
+    spb = 0.55;
+  audio.cue('jingle', t);
+  for (const n of notes)
+    sfx.note({ i: 'musicbox', n: n.n, d: n.d * spb, v: 0.7, o: { dec: 0.9 } }, t + n.b * spb);
+}
 // ---------- fatigue test ----------
-const fat = { on: false, t: 0, asked: new Set(), dir: null, x: null };
-const ASK = [1, 5, 10];
-$('fatigue').onclick = () => {
+const fat = { on: false, t: 0, asked: new Set(), dir: null, x: null, ask: [], kind: 'fatigue' };
+const ASK = { fatigue: [1, 5, 10], block3: [0.02, 3.5] };
+function startFatigue(kind) {
   if (fat.on) {
     stopFatigue('přerušeno');
     return;
@@ -839,36 +1184,69 @@ $('fatigue').onclick = () => {
     asked: new Set(),
     dir: musicKey(),
     x: ui.blind ? ui.x : null,
+    kind,
+    ask: ASK[kind],
   });
-  $('fatigue').textContent = '■ Přerušit';
+  $(kind === 'block3' ? 'block3' : 'fatigue').textContent = '■ Přerušit';
   $('dir').disabled = true;
   $('blind').disabled = true;
   if (!S.on) setAuto(true);
+}
+$('fatigue').onclick = () => startFatigue('fatigue');
+$('block3').onclick = () => {
+  if (!fat.on) {
+    ui.follow = false;
+    $('follow').checked = false;
+    ui.district = 2;
+    $('district').value = 2;
+    ui.place = 3;
+    $('place').value = 4;
+    $('place').oninput();
+    applyMusic();
+  }
+  startFatigue('block3');
 };
 function fatigueStep(dt) {
   fat.t += dt;
-  const m = Math.floor(fat.t / 60);
+  const m = fat.t / 60,
+    total = fat.ask.at(-1);
   $('fatigue-status').textContent =
-    `${Math.floor(fat.t / 60)}:${String(Math.floor(fat.t % 60)).padStart(2, '0')} / 10:00 · ${fat.x ?? fat.dir} · čtvrť ${district() + 1}`;
-  for (const q of ASK)
+    `${Math.floor(fat.t / 60)}:${String(Math.floor(fat.t % 60)).padStart(2, '0')} / ${Math.floor(total)}:${String(Math.round((total % 1) * 60)).padStart(2, '0')} · ${fat.x ?? (ui.blind ? '?' : fat.dir)} · čtvrť ${district() + 1}`;
+  for (const q of fat.ask)
     if (m >= q && !fat.asked.has(q)) {
       fat.asked.add(q);
       ask(q);
     }
 }
 function ask(minute) {
-  const box = $('fatigue-ask');
+  const box = $('fatigue-ask'),
+    keep = fat.kind === 'block3';
   box.hidden = false;
-  box.innerHTML = `<b>${minute}. minuta:</b> jak moc tě hudba unavuje? `;
+  box.innerHTML = keep
+    ? `<b>${minute < 1 ? 'Začátek' : minute + '. minuta'}:</b> nechal bys ji zapnutou? `
+    : `<b>${minute}. minuta:</b> jak moc tě hudba unavuje? `;
   for (let v = 1; v <= 5; v++) {
     const b = document.createElement('button');
-    b.textContent = v + (v === 1 ? ' vůbec' : v === 5 ? ' vypnul bych' : '');
+    b.textContent =
+      v +
+      (keep
+        ? v === 1
+          ? ' ne'
+          : v === 5
+            ? ' určitě'
+            : ''
+        : v === 1
+          ? ' vůbec'
+          : v === 5
+            ? ' vypnul bych'
+            : '');
     b.onclick = () => {
       store.fatigue.push({
         dir: fat.dir,
         x: fat.x,
         minute,
-        score: 6 - v,
+        kind: fat.kind,
+        score: keep ? v : 6 - v,
         raw: v,
         district: district(),
         at: new Date().toISOString(),
@@ -876,14 +1254,15 @@ function ask(minute) {
       saveStore(store);
       box.hidden = true;
       showRatings();
-      if (minute === 10) stopFatigue('hotovo');
+      if (minute === fat.ask.at(-1)) stopFatigue('hotovo');
     };
     box.append(b);
   }
 }
 function stopFatigue(why) {
   fat.on = false;
-  $('fatigue').textContent = '▶ Spustit únavový test';
+  $('fatigue').textContent = '▶ Spustit únavový test (10 min)';
+  $('block3').textContent = '▶ Blok 3: únava 3:30 (čtvrť 3, místo 4)';
   $('dir').disabled = ui.blind;
   $('blind').disabled = false;
   $('fatigue-status').textContent += ` · ${why}`;
@@ -915,5 +1294,16 @@ drop.ondrop = e => {
 };
 $('file').onchange = () => useFile($('file').files[0]);
 nextFrame(frame);
-// Debug handle for console checks.
-globalThis.musicProto = { audio, sfx, S, ui, store };
+// Debug and measurement handle for console checks.
+globalThis.musicProto = {
+  audio,
+  sfx,
+  S,
+  ui,
+  store,
+  lufsAll,
+  measureTrack,
+  overMusic,
+  monitor,
+  setAuto,
+};
