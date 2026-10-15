@@ -219,3 +219,6 @@ Průběžný záznam rozhodnutí k návrhům v `01–05`. Platí přednostně p�
   3. **Starý save:** utracené mince za starou Dílnu se vrátí, úrovně se vynulují, rekord zůstane (místa v Atlasu se objeví podle doletu).
   4. **Uzly bez ceny** (orchestrátor podle 06): Night Route skrytý, Autopilot až ve 2. vlně, žádné „Coming soon“.
   5. **Pohlednice:** čtvrť 1 snímky z 3D, čtvrti 2–4 papírová silueta dominanty, dokud nebudou modely.
+- **Nové události — vzhled (15. 10., k `research/atlas/05-art-udalosti.md`):**
+  1. **Ventilace s párou jen u Steam Hop** (dvojí ťuk); poryv bude jen papírové proužky větru podle bible kap. 7. Jeden objekt = jedno ovládání.
+  2. **Větší kruh QTE pro všechny události** (min. 30 px poloměr na mobilu i pro poryv a holuba), na desktopu beze změny.
