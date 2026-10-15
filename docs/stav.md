@@ -3,19 +3,16 @@
 Aktualizuje se po každé větší práci (orchestrátor nebo agent, který práci dokončil). U každého údaje je datum.
 Poslední úprava: 15. 10. 2026 večer (orchestrátor před compactem: sezení „pokračuj podle plánu hratelnosti“).
 
-## Právě teď (15. 10. 2026 večer) — JAK NAVÁZAT
-**Hotové a sloučené dnes (větev `f3-3d-prototypy`, 396 testů zelených):** U0 jeden styl v UI, R0+H0 render bez cyberu, QS2 práh QTE 8 m (i v tutoriálu), U1 texty EN/CS podle bible kap. 12, H2 postavička C (`models/kid.js`, `kid-rig.js`), H1 úvodní záběr (`render3d/intro.js`, nápis „Throw it“ v nebi), U2 `src/settings.js`, U3 `src/screens.js` (automat obrazovek, obrazovka `chapter`), U4 `src/reveal.js`, T1 `src/result.js` (throwDiff, nextGoal, chapterTrigger, airFocus, throwReasons). Prettier zaveden (`npm run format`), úklid dokumentů (`docs/zdroje.md`, `archiv/`), prototypy 3d/styly/papers v `archiv/`.
-**Design dnes:** `research/plan-hratelnost/04-chut-hrat-dal.md` (ředitel, podle KB), `05-karty-mechanik.md` (K1–K9, dávky T1–T9), `06-pejsek.md` (pejsek nálezce, dávka H6). Rozhodnutí v `research/bonusy/06-rozhodnuti.md` (bloky z 15. 10.).
-**Běží:** agent **U5 Kostra přes celou obrazovku** (worktree, Opus, soubor průběhu `runs/2026-10-15-u5-kostra.md`).
-**Domluvené pořadí do předání uživateli k hraní (uživatel chce odkaz, až bude vše ready):**
-1. Po U5: zkontrolovat diff, sloučit, `npm test`, smoke test.
-2. Orchestrátor sám: **dev tlačítko „+1000 mincí“** za `?dev=1` (čistý modul s testem, háček v `ui.js`, i18n EN/CS). Jen mince — Atlas a místa si uživatel odemkne doletem (nechce tlačítko na rekord).
-3. **QA tester** (Sonnet) podle kontrolního seznamu (menu, míření, hod, QTE, výsledek, Dílna, Atlas, EN/CS, klávesnice, dotyk, reduced motion, 360 px i desktop); kritické chyby opravit game-devem a přetestovat.
-4. **Art review** úvodu, postavičky C a nové obrazovky.
-5. Spustit `npm start` a dát uživateli odkaz http://127.0.0.1:4173 + seznam známých drobností a na co se zaměřit. (Port 4173 byl uvolněn; `kompas.server` na 8770 nevypínat.)
-**Čeká na uživatele (nespěchá, po hraní):** pejsek — roztomilý moment A/B/C, barva A/B/C, přiblížení kamery u krátké verze A/B/C (`06-pejsek.md` BLOCKED, doporučení vždy A).
-**Další dávky po hraní:** U6 výzva a vstupy, U7 + T2 karta výsledku (14 i18n klíčů z reportu T1 v `runs/2026-10-15-t1-vysledek.md`), T5 konec kapitoly, T8 log `?playtest=1`, H5 papírový kouř, H6 pejsek, T3/T4 vlajka a páska rekordu, B1 Atlas (texty Atlasu jsou zastaralé cyber — přepsat; bonusy projde game-designer znovu).
-**Pravidla práce:** max 2 souběžní agenti, model podle úkolu (Opus návrh a složitá logika, Sonnet dávky se specifikací s přesnými řádky zdrojů), orchestrátor čte diff a sám spouští testy (`.claude/rules/orchestrace.md`).
+## Právě teď (15. 10. 2026 noc) — JAK NAVÁZAT
+**Hotovo dnes večer:** U5 kostra přes celou obrazovku (sloučeno), dev tlačítko „+1000 mincí“ za `?dev=1` (`src/dev.js`), QA (`runs/2026-10-15-qa-predani.md`) a art review (`runs/2026-10-15-art-review-u5.md`), opravy F1 (`runs/2026-10-15-f1-opravy.md`) + nápis úvodu se zoomem UI. 417 testů zelených.
+
+**Teď běží: Atlas s bonusy do hry přes noc** (uživatel: „neřeš rozsah, udělej to pořádně“). Plán `research/atlas/04-plan-zapojeni.md`, rozhodnutí v 06 (15. 10., QS1 později, lampiony místo dronů, vrátit mince starého save, pohlednice). Pořadí:
+- Linka 1: **A1** jádro letu `src/flight.js` (běží, Opus) → **M2** hra na novém modelu (Opus) → **C1** zapojení Atlasu (Sonnet) → **C2b** vstupy událostí (Opus) → **C3** kapsy (Opus) → QA.
+- Linka 2: **A2** texty Atlasu přes i18n (běží, Sonnet) → **B1a** panel Atlasu (Sonnet) → **C2a** nové události ve scéně (art spec + Opus) → **C4** Dílna 3/12/3 (Sonnet) → **G1** papíry na vlaštovce (Opus) → **G2** pohlednice (Sonnet).
+- Každá dávka: worktree, kontrola diffu orchestrátorem, `npm test`, sloučení; soubory průběhu `runs/2026-10-15-<dávka>.md`. `ui.js` vždy jen jeden vlastník.
+- Na konci: QA tester, art review, a11y, smoke; pak `npm start` a odkaz http://127.0.0.1:4173 uživateli (ráno).
+
+**Po hraní uživatele:** U6 výzva a vstupy (+ panel `drawAim` „Release at peak“ v `ui-layer.js`), U7 + T2 karta výsledku, T5, T8, H5, H6 pejsek (3 otázky po hraní), T3/T4, H4 (lidé na střechách větší než dítě, art A6). Balanc až po schválení obsahu (noční workflow).
 
 ## Verze a hotové části
 **Verze 0.6.1 (13. 10. 2026).** Proběhlo review kódu, obsahu a mechanik. Opravené:
