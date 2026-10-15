@@ -524,7 +524,9 @@ $('game').addEventListener('lostpointercapture', e => {
 $('hold').addEventListener('pointerdown', e => {
   if (S.screen !== 'home' || e.button !== 0 || held) return;
   e.preventDefault();
-  $('hold').setPointerCapture(e.pointerId);
+  try {
+    $('hold').setPointerCapture(e.pointerId);
+  } catch {}
   begin(e.pointerId);
 });
 $('hold').addEventListener('pointerup', e => release(e.pointerId));
@@ -562,7 +564,9 @@ function flightCancel() {
 $('action').addEventListener('pointerdown', e => {
   if (e.button !== 0 || inputOwner !== null) return;
   e.preventDefault();
-  $('action').setPointerCapture(e.pointerId);
+  try {
+    $('action').setPointerCapture(e.pointerId);
+  } catch {}
   flightDown(e.pointerId);
 });
 $('action').addEventListener('pointerup', e => flightUp(e.pointerId));

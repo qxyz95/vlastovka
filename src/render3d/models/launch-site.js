@@ -86,5 +86,5 @@ export const INTRO_SHOT = Object.freeze({
   planeInHand: 0.5,
   text: Object.freeze([0.08, 0.28]),
   portraitText: Object.freeze([0.12, 0.32]),
-  landText: Object.freeze([0.04, 0.18]),
+  landText: Object.freeze([0.06, 0.2]),
 });

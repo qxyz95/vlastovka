@@ -129,7 +129,7 @@
   --hud-inset-l: max(12px, env(safe-area-inset-left));
   --gain-row-bg: var(--card2);
   --gain-row-mark: var(--color-new);
-  --title-size: clamp(44px, 12vw, 112px);
+  --title-size: clamp(44px, 6.5vw, 88px);
   --label-bg: var(--card);
   --banner-bg: var(--card);
   --banner-fg: var(--text);
@@ -670,6 +670,8 @@ dialog.panel {
   max-height: calc(100dvh - 24px);
   padding: var(--s5);
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kraft-400) transparent;
   color: var(--text);
   background: var(--card);
   border: 0;
@@ -957,6 +959,8 @@ aside button {
   flex-direction: column;
   padding: var(--s5) var(--s5) 0;
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--kraft-400) transparent;
   color: var(--text);
   background: var(--card);
   border-radius: var(--r-dialog);
@@ -1131,7 +1135,7 @@ aside button {
     top: var(--hud-inset-t);
   }
   #title h1 {
-    font-size: clamp(28px, 9vw, 40px);
+    font-size: clamp(24px, 7.5vw, 30px);
   }
   body[data-title="on"] #aim {
     bottom: calc(var(--hud-inset-b) + 56px);
@@ -1222,8 +1226,23 @@ aside button {
     min-height: 44px;
     padding-block: 6px;
   }
-  #result {
-    top: var(--hud-inset-t);
+  /* karta výsledku začíná pod řádkem HUD (základní top), ☰ a čip mincí zůstanou vidět a stisknutelné */
+}
+/* velká okna: UI kontejnery ve větším měřítku jedním krokem (art review A2); ne na html ani #game, aby seděly souřadnice mířidel */
+@media (min-width: 1700px) and (min-height: 1000px) {
+  :is(dialog.panel, #result, .hud, #title, .corner) {
+    zoom: 1.25;
+  }
+  dialog.panel {
+    max-height: calc((100dvh - 24px) / 1.25);
+  }
+}
+@media (min-width: 2200px) and (min-height: 1200px) {
+  :is(dialog.panel, #result, .hud, #title, .corner) {
+    zoom: 1.5;
+  }
+  dialog.panel {
+    max-height: calc((100dvh - 24px) / 1.5);
   }
 }
 

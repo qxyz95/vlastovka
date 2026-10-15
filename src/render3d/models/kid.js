@@ -16,7 +16,7 @@ export const RIG = Object.freeze({
   shoe: Object.freeze([0, -0.42, 0]),
   trunk: Object.freeze([0, 0.44, 0]),
   head: Object.freeze([0.01, 0.47, 0]),
-  cap: Object.freeze([-0.01, 0.255, 0]),
+  cap: Object.freeze([-0.01, 0.285, 0]),
   shoulder: Object.freeze([0, 0.41, 0.2]),
   hand: Object.freeze([0, -ARM_LEN, 0]),
 });
