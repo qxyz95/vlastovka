@@ -100,7 +100,7 @@ test('quantisation to the next beat or bar', () => {
   assert.equal(nextBoundary(3, 100, 5, 4), 5, 'before the start → start');
 });
 test('track choice follows the frontier, not the plane, and is stable', () => {
-  assert.deepEqual(trackFor({ best: 0 }), { direction: 'A', district: 0, finale: false, id: 'A0' });
+  assert.deepEqual(trackFor({ best: 0 }), { direction: 'E', district: 0, finale: false, id: 'E0' });
   assert.equal(trackFor({ best: SECTION_METERS - 1 }).district, 0);
   assert.equal(trackFor({ best: SECTION_METERS }).district, 1);
   assert.equal(trackFor({ best: SECTION_METERS * 3.5 }, 'E').id, 'E3');
@@ -109,7 +109,7 @@ test('track choice follows the frontier, not the plane, and is stable', () => {
   assert.equal(trackFor({ best: NaN }).district, 0);
   assert.equal(trackFor({ best: -5 }).district, 0);
   // Same frontier → same track whatever the plane does.
-  for (let x = 0; x < ROUTE_METERS; x += 97) assert.equal(trackFor({ best: 1500, x }).id, 'A1');
+  for (let x = 0; x < ROUTE_METERS; x += 97) assert.equal(trackFor({ best: 1500, x }).id, 'E1');
   assert.equal(boundaryCue(100, 200, 0), null);
   assert.deepEqual(boundaryCue(SECTION_METERS - 1, SECTION_METERS + 1, 500), {
     district: 1,

@@ -147,7 +147,7 @@ export const comboAfter = (c, r) =>
   r === 'success' || r === 'perfect' ? c + 1 : r === 'miss' ? 0 : c;
 // Track follows the player's frontier (best distance), never the plane's position.
 export const ROUTE_METERS = SECTION_METERS * DISTRICTS.length;
-export function trackFor(progress = {}, direction = 'A') {
+export function trackFor(progress = {}, direction = 'E') {
   const best = Math.max(0, Number(progress.best) || 0),
     finale = best >= ROUTE_METERS,
     district = Math.min(DISTRICTS.length - 1, Math.floor(best / SECTION_METERS));
