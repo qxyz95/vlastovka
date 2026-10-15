@@ -10,6 +10,7 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`).
 - `npm run format`: Prettier 3.3.3 přes `npx` (JS a CSS; dokumenty, HTML, vendor a archiv ne).
 - Ladění 3D: `?render=2d` (záloha 2D), `?perf=1` (ms/snímek), `?timer` (smyčka běží i ve skrytém okně), `window.__r3d` (`advance`, `snapshot`, `bench`, `lose`, `restore`). Jazyk: `?lang=en|cs`.
 - Simulátor progrese: `node simulation/progression/run.mjs ... --out <jméno>` (výstup do `simulation/progression/out/`).
+- Monte Carlo se současnou hrou (stejná mechanika `src/flight.js`): `npm run sim:mc` (300 kampaní na skupinu, ~5–10 min, `out/mc-plna.md`), rychlá `npm run sim:mc:rychla` (~1 min, `out/mc-rychla.md`). Spouští uživatel lokálně.
 - **IMPORTANT: Nespouštět `npm run simulate`, `node simulation/run.mjs`, `monte-carlo.mjs` ani `qte-balance.mjs`.** Přepisují reporty v `simulation/` (zakázáno i v `.claude/settings.json`).
 
 ## Pravidla kódu
