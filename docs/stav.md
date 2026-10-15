@@ -3,14 +3,12 @@
 Aktualizuje se po každé větší práci (orchestrátor nebo agent, který práci dokončil). U každého údaje je datum.
 Poslední úprava: 15. 10. 2026 večer (orchestrátor před compactem: sezení „pokračuj podle plánu hratelnosti“).
 
-## Právě teď (15. 10. 2026 noc) — JAK NAVÁZAT
+## Právě teď (16. 10. 2026 noc) — JAK NAVÁZAT
 **Hotovo dnes večer:** U5 kostra přes celou obrazovku (sloučeno), dev tlačítko „+1000 mincí“ za `?dev=1` (`src/dev.js`), QA (`runs/2026-10-15-qa-predani.md`) a art review (`runs/2026-10-15-art-review-u5.md`), opravy F1 (`runs/2026-10-15-f1-opravy.md`) + nápis úvodu se zoomem UI. 417 testů zelených.
 
-**Teď běží: Atlas s bonusy do hry přes noc** (uživatel: „neřeš rozsah, udělej to pořádně“). Plán `research/atlas/04-plan-zapojeni.md`, rozhodnutí v 06 (15. 10., QS1 později, lampiony místo dronů, vrátit mince starého save, pohlednice). Pořadí:
-- Linka 1: **A1** jádro letu `src/flight.js` (běží, Opus) → **M2** hra na novém modelu (Opus) → **C1** zapojení Atlasu (Sonnet) → **C2b** vstupy událostí (Opus) → **C3** kapsy (Opus) → QA.
-- Linka 2: **A2** texty Atlasu přes i18n (běží, Sonnet) → **B1a** panel Atlasu (Sonnet) → **C2a** nové události ve scéně (art spec + Opus) → **C4** Dílna 3/12/3 (Sonnet) → **G1** papíry na vlaštovce (Opus) → **G2** pohlednice (Sonnet).
-- Každá dávka: worktree, kontrola diffu orchestrátorem, `npm test`, sloučení; soubory průběhu `runs/2026-10-15-<dávka>.md`. `ui.js` vždy jen jeden vlastník.
-- Na konci: QA tester, art review, a11y, smoke; pak `npm start` a odkaz http://127.0.0.1:4173 uživateli (ráno).
+**Atlas s bonusy je ve hře (noc 15./16. 10.), všechny stavební dávky sloučené, 513 testů zelených:** A1 jádro letu `src/flight.js` (společné se simulátorem), A2 texty Atlasu přes i18n (Otto, Wick, Sky Lantern, Chimes…), M2 hra na novém modelu (save v5, vrácení mincí, Dílna Power 3/Paper 12/Folds 3, cíl 4 876 m), B1a panel `src/atlas-ui.js`, C1 zapojení (novinka na kartě, tečka, Undo do dalšího hodu), C2a vzhled událostí (pára, termika, lampion, hvězda, výtrysk, kombo, kruh ≥ 30 px), C2b vstupy a první setkání (`p.atlas.met`), C3 kapsy (jedno tlačítko Z6, čip, efekty), C4 Dílna (žebřík papírů, náhled „≈ +X m“, Undo), G1 papíry na vlaštovce, G2 pohlednice, revize textů. Oprava `flight.js`: odložená událost má okna od skutečného začátku (přepínač `events.delayedFromStart`, výchozí true — **mění kampaně simulátoru, ověří balanc**).
+- **Teď běží:** závěrečné QA (`runs/2026-10-16-qa-atlas.md`) a art review (`runs/2026-10-16-art-review-atlas.md`). Pak opravná dávka, přetest, `npm start` a odkaz http://127.0.0.1:4173 uživateli.
+- Známé: výchozí úhel 15° je daleko od nejlepšího (25–36°) → U6; let s Gliderem a všemi událostmi až 47 s (cíl ≤ 35 s) → balanc; zvuk ve hře není zapojený.
 
 **Po hraní uživatele:** U6 výzva a vstupy (+ panel `drawAim` „Release at peak“ v `ui-layer.js`), U7 + T2 karta výsledku, T5, T8, H5, H6 pejsek (3 otázky po hraní), T3/T4, H4 (lidé na střechách větší než dítě, art A6). Balanc až po schválení obsahu (noční workflow).
 
