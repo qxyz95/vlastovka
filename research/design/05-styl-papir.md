@@ -383,7 +383,7 @@ Dnešní názvy nesou neon a noc (*Violet Suburbs*, *Neon Core*, „Night flight
 - `place.gate.story`: „Down from the hills you reach the gates of the **lantern city**.“ / „Z kopců přilétáš k branám **města lampionů**.“
 - `place.tower.story`: „You pass the **clock tower**, the bright point of the whole journey.“ / „Míjíš **hodinovou věž**, světelný bod celé cesty.“
 - `intro.eyebrow`: „SUNRISE ROOFS / MORNING FLIGHT“ / „STŘECHY ZA ÚSVITU / RANNÍ LET“; `intro.line1`: „Aim. Charge. **Fly toward the sun.**“ / „Zamiř. Nabij hod. **Leť za sluncem.**“; `intro.line2`: „… **to the lantern city**.“ / „… až **do města lampionů**.“
-- Mimo tento úkol, ale nesedí: „Cyber pigeon courier“, robot Bolts, Ad Drone, neonové reklamy (`geometry.SIGNS`), hudba „Neon Glide“. Návrh: Paper pigeon / papírový holub, Bolts jako plechový robot zůstává (vtip), Ad Drone jako papírový drak s reklamní stužkou. Rozhodne product-designer.
+- Mimo tento úkol, ale nesedí: „Cyber pigeon courier“, robot Bolts, Ad Drone, neonové reklamy (`geometry.SIGNS`), hudba „Neon Glide“. Návrh: Paper pigeon / papírový holub, Bolts jako plechový robot zůstává (vtip), Ad Drone je Sky Lantern, papírový lampion (rozhodnutí 06, 15. 10.). Rozhodne product-designer.
 
 Nálady čtvrtí: kap. 2.3.
 
@@ -570,7 +570,7 @@ Skin je **potisk přes papír**, ne jiný papír; **jeden skin platí pro všech
 
 **Paleta skinů** (jen existující tokeny a palety čtvrtí, nejvýš 3 barvy potisku + papír): linky `#2a2622` (jen tenké), `#6b6158`, `#3d4f7a`; teplé `#b5503c` `#f0a27a` `#e0a060` `#d9967a` `#c98a4a` `#9c7a55`; studené `#7f9ed6` `#5b8fb0` `#9ec2d6` `#22355e` `#5aa6a0`; pastely `#e98fa0` `#9cc3a6`, úsvit `#ffe0e8` → `#fff0b0`. Suvenýr čtvrti bere barvy své čtvrti.
 
-**Razítka:** nálepka ≤ 10 % plochy na pravém křídle, krémový podklad `#fbf6ec`, tužková kresba a jeden akcent z palety skinů; ikony rozlišené tvarem (Gust 3 vlnky, Pigeon origami holub, Steam 3 obláčky, Thermal spirála, Drone papírový drak, Shooting Star 4cípá tužková hvězda, ne rajčatová pěticípá perfektu, Delivered obálka).
+**Razítka:** nálepka ≤ 10 % plochy na pravém křídle, krémový podklad `#fbf6ec`, tužková kresba a jeden akcent z palety skinů; ikony rozlišené tvarem (Gust 3 vlnky, Pigeon origami holub, Steam 3 obláčky, Thermal spirála, Drone = Sky Lantern papírový lampion, Shooting Star 4cípá tužková hvězda, ne rajčatová pěticípá perfektu, Delivered obálka).
 
 **Kde se skin ukáže:** naplno v Dílně, při míření (vlaštovka v ruce 0,5 m, 40 px), ve výsledku a v hlavním menu; za letu na telefonu jen tón a velké pruhy. To je záměr (P1). Viditelnost skinů za letu na telefonu se řeší až s telefonem na konci (06 bod 7).
 
