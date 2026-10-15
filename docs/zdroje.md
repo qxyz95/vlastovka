@@ -67,7 +67,7 @@ Kategorie: **platný** = aktuální zadání nebo pravidla · **podklad** = rese
 | `research/plan-hratelnost/README.md`, `00`–`03` | platný | Aktuální směr po poznámkách tvůrce (15. 10.), odpovědi v 06. |
 | `research/atlas/01-navrh-atlasu.md` | platný | Návrh Atlasu (panel ve hře, logika, `p.atlas`). |
 | `research/atlas/02-design-spec.md` | překonaný (část) | Spec Atlasu; vzhled pohlednic podle bible 05 kap. 10. |
-| `research/atlas/03-texty.md` | platný | Texty Atlasu EN a CS (generováno z prototypu). |
+| `research/atlas/03-texty.md` | překonaný | Texty Atlasu EN a CS přešly do `src/locales/*.js` (`atlas.*`, A2, 15. 10.); platí tam. |
 | `research/3d/01-plan-prevodu.md` | překonaný (část) | Plán 3D převodu; „komiksový“ vzhled neplatí, postup po fázích ano. |
 | `research/svet/01-zivy-svet.md` | překonaný (část) | Živý svět; vizuál neplatí, nápady na život a humor ano. |
 | `research/hudba/01-vyzkum-a-plan.md` | podklad | Plán hudby (rozpočet 0, generování v kódu); hra zvuk zatím nenačítá. |

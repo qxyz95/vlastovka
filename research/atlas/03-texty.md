@@ -1,3 +1,5 @@
+> **ZASTARALÉ (15. 10. 2026):** texty Atlasu žijí v `src/locales/*.js` (klíče `atlas.*`); platí tam. Tabulka níže je výchozí návrh z prototypu: kyber výrazy (Violet Suburbs, Bolts, Zippy, Ad Drone, On Air, Neon Foil, drony) nahradila rozhodnutí 06 (15. 10.), čtvrti a místa berou jména z `district.*` a `place.*`. Nečíst jako zadání textů.
+
 # Atlas: texty EN a CS (klíč → text)
 
 **Stav 2026-10-14, product-designer (A1, doplněna CS podle 06 „Atlas A1, čeština“).** Zdroj pravdy je `prototype/atlas/content.js`, tahle tabulka je z něj vygenerovaná (`node prototype/atlas/gen-texty.mjs`, logika v `prototype/atlas/texty.js`; ručně neupravovat). Vývojář klíče přenese do `src/locales/en.js` a `cs.js` (stejné klíče a parametry, plurály `{one,other}` / `{one,few,many,other}` přes `count`) a ID do `src/atlas-content.js`. ID bonusů = `simulation/progression/params.mjs` `atlas.bonuses`. Prototyp: `prototype-atlas.html?lang=cs` (výchozí EN, přepínač i v ovládání prototypu).
