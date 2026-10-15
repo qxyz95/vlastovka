@@ -211,12 +211,17 @@ test('úvod po načtení a po Dílně, Atlasu nebo menu; „Hodit znovu“ ho p�
   assert.deepEqual([...INTRO_FROM], ['load', 'workshop', 'atlas', 'menu']);
   assert.equal(introAfter('throwAgain'), null);
   assert.equal(introAfter(undefined), null);
-  // ui.js: Hodit znovu a výchozí prepare() bez úvodu, Throw it z Dílny a načtení s úvodem
+  // ui.js přes screens.js (U5): Hodit znovu = událost 'throwAgain' → Domov bez úvodu; načtení ('loaded') a smazání postupu
+  // s úvodem; zavření panelu zpět na Domov = úvod podle zavřeného panelu (Dílna, Atlas, Menu).
   const ui = readFileSync(new URL('../src/ui.js', import.meta.url), 'utf8');
-  assert.match(ui, /\$\('retry'\)\.onclick = \(\) => prepare\('throwAgain'\)/);
-  assert.match(ui, /\$\('launch'\)\.onclick = \(\) => prepare\('workshop'\)/);
+  assert.match(ui, /\$\('retry'\)\.onclick = \(\) => go\(\{ type: 'throwAgain' \}\)/);
   assert.match(ui, /function prepare\(from = 'throwAgain'\)/);
-  assert.match(ui, /\r?\nprepare\('load'\);\r?\ntick\(\);\s*$/);
+  assert.match(
+    ui,
+    /prepare\(e\.type === 'loaded' \|\| e\.type === 'resetProgress' \? 'load' : 'throwAgain'\)/,
+  );
+  assert.match(ui, /intro = introAfter\(was\.panels\.at\(-1\)\) \?\? intro/);
+  assert.match(ui, /\r?\ngo\(\{ type: 'loaded' \}\);\r?\n/);
   // úvod jen při míření: Dílna ani let ho nekreslí
   const w = planFrame({ state: 'workshop', visual: { state: 'workshop', intro: { since: null } } });
   assert.equal(w.ui.intro, null);

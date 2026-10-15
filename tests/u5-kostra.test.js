@@ -12,6 +12,11 @@ import {
 import { planFrame, aspectOf, project, ASPECT, ASPECT_RANGE } from '../src/render3d/frame.js';
 import { HAND } from '../src/render3d/pose.js';
 import { createFlight, step } from '../src/core.js';
+import { readFileSync, readdirSync } from 'node:fs';
+import { compact } from './helpers/compact.js';
+import { PANELS } from '../src/screens.js';
+import en from '../src/locales/en.js';
+import cs from '../src/locales/cs.js';
 
 const SIZES = [
   [1280, 720],
@@ -125,4 +130,139 @@ test('U5 §1.5: kamera počítá se skutečným poměrem stran; vlaštovka v ruc
     near(sx, plan.view.px, 1, `let ${aspect.toFixed(2)} x`);
     near(sy, plan.view.py, 1, `let ${aspect.toFixed(2)} y`);
   }
+});
+
+// ── Statické kontroly kostry (02-ux §1.1 co zmizí, §1.4 HUD, §1.5, §5.3) ──
+const raw = p => readFileSync(new URL('../' + p, import.meta.url), 'utf8');
+const stripJs = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[\s;{}),])\/\/.*$/gm, '$1');
+const html = raw('index.html'),
+  css = compact(raw('style.css')),
+  ui = stripJs(raw('src/ui.js'));
+
+test('U5 §1.1: z index.html zmizela okolní stránka, zůstala hra přes celé okno', () => {
+  for (const s of [
+    '<header',
+    '<footer',
+    'page-nav',
+    'class="intro"',
+    'journey-story',
+    'scene-label',
+    'milestone-banner',
+    'id="paused"',
+    'id="launch"',
+    'id="upgrades"',
+    'id="cancel-aim"',
+    'charge-track',
+    'aim.title',
+    'aim.eyebrow',
+    'flight.eyebrow',
+    'class="scene"',
+  ])
+    assert.ok(!html.includes(s), s);
+  assert.match(html, /<meta name="viewport" content="[^"]*viewport-fit=cover/);
+  assert.match(html, /<canvas id="scene3d"/);
+  assert.match(html, /<canvas id="game"/);
+  // HUD jen dolet a mince + ☰/❚❚ s klávesou Esc (§1.4)
+  assert.match(html, /id="hud-distance"/);
+  assert.match(html, /id="hud-coins"/);
+  assert.match(html, /<button id="menu-btn"[^>]*aria-keyshortcuts="Escape"/);
+  assert.match(html, /<div id="banner" role="status"/);
+  assert.match(html, /<section id="result"[^>]*role="dialog"/);
+  for (const id of PANELS) assert.match(html, new RegExp(`<dialog id="${id}"`), id);
+  assert.match(html, /<noscript>/);
+  // vstupy hodu zatím beze změny (U6): tlačítko Hold zůstává v rohu
+  assert.match(html, /<button id="hold"/);
+  assert.match(html, /<button id="action"/);
+  // jazyk patří do Nastavení
+  assert.match(html, /<dialog id="settings"[\s\S]*id="lang-picker"[\s\S]*<\/dialog>/);
+  assert.ok(!/confirm\(/.test(ui), 'mazání postupu bez window.confirm()');
+});
+
+test('U5 §1.5: celé okno, bezpečné okraje, dotyk jen na herní ploše, tokeny §6', () => {
+  assert.match(css, /html,body\{height:100%;overflow:hidden;overscroll-behavior:none;?\}/);
+  assert.match(css, /#app\{position:fixed;inset:0;height:100vh;height:100dvh;/);
+  assert.match(css, /#game\{touch-action:none;/);
+  assert.match(css, /dialog\.panel\{[^}]*touch-action:pan-y/);
+  assert.match(css, /--hud-inset-t:max\(12px,env\(safe-area-inset-top\)\)/);
+  for (const k of [
+    '--surface-hud',
+    '--color-new',
+    '--color-danger',
+    '--prompt-fg',
+    '--prompt-halo',
+    '--prompt-size',
+    '--prompt-size-calm',
+    '--prompt-hint-size',
+    '--prompt-anchor-y',
+    '--hud-chip-bg',
+    '--hud-chip-fg',
+    '--hud-distance-size',
+    '--hud-coins-fg',
+    '--gain-row-bg',
+    '--gain-row-mark',
+    '--title-size',
+    '--t-fast',
+    '--t-mid',
+    '--t-panel',
+  ])
+    assert.ok(css.includes(k + ':'), k);
+  for (const s of ['.page-nav', '.brand', '.wallet', '#journey-story', 'footer{', '.scene{'])
+    assert.ok(!css.includes(s), s);
+});
+
+test('U5: ui.js řídí obrazovky a panely přes screens.js (žádné vlastní příznaky obrazovek)', () => {
+  assert.match(
+    ui,
+    /import \{ initialState, transition, loopRuns, PANELS \} from '\.\/screens\.js';/,
+  );
+  assert.match(ui, /let S = initialState\(\);/);
+  assert.match(ui, /S = transition\(S, e\);/);
+  assert.ok(!/\bstate = '(workshop|aim|flight|result)'/.test(ui), 'starý příznak state');
+  assert.ok(!/function show\(next\)/.test(ui), 'starý přepínač show()');
+  assert.ok(!/function workshop\(/.test(ui), 'Dílna je panel, ne obrazovka');
+  // herní smyčka jen při loopRuns, Esc = back, systémové zpět, auto-pauza, přistání a Hodit znovu jako události
+  assert.match(ui, /const runs = loopRuns\(S\)/);
+  assert.match(ui, /go\(\{ type: 'back' \}\)/);
+  assert.match(ui, /addEventListener\('popstate'/);
+  assert.match(ui, /go\(\{ type: 'hidden' \}\)/);
+  assert.match(ui, /go\(\{ type: 'landed', t: now, chapter: false \}\)/);
+  assert.match(ui, /go\(\{ type: 'cancelThrow' \}\)/);
+  assert.match(ui, /go\(\{ type: 'resetProgress' \}\)/);
+  assert.match(ui, /go\(\{ type: 'press', t: performance\.now\(\) \}\)/);
+  assert.match(ui, /go\(\{ type: 'release', heldMs \}\)/);
+  // odkrývání, nastavení pohybu a skutečný poměr plátna
+  assert.match(ui, /import \{ reveal, coinLine \} from '\.\/reveal\.js';/);
+  assert.match(ui, /reducedMotion\(settings, systemReduce\.matches\)/);
+  assert.match(ui, /aspect: gameSize\.width \/ gameSize\.height/);
+  assert.match(ui, /aimAngleAt\(/);
+});
+
+test('U5 §5.3: klíče zmizelých prvků jsou pryč z obou slovníků a nikde se nečtou', () => {
+  const gone = [
+    'nav.label',
+    'nav.workshop',
+    'nav.atlas',
+    'intro.eyebrow',
+    'intro.title',
+    'intro.line1',
+    'intro.line2',
+    'workshop.eyebrow',
+    'hud.best',
+    'hud.milestone',
+    'scene.aim',
+    'footer.confirm',
+    'result.upgrades',
+  ];
+  for (const d of [en, cs]) for (const k of gone) assert.ok(!(k in d), k);
+  const srcs = [
+    ...readdirSync(new URL('../src/', import.meta.url), { recursive: true })
+      .filter(f => f.endsWith('.js') && !f.startsWith('locales'))
+      .map(f => raw('src/' + f)),
+    html,
+    raw('bonus.html'),
+  ];
+  for (const s of srcs)
+    for (const k of gone) assert.ok(!s.includes(`'${k}'`) && !s.includes(`"${k}"`), k);
+  // bonus.html jen přesměruje na Atlas ve hře
+  assert.match(raw('bonus.html'), /location\.replace\('\.\/'\+location\.search\+'#atlas'\)/);
 });
