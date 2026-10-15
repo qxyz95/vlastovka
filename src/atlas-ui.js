@@ -5,6 +5,7 @@ import * as CONTENT from './atlas-content.js';
 import { NUMBERS } from './atlas-numbers.js';
 import * as A from './atlas.js';
 import * as X from './atlas-text.js';
+import { altKey, imageUrl, silhouette } from './atlas-postcards.js';
 import { t } from './i18n.js';
 
 // Paper tones of the districts (CSS tokens in style.css: tomato, teal, mustard, cobalt); decoration only, the name always carries identity.
@@ -49,9 +50,16 @@ export function cardModel(st, c = CONTENT) {
     bonusName: st.bonusName,
     status,
     isNew: !!st.isNew,
+    postcard: postcardOf(st.index, c),
     dots: levelled ? { level: st.level, max: st.maxLevel } : null,
     aria: [st.name, st.bonusName, status].filter(Boolean).join(', '),
   };
+}
+// Postcard of a found place: 3D screenshot (district 1) with alt text, else the paper silhouette of the landmark (decorative).
+export function postcardOf(index, c = CONTENT) {
+  const pl = c.PLACES[index],
+    src = imageUrl(pl.id);
+  return { kind: pl.kind, image: src, alt: src ? t(altKey(pl.id)) : null };
 }
 // Four districts; an unreached one shows only its title and mood sentence (guard 08 N2) plus the teaser card if the next place is there.
 export function districtsModel(p, c = CONTENT, n = NUMBERS) {
@@ -95,6 +103,8 @@ export function detailModel(p, index, c = CONTENT, n = NUMBERS) {
         n: (index % n.route.perDistrict) + 1,
       }),
       bonus: pl.bonus,
+      tone: TONES[st.district],
+      postcard: st.state === 'teaser' ? null : postcardOf(index, c),
       bonusName: b.name,
       verb: b.verb,
       tags: b.tags.map(id => c.TAGS[id]),
@@ -260,6 +270,37 @@ const h = (tag, attrs = {}, ...kids) => {
   el.append(...clean(kids));
   return el;
 };
+const SVGNS = 'http://www.w3.org/2000/svg';
+// Postcard picture: lazy <img> with a silhouette fallback if the file is missing; silhouettes are decorative (the card carries the name).
+function postcardEl(pc) {
+  const sil = () => {
+    const d = silhouette(pc.kind),
+      svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('viewBox', d.viewBox);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMax slice');
+    svg.setAttribute('class', 'atlas-pc');
+    svg.setAttribute('aria-hidden', 'true');
+    for (const sh of d.shapes) {
+      const e = document.createElementNS(SVGNS, sh.tag);
+      for (const [k, v] of Object.entries(sh.attrs)) e.setAttribute(k, v);
+      e.setAttribute('class', `atlas-pc-${sh.tone}`);
+      svg.append(e);
+    }
+    return svg;
+  };
+  if (!pc.image) return sil();
+  const img = h('img', {
+    class: 'atlas-pc-img',
+    src: pc.image,
+    alt: pc.alt,
+    width: 480,
+    height: 300,
+    loading: 'lazy',
+    decoding: 'async',
+  });
+  img.addEventListener('error', () => img.replaceWith(sil()), { once: true });
+  return img;
+}
 const dots = ({ level, max }) =>
   h(
     'span',
@@ -299,7 +340,9 @@ export function mountAtlas(dialog, api) {
   function cardEl(card) {
     const label = h('span', { class: 'atlas-name' }, card.name);
     const body = [
-      h('span', { class: 'atlas-pic', 'aria-hidden': 'true' }),
+      card.postcard
+        ? h('span', { class: 'atlas-pic atlas-has-pc' }, postcardEl(card.postcard))
+        : h('span', { class: 'atlas-pic', 'aria-hidden': 'true' }),
       label,
       card.bonusName && h('span', { class: 'atlas-bonus' }, card.bonusName),
       card.distance && h('span', { class: 'atlas-dist' }, card.distance),
@@ -519,6 +562,12 @@ export function mountAtlas(dialog, api) {
           h('strong', {}, d.bonusName),
           d.levelText && h('span', {}, ` · ${d.levelText}`),
         ),
+        d.postcard &&
+          h(
+            'div',
+            { class: 'atlas-pic atlas-pc-big', 'data-tone': d.tone },
+            postcardEl(d.postcard),
+          ),
         d.kind === 'teaser'
           ? [
               h('p', {}, d.teaser),

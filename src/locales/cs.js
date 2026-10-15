@@ -497,6 +497,13 @@ export default {
   'atlas.teaser.bonus': '{bonus} · {pitch}',
   'atlas.teaser.bonusHidden': 'Co dává, zjistíš, až tam doletíš.',
   'atlas.card.unknown': '???',
+  'atlas.postcard.roofs.alt':
+    'Pohlednice: papírové střechy v teplém ranním světle, kolem klouže papírová vlaštovka.',
+  'atlas.postcard.market.alt':
+    'Pohlednice: tržní ulice s vlaječkami a pruhovanými stánky pod vysokými papírovými domy.',
+  'atlas.postcard.gardens.alt':
+    'Pohlednice: papírová zahrada s kulatými stromy a domkem u železniční trati.',
+  'atlas.postcard.railway.alt': 'Pohlednice: papírový vlak jede po kolejích kolem barevných domů.',
   'atlas.card.unknownAria': 'Neobjevené místo',
   'atlas.card.frameAria': '{district}, zatím mimo dolet',
   'atlas.card.encoreLocked': 'Otevře se na konci trasy.',

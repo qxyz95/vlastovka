@@ -459,6 +459,14 @@ export default {
   'atlas.teaser.bonus': '{bonus} · {pitch}',
   'atlas.teaser.bonusHidden': 'You find out what it gives when you get there.',
   'atlas.card.unknown': '???',
+  'atlas.postcard.roofs.alt':
+    'Postcard: paper rooftops in warm morning light, a paper swallow gliding past.',
+  'atlas.postcard.market.alt':
+    'Postcard: a market street with bunting and striped stalls under tall paper houses.',
+  'atlas.postcard.gardens.alt':
+    'Postcard: a paper garden with round trees and a small house by the railway line.',
+  'atlas.postcard.railway.alt':
+    'Postcard: a paper train running along the tracks past colourful houses.',
   'atlas.card.unknownAria': 'Undiscovered place',
   'atlas.card.frameAria': '{district}, not reached yet',
   'atlas.card.encoreLocked': 'Finish the route to open.',

@@ -1651,6 +1651,75 @@ div.atlas-card {
 .atlas-card[aria-expanded="true"] {
   border-color: var(--ink);
 }
+/* pohlednice (G2): snímek 3D scény (čtvrť 1) nebo vystřižená silueta dominanty (2–4), bible 05 kap. 10 */
+.atlas-district {
+  --pc-accent: var(--mustard-400);
+}
+.atlas-district[data-tone="mustard"] {
+  --pc-accent: var(--tomato-500);
+}
+.atlas-pc-big {
+  --tone: var(--tomato-600);
+  --pc-accent: var(--mustard-400);
+}
+.atlas-pc-big[data-tone="teal"] {
+  --tone: var(--teal-600);
+}
+.atlas-pc-big[data-tone="mustard"] {
+  --tone: var(--mustard-400);
+  --pc-accent: var(--tomato-500);
+}
+.atlas-pc-big[data-tone="cobalt"] {
+  --tone: var(--cobalt-600);
+}
+.atlas-has-pc::after,
+.atlas-pc-big::after {
+  display: none;
+}
+.atlas-pc,
+.atlas-pc-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.atlas-pc-big {
+  width: min(100%, 200px);
+  margin-bottom: var(--s2);
+  border: 6px solid var(--card-100);
+  box-shadow: var(--lift);
+}
+.atlas-pc-far {
+  --pc-c: color-mix(in srgb, var(--tone) 40%, var(--card-100));
+}
+.atlas-pc-main {
+  --pc-c: color-mix(in srgb, var(--tone) 70%, var(--graphite-900));
+}
+.atlas-pc-accent {
+  --pc-c: var(--pc-accent);
+}
+.atlas-pc-light {
+  --pc-c: var(--paper);
+}
+.atlas-pc-ground {
+  --pc-c: color-mix(in srgb, var(--tone) 35%, var(--card-100));
+}
+.atlas-pc [class^="atlas-pc-"]:not([fill]) {
+  fill: var(--pc-c);
+}
+.atlas-pc [fill="none"] {
+  stroke: var(--pc-c);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atlas-cards > :is(.atlas-found, .atlas-level, .atlas-top-level) {
+    transition: rotate var(--t-fast, 0.15s) ease;
+  }
+  .atlas-cards > :is(.atlas-found, .atlas-level, .atlas-top-level):is(:hover, :focus-visible) {
+    rotate: 0deg;
+  }
+}
 /* detail: spodní panel uvnitř dialogu, tlačítko koupě zůstává vidět */
 .atlas-sheet {
   position: sticky;
