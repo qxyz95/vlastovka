@@ -2,6 +2,7 @@
 // Pure functions of data, no DOM and no texts: the UI maps the returned ids and kinds to i18n keys.
 import { BRANCH_IDS, branchStatus } from './gear.js';
 import { NUMBERS } from './atlas-numbers.js';
+import { discoveries, queueNovelties, takeNovelty, atlasNotice } from './atlas.js';
 import { SCREEN_METERS } from './scenes.js';
 
 // Placeholder thresholds, tune later by the game designer (zástupné, doladí game-designer). Only these may be edited here.
@@ -65,3 +66,13 @@ export function promptHint(history = [], completed = false) {
   if (h.at(-1)?.tap || weakRun === WEAK_STREAK) return { hint: 'holdLonger', size };
   return strong >= STRONG_FOR_CALM ? { hint: null, size } : { hint: 'first', size };
 }
+
+// C1: novinky z hodu. Co hod objevil (prevBest -> p.best) se zařadí do fronty p.atlas.pending a na kartu výsledku jde jediná
+// (nejvyšší priority, nic dvakrát), zbytek čeká na další hody. Mění p (fronta); vrací novinku atlas.js nebo null.
+export function resultNovelty(p, prevBest) {
+  queueNovelties(p, discoveries(prevBest, p.best, p));
+  return takeNovelty(p);
+}
+
+// C1: tečka „něco nového“ na tlačítku Atlasu jen tehdy, když je Atlas odkrytý a je v něm neviděná novinka (nikdy „můžeš si koupit“).
+export const atlasDot = p => reveal(p).atlas && atlasNotice(p);

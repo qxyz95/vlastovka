@@ -15,6 +15,9 @@ import {
 } from './core.js';
 import { PROGRESSION } from './progression-numbers.js';
 import { mountWorkshop } from './workshop-ui.js';
+import { mountAtlas } from './atlas-ui.js';
+import { clearUndo } from './atlas.js';
+import { noveltyLine } from './atlas-text.js';
 import { load, save } from './storage.js';
 import { createFx, fxEvent, stepFx } from './juice.js';
 import { lerp } from './motion.js';
@@ -23,7 +26,7 @@ import { chargeAt } from './throw.js';
 import { eventProgress, eventStats, zones } from './events.js';
 import { createDecorations, stepDecorations } from './decorations.js';
 import { initialState, transition, loopRuns, PANELS } from './screens.js';
-import { reveal, coinLine, GLIDER_METERS } from './reveal.js';
+import { reveal, coinLine, GLIDER_METERS, resultNovelty, atlasDot } from './reveal.js';
 import { loadSettings, saveSettings, reducedMotion } from './settings.js';
 import { devEnabled, addDevCoins } from './dev.js';
 import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
@@ -139,11 +142,14 @@ function persist() {
 const m = (x, d = 0) => unit(x, 'm', d);
 // Velikost plátna v CSS px (celé okno, 02-ux §1.5): poměr stran jde rendereru, čte se jen při resize, ne každým snímkem.
 const gameSize = { width: 640, height: 360 };
+// Při otevřeném Atlasu se 3D scéna nekreslí (zakrývá ji panel); jednou se překreslí po změně velikosti a panelů (C1).
+let redraw = true;
 {
   const r = $('game').getBoundingClientRect();
   if (r.width && r.height) Object.assign(gameSize, { width: r.width, height: r.height });
   new ResizeObserver(([e]) => {
     const r = e.contentRect;
+    redraw = true;
     if (r.width && r.height) Object.assign(gameSize, { width: r.width, height: r.height });
   }).observe($('game'));
 }
@@ -164,6 +170,7 @@ function applyLang(id) {
   layout();
   if (S.screen === 'home') updateAim();
   if (S.screen === 'result' && f && outcome) fillResult();
+  atlas?.refresh();
 }
 for (const b of $$('[data-lang]')) b.onclick = () => applyLang(b.dataset.lang);
 // Pohyb: volba v Nastavení přebíjí systém (settings.js); CSS čte data-reduced, renderer visual.reduced.
@@ -182,6 +189,13 @@ systemReduce.addEventListener?.('change', applyMotion);
 function applyReveal() {
   const R = reveal(p);
   for (const b of $$('[data-open="workshop"], [data-open="atlas"]')) b.hidden = !R[b.dataset.open];
+  // Tečka „něco nového“ jen při neviděné novince; čtečka dostane slovo „Nové“ (stav nikdy jen barvou).
+  const dot = atlasDot(p);
+  for (const b of $$('[data-open="atlas"]')) {
+    b.toggleAttribute('data-notice', dot);
+    if (dot) b.setAttribute('aria-label', `${t('menu.atlas')}, ${t('atlas.label.new')}`);
+    else b.removeAttribute('aria-label');
+  }
   $('models').hidden = !R.models;
   $('title-status').textContent = p.completed ? t('menu.delivered') : '';
   return R;
@@ -191,6 +205,25 @@ const workshop = mountWorkshop($('workshop'), {
   onChange: () => {
     persist();
     refresh();
+  },
+});
+// Atlas (C1): panel mountAtlas, otevírá ho screens.js jako ostatní panely; peněženku a tečku po změně obnoví refresh().
+// Z Atlasu do Dílny automat napřímo nevede (workshop jen z Domova, výsledku a Menu), proto Atlas zavřít a Dílnu otevřít po návratu historie.
+const afterPops = [];
+const runAfterPops = () => afterPops.splice(0).forEach(fn => fn());
+const atlas = mountAtlas($('atlas'), {
+  getSave: () => p,
+  persist,
+  onChange: () => refresh(),
+  onNav: target => {
+    if (target === 'workshop') {
+      if (!go({ type: 'close' })) return;
+      afterPops.push(() => go({ type: 'open', panel: 'workshop' }));
+      setTimeout(runAfterPops, 500);
+      return;
+    }
+    while (S.panels.length && go({ type: 'close' }));
+    if (isCard()) go({ type: 'throwAgain' });
   },
 });
 function refresh() {
@@ -226,6 +259,7 @@ function sync(was, e) {
     heldTime = 0;
   }
   if (panels && S.panels.length) flightCancel();
+  if (panels) redraw = true;
   layout();
   if (screen) enter(e);
   if (panels) {
@@ -280,7 +314,7 @@ function syncHistory() {
 }
 addEventListener('popstate', () => {
   if (skipPop) {
-    skipPop--;
+    if (!--skipPop) runAfterPops();
     return;
   }
   const d = history.state?.jti ?? 0;
@@ -311,6 +345,7 @@ $('confirm-delete').onclick = () => {
   refund = 0;
   persist();
   refresh();
+  atlas.refresh();
   go({ type: 'resetProgress' });
 };
 // ?dev=1: „+1000 mincí“ v Nastavení, aby šlo odemknout vše bez grindu (jen mince, rekord ne; rozhodnutí 06).
@@ -320,6 +355,7 @@ if (devEnabled(location.search)) {
     addDevCoins(p);
     persist();
     refresh();
+    atlas.refresh();
   };
 }
 function prepare(from = 'throwAgain') {
@@ -358,6 +394,7 @@ function release(source) {
 }
 function startFlight({ angle, charge }) {
   intro = null;
+  clearUndo(p); // Undo koupě v Atlasu platí jen do dalšího hodu
   f = flightFor(p, angle, charge);
   const launch = f.launch;
   acc = 0;
@@ -533,6 +570,7 @@ window.addEventListener('blur', () => {
 });
 // Skrytí karty: konec držení, za letu automatická pauza (screens.js 'hidden').
 document.addEventListener('visibilitychange', () => {
+  redraw = true;
   last = 0;
   acc = 0;
   if (hidden()) {
@@ -546,9 +584,12 @@ let outcome = null;
 function finish() {
   const previous = p.best;
   settle(p, f);
+  const novelty = resultNovelty(p, previous); // jedna novinka z Atlasu na kartu, zbytek fronty při dalších hodech
   persist();
   refresh();
+  atlas.refresh();
   outcome = {
+    novelty,
     record: f.x > previous,
     glider: previous < GLIDER_METERS && p.best >= GLIDER_METERS,
     hint: angleHint(f.angle, bestAngle(f.kit, f.charge)),
@@ -581,6 +622,9 @@ function fillResult() {
       coins.kind === 'canBuy'
         ? t('result.canBuy', { count: coins.count })
         : t('result.toNextBuy', { coins: num(coins.coins) + ' ◈' });
+  const news = noveltyLine(outcome.novelty);
+  $('result-extra').hidden = !news;
+  $('result-extra').textContent = news ?? '';
   $('result-text').textContent = [
     t('throw.' + f.launch.grade),
     t(outcome.hint),
@@ -650,35 +694,38 @@ function frame(now) {
       state = home ? 'aim' : S.screen === 'flight' ? 'flight' : 'result',
       charge = home && held ? chargeAt(heldTime) : 0,
       aim = home ? { angle, held, charge } : null;
+    const draw = redraw || !S.panels.includes('atlas');
+    redraw = false;
     try {
-      render(
-        $('game'),
-        shown,
-        p.model,
-        f ? f.t + (f.landed && landedAt ? (now - landedAt) / 1000 : 0) : now / 1000,
-        {
-          decorations,
-          reduced,
-          qte: qteVisual(),
-          fx,
-          charge,
-          clock: now / 1000,
-          state,
-          aim,
-          intro: home &&
-            intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
-          best: p.best,
-          style: STYLE,
-          touch: coarse.matches,
-          aspect: gameSize.width / gameSize.height,
-        },
-      );
+      if (draw)
+        render(
+          $('game'),
+          shown,
+          p.model,
+          f ? f.t + (f.landed && landedAt ? (now - landedAt) / 1000 : 0) : now / 1000,
+          {
+            decorations,
+            reduced,
+            qte: qteVisual(),
+            fx,
+            charge,
+            clock: now / 1000,
+            state,
+            aim,
+            intro: home &&
+              intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
+            best: p.best,
+            style: STYLE,
+            touch: coarse.matches,
+            aspect: gameSize.width / gameSize.height,
+          },
+        );
     } catch (e) {
       if (mode !== '3d') throw e;
       fallback2d(e);
     }
     // 2D renderer mířidla nekreslí: stejná kresba jako UI vrstva 3D, z promítnuté vlaštovky view(null).
-    if (aim && mode === '2d') {
+    if (draw && aim && mode === '2d') {
       const c = $('game').getContext('2d'),
         k = c.canvas.width / 640;
       c.setTransform(k, 0, 0, k, 0, 0);

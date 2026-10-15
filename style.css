@@ -1738,3 +1738,20 @@ div.atlas-card {
 :root[data-reduced="true"] .atlas-sheet {
   animation: none;
 }
+
+/* C1: tečka „něco nového“ na tlačítku Atlasu (jen při neviděné novince; slovo pro čtečku je v aria-label) */
+[data-open="atlas"][data-notice] {
+  position: relative;
+}
+[data-open="atlas"][data-notice]::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tomato-600);
+  border: 2px solid var(--paper);
+  pointer-events: none;
+}
