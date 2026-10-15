@@ -486,7 +486,7 @@ export function drawParticles(c, list = [], p = PAPIR, reduced = false) {
   }
   c.restore();
 }
-// Popupy sledují vlaštovku (px+20, py−30, land nad ní); rise/scale počítá fxMap (reduced = bez pohybu).
+// Popupy sledují vlaštovku (px+20, py−30, land nad ní); rise/scale počítá fxMap (reduced = bez pohybu). half (½) má barvu qte.half.
 export function drawPopups(c, list = [], view = AIM_VIEW, p = PAPIR, scale = 1) {
   if (!list?.length) return;
   c.save();
@@ -514,7 +514,7 @@ export function drawPopups(c, list = [], view = AIM_VIEW, p = PAPIR, scale = 1) 
     c.save();
     c.translate(x, y);
     c.rotate((q.i % 2 ? 1 : -1) * (p.popup.tilt ?? 0) * DEG);
-    c.fillStyle = p.popup[q.style] ?? p.popup.land;
+    c.fillStyle = p.popup[q.style] ?? (q.style === 'half' ? p.qte.half : p.popup.land);
     c.fillText(q.text, 0, 0);
     c.restore();
   }
