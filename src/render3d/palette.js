@@ -319,3 +319,43 @@ export const PAPIR = {
   },
 };
 export const palette = () => PAPIR;
+// Násobení barev (list × planeUnder = spodní plochy, bible 05 kap. 17.3).
+export const multiply = (a, b) =>
+  '#' +
+  [1, 3, 5]
+    .map(i =>
+      Math.round((parseInt(a.slice(i, i + 2), 16) * parseInt(b.slice(i, i + 2), 16)) / 255)
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('');
+// Druhy papíru na vlaštovce (bible 05 kap. 17.3, 06 bod 8). Id jako atlas-numbers paper.kinds; `neon` = Stříbrná fólie (bez neonu a záře).
+// fill = list (horní plochy), under = list × planeUnder, crease = přehyb tužkou, dash = [čárka, mezera] v délkách vlaštovky (steh) nebo null,
+// outlinePx = obrys vždy grafit, pattern = barvy vzoru zblízka (zdálky se slije do průměru): copy [linky sešitu, okraj u ocasu],
+// kraft [vlákna, airmail lem ×2], washi [seigaiha], neon [perleť úsvit → opar → světlo].
+const PAPER_KIND = (fill, crease, outlinePx, pattern, dash = null) =>
+  Object.freeze({
+    fill,
+    under: multiply(fill, PAPER_ROLE.planeUnder),
+    crease,
+    dash,
+    outlinePx,
+    pattern,
+  });
+export const PLANE_PAPER = Object.freeze({
+  copy: PAPER_KIND(PT.paper, PT.pencil, 2.6, ['#7f9ed6', '#b5503c', '#b5503c']),
+  kraft: PAPER_KIND(
+    '#ead7b5',
+    PT.kraftDark,
+    2.9,
+    [PT.kraftDark, '#b5503c', '#3d4f7a'],
+    [0.05, 0.035],
+  ),
+  washi: PAPER_KIND('#fbe8cc', mix(PT.pencil, '#fbe8cc', 0.4), 2.6, [
+    '#3d4f7a',
+    '#3d4f7a',
+    '#3d4f7a',
+  ]),
+  neon: PAPER_KIND('#e9edf2', PT.pencil, 2.6, ['#cfe2ec', '#ffe0e8', '#fff0b0']),
+});
+export const PLANE_PAPER_IDS = Object.keys(PLANE_PAPER);

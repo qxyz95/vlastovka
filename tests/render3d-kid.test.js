@@ -353,7 +353,7 @@ test('kidMaterial: ramp per face (03 kap. 1.5), shared kit uniforms; plane in ha
       ),
     'mesh, hull and crease biased, depth test on',
   );
-  const sh = { vertexShader: 'a\n#include <project_vertex>\nb' };
+  const sh = { uniforms: {}, vertexShader: 'a\n#include <project_vertex>\nb', fragmentShader: '' };
   meshes.find(o => o.material.isMeshBasicMaterial).material.onBeforeCompile(sh);
   assert.match(sh.vertexShader, /mvPosition\.xyz\*=max\(\.05,\(-mvPosition\.z-0\.60\)/);
   assert.equal(biasChunk('x'), 'x');

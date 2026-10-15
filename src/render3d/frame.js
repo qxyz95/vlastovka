@@ -29,6 +29,23 @@ import { uiScale } from './ui-layer.js';
 import { qteRing, eventScene, burstOf, effectiveVx, comboOf } from './event-fx.js';
 import { initialQuality } from './quality.js';
 import { introProgress, introShot, introTitleAlpha, introIdle } from './intro.js';
+import { PLANE_PAPER } from './palette.js';
+import { NUMBERS } from '../atlas-numbers.js';
+import { PROGRESSION } from '../progression-numbers.js';
+
+// Druh papíru na vlaštovce (G1, bible 05 kap. 17.3): visual.paper = úroveň Paper (0–12, druh = nejvyšší s aspoň 1 úrovní, 0 = copy)
+// nebo přímo id druhu (náhled v Dílně a katalogu). Neznámé → copy.
+export function paperKindOf(paper) {
+  if (typeof paper === 'string') return PLANE_PAPER[paper] ? paper : 'copy';
+  const kinds = NUMBERS.paper.kinds,
+    l = Math.floor(Number(paper) || 0);
+  return kinds[
+    Math.min(
+      kinds.length - 1,
+      Math.floor((Math.max(1, l) - 1) / PROGRESSION.workshop.paper.perTier),
+    )
+  ];
+}
 
 // Výška dítěte H1 (person × 0,7 = 1,2 m, models/kid.js KID.h) pro LOD podle px na obrazovce.
 const KID_H = SCALE.person * 0.7;
@@ -316,7 +333,8 @@ export function planFrame({
     t = flying ? f.t : (visual.clock ?? time),
     clock = visual.clock ?? time,
     reduced = !!visual.reduced,
-    charge = f ? 0 : (visual.charge ?? 0);
+    charge = f ? 0 : (visual.charge ?? 0),
+    paper = paperKindOf(visual.paper);
   state = state ?? visual.state ?? (f ? (f.landed ? 'landed' : 'flight') : 'aim');
   state = state === 'result' ? 'landed' : state;
   const rest = state === 'aim' || state === 'workshop',
@@ -366,6 +384,7 @@ export function planFrame({
     ...tilt(t, anim, flying, reduced),
     squash: own.squash,
     model,
+    paper,
     look: null,
     visible: !rest,
     scale,
@@ -411,7 +430,7 @@ export function planFrame({
     t,
     state,
     view: v,
-    hand: rest ? { ...own, model, scale } : null,
+    hand: rest ? { ...own, model, paper, scale } : null,
     X,
     Y,
     camera,

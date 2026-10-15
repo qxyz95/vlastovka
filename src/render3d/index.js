@@ -147,6 +147,7 @@ function init(canvas, visual = {}) {
     drawn: 0,
     ext: null,
     timer: query('timer') != null,
+    paper: query('paper'), // náhled druhu papíru (G1): ?paper=copy|kraft|washi|neon nebo úroveň 0–12, __r3d.paper = …; přebije visual.paper
     quality: qualityTracker(
       initialQuality({ touch: !!visual.touch, cssWidth: canvas.clientWidth || 640 }),
     ),
@@ -212,7 +213,14 @@ function init(canvas, visual = {}) {
     get lost() {
       return R?.lost;
     },
+    get paper() {
+      return R?.paper ?? null;
+    },
+    set paper(v) {
+      if (R) R.paper = v == null ? null : /^\d+$/.test(String(v)) ? Number(v) : String(v);
+    },
   };
+  if (r.paper != null && /^\d+$/.test(r.paper)) r.paper = Number(r.paper);
   return r;
 }
 // UI vrstva (ui-layer.js R2) v rozlišení podle CSS šířky × DPR (1–2× logického 640×360). Bez kontextu WebGL pod ní gradient z nálady.
@@ -298,7 +306,11 @@ export function render(canvas, f, model, time = 0, visual = {}, force = false) {
     f,
     model,
     time,
-    visual: visualFor(visual, css, r.quality.level),
+    visual: visualFor(
+      r.paper != null ? { ...visual, paper: r.paper } : visual,
+      css,
+      r.quality.level,
+    ),
     prev: r.plan,
   });
   if (!r.lost) {

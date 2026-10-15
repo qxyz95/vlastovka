@@ -9,12 +9,21 @@
 // ctx.paper = paper.paperKit(), jinak vlastních; stín dítěte je proxy v masce místa), cedulka PAPER LAB jako textura na kartě domu H2 a vlaštovka
 // v ruce ve 12 m (razítko grafit 2,6 px, stín na zem ctx.paper.shadows.castPlane).
 import * as THREE from 'three';
-import { planeShape, outlineStamp } from './geometry.js';
+import { planeShape } from './geometry.js';
 import { stampOutlineMaterial } from './toon.js';
 import { HAND, kidPose, planePose } from './pose.js';
-import { PAPIR } from './palette.js';
+import { PAPIR, PLANE_PAPER } from './palette.js';
 import { kidMaterial, lin, ID } from './paper.js';
-import { planeColors, PLANE_SCALE } from './plane.js';
+import {
+  planeColors,
+  PLANE_SCALE,
+  planeMaterial,
+  creaseMaterial,
+  creaseGeometry,
+  stampGeometry,
+  paintPlane,
+  paperOf,
+} from './plane.js';
 import { kidRig, poseKid, kidLod, kidDrawRange } from './models/kid-rig.js';
 import { DIORAMA } from './models/launch-site.js';
 import { ATTIC } from './models/workshop-attic.js';
@@ -86,10 +95,15 @@ export function handDepthBias(m) {
     );
     if (m.uniforms.push) m.uniforms.push.value = HAND_DEPTH.push;
   } else {
-    m.onBeforeCompile = sh => {
+    // řetězí se za vlastní onBeforeCompile materiálu (vzor papíru vlaštovky, plane.planeMaterial)
+    const prev = m.onBeforeCompile,
+      own = m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey,
+      key = own ? m.customProgramCacheKey() : '';
+    m.onBeforeCompile = (sh, r) => {
+      prev.call(m, sh, r);
       sh.vertexShader = biasChunk(sh.vertexShader);
     };
-    m.customProgramCacheKey = () => 'handDepthBias';
+    m.customProgramCacheKey = () => key + 'handDepthBias';
   }
   m.userData.handBias = HAND_DEPTH.bias;
   return m;
@@ -141,31 +155,25 @@ export function createWorkshop(scene, ctx = {}) {
   sign.position.set(sg.x, sg.y, sg.z);
   group.add(sign);
   // Vlaštovka v ruce: planeShape, skupiny root (poloha) → tilt (rotace z) → squash → roll; barva vrcholů bez světla (jako plane.js),
-  // obrys razítkem grafit 2,6 px, přehyb tužkou, stín na zem castPlane.
+  // obrys razítkem grafit 2,6 px (Kraft 2,9), přehyb tužkou, stín na zem castPlane; druh papíru z plan.hand.paper (plane.paintPlane, G1).
   const planeHull = handDepthBias(
     mk(stampOutlineMaterial({ color: PAPIR.plane.outline, thickness: OUTLINE.plane })),
   );
   planeHull.depthWrite = false;
   outlines.push(planeHull);
-  const planeMat = handDepthBias(
-      mk(new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, fog: false })),
-    ),
-    creaseMat = handDepthBias(mk(new THREE.LineBasicMaterial({ color: PAL.crease })));
+  const planeMat = handDepthBias(mk(planeMaterial())),
+    creaseMat = handDepthBias(mk(creaseMaterial()));
   const shapes = {},
     shapeOf = model =>
       (shapes[model] ??= (s => {
         const g = mk(new THREE.BufferGeometry()),
-          l = mk(new THREE.BufferGeometry());
+          l = mk(creaseGeometry(s)),
+          h = mk(stampGeometry(s.positions));
         g.setAttribute('position', new THREE.Float32BufferAttribute(s.positions, 3));
         g.setAttribute('normal', new THREE.Float32BufferAttribute(s.normals, 3));
         g.setAttribute('outline', new THREE.Float32BufferAttribute(s.outline, 3));
-        l.setAttribute('position', new THREE.Float32BufferAttribute(s.creases, 3));
-        g.setAttribute('color', new THREE.BufferAttribute(planeColors(s.normals, PAPIR.plane), 3));
-        const st = outlineStamp(s.positions),
-          h = mk(new THREE.BufferGeometry());
-        h.setAttribute('position', new THREE.Float32BufferAttribute(st.positions, 3));
-        h.setAttribute('shift', new THREE.Float32BufferAttribute(st.shift, 2));
-        return { g, l, h };
+        g.setAttribute('color', new THREE.BufferAttribute(planeColors(s.normals, paperOf()), 3));
+        return { g, l, h, normals: s.normals, kind: 'copy' };
       })(planeShape(model)));
   const plane = new THREE.Group(),
     tilt = new THREE.Group(),
@@ -185,11 +193,27 @@ export function createWorkshop(scene, ctx = {}) {
   roll.rotation.x = 0.42;
   roll.rotation.y = -0.2; // křídla natočená ke kameře jako v prototypu
   let model = null,
-    ps = null;
+    ps = null,
+    kind = 'copy';
+  const paint = s => {
+    if (s.kind !== kind)
+      paintPlane(
+        { geo: s.g, normals: s.normals, mat: planeMat, crease: creaseMat, stamp: s.h },
+        kind,
+      );
+    s.kind = kind;
+  };
+  const setPaper = k => {
+    k = PLANE_PAPER[k] ? k : 'copy';
+    if (k === kind) return;
+    kind = k;
+    paint(shapeOf(model));
+  };
   const setModel = m => {
     if (m === model) return;
     model = m;
     const s = shapeOf(m);
+    paint(s);
     pm.geometry = s.g;
     ph.geometry = s.h;
     pc.geometry = s.l;
@@ -209,6 +233,7 @@ export function createWorkshop(scene, ctx = {}) {
     // plan.hand.scale: velikost vlaštovky v ruce podle záběru (S3) a +15 % na úzké scéně (P0)
     if (p) {
       if (p.model) setModel(p.model);
+      setPaper(p.paper);
       const sc = scale * (p.scale ?? 1);
       plane.position.set(H.x + p.dx, H.y + p.dy, H.z);
       tilt.rotation.z = p.angle;
