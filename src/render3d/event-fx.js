@@ -379,6 +379,39 @@ export function comboOf(f) {
     ring: chimes && before < need ? age : Infinity,
   };
 }
+// ── Schopnosti z kapes (C3) v UI vrstvě, 0 draw calls. Výšky z flight.js (specials) převedené na logické px přes view
+// (ground = výška 0, k · ppm px na metr v hloubce vlaštovky). Rocket a nízký průlet Dive kreslí tah výtrysku (burstOf, tag rocket / lowPass).
+// Dive: pás nízkého průletu nad zemí (specials.dive.low), in = vlaštovka v pásu (puštění dá výtrysk). Cushion: pásma výšky pod
+// vlaštovkou, dokud je polštář k dispozici a vlaštovka je pod maxY + 1 m (perfekt / střed / vysoko); po klepnutí polštář pod vlaštovkou
+// (k = zbývající podíl hoverT / glideT, doznívá).
+export const ABILITY_UI = Object.freeze({ guideW: 36, pillowW: 22, pillowH: 5, bandAlpha: 0.18 });
+export function abilityFx(f, view, ppm) {
+  if (!f || f.landed || !view || !(view.k > 0)) return null;
+  const S = P.specials,
+    m = view.k * ppm,
+    at = h => view.ground - h * m;
+  if (f.dive) {
+    const [lo, hi] = S.dive.low;
+    return { kind: 'lowPass', top: at(hi), bottom: at(lo), in: f.y >= lo && f.y <= hi };
+  }
+  const C = S.cushion;
+  if (f.hoverT > 0 || f.glideT > 0)
+    return {
+      kind: 'pillow',
+      y: Math.min(view.ground, view.py + 6),
+      k: clamp01(f.hoverT > 0 ? f.hoverT / C.perfectT : f.glideT / C.glideT),
+    };
+  if (f.d?.active === 'cushion' && !f.abil.cushion && f.y <= C.maxY + 1)
+    return {
+      kind: 'cushion',
+      bands: [
+        [at(C.perfectY), at(0), 'perfect'],
+        [at(C.midY), at(C.perfectY), 'success'],
+        [at(C.maxY), at(C.midY), 'track'],
+      ],
+    };
+  return null;
+}
 // Očka řetězu: pravý konec v x (logické px), střed y; i = 0 vlevo. s = zvětšení UI (uiScale).
 export function comboLinks(max, n, x, y, s = 1) {
   const C = COMBO_UI;

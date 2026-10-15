@@ -5,7 +5,9 @@ import {
   flightFor,
   advance,
   activeEvent,
-  eventInput,
+  flightInput,
+  abilityState,
+  pocketsOf,
   feedbackOf,
   settle,
   reward,
@@ -19,7 +21,16 @@ import { mountAtlas } from './atlas-ui.js';
 import { clearUndo } from './atlas.js';
 import { noveltyLine } from './atlas-text.js';
 import { load, save } from './storage.js';
-import { createFx, fxEvent, stepFx, resultFx, isFirstMeet, meetScale, comboNews } from './juice.js';
+import {
+  createFx,
+  fxEvent,
+  stepFx,
+  resultFx,
+  isFirstMeet,
+  meetScale,
+  comboNews,
+  abilityNews,
+} from './juice.js';
 import { NEW_EVENT_TYPES } from './gear.js';
 import { lerp } from './motion.js';
 import { districtAt } from './scenes.js';
@@ -91,6 +102,14 @@ let meet = null;
 // Kombo: kotva řetězu vpravo nahoře pod .hud-right (CSS px plátna, měří se při startu letu a změně velikosti) a hlášení pro čtečky.
 let comboAnchor = null,
   comboSay = { n: 0, at: -Infinity };
+// Kapsy (C3): čip při míření s nápovědou na POCKET_HINT s po vstupu na Domov, za letu stav aktivní schopnosti; čtečka hlásí jen změnu
+// stavu (bez „počkej“ a „níž“, které se střídají s každou událostí). Ikony jsou jen ozdoba (aria-hidden), název a stav jsou text.
+const POCKET_ICON = { dive: '↘', cushion: '◡', whistle: '♪', rocket: '»', sharp: '◆', calm: '≈' },
+  POCKET_HINT = 6;
+let pocketKey = '',
+  pocketHintUntil = 0,
+  abilitySaid = '',
+  abilitySeen = {};
 const comboLive = document.createElement('p');
 comboLive.className = 'sr-only';
 comboLive.setAttribute('role', 'status');
@@ -253,7 +272,44 @@ function refresh() {
   $('coins').textContent = num(p.coins);
   $('hud-coins').setAttribute('aria-label', t('menu.coins', { count: p.coins }));
   workshop.refresh();
+  updatePockets();
 }
+const specialName = id => t('atlas.special.' + id + '.name');
+// Čip kapes na Domově: nasazené speciály (ikona + název, pasivní s „Pasivní“) a jedna věta nápovědy (aktivní schopnost má přednost).
+// DOM se přestaví jen při změně kapes nebo jazyka; nová sestava kapes znovu ukáže nápovědu.
+function updatePockets() {
+  const list = pocketsOf(p),
+    key = list.map(x => x.id).join() + '|' + document.documentElement.lang;
+  setHidden($('aim-pockets'), !list.length);
+  if (key === pocketKey) return;
+  if (pocketKey.split('|')[0] !== key.split('|')[0])
+    pocketHintUntil = performance.now() / 1000 + POCKET_HINT;
+  pocketKey = key;
+  $('pocket-list').replaceChildren(
+    ...list.map(x => {
+      const el = document.createElement('span'),
+        icon = document.createElement('span');
+      el.className = 'pocket-item' + (x.active ? ' pocket-active' : '');
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = POCKET_ICON[x.id] ?? '·';
+      el.append(icon, ' ' + specialName(x.id) + (x.active ? '' : ' · ' + t('ability.passive')));
+      return el;
+    }),
+  );
+  $('pocket-list').setAttribute(
+    'aria-label',
+    t('ability.pockets', { list: list.map(x => specialName(x.id)).join(', ') }),
+  );
+  const first = list.find(x => x.active) ?? list[0];
+  $('pocket-hint').textContent = first
+    ? t('ability.hint.' + first.id, { count: PROGRESSION.specials.rocket.charges })
+    : '';
+}
+// Text stavu schopnosti za letu: Rocket ukazuje zbývající náboje, ostatní slovo stavu.
+const abilityText = a =>
+  a.state === 'ready' && a.id === 'rocket'
+    ? t('ability.state.left', { count: a.left })
+    : t('ability.state.' + a.state);
 // Úvod (H1): {pressed: s | null} nebo null. Ukáže se po načtení ('loaded') a po zavření Dílny, Atlasu nebo Menu zpět na Domov
 // (introAfter podle zavřeného panelu), ne po „Hodit znovu“ ('throwAgain', stisk na kartě výsledku) ani po zrušení hodu.
 // Stisk na Domově = událost 'press' (screens.js) a zároveň introPress: jízda do míření a nabíjení.
@@ -390,6 +446,7 @@ function prepare(from = 'throwAgain') {
   owner = null;
   heldTime = 0;
   acc = 0;
+  pocketHintUntil = performance.now() / 1000 + POCKET_HINT;
   updateAim();
 }
 function updateAim() {
@@ -437,6 +494,10 @@ function startFlight({ angle, charge }) {
   comboSay = { n: 0, at: -Infinity };
   comboLive.textContent = '';
   comboAnchor = measureCombo();
+  abilitySeen = {};
+  const ab = abilityState(f);
+  abilitySaid = ab ? ab.state + '|' + ab.left : '';
+  $('ability-live').textContent = '';
   $('event-help').textContent = t('throw.' + launch.grade);
   $('action').disabled = true;
   $('hud-best').hidden = true;
@@ -510,20 +571,20 @@ $('angle').oninput = () => {
   angle = Number($('angle').value);
   updateAim();
 };
+// Jedno tlačítko (08 Z6, core.flightInput): stisk patří události, jinak schopnosti z kapsy. Držení vlastní jeden zdroj (ukazatel / klávesa)
+// až do puštění; ztráta ukazatele, blur a skrytí karty = puštění (holub minutí, Dive vybrání), nic nezůstane držené.
 function flightDown(source) {
-  if (S.screen !== 'flight' || !loopRuns(S) || hidden() || inputOwner !== null) return;
-  const e = activeEvent(f);
-  if (!e || e.result) return;
+  if (S.screen !== 'flight' || !loopRuns(S) || hidden() || inputOwner !== null || !f) return;
   inputOwner = source;
-  eventInput(f, 'down');
+  flightInput(f, 'down');
 }
 function flightUp(source) {
   if (inputOwner !== source) return;
-  eventInput(f, 'up');
+  flightInput(f, 'up');
   inputOwner = null;
 }
 function flightCancel() {
-  if (inputOwner !== null && f) eventInput(f, 'cancel');
+  if (inputOwner !== null && f) flightInput(f, 'cancel');
   inputOwner = null;
 }
 $('action').addEventListener('pointerdown', e => {
@@ -688,6 +749,9 @@ function frame(now) {
     if (S.screen === 'home') {
       if (held && runs) heldTime += elapsed;
       if (intro && introDone(intro, now / 1000, reduced)) intro = null;
+      // titul míření skrývá, nápověda se odpočítává až od chvíle, kdy je míření vidět
+      if (S.title) pocketHintUntil = now / 1000 + POCKET_HINT;
+      setHidden($('pocket-hint'), now / 1000 > pocketHintUntil || !$('pocket-hint').textContent);
     }
     if (S.screen === 'flight' && f && runs) {
       // Hitstop freezes physics for a few frames; QTE timing runs on flight time, so it is unaffected.
@@ -791,6 +855,7 @@ function juiceEvents() {
       if (e.type === 'gust' && e.result !== 'miss') fxEvent(fx, 'boost');
     }
   }
+  for (const kind of abilityNews(abilitySeen, f.stats)) fxEvent(fx, kind);
   if (f.landed && !fx.landed)
     fxEvent(fx, 'land', { speed: prev ? Math.hypot(prev.vx, prev.vy) : 0, text: m(f.x, 1) });
 }
@@ -827,11 +892,35 @@ function updateFlightUI(now) {
       el.style.width = (b - a) * 100 + '%';
     }
   }
-  const act = t(
-    e?.type === 'bird' ? (e.heldAt !== null ? 'flight.release' : 'flight.hold') : 'flight.tap',
-  );
-  $('action').disabled = !interactive;
+  // Bez události patří tlačítko schopnosti z kapsy (Z6); během držení zůstává povolené, aby puštění vždy došlo.
+  const ab = abilityState(f),
+    abUse = !interactive && ab && (ab.state === 'ready' || ab.state === 'diving'),
+    act = abUse
+      ? ab.state === 'diving'
+        ? t('ability.pullUp')
+        : t('ability.button', { name: specialName(ab.id) })
+      : t(
+          e?.type === 'bird'
+            ? e.heldAt !== null
+              ? 'flight.release'
+              : 'flight.hold'
+            : 'flight.tap',
+        );
+  $('action').disabled = !(interactive || abUse || inputOwner !== null);
   setText($('action'), act);
+  setHidden($('ability-chip'), !ab);
+  if (ab) {
+    const name = specialName(ab.id),
+      state = abilityText(ab);
+    setText($('ability-chip'), POCKET_ICON[ab.id] + ' ' + t('ability.chip', { name, state }));
+    if ($('ability-chip').dataset.state !== ab.state) $('ability-chip').dataset.state = ab.state;
+    const said =
+      ab.state === 'wait' || ab.state === 'high' ? abilitySaid : ab.state + '|' + ab.left;
+    if (said !== abilitySaid) {
+      abilitySaid = said;
+      setText($('ability-live'), t('ability.live', { name, state }));
+    }
+  }
   $('flight').dataset.kind = e?.type ?? 'none';
   $('flight').dataset.phase = e?.phase ?? 'idle';
   if (settings.timingBar) $('needle').style.left = (e ? eventProgress(f, e) * 100 : 0) + '%';
