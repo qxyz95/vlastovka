@@ -57,6 +57,22 @@ export function buy(p, id, level = (p.levels?.[id] ?? 0) + 1) {
   p.levels[id] = s.next.level;
   return true;
 }
+// Undo poslední koupě v Dílně: platí do dalšího hodu (settle zvýší attempts). Záznam drží UI v paměti, do save nejde
+// (struktura save zůstává; p.atlas.undo patří Atlasu). -> záznam {id, level, price, attempts} | null
+export function buyUndoable(p, id) {
+  const next = branchStatus(p, id).next;
+  return next && buy(p, id, next.level)
+    ? { id, level: next.level, price: next.price, attempts: p.attempts }
+    : null;
+}
+export const canUndo = (p, u) =>
+  !!u && p.attempts === u.attempts && (p.levels?.[u.id] ?? 0) === u.level;
+export function undoBuy(p, u) {
+  if (!canUndo(p, u)) return false;
+  p.coins += u.price;
+  p.levels[u.id] = u.level - 1;
+  return true;
+}
 // Události, které hra zatím nezná (C2 je zapojí); bez příznaku se jejich bonusy do kitu nedostanou, takže nepřijdou.
 export const NEW_EVENT_TYPES = ['steam', 'thermal', 'drone', 'star'];
 // Kit letu z save: Dílna, model, úrovně Atlasu (objev z p.best, koupené úrovně z p.atlas) a speciály v kapsách.

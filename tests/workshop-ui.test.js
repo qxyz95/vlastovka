@@ -45,7 +45,15 @@ class El {
 globalThis.document = { createElement: tag => new El(tag) };
 const dialog = () => {
   const root = new El('dialog');
-  for (const id of ['tree', 'detail', 'dart', 'glider', 'glider-description']) {
+  for (const id of [
+    'tree',
+    'detail',
+    'dart',
+    'glider',
+    'glider-description',
+    'workshop-coins',
+    'workshop-live',
+  ]) {
     const e = new El('div');
     e.id = id;
     root.append(e);
@@ -55,13 +63,13 @@ const dialog = () => {
 const text = e =>
   [e.textContent, ...e.children.map(c => (c instanceof El ? text(c) : c.text))].join(' ');
 
-test('nodeLevels: Power and Folds show all 3 levels, Paper only the kind with the next level', () => {
-  assert.deepEqual(nodeLevels('power', 0), [1, 2, 3]);
-  assert.deepEqual(nodeLevels('folds', 3), [1, 2, 3]);
-  assert.deepEqual(nodeLevels('paper', 0), [1, 2, 3]);
-  assert.deepEqual(nodeLevels('paper', 2), [1, 2, 3]);
-  assert.deepEqual(nodeLevels('paper', 3), [4, 5, 6]);
-  assert.deepEqual(nodeLevels('paper', 12), [10, 11, 12]);
+test('nodeLevels: Power and Folds have 3 levels, Paper all 12 (ladder of 4 kinds)', () => {
+  assert.deepEqual(nodeLevels('power'), [1, 2, 3]);
+  assert.deepEqual(nodeLevels('folds'), [1, 2, 3]);
+  assert.deepEqual(
+    nodeLevels('paper'),
+    Array.from({ length: 12 }, (_, i) => i + 1),
+  );
 });
 
 test('mountWorkshop: three branches, buying the next level, not enough coins, Paper waits for its place', () => {
@@ -77,8 +85,16 @@ test('mountWorkshop: three branches, buying the next level, not enough coins, Pa
   );
   assert.deepEqual(
     tree.children.map(r => r.children[1].children.length),
-    [3, 3, 3],
+    [3, 4, 3],
+    'Power 3 nodes, Paper ladder of 4 kinds, Folds 3 nodes',
   );
+  const ladder = tree.children[1].children[1];
+  assert.deepEqual(
+    ladder.children.map(k => k.children[1].children.length),
+    [3, 3, 3, 3],
+  );
+  assert.match(text(ladder.children[1]), /Opens at/, 'locked Kraft names the place');
+  assert.match(text(ladder.children[1]), /Kraft Paper/);
   const buy = () => root.querySelector('#buy');
   assert.equal(buy().disabled, false);
   buy().onclick();
@@ -89,7 +105,10 @@ test('mountWorkshop: three branches, buying the next level, not enough coins, Pa
   assert.match(text(root.querySelector('#detail')), /150/, 'how many coins are missing');
   // Paper: Copy bought out, Kraft waits for the 3rd place
   Object.assign(p, { coins: 5000, levels: { power: 1, paper: 3, folds: 0 } });
-  tree.children[1].children[1].children[0].onclick();
+  tree.children[1].children[1].children[0].children[1].children[0].onclick(); // level 1 owned: no Buy
+  assert.equal(buy().disabled, true);
+  tree.children[1].children[1].children[1].children[1].children[0].onclick(); // Kraft level 4
+  assert.match(text(root.querySelector('#detail')), /Opens at/);
   assert.equal(buy().disabled, true);
   p.best = 2 * SCREEN_METERS;
   w.refresh();
@@ -106,6 +125,34 @@ test('mountWorkshop: three branches, buying the next level, not enough coins, Pa
   w.refresh();
   root.querySelector('#glider').onclick();
   assert.equal(p.model, 'glider');
+});
+
+test('detail: now -> after, preview "≈ +X m" only after a throw, Undo until the next throw', () => {
+  const p = { ...fresh(), coins: 500 },
+    root = dialog();
+  let changes = 0;
+  const w = mountWorkshop(root, { getSave: () => p, onChange: () => (changes++, w.refresh()) }),
+    detail = () => text(root.querySelector('#detail'));
+  w.refresh();
+  assert.match(detail(), /\+0\s?% → \+14\s?%/, 'value now → after');
+  assert.doesNotMatch(detail(), /≈/, 'no preview before the first throw');
+  assert.equal(root.querySelector('#undo'), null);
+  p.attempts = 2;
+  w.refresh();
+  assert.match(detail(), /≈ \+\d+\s?m on a calm throw/, 'preview without a record = calm throw');
+  root.querySelector('#buy').onclick();
+  assert.equal(p.levels.power, 1);
+  assert.match(text(root.querySelector('#workshop-live')), /Bought: Power, level 1/);
+  const undo = root.querySelector('#undo');
+  assert.match(text(undo), /Undo: Power, level 1/);
+  undo.onclick();
+  assert.deepEqual([p.levels.power, p.coins], [0, 500], 'coins and level are back');
+  assert.equal(root.querySelector('#undo'), null);
+  assert.match(text(root.querySelector('#workshop-live')), /Undone/);
+  root.querySelector('#buy').onclick();
+  p.attempts++; // the next throw settled
+  w.refresh();
+  assert.equal(root.querySelector('#undo'), null, 'Undo ends with the next throw');
 });
 
 test('ui.js mounts the Workshop and has no old tree, prices or upgrade numbers', () => {
