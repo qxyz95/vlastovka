@@ -29,6 +29,11 @@ Repozitář: https://github.com/qxyz95/vlastovka (větev `main`).
 - Laditelná čísla nového systému jsou jen v `simulation/progression/params.mjs` (do `src/` je přenáší `src/atlas-numbers.js`). Nový systém (Atlas, papíry) zatím není ve hře.
 - Offline audio benchmark ve skrytém okně je nespolehlivý, zátěž měřit výpadky (`playbackStats`) v reálném čase.
 
+## Prohloubení zadání (prompt uživatele, 16. 10. 2026)
+Když uživatel pošle tento prompt nebo řekne „prohlub to“, nejdřív odpověz na body 1–4 a pak přepiš jeho zadání. Prohloubit znamená jít hlouběji, ne rozšířit rozsah. Znění uživatele:
+
+> I want a depeper version of this task, not a bigger one. Before rewriting it: (1) say what a top professional in this field would do here that I'm not asking for; (2) name the rawest material they would start from instead of what has already been digested for me; (3) name the specific methods and tools they would use; (4) say what, other than you or me, would show me the is right. Then rewrite my prompt to ask for exactly that.
+
 ## Spolupráce a git
 - Orchestrace, role agentů, soubory průběhu a souběh: `.claude/rules/orchestrace.md`.
 - Rozhodnutí uživatele v `research/bonusy/06-rozhodnuti.md` jsou závazná a mají přednost před návrhy.
