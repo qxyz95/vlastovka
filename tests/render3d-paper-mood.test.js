@@ -33,6 +33,7 @@ test('paleta: jediná PAPIR (palette() parametr ignoruje), klíče, které čtou
   for (const id of [undefined, 'papir', 'cyber', 'nope'])
     assert.equal(palette(id), PAPIR, String(id));
   assert.deepEqual(Object.keys(PAPIR).sort(), [
+    'ability',
     'aim',
     'burst',
     'city',

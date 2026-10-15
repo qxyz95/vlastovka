@@ -50,6 +50,15 @@
   --color-miss: var(--warm-grey-500);
   --color-warning: var(--graphite-900);
   --focus: var(--cobalt-600);
+  /* barvy čtvrtí v Atlasu = denní doby z palety čtvrtí (bible 05 kap. 2.3, rozhodnutí 06 16. 10.), nikdy barvy rolí */
+  --district-1: #3d4f7a;
+  --district-2: #2c6e9b;
+  --district-3: #7a3b2e;
+  --district-4: #1d2b4d;
+  --district-1-accent: #f2b65a;
+  --district-2-accent: #e8b03e;
+  --district-3-accent: #e0533a;
+  --district-4-accent: #f2c14e;
   --display: var(--font-paper-display);
   --body: var(--font-paper-body);
   --hand: var(--font-paper-hand);
@@ -916,6 +925,49 @@ legend {
 .kind-head strong {
   font: 800 18px/1.2 var(--display);
 }
+/* vzorek papíru (F2 B14, tóny z PLANE_PAPER v render3d/palette.js), aktivní druh má pásku jako pohlednice v Atlasu */
+.kind-head strong {
+  margin-right: auto;
+}
+.kind-swatch {
+  flex: none;
+  align-self: center;
+  width: 32px;
+  height: 22px;
+  border: 1.5px solid var(--ink);
+  rotate: -2deg;
+  background: #ead7b5;
+}
+.kind[data-kind="copy"] .kind-swatch {
+  background: repeating-linear-gradient(0deg, transparent 0 5px, #7f9ed6 5px 6px) #fff;
+}
+.kind[data-kind="washi"] .kind-swatch {
+  background: radial-gradient(
+      circle at 50% 100%,
+      transparent 4px,
+      #3d4f7a33 4px 5px,
+      transparent 5px
+    )
+    0 0/10px 6px #fbe8cc;
+}
+.kind[data-kind="neon"] .kind-swatch {
+  background: linear-gradient(110deg, #cfe2ec, #ffe0e8, #fff0b0);
+}
+.kind.active {
+  position: relative;
+}
+.kind.active::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: calc(50% - 22px);
+  width: 44px;
+  height: 14px;
+  background: var(--tape);
+  opacity: 0.85;
+  rotate: -2deg;
+  pointer-events: none;
+}
 .kind-state {
   font: 600 14px/1.3 var(--body);
   color: var(--dim);
@@ -973,7 +1025,7 @@ legend {
 .node.picked:focus-visible {
   outline-color: var(--focus);
 }
-/* detail uzlu: hodnota teď → po koupi a náhled „≈ +X m“ (poznámka tužkou, žlutá hrana = hodnota) */
+/* detail uzlu: hodnota teď → po koupi a náhled „≈ +X m“ (poznámka tužkou, grafitová hrana: metry, ne mince, F2 B15) */
 #detail .eyebrow {
   font-size: 14px;
 }
@@ -987,7 +1039,7 @@ legend {
   margin: var(--s3) 0;
   padding: var(--s3);
   background: var(--card2);
-  border-left: 6px solid var(--color-reward);
+  border-left: 6px solid var(--ink);
   border-radius: var(--r);
 }
 .preview strong {
@@ -1446,17 +1498,23 @@ dialog.atlas > .panel-head {
 .atlas-slot-text {
   font: 700 16px/1.2 var(--display);
 }
-.atlas-district {
-  --tone: var(--tomato-600);
+/* čtvrť = denní doba (ráno, poledne, odpoledne, večer); --tone okraj a siluety, --pc-accent teplý akcent siluet */
+.atlas-district,
+.atlas-pc-big {
+  --tone: var(--district-1);
+  --pc-accent: var(--district-1-accent);
 }
-.atlas-district[data-tone="teal"] {
-  --tone: var(--teal-600);
+:is(.atlas-district, .atlas-pc-big)[data-tone="noon"] {
+  --tone: var(--district-2);
+  --pc-accent: var(--district-2-accent);
 }
-.atlas-district[data-tone="mustard"] {
-  --tone: var(--mustard-400);
+:is(.atlas-district, .atlas-pc-big)[data-tone="afternoon"] {
+  --tone: var(--district-3);
+  --pc-accent: var(--district-3-accent);
 }
-.atlas-district[data-tone="cobalt"] {
-  --tone: var(--cobalt-600);
+:is(.atlas-district, .atlas-pc-big)[data-tone="evening"] {
+  --tone: var(--district-4);
+  --pc-accent: var(--district-4-accent);
 }
 .atlas-dtitle {
   display: flex;
@@ -1628,7 +1686,7 @@ div.atlas-card {
   rotate: var(--tilt-r);
 }
 .atlas-card.atlas-top-level {
-  outline: 3px solid var(--tone);
+  outline: 3px solid var(--ink);
   outline-offset: -1px;
 }
 .atlas-card.atlas-top-level:focus-visible {
@@ -1652,26 +1710,6 @@ div.atlas-card {
   border-color: var(--ink);
 }
 /* pohlednice (G2): snímek 3D scény (čtvrť 1) nebo vystřižená silueta dominanty (2–4), bible 05 kap. 10 */
-.atlas-district {
-  --pc-accent: var(--mustard-400);
-}
-.atlas-district[data-tone="mustard"] {
-  --pc-accent: var(--tomato-500);
-}
-.atlas-pc-big {
-  --tone: var(--tomato-600);
-  --pc-accent: var(--mustard-400);
-}
-.atlas-pc-big[data-tone="teal"] {
-  --tone: var(--teal-600);
-}
-.atlas-pc-big[data-tone="mustard"] {
-  --tone: var(--mustard-400);
-  --pc-accent: var(--tomato-500);
-}
-.atlas-pc-big[data-tone="cobalt"] {
-  --tone: var(--cobalt-600);
-}
 .atlas-has-pc::after,
 .atlas-pc-big::after {
   display: none;
@@ -1701,7 +1739,7 @@ div.atlas-card {
   --pc-c: var(--pc-accent);
 }
 .atlas-pc-light {
-  --pc-c: var(--paper);
+  --pc-c: var(--cream-50);
 }
 .atlas-pc-ground {
   --pc-c: color-mix(in srgb, var(--tone) 35%, var(--card-100));
@@ -1711,6 +1749,13 @@ div.atlas-card {
 }
 .atlas-pc [fill="none"] {
   stroke: var(--pc-c);
+}
+/* vystřižený papír (F2 B11): světlý řez po hraně a stín zvednuté vrstvy */
+.atlas-pc :is(.atlas-pc-main, .atlas-pc-accent):not([fill]) {
+  stroke: color-mix(in srgb, #fffaf0 55%, var(--pc-c));
+  stroke-width: 0.8;
+  paint-order: stroke;
+  filter: drop-shadow(-1px 1px 0 color-mix(in srgb, #3b3560 25%, transparent));
 }
 @media (prefers-reduced-motion: no-preference) {
   .atlas-cards > :is(.atlas-found, .atlas-level, .atlas-top-level) {
@@ -1745,6 +1790,20 @@ div.atlas-card {
 }
 .atlas-sheet > * {
   margin-block: 0 var(--s2);
+}
+/* telefon na šířku (F2 B13): detail jako pravý sloupec, karty zůstanou vidět vlevo */
+@media (max-height: 500px) and (orientation: landscape) {
+  .atlas-sheet {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: 46%;
+    max-height: none;
+    border-left: var(--frame) solid var(--rule);
+    border-top: 0;
+  }
+  .atlas:has(.atlas-sheet:not([hidden])) .atlas-main {
+    padding-right: 47%;
+  }
 }
 .atlas-sheet-head {
   display: flex;
@@ -1931,7 +1990,7 @@ div.atlas-card {
   white-space: nowrap;
 }
 .pocket-active {
-  box-shadow: inset 0 -3px 0 var(--tape);
+  box-shadow: inset 0 -2px 0 var(--ink);
 }
 .pocket-hint {
   margin: 0;

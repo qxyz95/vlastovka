@@ -172,8 +172,15 @@ export function mountWorkshop(root, { getSave, onChange, getLastThrow = () => nu
                 ? t('workshop.kindWaits')
                 : t('workshop.kindProgress', { done: k.done, total: k.total });
       li.dataset.kind = k.kind;
-      const head = el('div', null, 'kind-head');
-      head.append(el('strong', t('atlas.paper.' + k.kind)), el('span', state, 'kind-state'));
+      // vzorek papíru před jménem (F2 B14, bible kap. 17: papír se pozná podle tónu), jen ozdoba, jméno nese text
+      const head = el('div', null, 'kind-head'),
+        swatch = el('span', null, 'kind-swatch');
+      swatch.setAttribute('aria-hidden', 'true');
+      head.append(
+        swatch,
+        el('strong', t('atlas.paper.' + k.kind)),
+        el('span', state, 'kind-state'),
+      );
       li.append(head, nodes(k.levels, 'nodes kind-nodes'));
       ladder.append(li);
     }

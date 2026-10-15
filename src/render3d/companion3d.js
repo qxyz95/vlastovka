@@ -65,13 +65,14 @@ const setRGBA = (arr, i, col, a) => {
 };
 // Holub v poměru k vlaštovce jako ve 2D (20 px : 31 px, vlaštovka 7,75 m); při nesení drápy na hřbetu vlaštovky.
 export const PIGEON = { scale: 1.8, carryY: 3.3 };
-// Rozpočet △ jednotlivých objektů (testy a perf-check): pára = skříň 8 + mřížka 12 + 2 pruhy 4 + 6 obláčků 48; termika = stužky 48 + tělo 2 + útržky 20;
-// lampion LOD 0 72 + záře 8; hvězda 32 + ohon 36 + hvězdičky 6 × 8.
-export const EVENT_TRIS = Object.freeze({ steam: 72, thermal: 70, drone: 80, star: 116 });
+// Rozpočet △ jednotlivých objektů (testy a perf-check): pára = skříň 8 + mřížka 12 + 2 pruhy 4 + 6 obláčků 48; termika = stužky 48 + tělo 4 + útržky 20;
+// lampion LOD 0 72 + záře 16; hvězda 32 + ohon 36 + hvězdičky 6 × 8.
+export const EVENT_TRIS = Object.freeze({ steam: 72, thermal: 72, drone: 88, star: 116 });
 const OCT = 8,
   STEAM_TRIS = 2 * 2 + 2 * 3 * OCT,
   RIB_TRIS = 2 * THERMAL_FX.segs * 2,
-  THERM_TRIS = RIB_TRIS + 2,
+  THERM_TRIS = RIB_TRIS + 4,
+  GLOW_SEGS = 16,
   TAIL_TRIS = 3 * STAR_FX.segs * 2;
 export function createCompanion({ ramp, hull, palette, paper = null }) {
   const K = palette.companion,
@@ -144,16 +145,35 @@ export function createCompanion({ ramp, hull, palette, paper = null }) {
   vent.add(grate);
   vent.visible = false;
   group.add(vent);
-  const steamGeo = mk(dynamic(STEAM_TRIS)),
+  const steamGeo = mk(dynamic(STEAM_TRIS, true)),
     steam = new THREE.Mesh(
       steamGeo,
-      flat({ color: K.steam, transparent: true, opacity: K.steamAlpha }),
+      flat({ color: K.steam, transparent: true, opacity: K.steamAlpha, vertexColors: true }),
     );
   steam.frustumCulled = false;
   steam.renderOrder = 4;
   steam.visible = false;
   group.add(steam);
   const octRot = [0.3, 1.1, 2.0, 0.7, 1.6, 2.6];
+  // Barvy páry jsou pevné (rozložení trojúhelníků se nemění): pruh a horní polovina obláčků krém, spodní polovina ve stínu papíru
+  // (F2 B10). Vrcholová barva násobí barvu materiálu (krém), proto stín = steamShade / steam po kanálech.
+  {
+    const cream = C(K.steam),
+      sh = C(K.steamShade),
+      under = new THREE.Color(sh.r / cream.r, sh.g / cream.g, sh.b / cream.b),
+      white = new THREE.Color(1, 1, 1),
+      col = steamGeo.attributes.color.array;
+    let vi = 0;
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 6; j++) setRGBA(col, vi++, white, 1);
+      for (let k = 0; k < 3; k++)
+        for (let j = 0; j < OCT; j++) {
+          const mid = octRot[i * 3 + k] + ((j + 0.5) / OCT) * Math.PI * 2,
+            c = Math.sin(mid) < 0 ? under : white;
+          for (let v = 0; v < 3; v++) setRGBA(col, vi++, c, 1);
+        }
+    }
+  }
   // ── Termika (kap. 2.1): stužky + tělo v jednom bufferu s alfou ve vrcholech (1 DC), útržky instancované (1 DC).
   const thermGeo = mk(dynamic(THERM_TRIS, true)),
     thermal = new THREE.Mesh(
@@ -178,7 +198,7 @@ export function createCompanion({ ramp, hull, palette, paper = null }) {
     bodyDay = C(K.thermal.body),
     bodyNight = C(K.thermal.night);
   // ── Sky Lantern (kap. 3.1): model sky-lantern (LOD 0/1, den / noc), ve dne papírový materiál a nesvítí, ve čtvrti 4 svítí (bez stínování,
-  // toneMapped false) s měkkým kotoučem záře za sebou (normální míchání, alfa 0,22). 1–2 DC.
+  // toneMapped false) s měkkým kotoučem záře za sebou (normální míchání, alfa ve vrcholech 0,3 → 0, ⌀ 8,8 m). 1–2 DC.
   const lanGeo = new Map(),
     lanternGeo = (lod, night) => {
       const k = lod + (night ? 'n' : 'd');
@@ -195,15 +215,19 @@ export function createCompanion({ ramp, hull, palette, paper = null }) {
     lanNight = mk(new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false })),
     lanternPivot = new THREE.Group(),
     lantern = new THREE.Mesh(lanternGeo(0, false), lanDay),
+    glowGeo = mk(new THREE.CircleGeometry(1, GLOW_SEGS)),
     glow = new THREE.Mesh(
-      mk(new THREE.CircleGeometry(1, 8)),
-      flat({
-        color: K.lantern.night,
-        transparent: true,
-        opacity: K.lantern.glowAlpha,
-        toneMapped: false,
-      }),
+      glowGeo,
+      flat({ vertexColors: true, transparent: true, toneMapped: false }),
     );
+  // Měkký kotouč (F2 B7, 05-art kap. 3.1): 16 segmentů, alfa ve vrcholech střed glowCore → okraj 0 (vrchol 0 je střed).
+  {
+    const n = glowGeo.attributes.position.count,
+      col = new Float32Array(n * 4),
+      gc = C(K.lantern.glow);
+    for (let i = 0; i < n; i++) setRGBA(col, i, gc, i ? 0 : K.lantern.glowCore);
+    glowGeo.setAttribute('color', new THREE.BufferAttribute(col, 4));
+  }
   lantern.position.y = -2.35;
   lanternPivot.add(lantern);
   lanternPivot.visible = false;
@@ -317,14 +341,23 @@ export function createCompanion({ ramp, hull, palette, paper = null }) {
       pos[o++] = 0;
       setRGBA(col, vi++, c, al);
     };
+    // tělo bez tvrdé hrany (F2 B8): o inset m užší než stužky, v horní třetině alfa lineárně k 0
     const xl = cx - span.width / 2,
-      xr = cx + span.width / 2;
-    v(xl, 0, body, bodyA);
-    v(xr, 0, body, bodyA);
-    v(xr, look.top, body, bodyA);
-    v(xl, 0, body, bodyA);
-    v(xr, look.top, body, bodyA);
-    v(xl, look.top, body, bodyA);
+      xr = cx + span.width / 2,
+      bl = Math.min(cx, xl + THERMAL_FX.inset),
+      br = Math.max(cx, xr - THERMAL_FX.inset),
+      ym = look.top * THERMAL_FX.solid;
+    for (const [y0, y1, a0, a1] of [
+      [0, ym, bodyA, bodyA],
+      [ym, look.top, bodyA, 0],
+    ]) {
+      v(bl, y0, body, a0);
+      v(br, y0, body, a0);
+      v(br, y1, body, a1);
+      v(bl, y0, body, a0);
+      v(br, y1, body, a1);
+      v(bl, y1, body, a1);
+    }
     for (const [k, x] of [
       [0, xl],
       [1, xr],
@@ -446,7 +479,7 @@ export function createCompanion({ ramp, hull, palette, paper = null }) {
         // záře jen ve čtvrti 4, nepulzuje (rozhodnutí 06 14. 10.)
         glow.visible = night;
         glow.position.set(pose.x, pose.y, pose.z - 1);
-        glow.scale.setScalar(1.5 * 4.4 * s);
+        glow.scale.setScalar(LANTERN_FX.glow * 4.4 * s);
       }
     } else if (type === 'star') {
       const pose = starPose(evs.w, t, X, Y, evs.result, evs.resolvedAt, reduced);

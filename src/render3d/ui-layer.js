@@ -15,6 +15,8 @@ import {
   ABILITY_UI,
   COMBO_UI,
   comboLinks,
+  comboZoom,
+  bellZoom,
   effectiveVx,
 } from './event-fx.js';
 // Papír (P3, bible 05 kap. 7, 8, 11): QTE mezikruží krémové se stínem zvednutého papíru, štítky a popupy jako natočené papírové štítky,
@@ -109,11 +111,22 @@ export function drawUi(c, plan = {}, visual = {}) {
     });
     if (ui.aim) drawAim(c, ui.aim, v, p);
     if (dy) c.translate(0, -dy);
-    if (ui.combo) drawCombo(c, ui.combo, comboAt(ui.comboAnchor, css), t, reduced, p, scale);
+    if (ui.combo)
+      drawCombo(
+        c,
+        ui.combo,
+        comboAt(ui.comboAnchor, css),
+        t,
+        reduced,
+        p,
+        scale * comboZoom(css, scale),
+        css,
+      );
     if (!reduced) drawFlash(c, fx.flash, p, lh);
     if (ui.intro) {
-      const cw = visual.cssWidth ?? c.canvas?.clientWidth ?? 640;
-      drawIntro(c, ui.intro, p, cw, lh, uiZoom(cw, c.canvas?.clientHeight ?? 360));
+      const cw = visual.cssWidth ?? c.canvas?.clientWidth ?? 640,
+        ch = c.canvas?.clientHeight;
+      drawIntro(c, ui.intro, p, cw, lh, uiZoom(cw, ch ?? 360), ch);
     }
   } finally {
     c.setTransform(1, 0, 0, 1, 0, 0);
@@ -364,8 +377,9 @@ export function drawBurst(c, b, view = AIM_VIEW, time = 0, reduced = false, p = 
   c.restore();
 }
 // Schopnosti z kapes (C3, event-fx.abilityFx): barvy jen z rolí QTE (perfekt, úspěch, stopa, tuš, krém), tužkou 1 px, bez pohybu
-// (reduced motion beze změny). lowPass = pás nízkého průletu přes celou šířku, v pásu sytější; cushion = pásma výšky pod vlaštovkou;
-// pillow = krémový polštář s tuší pod vlaštovkou, mizí s k.
+// (reduced motion beze změny). lowPass = tyrkysový pás nízkého průletu jen před vlaštovkou (LOW_PASS, konce zeslabené), v pásu sytější;
+// cushion = pásma výšky pod vlaštovkou; pillow = polštář z pásky s kraftovým čárkovaným obrysem pod vlaštovkou, mizí s k (F2 B5, B6).
+export const LOW_PASS = Object.freeze({ back: 40, ahead: 260, fade: 30 });
 export function drawAbility(c, a, view = AIM_VIEW, p = PAPIR) {
   if (!a) return;
   const A = ABILITY_UI,
@@ -375,14 +389,27 @@ export function drawAbility(c, a, view = AIM_VIEW, p = PAPIR) {
   c.strokeStyle = q.dot;
   c.setLineDash?.([4, 3]);
   if (a.kind === 'lowPass') {
+    const L = LOW_PASS,
+      x0 = view.px - L.back,
+      x1 = view.px + L.ahead,
+      g = c.createLinearGradient?.(x0, 0, x1, 0),
+      e = L.fade / (x1 - x0);
+    if (g)
+      [
+        [0, 0],
+        [e, 1],
+        [1 - e, 1],
+        [1, 0],
+      ].forEach(([at, al]) => g.addColorStop(at, rgba(q.success, al)));
     c.globalAlpha = a.in ? A.bandAlpha * 1.8 : A.bandAlpha;
-    c.fillStyle = q.success;
-    c.fillRect(-20, a.top, 680, a.bottom - a.top);
+    c.fillStyle = g ?? q.success;
+    c.fillRect(x0, a.top, x1 - x0, a.bottom - a.top);
     c.globalAlpha = 0.5;
+    c.strokeStyle = g ?? q.success;
     c.beginPath();
     for (const y of [a.top, a.bottom]) {
-      c.moveTo(-20, y);
-      c.lineTo(660, y);
+      c.moveTo(x0, y);
+      c.lineTo(x1, y);
     }
     c.stroke();
   } else if (a.kind === 'cushion') {
@@ -398,11 +425,12 @@ export function drawAbility(c, a, view = AIM_VIEW, p = PAPIR) {
       c.stroke();
     }
   } else if (a.kind === 'pillow' && a.k > 0) {
-    c.setLineDash?.([]);
+    c.setLineDash?.([3, 2]);
     c.globalAlpha = 0.4 + 0.5 * a.k;
-    c.fillStyle = q.disc;
+    c.fillStyle = p.ability.pillow;
+    c.strokeStyle = p.ability.pillowEdge;
     c.beginPath();
-    c.ellipse(view.px, a.y, A.pillowW, A.pillowH, 0, 0, TAU);
+    c.ellipse(view.px, a.y + A.pillowGap, A.pillowW, A.pillowH, 0, 0, TAU);
     c.fill();
     c.stroke();
   }
@@ -410,17 +438,48 @@ export function drawAbility(c, a, view = AIM_VIEW, p = PAPIR) {
 }
 // Papírový řetěz komba (kap. 6.1–6.2) vpravo nahoře: očka = strop comboSpec.max, vyplněná teal, prázdná čárkovaná miss, vlevo štítek ×N
 // (číslo vždy). Nové očko zacvakne (1,3 → 1 za 0,15 s), přetržení = očka padají 0,4 s; Chimes = zvoneček na konci při kombu ≥ 3.
-// at = {x (pravý konec), y (střed)} v logických px, s = uiScale. Reduced motion: bez měřítka, pádu a houpání.
-export function drawCombo(c, cb, at = COMBO_UI.at, time = 0, reduced = false, p = PAPIR, s = 1) {
+// at = {x (pravý konec), y (střed)} v logických px, s = měřítko (uiScale × comboZoom), css = šířka plátna v CSS px (zvoneček ≥ 14 px).
+// Celý řetěz leží na krémovém štítku se stínem zvednutí (F2 B3: očka se čtou proti krému, ne proti nebi). Reduced motion: bez měřítka, pádu a houpání.
+export function drawCombo(
+  c,
+  cb,
+  at = COMBO_UI.at,
+  time = 0,
+  reduced = false,
+  p = PAPIR,
+  s = 1,
+  css = 640,
+) {
   if (!cb) return;
   const C = COMBO_UI,
     K = p.combo,
     broke = cb.broke && !reduced,
     links = comboLinks(cb.max, broke ? cb.broke : cb.n, at.x, at.y, s),
     fall = broke ? Math.min(1, cb.age / C.fall) : 0,
-    last = Math.min(cb.n, cb.max) - 1;
+    last = Math.min(cb.n, cb.max) - 1,
+    txt = '×' + (cb.broke ? 0 : cb.n),
+    fs = Math.ceil(C.font * s - 1e-6),
+    x1 = links[0].x - C.rx * s - 4 * s,
+    end = links[links.length - 1],
+    b = s * bellZoom(css, s),
+    [bw, bh] = C.bell;
   c.save();
   c.lineJoin = 'round';
+  c.font = `bold ${fs}px ${p.popup.font}`;
+  const w = c.measureText(txt).width + 6 * s,
+    half = Math.max(fs * 0.65, C.ry * s) + 2 * s,
+    below = cb.chimes ? C.ry * s + (bh + 1) * b + 2 * s : half;
+  c.save();
+  if (p.qte.shadow) lift(c, p.qte.shadow);
+  c.globalAlpha = C.backAlpha;
+  c.fillStyle = K.tag;
+  c.fillRect(
+    x1 - w,
+    at.y - half,
+    end.x + C.rx * s + 3 * s - (x1 - w),
+    half + Math.max(half, below),
+  );
+  c.restore();
   links.forEach((l, i) => {
     let rx = C.rx * s,
       ry = C.ry * s,
@@ -451,25 +510,16 @@ export function drawCombo(c, cb, at = COMBO_UI.at, time = 0, reduced = false, p 
   c.setLineDash([]);
   c.globalAlpha = 1;
   // štítek s číslem vlevo od řetězu
-  const txt = '×' + (cb.broke ? 0 : cb.n),
-    fs = Math.round(C.font * s),
-    x1 = links[0].x - C.rx * s - 4 * s;
-  c.font = `bold ${fs}px ${p.popup.font}`;
-  const w = c.measureText(txt).width + 6 * s;
-  c.fillStyle = K.tag;
-  c.fillRect(x1 - w, at.y - fs * 0.65, w, fs * 1.3);
   c.fillStyle = K.text;
   c.textAlign = 'right';
   c.textBaseline = 'middle';
   c.fillText(txt, x1 - 3 * s, at.y);
   if (cb.chimes) {
-    const end = links[links.length - 1],
-      [bw, bh] = C.bell,
-      u = cb.ring * C.hz,
+    const u = cb.ring * C.hz,
       a = reduced || !(u < C.cycles) ? 0 : C.swing * Math.sin(u * TAU) * (1 - u / C.cycles);
     c.translate(end.x, end.y + C.ry * s);
     c.rotate(a);
-    c.scale(s, s);
+    c.scale(b, b);
     c.fillStyle = K.bell;
     c.beginPath();
     c.moveTo(-bw / 2 + 2, 0);
@@ -542,7 +592,8 @@ export function drawPopups(c, list = [], view = AIM_VIEW, p = PAPIR, scale = 1) 
   // krémový štítek se stínem zvednutí, natočený střídavě o ±popup.tilt (°), text v barvě role bez obrysu
   c.textBaseline = 'middle';
   for (const q of list) {
-    const big = q.style === 'perfect' || q.style === 'land',
+    // half (½) jako big: zlomek je malý a kraftDark má na krému 3,66 : 1, velký text stačí ≥ 3 : 1 (F2 B9)
+    const big = q.style === 'perfect' || q.style === 'land' || q.style === 'half',
       land = q.style === 'land',
       fs = Math.round((big ? 17 : 13) * q.scale * scale);
     c.globalAlpha = q.alpha;
@@ -600,19 +651,26 @@ const clampPx = (lo, v, hi) => Math.max(lo, Math.min(hi, v));
 // Krok zvětšení UI pro velká okna, stejný jako zoom v style.css (art review A2): nápis v plátně roste se stejným krokem jako titul a panely.
 export const uiZoom = (cssWidth = 640, cssHeight = 360) =>
   cssWidth >= 2200 && cssHeight >= 1200 ? 1.5 : cssWidth >= 1700 && cssHeight >= 1000 ? 1.25 : 1;
-export function introTextSize(cssWidth = 640, scale = cssWidth / 640, zoom = 1) {
+// Na nízkém okně (na šířku) bere i výšku (F2 B16): 932 × 430 → 52 / 18 px, desktop beze změny.
+export function introTextSize(
+  cssWidth = 640,
+  scale = cssWidth / 640,
+  zoom = 1,
+  cssHeight = Infinity,
+) {
   const w = cssWidth > 0 ? cssWidth : 640,
+    h = cssHeight > 0 ? cssHeight : Infinity,
     k = scale > 0 ? scale : 1,
     z = zoom > 0 ? zoom : 1,
-    cssSize = clampPx(32, 0.09 * w, 72) * z,
-    cssSub = clampPx(15, 0.038 * w, 18) * z;
+    cssSize = clampPx(32, Math.min(0.09 * w, 0.12 * h), 72) * z,
+    cssSub = clampPx(15, Math.min(0.038 * w, 0.042 * h), 18) * z;
   return { size: cssSize / k, sub: cssSub / k, cssSize, cssSub };
 }
-export function drawIntro(c, intro, p = PAPIR, cssWidth = 640, lh = VIEW.h, zoom = 1) {
+export function drawIntro(c, intro, p = PAPIR, cssWidth = 640, lh = VIEW.h, zoom = 1, cssHeight) {
   if (!(intro?.alpha > 0)) return;
   const [y0, y1] = (intro.band ?? [0.08, 0.28]).map(v => v * lh),
     k = INTRO_TITLE,
-    sz = introTextSize(cssWidth, cssWidth / 640, zoom);
+    sz = introTextSize(cssWidth, cssWidth / 640, zoom, cssHeight);
   c.save();
   c.globalAlpha = Math.min(1, intro.alpha);
   c.fillStyle = p.aim.text;
