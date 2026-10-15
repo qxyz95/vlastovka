@@ -87,17 +87,17 @@ test('i18n: choice of language: URL wins, then the stored value, otherwise Engli
   setLang('en');
 });
 test('i18n: a missing key falls back to English, in strict mode (tests) it fails', () => {
-  const saved = cs['hud.best'];
-  delete cs['hud.best'];
+  const saved = cs['hud.distance'];
+  delete cs['hud.distance'];
   try {
     setStrict(false);
-    assert.equal(t('hud.best', {}, 'cs'), 'BEST');
+    assert.equal(t('hud.distance', {}, 'cs'), 'DISTANCE');
     assert.equal(t('no.such.key'), 'no.such.key');
     setStrict(true);
-    assert.throws(() => t('hud.best', {}, 'cs'), /missing key "hud.best"/);
+    assert.throws(() => t('hud.distance', {}, 'cs'), /missing key "hud.distance"/);
     assert.throws(() => t('no.such.key'), /missing key/);
   } finally {
-    cs['hud.best'] = saved;
+    cs['hud.distance'] = saved;
     setStrict(true);
   }
 });
@@ -312,8 +312,11 @@ test('U1: removed style keys are gone and unread; no night/neon wording; new key
   assert.match(read('bonus.html'), /theme-color" content="#d9c4a0"/);
   assert.match(read('bonus.html'), /color-scheme" content="light"/);
 });
-test('guard: navigation links and language buttons keep a 44 px touch target (also on bonus.html without the picker)', () => {
+// U5: the page navigation is gone (02-ux §1.1); buttons, the ☰ / ❚❚ icon and the language buttons keep the touch target.
+test('guard: buttons, the menu icon and language buttons keep a 44 px touch target', () => {
   const css = compact(read('style.css'));
-  assert.match(css, /\.page-nav a\{[^}]*min-height:44px/);
+  assert.ok(!css.includes('.page-nav'), 'page navigation removed');
+  assert.match(css, /\}button\{[^}]*min-height:48px;min-width:48px/);
+  assert.match(css, /\.icon\{min-width:48px;min-height:48px/);
   assert.match(css, /\.lang-picker button\{[^}]*min-height:44px;min-width:44px/);
 });

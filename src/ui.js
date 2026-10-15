@@ -15,11 +15,14 @@ import {
 import { load, save } from './storage.js';
 import { createFx, fxEvent, stepFx } from './juice.js';
 import { lerp } from './motion.js';
-import { districtAt, routeAt, SCREEN_METERS } from './scenes.js';
+import { districtAt } from './scenes.js';
 import { chargeAt, throwSettings } from './throw.js';
 import { eventProgress, eventStats, windows, TIMING } from './events.js';
 import { createDecorations, stepDecorations } from './decorations.js';
-import { drawAim } from './render3d/ui-layer.js';
+import { initialState, transition, loopRuns, PANELS } from './screens.js';
+import { reveal, coinLine } from './reveal.js';
+import { loadSettings, saveSettings, reducedMotion } from './settings.js';
+import { drawAim, aimAngleAt } from './render3d/ui-layer.js';
 import { eventView } from './render3d/events-view.js';
 import { introAfter, introPress, introDone } from './render3d/intro.js';
 // Renderer: 3D výchozí (src/render3d/), ?render=2d nebo prohlížeč bez WebGL2 → 2D render.js (do smazání 2D, fáze f plánu 3D).
@@ -54,10 +57,10 @@ function fallback2d(e) {
   render = () => {};
 }
 const $ = id => document.getElementById(id),
+  $$ = sel => document.querySelectorAll(sel),
   loaded = load();
 let p = loaded.data,
   f = null,
-  state = 'workshop',
   picked = { branch: 'power', level: 1 },
   last = 0,
   acc = 0;
@@ -66,12 +69,24 @@ let fx = null,
   landedAt = 0,
   decorations = null,
   inputOwner = null,
-  milestoneQueue = [],
+  bannerQueue = [],
   seenMilestones = new Set(),
   banner = null,
   lastDistrict = 0,
-  districtUntil = 0;
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  bestAtStart = 0;
+// Obrazovky a panely řídí čistý automat screens.js (U3, 02-ux §1.2): S = {screen, title, panels, charging, shownAt}.
+// UI jen posílá události přes go() a podle změny stavu přepíná DOM (sync); vlastní příznaky obrazovek nemá.
+let S = initialState();
+const store = (() => {
+  try {
+    return localStorage;
+  } catch {
+    return null;
+  }
+})();
+let settings = loadSettings(store);
+const systemReduce = matchMedia('(prefers-reduced-motion: reduce)'),
+  isReduced = () => reducedMotion(settings, systemReduce.matches);
 // ?timer: ladicí smyčka ~60 Hz přes MessageChannel (skrytá záložka škrtí rAF i setTimeout) a skrytá záložka se nebere jako pauza
 // (automatické ověření ve skrytém okně prohlížeče; točí jedno jádro CPU, jen pro ladění).
 const TIMER = new URLSearchParams(location.search).has('timer'),
@@ -87,9 +102,16 @@ if (mc)
     } else mc.port2.postMessage(0);
   };
 const tick = () => (mc ? mc.port2.postMessage(0) : requestAnimationFrame(frame));
-let warning = loaded.warning;
+let warning = loaded.warning,
+  warningClosed = false;
 const showWarning = () => {
-  $('warning').textContent = translateMessage(warning);
+  const text = translateMessage(warning);
+  $('warning-text').textContent = text;
+  $('warning').hidden = !text || warningClosed;
+};
+$('warning-close').onclick = () => {
+  warningClosed = true;
+  showWarning();
 };
 // Jediný styl je Papírové město (06, 15. 10.): CSS ho má na :root, renderer dostane visual.style jako konstantu, dokud R0 nesmaže cyber větve.
 // Bývalý klíč 2D přepínače motivů se jednou uklidí; save hry se nemění.
@@ -103,10 +125,21 @@ function persist() {
   const w = save(p);
   if (w) {
     warning = w;
+    warningClosed = false;
     showWarning();
   }
 }
 const m = (x, d = 0) => unit(x, 'm', d);
+// Velikost plátna v CSS px (celé okno, 02-ux §1.5): poměr stran jde rendereru, čte se jen při resize, ne každým snímkem.
+const gameSize = { width: 640, height: 360 };
+{
+  const r = $('game').getBoundingClientRect();
+  if (r.width && r.height) Object.assign(gameSize, { width: r.width, height: r.height });
+  new ResizeObserver(([e]) => {
+    const r = e.contentRect;
+    if (r.width && r.height) Object.assign(gameSize, { width: r.width, height: r.height });
+  }).observe($('game'));
+}
 // Language: ?lang= in the URL wins, then the last choice, otherwise English. Stored outside the save.
 // Switching redraws every text without a reload: static HTML via data-i18n / data-i18n-aria, the rest through refresh() and the frame loop.
 function applyLang(id) {
@@ -115,35 +148,41 @@ function applyLang(id) {
   try {
     localStorage.setItem(LANG_KEY, lang);
   } catch {}
-  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
-  for (const el of document.querySelectorAll('[data-i18n-aria]'))
-    el.setAttribute('aria-label', t(el.dataset.i18nAria));
-  for (const b of document.querySelectorAll('[data-lang]'))
-    b.setAttribute('aria-pressed', b.dataset.lang === lang);
+  for (const el of $$('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  for (const el of $$('[data-i18n-aria]')) el.setAttribute('aria-label', t(el.dataset.i18nAria));
+  for (const b of $$('[data-lang]')) b.setAttribute('aria-pressed', b.dataset.lang === lang);
   $('version').textContent = t('footer.version', { version: VERSION });
   showWarning();
   refresh();
-  if (state === 'aim') updateAim();
-  if ($('result').open && f && outcome) fillResult();
+  layout();
+  if (S.screen === 'home') updateAim();
+  if (S.screen === 'result' && f && outcome) fillResult();
 }
-for (const b of document.querySelectorAll('[data-lang]'))
-  b.onclick = () => applyLang(b.dataset.lang);
-// Story line under the scene: the current place in flight, otherwise the farthest place reached.
-function setStory(text) {
-  if ($('journey-story').textContent !== text) $('journey-story').textContent = text;
+for (const b of $$('[data-lang]')) b.onclick = () => applyLang(b.dataset.lang);
+// Pohyb: volba v Nastavení přebíjí systém (settings.js); CSS čte data-reduced, renderer visual.reduced.
+function applyMotion() {
+  document.documentElement.dataset.reduced = isReduced();
+  for (const r of $$('input[name="motion"]')) r.checked = r.value === settings.motion;
 }
-function storyAt(x, key = 'story.line') {
-  const place = routeAt(x);
-  return t(key, { place: place.name, story: place.story });
+for (const r of $$('input[name="motion"]'))
+  r.onchange = () => {
+    settings = { ...settings, motion: r.value };
+    saveSettings(settings, store);
+    applyMotion();
+  };
+systemReduce.addEventListener?.('change', applyMotion);
+// Postupné odkrývání (U4, reveal.js): tlačítka titulu, Menu, výsledku a Dílny, čip mincí, řada modelů.
+function applyReveal() {
+  const R = reveal(p);
+  for (const b of $$('[data-open="workshop"], [data-open="atlas"]')) b.hidden = !R[b.dataset.open];
+  $('models').hidden = !R.models;
+  $('title-status').textContent = p.completed ? t('menu.delivered') : '';
+  return R;
 }
 function refresh() {
-  $('coins').textContent = p.coins;
-  $('best').textContent = m(Math.floor(p.best));
-  $('milestone').textContent = m(
-    [100, 250, 500].find(n => n > p.best) ??
-      Math.ceil((Math.floor(p.best / SCREEN_METERS) + 1) * SCREEN_METERS),
-  );
-  setStory(p.best > 0 ? storyAt(p.best, 'story.farthest') : storyAt(0));
+  applyReveal();
+  $('coins').textContent = num(p.coins);
+  $('hud-coins').setAttribute('aria-label', t('menu.coins', { count: p.coins }));
   for (const m of ['dart', 'glider']) {
     $(m).classList.toggle('selected', p.model === m);
     $(m).setAttribute('aria-pressed', p.model === m);
@@ -191,10 +230,7 @@ function refresh() {
       node.onclick = () => {
         picked = { branch: b.id, level: l };
         refresh();
-        $('tree')
-          .querySelectorAll('.branch')
-          [BRANCHES.indexOf(b)].querySelectorAll('button')
-          [l - 1].focus();
+        focusPicked();
       };
       nodes.append(node);
     }
@@ -235,10 +271,15 @@ function refresh() {
     if (buy(p, b.id, l)) {
       persist();
       refresh();
-      $('launch').focus();
+      focusPicked();
     }
   };
 }
+const focusPicked = () =>
+  $('tree')
+    .querySelectorAll('.branch')
+    [BRANCHES.findIndex(b => b.id === picked.branch)]?.querySelectorAll('button')
+    [picked.level - 1]?.focus();
 // Effect numbers come from config (UPGRADE), so the text follows any rebalance.
 function effectText(id) {
   const plus = x => '+' + pct(x);
@@ -251,77 +292,154 @@ function effectText(id) {
         : { steady: plus(UPGRADE.steady), window: plus(UPGRADE.window), qte: plus(UPGRADE.qte) },
   );
 }
-// Úvod (H1): {pressed: s | null} nebo null. Ukáže se po načtení a po návratu z Dílny, ne po „Hodit znovu“; první stisk spustí jízdu
-// do míření a zároveň nabíjení. Po zapojení screens.js (U5): úvod = s.title na Domově, stisk = událost 'press', Hodit znovu = 'throwAgain'.
+// Úvod (H1): {pressed: s | null} nebo null. Ukáže se po načtení ('loaded') a po zavření Dílny, Atlasu nebo Menu zpět na Domov
+// (introAfter podle zavřeného panelu), ne po „Hodit znovu“ ('throwAgain', stisk na kartě výsledku) ani po zrušení hodu.
+// Stisk na Domově = událost 'press' (screens.js) a zároveň introPress: jízda do míření a nabíjení.
 let intro = null;
 let angle = 15,
   held = false,
   heldTime = 0,
-  owner = null;
-function show(next) {
-  state = next;
-  document.body.classList.toggle('in-flight', next === 'flight');
-  for (const id of ['workshop', 'flight', 'aim']) $(id).hidden = id !== next;
-  $('game').classList.toggle('aiming', next === 'aim');
-  if (next !== 'flight') {
-    $('milestone-banner').hidden = true;
-    $('scene-label').classList.remove('district-highlight');
+  owner = null,
+  pending = null;
+const isCard = () => S.screen === 'result' || S.screen === 'chapter';
+// Jediný vstup do automatu: vrací true, když se stav změnil.
+function go(e) {
+  const was = S;
+  S = transition(S, e);
+  if (S === was) return false;
+  sync(was, e);
+  return true;
+}
+function sync(was, e) {
+  const screen = S.screen !== was.screen || e.type === 'resetProgress',
+    panels = S.panels.join() !== was.panels.join();
+  if (!S.charging && held) {
+    held = false;
+    owner = null;
+    heldTime = 0;
   }
-  if (next === 'workshop' || next === 'aim') {
-    $('flight-reward').textContent = num(10) + ' ◈';
-    decorations = null;
+  if (panels && S.panels.length) flightCancel();
+  layout();
+  if (screen) enter(e);
+  if (panels) {
+    if (!S.panels.length && S.screen === 'home' && was.panels.length)
+      intro = introAfter(was.panels.at(-1)) ?? intro;
+    if (S.panels.at(-1) === 'pause') $('pause-note').hidden = e.type !== 'hidden';
+    showPanels();
+    syncHistory();
+  }
+  if (screen || panels) focusDefault();
+}
+function enter(e) {
+  if (S.screen === 'home')
+    prepare(e.type === 'loaded' || e.type === 'resetProgress' ? 'load' : 'throwAgain');
+  else if (S.screen === 'flight') startFlight(pending);
+  else if (isCard()) finish();
+}
+// DOM podle stavu: obrazovka a titul jako data-* na <body> (CSS), rohové ovládání, karta výsledku, ☰ / ❚❚.
+function layout() {
+  const b = document.body.dataset,
+    flight = S.screen === 'flight',
+    title = S.screen === 'home' && S.title ? 'on' : '';
+  if (b.screen !== S.screen) b.screen = S.screen;
+  if (b.title !== title) b.title = title;
+  $('aim').hidden = S.screen !== 'home';
+  $('flight').hidden = !flight;
+  $('result').hidden = !isCard();
+  $('game').classList.toggle('aiming', S.screen === 'home');
+  $('menu-btn').textContent = flight ? '❚❚' : '☰';
+  $('menu-btn').setAttribute('aria-label', t(flight ? 'hud.pause' : 'menu.open'));
+  if (!flight) $('banner').hidden = true;
+}
+function showPanels() {
+  for (const id of PANELS) if ($(id).open && !S.panels.includes(id)) $(id).close();
+  for (const id of S.panels) if (!$(id).open) $(id).showModal();
+}
+function focusDefault() {
+  if (S.panels.length) return;
+  (S.screen === 'home' ? $('hold') : isCard() ? $('retry') : null)?.focus({ preventScroll: true });
+}
+// Systémové zpět (Android, gesto, Alt+←) zavírá panely: každý otevřený panel má záznam v historii (02-ux §1.2 back()).
+let depth = 0,
+  skipPop = 0;
+function syncHistory() {
+  const want = S.panels.length;
+  if (want > depth) for (; depth < want; depth++) history.pushState({ jti: depth + 1 }, '');
+  else if (want < depth) {
+    skipPop++;
+    history.go(want - depth);
+    depth = want;
   }
 }
+addEventListener('popstate', () => {
+  if (skipPop) {
+    skipPop--;
+    return;
+  }
+  const d = history.state?.jti ?? 0;
+  if (d >= depth) {
+    depth = d;
+    return;
+  }
+  depth = d;
+  while (S.panels.length > d && go({ type: 'close' }));
+});
+for (const id of PANELS) {
+  // Esc v panelu: zpět o jeden krok přes automat (cancel); zavření prohlížečem mimo automat srovná stav.
+  $(id).addEventListener('cancel', e => {
+    e.preventDefault();
+    go({ type: 'back' });
+  });
+  $(id).addEventListener('close', () => {
+    if (S.panels.includes(id)) go({ type: 'back' });
+  });
+}
+for (const b of $$('[data-open]')) b.onclick = () => go({ type: 'open', panel: b.dataset.open });
+for (const b of $$('[data-close]')) b.onclick = () => go({ type: 'close' });
+$('menu-btn').onclick = () => go({ type: 'open', panel: S.screen === 'flight' ? 'pause' : 'menu' });
+$('cancel-throw').onclick = () => go({ type: 'cancelThrow' });
+$('retry').onclick = () => go({ type: 'throwAgain' });
+$('confirm-delete').onclick = () => {
+  p = fresh();
+  persist();
+  refresh();
+  go({ type: 'resetProgress' });
+};
 function prepare(from = 'throwAgain') {
-  if ($('result').open) $('result').close();
   intro = introAfter(from);
   f = null;
   fx = null;
+  decorations = null;
   held = false;
   owner = null;
   heldTime = 0;
   acc = 0;
-  show('aim');
   updateAim();
-  $('hold').focus();
-  $('game').scrollIntoView({ block: 'center', behavior: 'smooth' });
-}
-function workshop(upgrades = false) {
-  if ($('result').open) $('result').close();
-  intro = null;
-  held = false;
-  owner = null;
-  f = null;
-  fx = null;
-  show('workshop');
-  refresh();
-  if (upgrades) {
-    $('tree').scrollIntoView({ block: 'center' });
-    $('tree').querySelector('button').focus();
-  } else $('launch').focus();
 }
 function updateAim() {
-  const charge = held ? chargeAt(heldTime) : 0;
   $('angle').value = angle;
   $('angle-value').textContent = Math.round(angle) + '°';
-  $('charge-fill').style.width = charge * 100 + '%';
-  const label = t(held ? 'aim.release' : 'aim.ready', {
-    power: pct(Math.round(charge * 100) / 100),
-  });
-  if ($('charge-label').textContent !== label) $('charge-label').textContent = label;
 }
 function begin(source) {
-  if (state !== 'aim' || held || hidden()) return;
+  if (held || hidden() || S.panels.length) return;
+  go({ type: 'press', t: performance.now() });
+  if (S.screen !== 'home' || !S.charging) return;
   held = true;
   owner = source;
   heldTime = 0;
   intro = introPress(intro, performance.now() / 1000);
 }
+// Puštění: automat rozhodne, jestli to byl hod (≥ HOLD_MIN_MS), nebo jen ťuknutí (Domov zůstane).
 function release(source) {
-  if (!held || owner !== source || state !== 'aim') return;
-  const launch = throwSettings(angle, chargeAt(heldTime));
+  if (!held || owner !== source || S.screen !== 'home') return;
+  pending = throwSettings(angle, chargeAt(heldTime));
+  const heldMs = heldTime * 1000;
   held = false;
   owner = null;
+  go({ type: 'release', heldMs });
+  heldTime = 0;
+}
+function startFlight(launch) {
   intro = null;
   f = createFlight(p.model, p.levels, p.attempts + 1, { x: 0, y: 0 }, launch);
   acc = 0;
@@ -332,61 +450,82 @@ function release(source) {
   decorations = createDecorations(f.seed);
   zoneKind = null;
   inputOwner = null;
-  milestoneQueue = [];
+  bannerQueue = [];
   seenMilestones = new Set();
   banner = null;
   lastDistrict = 0;
-  districtUntil = 0;
-  show('flight');
+  bestAtStart = p.best;
   $('event-help').textContent = t('throw.' + launch.grade);
   $('action').disabled = true;
+  $('hud-best').hidden = true;
 }
 function cancelHold() {
-  held = false;
-  owner = null;
-  heldTime = 0;
+  if (held) {
+    held = false;
+    owner = null;
+    heldTime = 0;
+  }
+  go({ type: 'holdCancel' });
   updateAim();
 }
+// Míření ukazatelem: úhel ve skutečných CSS px plátna (02-ux §1.5, ui-layer.aimAngleAt), ne v natažených 640 × 360.
 function aimPointer(e) {
-  const r = $('game').getBoundingClientRect(),
-    o = view(null);
-  const x = ((e.clientX - r.left) * 640) / r.width,
-    y = ((e.clientY - r.top) * 360) / r.height;
-  angle = Math.max(5, Math.min(40, (Math.atan2(o.py - y, Math.max(1, x - o.px)) * 180) / Math.PI));
+  const r = $('game').getBoundingClientRect();
+  angle = aimAngleAt({ x: e.clientX - r.left, y: e.clientY - r.top }, view(null), r);
   updateAim();
 }
-for (const target of [$('hold'), $('game')]) {
-  target.addEventListener('pointerdown', e => {
-    if (state !== 'aim' || e.button !== 0 || held) return;
+// Podržet kdekoli ve scéně: na Domově nabíjení, na kartě výsledku (po zámku) rovnou nový hod; za letu vstup události.
+$('game').addEventListener('pointerdown', e => {
+  if (e.button !== 0 || S.panels.length) return;
+  if (S.screen === 'flight') {
+    if (inputOwner !== null) return;
     e.preventDefault();
-    if (target === $('game')) aimPointer(e);
-    target.setPointerCapture(e.pointerId);
-    begin(e.pointerId);
-  });
-  target.addEventListener('pointermove', e => {
-    if (state === 'aim' && target === $('game') && (!held || owner === e.pointerId)) aimPointer(e);
-  });
-  target.addEventListener('pointerup', e => {
-    release(e.pointerId);
-  });
-  target.addEventListener('pointercancel', cancelHold);
-  target.addEventListener('lostpointercapture', () => {
-    if (held) cancelHold();
-  });
-}
+    try {
+      $('game').setPointerCapture(e.pointerId);
+    } catch {}
+    flightDown(e.pointerId);
+    return;
+  }
+  if (S.screen !== 'home' && !isCard()) return;
+  e.preventDefault();
+  begin(e.pointerId);
+  if (!held) return;
+  aimPointer(e);
+  try {
+    $('game').setPointerCapture(e.pointerId);
+  } catch {}
+});
+$('game').addEventListener('pointermove', e => {
+  if (S.screen === 'home' && !S.panels.length && (!held || owner === e.pointerId)) aimPointer(e);
+});
+$('game').addEventListener('pointerup', e => {
+  if (S.screen === 'flight') flightUp(e.pointerId);
+  else release(e.pointerId);
+});
+$('game').addEventListener('pointercancel', e => {
+  if (S.screen === 'flight') {
+    if (inputOwner === e.pointerId) flightCancel();
+  } else if (held && owner === e.pointerId) cancelHold();
+});
+$('game').addEventListener('lostpointercapture', e => {
+  if (held && owner === e.pointerId) cancelHold();
+});
+// Dočasné tlačítko Hold v rohu (do U6): stejné nabíjení jako držení ve scéně.
+$('hold').addEventListener('pointerdown', e => {
+  if (S.screen !== 'home' || e.button !== 0 || held) return;
+  e.preventDefault();
+  $('hold').setPointerCapture(e.pointerId);
+  begin(e.pointerId);
+});
+$('hold').addEventListener('pointerup', e => release(e.pointerId));
+$('hold').addEventListener('pointercancel', cancelHold);
+$('hold').addEventListener('lostpointercapture', () => {
+  if (held) cancelHold();
+});
 $('angle').oninput = () => {
   angle = Number($('angle').value);
   updateAim();
 };
-$('launch').onclick = () => prepare('workshop');
-$('retry').onclick = () => prepare('throwAgain');
-$('upgrades').onclick = () => workshop(true);
-$('return').onclick = () => workshop();
-$('cancel-aim').onclick = () => workshop();
-$('result').addEventListener('cancel', e => {
-  e.preventDefault();
-  workshop();
-});
 for (const m of ['dart', 'glider'])
   $(m).onclick = () => {
     if (m === 'glider' && p.best < 100) return;
@@ -395,7 +534,7 @@ for (const m of ['dart', 'glider'])
     refresh();
   };
 function flightDown(source) {
-  if (state !== 'flight' || hidden() || inputOwner !== null) return;
+  if (S.screen !== 'flight' || !loopRuns(S) || hidden() || inputOwner !== null) return;
   const e = activeEvent(f);
   if (!e || e.result) return;
   inputOwner = source;
@@ -407,23 +546,9 @@ function flightUp(source) {
   inputOwner = null;
 }
 function flightCancel() {
-  if (inputOwner !== null) eventInput(f, 'cancel', inputOwner);
+  if (inputOwner !== null && f) eventInput(f, 'cancel', inputOwner);
   inputOwner = null;
 }
-$('game').addEventListener('pointerdown', e => {
-  if (state !== 'flight' || e.button !== 0 || inputOwner !== null) return;
-  e.preventDefault();
-  try {
-    $('game').setPointerCapture(e.pointerId);
-  } catch {}
-  flightDown(e.pointerId);
-});
-$('game').addEventListener('pointerup', e => {
-  if (state === 'flight') flightUp(e.pointerId);
-});
-$('game').addEventListener('pointercancel', e => {
-  if (state === 'flight' && inputOwner === e.pointerId) flightCancel();
-});
 $('action').addEventListener('pointerdown', e => {
   if (e.button !== 0 || inputOwner !== null) return;
   e.preventDefault();
@@ -437,12 +562,22 @@ $('action').addEventListener('pointercancel', e => {
 $('action').addEventListener('lostpointercapture', e => {
   if (inputOwner === e.pointerId) flightCancel();
 });
-// Space on another focused button (e.g. "Zpět do dílny") must activate that button, not throw.
+// Space on another focused button (e.g. a title button) must activate that button, not throw.
 const otherButton = e =>
   e.target instanceof HTMLButtonElement && e.target !== $('hold') && e.target !== $('action');
 window.addEventListener('keydown', e => {
+  // Esc bez panelu: Domov a výsledek → Menu, let → Pauza (v panelu ho řeší jeho událost cancel).
+  if (e.key === 'Escape') {
+    if (!S.panels.length && S.screen !== 'loading') {
+      e.preventDefault();
+      go({ type: 'back' });
+    }
+    return;
+  }
+  if (S.panels.length) return;
+  const home = S.screen === 'home';
   if (
-    state === 'aim' &&
+    home &&
     ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code) &&
     e.target !== $('angle')
   ) {
@@ -454,65 +589,56 @@ window.addEventListener('keydown', e => {
     updateAim();
   }
   if (
-    (e.code === 'Space' || (e.code === 'Enter' && (e.target === $('action') || state === 'aim'))) &&
-    (state === 'flight' || state === 'aim') &&
+    (e.code === 'Space' || (e.code === 'Enter' && (e.target === $('action') || home))) &&
+    (S.screen === 'flight' || home || isCard()) &&
     !otherButton(e)
   ) {
     e.preventDefault();
     if (!e.repeat) {
-      if (state === 'aim') begin('key');
-      else flightDown('key');
+      if (S.screen === 'flight') flightDown('key');
+      else begin('key');
     }
   }
 });
 window.addEventListener('keyup', e => {
   if (otherButton(e)) return;
   if (e.code === 'Space' || e.code === 'Enter') {
-    if (state === 'aim') {
+    if (S.screen === 'home') {
       e.preventDefault();
       release('key');
-    } else if (state === 'flight') {
+    } else if (S.screen === 'flight') {
       e.preventDefault();
       flightUp('key');
     }
   }
 });
 window.addEventListener('blur', () => {
-  if (state === 'aim') cancelHold();
+  if (held) cancelHold();
   flightCancel();
 });
-$('reset').onclick = () => {
-  if (confirm(t('footer.confirm'))) {
-    p = fresh();
-    persist();
-    workshop();
-  }
-};
+// Skrytí karty: konec držení, za letu automatická pauza (screens.js 'hidden').
 document.addEventListener('visibilitychange', () => {
   last = 0;
   acc = 0;
   if (hidden()) {
-    if (state === 'aim') cancelHold();
+    if (held) cancelHold();
     flightCancel();
+    go({ type: 'hidden' });
   }
-  $('paused').hidden = !hidden();
 });
-// Result facts are kept as data (outcome), so a language switch can redraw the dialog.
+// Result facts are kept as data (outcome), so a language switch can redraw the card.
 let outcome = null;
 function finish() {
   const previous = p.best;
   settle(p, f);
   persist();
   refresh();
-  show('result');
   outcome = {
     record: f.x > previous,
     glider: previous < 100 && p.best >= 100,
     hint: angleHint((f.launch.angle * 180) / Math.PI, bestAngle(f.model, p.levels, f.launch.power)),
   };
   fillResult();
-  $('result').showModal();
-  $('retry').focus();
 }
 function fillResult() {
   $('result-title').textContent = t(f.x >= 500 ? 'result.goal' : 'result.title');
@@ -530,6 +656,14 @@ function fillResult() {
     p.best >= 500
       ? t('result.goalDone', { distance: m(p.best) })
       : t('result.progress', { best: num(Math.floor(p.best)), goal: m(500) });
+  // Řádek mincí (reveal.coinLine): jen informuje, kupuje se v Dílně (06, 15. 10.). Pořadí řádků karty je U7.
+  const coins = coinLine(p);
+  $('result-coins').hidden = !coins;
+  if (coins)
+    $('result-coins').textContent =
+      coins.kind === 'canBuy'
+        ? t('result.canBuy', { count: coins.count })
+        : t('result.toNextBuy', { coins: num(coins.coins) + ' ◈' });
   $('result-text').textContent = [
     t('throw.' + f.launch.grade),
     t(outcome.hint),
@@ -539,16 +673,34 @@ function fillResult() {
     .filter(Boolean)
     .join(' · ');
 }
+// HUD jen dolet a mince (02-ux §1.4, 06 B3): dolet za letu a na kartě (na Domově jen před prvním hodem), mince od prvního výsledku.
+const setText = (el, s) => {
+  if (el.textContent !== s) el.textContent = s;
+};
+const setHidden = (el, h) => {
+  if (el.hidden !== h) el.hidden = h;
+};
+function updateHud() {
+  const flight = S.screen === 'flight';
+  setHidden(
+    $('hud-distance'),
+    !(flight || isCard() || (S.screen === 'home' && p.attempts === 0 && !S.title)),
+  );
+  setText($('distance'), m(Math.floor(f?.x ?? 0)));
+  setHidden($('hud-coins'), !reveal(p).coins);
+  setText($('coins'), flight && f ? '+' + num(reward(f)) : num(p.coins));
+}
 function frame(now) {
   const elapsed = last ? Math.min((now - last) / 1000, 0.1) : 0;
   last = now;
   if (!hidden()) {
-    if (state === 'aim') {
-      if (held) heldTime += elapsed;
-      if (intro && introDone(intro, now / 1000, reduced.matches)) intro = null;
-      updateAim();
+    const runs = loopRuns(S),
+      reduced = isReduced();
+    if (S.screen === 'home') {
+      if (held && runs) heldTime += elapsed;
+      if (intro && introDone(intro, now / 1000, reduced)) intro = null;
     }
-    if (state === 'flight') {
+    if (S.screen === 'flight' && f && runs) {
       // Hitstop freezes physics for a few frames; QTE timing runs on flight time, so it is unaffected.
       if (fx.hitstop > 0) fx.hitstop = Math.max(0, fx.hitstop - elapsed);
       else acc += elapsed;
@@ -559,13 +711,14 @@ function frame(now) {
         acc -= DT;
       }
       juiceEvents();
-      // Let the landing dust and shake play before the result dialog covers the scene.
+      // Let the landing dust and shake play before the result card covers the scene.
       if (f.landed) {
         if (!landedAt) landedAt = now;
-        if (now - landedAt > (reduced.matches ? 300 : 850)) finish();
+        if (now - landedAt > (reduced ? 300 : 850)) go({ type: 'landed', t: now, chapter: false });
       }
-      updateFlightUI();
+      if (S.screen === 'flight') updateFlightUI();
     }
+    updateHud();
     // Draw between the last two physics steps so motion is smooth on 120 Hz screens too.
     const a = Math.min(1, acc / DT),
       shown =
@@ -579,13 +732,11 @@ function frame(now) {
               t: lerp(prev.t, f.t, a),
             }
           : f;
-    if (fx) stepFx(fx, elapsed, shown, view(shown));
-    const dist = m(Math.floor(f?.x ?? 0)),
-      sceneLabel = state === 'aim' ? t('scene.aim') : districtAt(f?.x ?? 0).name;
-    if ($('distance').textContent !== dist) $('distance').textContent = dist;
-    if ($('scene-label').textContent !== sceneLabel) $('scene-label').textContent = sceneLabel;
-    const charge = state === 'aim' && held ? chargeAt(heldTime) : 0,
-      aim = state === 'aim' ? { angle, held, charge } : null;
+    if (fx && runs) stepFx(fx, elapsed, shown, view(shown));
+    const home = S.screen === 'home',
+      state = home ? 'aim' : S.screen === 'flight' ? 'flight' : 'result',
+      charge = home && held ? chargeAt(heldTime) : 0,
+      aim = home ? { angle, held, charge } : null;
     try {
       render(
         $('game'),
@@ -594,17 +745,19 @@ function frame(now) {
         f ? f.t + (f.landed && landedAt ? (now - landedAt) / 1000 : 0) : now / 1000,
         {
           decorations,
-          reduced: reduced.matches,
+          reduced,
           qte: qteVisual(),
           fx,
           charge,
           clock: now / 1000,
           state,
           aim,
-          intro: intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
+          intro: home &&
+            intro && { since: intro.pressed == null ? null : now / 1000 - intro.pressed },
           best: p.best,
           style: STYLE,
           touch: coarse.matches,
+          aspect: gameSize.width / gameSize.height,
         },
       );
     } catch (e) {
@@ -644,7 +797,7 @@ function juiceEvents() {
 }
 // What the canvas needs to draw the in-scene timing ring.
 function qteVisual() {
-  if (state !== 'flight' || !f) return null;
+  if (S.screen !== 'flight' || !f) return null;
   const e = activeEvent(f);
   if (!e) return null;
   return {
@@ -659,6 +812,8 @@ function qteVisual() {
 function updateFlightUI() {
   const e = activeEvent(f),
     interactive = e && !e.result;
+  // Časovací pruh pod scénou je volba Nastavení (settings.timingBar, přepínač přijde v U9); jinak jen kruh ve scéně.
+  setHidden($('timing'), !settings.timingBar);
   if (e && e.type !== zoneKind) {
     zoneKind = e.type;
     const z = zonesFor(zoneKind);
@@ -671,16 +826,14 @@ function updateFlightUI() {
       el.style.width = (b - a) * 100 + '%';
     }
   }
-  const title = e ? eventView(e.type).title : t('flight.calm'),
-    act = t(
-      e?.type === 'bird' ? (e.heldAt !== null ? 'flight.release' : 'flight.hold') : 'flight.tap',
-    );
-  if ($('event-title').textContent !== title) $('event-title').textContent = title;
+  const act = t(
+    e?.type === 'bird' ? (e.heldAt !== null ? 'flight.release' : 'flight.hold') : 'flight.tap',
+  );
   $('action').disabled = !interactive;
-  if ($('action').textContent !== act) $('action').textContent = act;
+  setText($('action'), act);
   $('flight').dataset.kind = e?.type ?? 'none';
   $('flight').dataset.phase = e?.phase ?? 'idle';
-  $('needle').style.left = (e ? eventProgress(f, e) * 100 : 0) + '%';
+  if (settings.timingBar) $('needle').style.left = (e ? eventProgress(f, e) * 100 : 0) + '%';
   const help =
     e?.phase === 'warning'
       ? t('help.ready')
@@ -689,32 +842,32 @@ function updateFlightUI() {
         : f.t < f.feedbackUntil
           ? t(f.feedback)
           : t('help.idle');
-  if ($('event-help').textContent !== help) $('event-help').textContent = help;
-  const rw = num(reward(f)) + ' ◈';
-  if ($('flight-reward').textContent !== rw) $('flight-reward').textContent = rw;
-  setStory(storyAt(f.x));
-  for (const m of [100, 250, 500])
-    if (f.x >= m && !seenMilestones.has(m)) {
-      seenMilestones.add(m);
-      milestoneQueue.push(m);
+  setText($('event-help'), help);
+  if (bestAtStart > 0 && f.x > bestAtStart) setHidden($('hud-best'), false);
+  // Banner (02-ux §1.1, §1.4): nejvýš jeden, mimo událost; nová čtvrť má přednost před milníkem.
+  for (const v of [100, 250, 500])
+    if (f.x >= v && !seenMilestones.has(v)) {
+      seenMilestones.add(v);
+      bannerQueue.push({ kind: 'milestone', value: v });
       fxEvent(fx, 'milestone');
     }
-  if (banner && f.t >= banner.until) banner = null;
-  if (!e && !banner && milestoneQueue.length)
-    banner = { value: milestoneQueue.shift(), until: f.t + 1.5 };
-  $('milestone-banner').hidden = !!e || !banner || f.landed;
-  if (banner) {
-    const text = t(banner.value === 500 ? 'banner.goal' : 'banner.milestone', {
-      distance: m(banner.value),
-    });
-    if ($('milestone-banner').textContent !== text) $('milestone-banner').textContent = text;
-  }
   const district = districtAt(f.x).index;
   if (district !== lastDistrict) {
     lastDistrict = district;
-    districtUntil = f.t + 1.5;
+    bannerQueue.unshift({ kind: 'district', x: f.x });
   }
-  $('scene-label').classList.toggle('district-highlight', f.t < districtUntil);
+  if (banner && f.t >= banner.until) banner = null;
+  if (!e && !banner && bannerQueue.length) banner = { ...bannerQueue.shift(), until: f.t + 1.5 };
+  setHidden($('banner'), !!e || !banner || f.landed);
+  if (banner)
+    setText(
+      $('banner'),
+      banner.kind === 'district'
+        ? districtAt(banner.x).name
+        : t(banner.value === 500 ? 'banner.goal' : 'banner.milestone', {
+            distance: m(banner.value),
+          }),
+    );
 }
 {
   let stored = null;
@@ -723,5 +876,14 @@ function updateFlightUI() {
   } catch {}
   applyLang(pickLang(new URLSearchParams(location.search).get('lang'), stored));
 }
-prepare('load');
+applyMotion();
+// Načteno: titulní stav místo „Unfolding the city…“, tlačítka titulu povolená.
+$('title-status').removeAttribute('data-i18n');
+for (const b of $$('#title button')) b.disabled = false;
+go({ type: 'loaded' });
+// bonus.html přesměruje na ./#atlas: Atlas se otevře jako panel (jen když je už odkrytý).
+if (location.hash === '#atlas') {
+  history.replaceState(null, '', location.pathname + location.search);
+  if (reveal(p).atlas) go({ type: 'open', panel: 'atlas' });
+}
 tick();

@@ -18,8 +18,8 @@ test('U0: index.html bez přepínače stylů a podtitulku „Neon City“, meta 
   assert.match(html, /<meta name="theme-color" content="([^"]+)">/);
   assert.equal(html.match(/<meta name="theme-color" content="([^"]+)">/)[1], PAPER_TOKENS.desk);
   assert.match(html, /<meta name="color-scheme" content="light">/);
-  // Logo smí dál vést na "./": vzhled už nezávisí na parametru v adrese, takže klik styl nepřepne.
-  assert.match(html, /<a href="\.\/" class="brand">JUST THROW IT<\/a>/);
+  // U5: hlavička s odkazem loga zmizela, název je jen nadpis titulní obrazovky (vzhled nezávisí na adrese).
+  assert.match(html, /<h1>JUST THROW IT<\/h1>/);
 });
 test('U0: style.css má papír na :root, žádné větve stylů ani 2D motivy', () => {
   for (const s of [
